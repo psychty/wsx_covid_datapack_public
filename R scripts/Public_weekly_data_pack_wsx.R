@@ -1,7 +1,7 @@
 # Public facing data pack - West Sussex and LTLAs
 library(easypackages)
 
-libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid'))
+libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest'))
 
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
@@ -562,13 +562,46 @@ utla_rate <- p12_test_df %>%
   filter(Date == max(Date)) %>%
   # filter(Date == '2020-07-12') %>% 
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority')) %>% 
-  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Colour_key) %>% 
+  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Colour_key) %>%
   mutate(Cumulate_rate_rank = rank(-Cumulative_per_100000)) %>% 
   mutate(Rate_decile = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
-  mutate(Rate_decile = factor(ifelse(Rate_decile == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate')))
+  mutate(Rate_decile = factor(ifelse(Rate_decile == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  arrange(Code)
+
+summary_table_rate <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000) %>% 
+  filter(Name %in% c('South East region', 'England')) %>% 
+  mutate(Cumulate_rate_rank = '-',
+         Rate_decile = '-')
+
+utla_rate_wsx <- utla_rate %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulate_rate_rank, Rate_decile) %>% 
+  mutate(Cumulate_rate_rank = ordinal(Cumulate_rate_rank)) %>% 
+  filter(Name == 'West Sussex') %>% 
+  bind_rows(summary_table_rate) %>% 
+  mutate(Cumulative_cases = format(Cumulative_cases, big.mark = ',', trim = TRUE),
+         Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
+  rename(Cases = Cumulative_cases,
+        `Rate per 100,000 residents` =  Cumulative_per_100000,
+        `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000
+` = Cumulate_rate_rank,
+        `Decile of rate per 100,000` =  Rate_decile)
 
 # library(classInt)
 # classIntervals(utla_rate$Cumulative_per_100000, n = 10, style = "quantile")
+
+utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
+  filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
+  mutate(ctyua19nm = ifelse(ctyua19nm %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
+    mutate(ctyua19cd = ifelse(ctyua19cd %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(ctyua19cd %in% c('E09000001', 'E09000012'), 'E09000012', ctyua19cd))) %>% 
+  group_by(ctyua19cd, ctyua19nm) %>% 
+  summarise() %>% 
+  arrange(ctyua19cd) %>% 
+  left_join(utla_rate, by = c('ctyua19cd' = 'Code')) 
+
+geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_json), keep = 0.2), file = paste0(github_repo_dir, '/utla_covid_cumulative_rate_latest.geojson'))
 
 utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
   fortify(region = "ctyua19cd") %>% 
@@ -646,76 +679,403 @@ print(map_1)
 print(inset_1, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
 
-map_2 <- ggplot() +
-  coord_fixed(1.5) +
-  map_theme() +
-  geom_polygon(data = utla_ua_boundaries,
-               aes(x=long,
-                   y=lat,
-                   group = group,
-                   fill = Colour_key),
-               color="#ffffff",
-               size = .1,
-               alpha = 1,
-               show.legend = TRUE) +
-  scale_fill_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
-                    name = 'Change in average new cases',
-                    drop = FALSE) +
-  labs(title = paste0('Recent changes in number of confirmed Covid-19 cases; Pillar 1 and 2 combined;\nUpper Tier Local and Unitary Authorities'),
-       subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')),
-       caption = paste0('A change in cases is identified by comparing the cases in the  most recent complete 7 day\nperiod (average number of new cases between ', format(complete_date - 6, '%d %B') , ' and ', format(complete_date, '%d %B'), ') with the previous 7 day period (', format(complete_date - 13, '%d %B') , '-', format(complete_date - 7, '%d %B'),').'))  +
-  theme(legend.position = c(.1,.55))
+# map_2 <- ggplot() +
+#   coord_fixed(1.5) +
+#   map_theme() +
+#   geom_polygon(data = utla_ua_boundaries,
+#                aes(x=long,
+#                    y=lat,
+#                    group = group,
+#                    fill = Colour_key),
+#                color="#ffffff",
+#                size = .1,
+#                alpha = 1,
+#                show.legend = TRUE) +
+#   scale_fill_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
+#                     name = 'Change in average new cases',
+#                     drop = FALSE) +
+#   labs(title = paste0('Recent changes in number of confirmed Covid-19 cases; Pillar 1 and 2 combined;\nUpper Tier Local and Unitary Authorities'),
+#        subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')),
+#        caption = paste0('A change in cases is identified by comparing the cases in the  most recent complete 7 day\nperiod (average number of new cases between ', format(complete_date - 6, '%d %B') , ' and ', format(complete_date, '%d %B'), ') with the previous 7 day period (', format(complete_date - 13, '%d %B') , '-', format(complete_date - 7, '%d %B'),').'))  +
+#   theme(legend.position = c(.1,.55))
+# 
+# 
+# inset_2 <- ggplot() +
+#   coord_fixed(1.5) +
+#   map_theme() +
+#   geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
+#                aes(x=long,
+#                    y=lat,
+#                    group = group,
+#                    fill = Colour_key),
+#                color="#ffffff",
+#                size = .1,
+#                alpha = 1,
+#                show.legend = FALSE) +
+#   scale_fill_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
+#                     name = 'Change in average new cases',
+#                     drop = FALSE) +
+#   labs(title = 'London') +
+#   theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
+#         plot.title = element_text(size = 8))
+# 
+# png(paste0(output_directory_x, '/Covid_19_case_change_utla_latest.png'),
+#     width = 1480,
+#     height = 1480,
+#     res = 180)
+# print(map_2)
+# print(inset_2, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
+# dev.off()
 
+# utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
+#   filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
+#   mutate(ctyua19nm = ifelse(ctyua19nm == 'Cornwall', 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
+#   group_by(ctyua19nm) %>% 
+#   summarise(do_union = TRUE)  %>% 
+#   filter(ctyua19nm != 'Isles of Scilly') 
+# 
+# df <- data.frame(ID=character())
+# 
+# # Get the IDs of spatial polygon
+#   for (i in utla_ua_boundaries_json@polygons ) { df <- rbind(df, data.frame(ID=i@ID, stringsAsFactors=FALSE))  }
+# 
+# # and set rowname=ID
+# row.names(df) <- df$ID
+# 
+# #Then use df as the second argument to the spatial dataframe conversion function:
+# utla_ua_boundaries_json <- SpatialPolygonsDataFrame(utla_ua_boundaries_json, df)
 
-inset_2 <- ggplot() +
-  coord_fixed(1.5) +
-  map_theme() +
-  geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
-               aes(x=long,
-                   y=lat,
-                   group = group,
-                   fill = Colour_key),
-               color="#ffffff",
-               size = .1,
-               alpha = 1,
-               show.legend = FALSE) +
-  scale_fill_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
-                    name = 'Change in average new cases',
-                    drop = FALSE) +
-  labs(title = 'London') +
-  theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
-        plot.title = element_text(size = 8))
+# LTLA rate ####
 
-png(paste0(output_directory_x, '/Covid_19_case_change_utla_latest.png'),
-    width = 1480,
-    height = 1480,
-    res = 180)
-print(map_2)
-print(inset_2, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
-dev.off()
+ltla_rate <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == max(Date)) %>%
+  filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority')) %>% 
+  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Colour_key) %>%
+  mutate(Cumulate_rate_rank = rank(-Cumulative_per_100000)) %>% 
+  mutate(Rate_decile = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
+  mutate(Rate_decile = factor(ifelse(Rate_decile == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  arrange(Code)
 
-# utla_json_simplified <- ms_simplify(geojson_json(utla_ua_boundaries), keep = 0.2)
-# geojson_write(utla_json_simplified, file = paste0(github_repo_dir, '/utla_covid_cumulative_rate_latest.geojson'))
+summary_table_rate <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000) %>% 
+  filter(Name %in% c('West Sussex','South East region', 'England')) %>% 
+  mutate(Cumulate_rate_rank = '-',
+         Rate_decile = '-') %>% 
+  mutate(Cumulative_cases = format(Cumulative_cases, big.mark = ',', trim = TRUE),
+         Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
+  mutate(Name = factor(Name, levels = c('West Sussex', 'South East region', 'England'))) %>% 
+  arrange(Name)
+
+ltla_rate_wsx <- ltla_rate %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulate_rate_rank, Rate_decile) %>% 
+  mutate(Cumulate_rate_rank = ordinal(Cumulate_rate_rank)) %>% 
+  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+  mutate(Cumulative_cases = format(Cumulative_cases, big.mark = ',', trim = TRUE),
+         Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
+  bind_rows(summary_table_rate) %>% 
+  rename(Cases = Cumulative_cases,
+         `Rate per 100,000 residents` =  Cumulative_per_100000,
+         `Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000
+         ` = Cumulate_rate_rank,
+         `Decile of rate per 100,000` = Rate_decile) 
+
+ltla_boundaries <- geojson_read('https://opendata.arcgis.com/datasets/54b65ffb42c2480b88a20899aff750de_0.geojson',  what = "sp") #%>% 
+    # filter(substr(ctyua20cd, 1,1 ) == 'E')
 
 # NHS Pathways ####
 
+ccg_region_2019 <- read_csv('https://opendata.arcgis.com/datasets/40f816a75fb14dfaaa6db375e6c3d5e6_0.csv') %>% 
+  select(CCG19CD, CCG19NM) %>% 
+  rename(Old_CCG_Name = CCG19NM,
+         Old_CCG_Code = CCG19CD) %>% 
+  mutate(New_CCG_Name = ifelse(Old_CCG_Name %in% c('NHS Bath and North East Somerset CCG', 'NHS Swindon CCG', 'NHS Wiltshire CCG'), 'NHS Bath and North East Somerset, Swindon and Wiltshire CCG', ifelse(Old_CCG_Name %in% c('NHS Airedale, Wharfedale and Craven CCG', 'NHS Bradford City CCG', 'NHS Bradford Districts CCG'), 'NHS Bradford District and Craven CCG', ifelse(Old_CCG_Name %in% c('NHS Eastern Cheshire CCG', 'NHS South Cheshire CCG', 'NHS Vale Royal CCG','NHS West Cheshire CCG'), 'NHS Cheshire CCG', ifelse(Old_CCG_Name %in% c('NHS Durham Dales, Easington and Sedgefield CCG', 'NHS North Durham CCG'), 'NHS County Durham CCG',  ifelse(Old_CCG_Name %in% c('NHS Eastbourne, Hailsham and Seaford CCG', 'NHS Hastings and Rother CCG', 'NHS High Weald Lewes Havens CCG'), 'NHS East Sussex CCG', ifelse(Old_CCG_Name %in% c('NHS Herefordshire CCG', 'NHS Redditch and Bromsgrove CCG', 'NHS South Worcestershire CCG','NHS Wyre Forest CCG'), 'NHS Herefordshire and Worcestershire CCG', ifelse(Old_CCG_Name %in% c('NHS Ashford CCG', 'NHS Canterbury and Coastal CCG', 'NHS Dartford, Gravesham and Swanley CCG', 'NHS Medway CCG', 'NHS South Kent Coast CCG', 'NHS Swale CCG', 'NHS Thanet CCG','NHS West Kent CCG'), 'NHS Kent and Medway CCG', ifelse(Old_CCG_Name %in% c('NHS Lincolnshire East CCG', 'NHS Lincolnshire West CCG', 'NHS South Lincolnshire CCG', 'NHS South West Lincolnshire CCG'), 'NHS Lincolnshire CCG', ifelse(Old_CCG_Name %in% c('NHS Great Yarmouth and Waveney CCG', 'NHS North Norfolk CCG', 'NHS Norwich CCG', 'NHS South Norfolk CCG', 'NHS West Norfolk CCG'), 'NHS Norfolk and Waveney CCG', ifelse(Old_CCG_Name %in% c('NHS Barnet CCG', 'NHS Camden CCG', 'NHS Enfield CCG', 'NHS Haringey CCG', 'NHS Islington CCG'), 'NHS North Central London CCG', ifelse(Old_CCG_Name %in% c('NHS Hambleton, Richmondshire and Whitby CCG', 'NHS Scarborough and Ryedale CCG', 'NHS Harrogate and Rural District CCG'),'NHS North Yorkshire CCG', ifelse(Old_CCG_Name %in% c('NHS Corby CCG', 'NHS Nene CCG'), 'NHS Northamptonshire CCG', ifelse(Old_CCG_Name %in% c('NHS Mansfield and Ashfield CCG', 'NHS Newark and Sherwood CCG', 'NHS Nottingham City CCG', 'NHS Nottingham North and East CCG', 'NHS Nottingham West CCG', 'NHS Rushcliffe CCG'), 'NHS Nottingham and Nottinghamshire CCG', ifelse(Old_CCG_Name %in% c('NHS Bexley CCG', 'NHS Bromley CCG', 'NHS Greenwich CCG', 'NHS Lambeth CCG', 'NHS Lewisham CCG','NHS Southwark CCG'), 'NHS South East London CCG',ifelse(Old_CCG_Name %in% c('NHS Croydon CCG', 'NHS Kingston CCG', 'NHS Merton CCG', 'NHS Richmond CCG', 'NHS Sutton CCG', 'NHS Wandsworth CCG'), 'NHS South West London CCG',ifelse(Old_CCG_Name %in% c('NHS East Surrey CCG', 'NHS Guildford and Waverley CCG', 'NHS North West Surrey CCG', 'NHS Surrey Downs CCG'), 'NHS Surrey Heartlands CCG', ifelse(Old_CCG_Name %in% c('NHS Darlington CCG', 'NHS Hartlepool and Stockton-on-Tees CCG', 'NHS South Tees CCG'), 'NHS Tees Valley CCG', ifelse(Old_CCG_Name %in% c('NHS Coastal West Sussex CCG', 'NHS Crawley CCG', 'NHS Horsham and Mid Sussex CCG'), 'NHS West Sussex CCG', Old_CCG_Name)))))))))))))))))))
+
+ccg_region_2020 <- read_csv('https://opendata.arcgis.com/datasets/888dc5cc66ba4ad9b4d935871dcce251_0.csv') %>% 
+  select(CCG20CD, CCG20NM, NHSER20NM) %>% 
+  rename(New_CCG_Code = CCG20CD,
+         CCG_Name = CCG20NM,
+         NHS_region = NHSER20NM)
+
+ccg_region_2019 <- ccg_region_2019 %>% 
+  left_join(ccg_region_2020[c('New_CCG_Code', 'CCG_Name')], by = c('New_CCG_Name'='CCG_Name'))
+
+# NHS Pathway Data
+calls_webpage <- read_html('https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest') %>%
+  html_nodes("a") %>%
+  html_attr("href")
+
+nhs_111_pathways_raw <- read_csv(grep('NHS%20Pathways%20Covid-19%20data%202020', calls_webpage, value = T))  %>% 
+  rename(CCG_Name = CCGName) %>% 
+  mutate(Date = as.Date(`Call Date`, format = '%d/%m/%Y')) %>% 
+  select(-`Call Date`) %>% 
+  mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
+
+nhs_111_pathways_pre_april <- nhs_111_pathways_raw %>% 
+  filter(Date < '2020-04-01') %>% 
+  left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCGCode' = 'Old_CCG_Code')) %>% 
+  group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex, SiteType) %>% 
+  summarise(TriageCount = sum(TriageCount, na.rm = TRUE)) %>% 
+  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
+  ungroup() %>% 
+  filter(!is.na(NHS_region))
+
+nhs_111_pathways_post_april <- nhs_111_pathways_raw %>% 
+  filter(Date >= '2020-04-01') %>% 
+  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCGCode' ='New_CCG_Code')) %>% 
+  filter(!is.na(NHS_region)) %>% 
+  rename(New_CCG_Code = CCGCode,
+         New_CCG_Name = CCG_Name)
+
+nhs_111_pathways <- nhs_111_pathways_pre_april %>% 
+  bind_rows(nhs_111_pathways_post_april) %>% 
+  mutate(Pathway = paste0(SiteType, ' triage')) %>% 
+  select(-SiteType) %>% 
+  rename(Triage_count = TriageCount)
+
+rm(nhs_111_pathways_pre_april, nhs_111_pathways_post_april)
+
+nhs_111_online_raw <- read_csv(grep('111%20Online%20Covid-19%20data_2020', calls_webpage, value = T)) %>% 
+  rename(CCG_Name = ccgname,
+         CCG_Code = ccgcode,
+         Sex = sex,
+         AgeBand = ageband) %>% 
+  mutate(Date = as.Date(journeydate, format = '%d/%m/%Y')) %>% 
+  select(-journeydate) %>% 
+  mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
+
+nhs_111_online_post_april <- nhs_111_online_raw %>% 
+  filter(Date >= '2020-04-01') %>% 
+  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCG_Code' ='New_CCG_Code')) %>% 
+  filter(!is.na(NHS_region)) %>% 
+  rename(New_CCG_Code = CCG_Code,
+         New_CCG_Name = CCG_Name)
+
+nhs_111_online_pre_april <- nhs_111_online_raw %>% 
+  filter(Date < '2020-04-01') %>% 
+  left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCG_Code' = 'Old_CCG_Code')) %>% 
+  group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex) %>% 
+  summarise(Total = sum(Total, na.rm = TRUE)) %>% 
+  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
+  ungroup() %>% 
+  filter(!is.na(NHS_region))
+
+nhs_111_online <- nhs_111_online_pre_april %>% 
+  bind_rows(nhs_111_online_post_april) %>% 
+  mutate(Pathway = '111 online Journey') %>% 
+  rename(Triage_count = Total)
+
+nhs_pathways_p1 <- nhs_111_pathways %>% 
+  bind_rows(nhs_111_online) %>% 
+  rename(Area_Code = New_CCG_Code,
+         Area_Name = New_CCG_Name)
+
+sussex_pathways <- nhs_pathways_p1 %>% 
+  filter(Area_Name %in% c('NHS West Sussex CCG', 'NHS East Sussex CCG', 'NHS Brighton and Hove CCG')) %>% 
+  group_by(Date, Pathway, Sex, AgeBand) %>% 
+  summarise(Triage_count = sum(Triage_count)) %>% 
+  mutate(Area_Name = 'Sussex areas combined',
+         Area_Code = '-',
+         NHS_region = '-')
+
+nhs_pathways <- nhs_pathways_p1 %>% 
+  bind_rows(sussex_pathways)
+
+nhs_pathways_all_ages_persons <- nhs_pathways %>% 
+  group_by(Area_Code, Area_Name, Date, Pathway) %>% 
+  summarise(Triage_count = sum(Triage_count)) %>% 
+  group_by(Area_Code, Area_Name, Pathway) %>% 
+  arrange(Area_Code, Pathway, Date) %>% 
+  mutate(Number_change = Triage_count - lag(Triage_count),
+         Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
+
+rm(ccg_region_2019, ccg_region_2020, nhs_111_online, nhs_111_online_pre_april, nhs_111_online_post_april, nhs_111_online_raw, nhs_111_pathways, nhs_111_pathways_raw, calls_webpage, nhs_pathways_p1, sussex_pathways)
+
+nhs_pathways_all_ages_persons_all_pathways <- nhs_pathways %>% 
+  group_by(Area_Code, Area_Name, Date) %>% 
+  summarise(Triage_count = sum(Triage_count)) %>% 
+  group_by(Area_Code, Area_Name) %>% 
+  arrange(Area_Code, Date) %>% 
+  mutate(Number_change = Triage_count - lag(Triage_count),
+         Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
+
+latest_triage_date = nhs_pathways %>% 
+  filter(Date == max(Date)) %>% 
+  select(Date) %>% 
+  unique() %>% 
+  mutate(Date = format(Date, '%d %B'))
+
+pathways_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
+  filter(Area_Name == 'NHS West Sussex CCG')
+
+whole_timeseries_plot <- ggplot(pathways_x,
+       aes(x = Date,
+           y = Triage_count,
+           group = 1)) +
+  geom_segment(x = as.Date('2020-04-09'), y = 0, xend = as.Date('2020-04-09'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)), color = "red", linetype = "dashed") +
+  geom_segment(x = as.Date('2020-04-23'), y = 0, xend = as.Date('2020-04-23'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)), color = "blue", linetype = "dashed") +
+  geom_segment(x = as.Date('2020-05-18'), y = 0, xend = as.Date('2020-05-18'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)), color = "red", linetype = "dashed") +
+  geom_line() +
+  geom_point() +
+  scale_x_date(date_labels = "%b %d",
+               breaks = seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 2),
+               limits = c(min(nhs_pathways$Date), max(nhs_pathways$Date)),
+               expand = c(0.01,0.01)) +
+  scale_y_continuous(labels = comma,
+                     breaks = seq(0,round_any(max(pathways_x$Triage_count, na.rm = TRUE), 500, ceiling),250)) +
+  labs(x = 'Date',
+       y = 'Number of complete triages',
+       title = paste0('Total number of complete triages to NHS Pathways for Covid-19; ', unique(pathways_x$Area_Name)),
+       subtitle = paste0('Triages via 111 online, 111 phone calls and 999 calls; 18 March - ', latest_triage_date$Date),
+       caption = 'Note: red dashed line = some patients excluded,\nblue dashed line = additional patients added') +
+  ph_theme() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
+  annotate(geom = 'text',
+           x = as.Date('2020-04-08'), 
+           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
+           label = '9th April',
+           fontface = 'bold',
+           size = 2.5,
+           hjust = 1,
+           vjust = 1) +
+  annotate(geom = 'text',
+           x = as.Date('2020-04-08'), 
+           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
+           label = '111 online removed\nfor 0-18 year olds',
+           size = 2.5,
+           hjust = 1,
+           vjust = 1.75) +
+  annotate(geom = 'text',
+           x = as.Date('2020-04-23'), 
+           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
+           label = '23rd April',
+           fontface = 'bold',
+           size = 2.5,
+           hjust = 0,
+           vjust = -8) +
+  annotate(geom = 'text',
+           x = as.Date('2020-04-23'),
+           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
+           label = '111 online reinstated\nfor 5-18 year olds',
+           size = 2.5,
+           hjust = 0,
+           vjust = -1.25) +
+  annotate(geom = 'text',
+           x = as.Date('2020-05-18'), 
+           y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
+           label = '18th May',
+           size = 2.5,
+           fontface = 'bold',
+           hjust = 0,
+           vjust = -6) +
+  annotate(geom = 'text',
+           x = as.Date('2020-05-18'), 
+           y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
+           label = 'Covid-19 pathway case\ndefinition change',
+           size = 2.5,
+           hjust = 0,
+           vjust = -.5)
+
+png(paste0(output_directory_x, '/Covid_complete_triages_nhs_pathways_', gsub(' ', '_', Area_x), '.png'),
+    width = 1580, 
+    height = 1300, 
+    res = 200)
+print(whole_timeseries_plot)
+dev.off()
+
+Report_df_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
+  filter(Area_Name == 'NHS West Sussex CCG') %>% 
+  mutate(seven_day_total_triages = rollapplyr(Triage_count, 7, sum, align = 'right', partial = TRUE)) %>% 
+  mutate(seven_day_average_triages = round(rollapplyr(Triage_count, 7, mean, align = 'right', partial = TRUE),0))
+
+latest_report_date <- Report_df_x %>% 
+  filter(Date == max(Date))
+
+latest_report_date_minus1 <- Report_df_x %>% 
+  filter(Date == max(Date) -1)
+
+paste0('In the seven days leading to ', format(latest_report_date$Date, '%d %B'), ' there were ', format(latest_report_date$seven_day_total_triages, big.mark = ','), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(latest_report_date$seven_day_average_triages, 0), big.mark = ','), ' each day.')
+
+paste0('In the last 24 hours there were ', format(latest_report_date$Triage_count, big.mark = ','), ' triages made. This is an ', ifelse(latest_report_date$Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(latest_report_date$Number_change), big.mark = ','), ' triages compared to the previous day (', format(latest_report_date_minus1$Triage_count, big.mark = ',') ,' triages).') 
+
 # Mortality ####
 
-deaths_labels <- read_csv(paste0(github_repo_dir, '/All_settings_deaths_occurrences.csv')) %>% 
+# Weekly death figures provide provisional counts of the number of deaths registered in England and Wales for which data are available.	From 31 March 2020 these figures also show the number of deaths involving coronavirus (COVID-19), based on any mention of COVID-19 on the death certificate.											
+
+# The tables include deaths that occurred up to the Friday before last but were registered up to last Friday. Figures by place of death may differ to previously published figures due to improvements in the way we code place of death.											
+# These figures do not include deaths of those residents outside England and Wales or those records where the place of residence is either missing or not yet fully coded. For this reason counts may differ to published figures when summed. These figures represent death occurrences and registrations, there can be a delay between the date a death occurred and the date a death was registered. More information can be found in our impact of registration delays release. 	
+
+# For this data, the week ends on a friday (so friday is the cut off date for each week of data). It might be helpful for us to say as at this date this is the number of deaths. To do this we need to convert each week number into a 'friday date'.
+set_week_start('Friday')
+
+week_ending <- data.frame(Week_ending = get_date(week = 1:52, year = 2020)) %>% 
+  mutate(Week_number = row_number())
+
+# Boo! but we can get around it with some date hackery. This will probably not work on Tuesday morning next week
+# download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), 'finalcodes.xlsx'), paste0(github_repo_dir, '/ons_mortality.xlsx'), mode = 'wb')
+
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/ons_mortality.xlsx'), mode = 'wb')
+
+# # if the downlaod does fail, it wipes out the old one, which we can use to our advantage
+if(!file.exists(paste0(github_repo_dir, '/ons_mortality.xlsx'))){
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-12)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/ons_mortality.xlsx'), mode = 'wb')
+}
+
+# Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
+
+# Occurrences data is produced at ltla level and we would probably find it useful to aggregate to utla and region for our analysis
+
+Occurrences_ltla <- read_excel(paste0(github_repo_dir, '/ons_mortality.xlsx'), sheet = 'Occurrences - All data', skip = 2) %>% 
+  rename(Name = `Area name`,
+         Cause = `Cause of death`,
+         Week_number = `Week number`,
+         Place_of_death = `Place of death`,
+         Deaths = `Number of deaths`) %>% 
+  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+  select(Name, Week_number, Cause, Place_of_death, Deaths) %>% 
+  left_join(week_ending, by = 'Week_number') %>% 
+  ungroup()
+
+# Occurrences data is produced at ltla level and we would probably find it useful to aggregate to utla and region for our analysis
+Occurrences_wsx <- Occurrences_ltla %>% 
+  group_by(Cause, Week_number, Place_of_death) %>% 
+  summarise(Deaths = sum(Deaths, na.rm = TRUE)) %>% 
+  mutate(Name = 'West Sussex') %>% 
+  select(Name, Week_number, Cause, Place_of_death, Deaths) %>% 
+  left_join(week_ending, by = 'Week_number') %>% 
+  ungroup()
+
+Occurrences<- Occurrences_ltla %>% 
+  bind_rows(Occurrences_wsx)
+
+rm(Occurrences_ltla, Occurrences_wsx)
+
+deaths_labels <- Occurrences %>% 
   arrange(Week_number) %>% 
   select(Week_ending) %>% 
   unique() %>% 
   mutate(deaths_label = paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')))
 
-weekly_all_place_all_deaths <- read_csv(paste0(github_repo_dir, '/All_settings_deaths_occurrences.csv')) %>% 
-  filter(Name %in% areas_to_loop) %>% 
+weekly_all_place_all_deaths <- Occurrences %>% 
   filter(Cause == 'All causes') %>% 
   arrange(Week_number) %>% 
+  group_by(Name, Week_ending) %>% 
+  summarise(Deaths = sum(Deaths, na.rm = TRUE)) %>% 
   select(Name, Week_ending, Deaths) %>% 
   mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
   rename(All_deaths = Deaths)
 
-weekly_all_place_deaths <- read_csv(paste0(github_repo_dir, '/All_settings_deaths_occurrences.csv')) %>% 
+All_settings_occurrences <- Occurrences %>% 
+  group_by(Name, Week_number, Week_ending, Cause) %>% 
+  summarise(Deaths = sum(Deaths, na.rm = TRUE)) %>% 
+  group_by(Name, Cause) %>% 
+  arrange(Cause, Week_number) %>% 
+  mutate(Cumulative_deaths = cumsum(Deaths))  %>% 
+  ungroup()
+
+weekly_all_place_deaths <- All_settings_occurrences %>% 
   filter(Name %in% areas_to_loop) %>%
   arrange(Week_number) %>% 
   select(Name, Cause, Week_ending, Deaths) %>% 
@@ -734,19 +1094,27 @@ for(i in 1:length(areas_to_loop)){
   
 area_x <- areas_to_loop[i]
 
-area_x_cov_non_cov <- weekly_all_place_deaths %>% 
+area_x_cov_non_cov_raw <- weekly_all_place_deaths %>% 
   filter(Name == area_x)
+
+deaths_area_x_cov_non_cov <- area_x_cov_non_cov_raw %>% 
+  group_by(Cause) %>% 
+  summarise(Deaths_to_date = sum(Deaths, na.rm = TRUE))
+
+area_x_cov_non_cov <- area_x_cov_non_cov_raw %>%
+  left_join(deaths_area_x_cov_non_cov, by = 'Cause') %>% 
+  mutate(Cause_1 = paste0(ifelse(Cause == 'Non-Covid', 'COVID not mentioned', gsub(' ', '-', Cause)), ' (', format(Deaths_to_date, big.mark = ',', trim = TRUE), ' deaths)')) %>% 
+  mutate(Cause_1 = factor(Cause_1, levels = unique(Cause_1)))
 
 max_deaths_limit <- ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 50, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 5, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 100, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 10, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 250, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 25, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 500, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 50, ceiling), round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 100, ceiling)))))
 
 max_deaths_break <- ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 20, 2, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 50, 5, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 100, 10, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 250, 25, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 500, 50, 100)))))
 
-
-area_x_wk_cause_deaths_plot <- ggplot(area_x_cov_non_cov,
+area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
                                       aes(x = Week_ending, 
                                           y = Deaths,
-                                          fill = Cause,
-                                          colour = Cause,
+                                          fill = Cause_1,
+                                          colour = Cause_1,
                                           label = Deaths)) +
   geom_bar(stat = 'identity',
            colour = '#ffffff') +
@@ -760,32 +1128,32 @@ area_x_wk_cause_deaths_plot <- ggplot(area_x_cov_non_cov,
        x = 'Week',
        y = 'Number of deaths') +
   scale_fill_manual(values = c('#2F5597','#BDD7EE'),
-                    labels = c('COVID-19', 'COVID not mentioned')) +
+                    name = 'Cause of death mentioned on certificate\n(number of deaths so far\nsince week ending 3rd Jan 2020\ngiven in brackets)') +
   scale_colour_manual(values = c('#000000', '#ffffff')) +
   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
                      limits = c(0,max_deaths_limit)) +
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-        legend.position = 'bottom')  +
+        legend.position = 'right')  +
   guides(colour = FALSE)
 
 png(paste0(output_directory_x, '/Covid_19_deaths_', gsub(' ', '_', area_x), '.png'),
-    width = 1580,
-    height = 750,
-    res = 200)
+    width = 1280,
+    height = 400,
+    res = 165)
 print(area_x_wk_cause_deaths_plot)
 dev.off()
 
-care_home_ons_all_deaths <- read_csv(paste0(github_repo_dir, '/Care_home_death_occurrences_ONS_weekly.csv')) %>% 
-  filter(Name %in% areas_to_loop) %>% 
+care_home_ons_all_deaths <- Occurrences %>%
+  filter(Place_of_death %in% 'Care home') %>% 
   filter(Cause == 'All causes') %>% 
   arrange(Week_number) %>% 
   select(Name, Week_ending, Deaths) %>% 
   mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
   rename(All_deaths = Deaths)
 
-carehome_weekly_deaths <- read_csv(paste0(github_repo_dir, '/Care_home_death_occurrences_ONS_weekly.csv')) %>% 
-  filter(Name %in% areas_to_loop) %>%
+carehome_weekly_deaths <- Occurrences %>%
+  filter(Place_of_death %in% 'Care home') %>% 
   arrange(Week_number) %>% 
   select(Name, Cause, Week_ending, Deaths) %>% 
   mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
@@ -799,14 +1167,23 @@ carehome_weekly_deaths <- read_csv(paste0(github_repo_dir, '/Care_home_death_occ
   mutate(lab_posit = ifelse(Cause == 'Non-Covid', 1.5, -1)) %>% 
   left_join(care_home_ons_all_deaths, by = c('Name', 'Week_ending'))
 
-area_x_cov_non_cov_carehome <- carehome_weekly_deaths %>% 
+area_x_cov_non_cov_carehome_raw <- carehome_weekly_deaths %>% 
   filter(Name == area_x)
+
+deaths_area_x_cov_non_cov_carehome <- area_x_cov_non_cov_carehome_raw %>% 
+  group_by(Cause) %>% 
+  summarise(Deaths_to_date = sum(Deaths, na.rm = TRUE))
+
+area_x_cov_non_cov_carehome <- area_x_cov_non_cov_carehome_raw %>%
+  left_join(deaths_area_x_cov_non_cov_carehome, by = 'Cause') %>% 
+  mutate(Cause_1 = paste0(ifelse(Cause == 'Non-Covid', 'COVID not mentioned', gsub(' ', '-', Cause)), ' (', format(Deaths_to_date, big.mark = ',', trim = TRUE), ' deaths)')) %>% 
+  mutate(Cause_1 = factor(Cause_1, levels = unique(Cause_1)))
 
 area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
        aes(x = Week_ending, 
            y = Deaths,
-           fill = Cause,
-           colour = Cause,
+           fill = Cause_1,
+           colour = Cause_1,
            label = Deaths)) +
   geom_bar(stat = 'identity',
            colour = '#ffffff') +
@@ -820,19 +1197,19 @@ area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
        x = 'Week',
        y = 'Number of deaths') +
   scale_fill_manual(values = c('#ED7D31','#FFD966'),
-                    labels = c('COVID-19', 'COVID not mentioned')) +
+                    name = 'Cause of death mentioned on certificate\n(number of deaths so far\nsince week ending 3rd Jan 2020\ngiven in brackets)') +
   scale_colour_manual(values = c('#000000', '#ffffff')) +
   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
                      limits = c(0,max_deaths_limit)) +
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-        legend.position = 'bottom')  +
+        legend.position = 'right')  +
   guides(colour = FALSE)
 
 png(paste0(output_directory_x, '/Covid_19_deaths_carehomes_', gsub(' ', '_', area_x), '.png'),
-    width = 1580,
-    height = 750,
-    res = 200)
+    width = 1280,
+    height = 400,
+    res = 165)
 print(area_x_wk_cause_deaths_plot_2)
 dev.off()
 
@@ -879,7 +1256,6 @@ png(paste0(output_directory_x, '/Covid_19_deaths_wsx_ltlas.png'),
     res = 120)
 print(ltla_deaths_plot_1)
 dev.off()
-
 
 ltla_deaths_df_2 <- carehome_weekly_deaths %>% 
   filter(Name != 'West Sussex')
