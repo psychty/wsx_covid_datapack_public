@@ -568,6 +568,16 @@ utla_rate <- p12_test_df %>%
   mutate(Rate_decile = factor(ifelse(Rate_decile == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
   arrange(Code)
 
+utla_rate_bins <- utla_rate %>% 
+  group_by(Rate_decile) %>% 
+  summarise(bins = paste0(Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-', format(round(max(Cumulative_per_100000)),big.mark = ','), ')')) %>% 
+  unique() %>% 
+  ungroup() %>% 
+  mutate(bins = factor(bins, levels = bins))
+
+utla_rate <- utla_rate %>% 
+  left_join(utla_rate_bins, by = 'Rate_decile')
+
 summary_table_rate <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>% 
@@ -588,6 +598,9 @@ utla_rate_wsx <- utla_rate %>%
         `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000
 ` = Cumulate_rate_rank,
         `Decile of rate per 100,000` =  Rate_decile)
+
+utla_rate_wsx %>% 
+  write.csv(., paste0(output_directory_x, '/utla_rate_wsx.csv'), row.names = FALSE)
 
 # library(classInt)
 # classIntervals(utla_rate$Cumulative_per_100000, n = 10, style = "quantile")
@@ -622,8 +635,8 @@ map_theme = function(){
     panel.background = element_blank(),  
     panel.border = element_blank(),
     axis.text = element_blank(), 
-    plot.title = element_text(colour = "#000000", face = "bold", size = 10), 
-    plot.subtitle = element_text(colour = "#000000", size = 9), 
+    plot.title = element_text(colour = "#000000", face = "bold", size = 11), 
+    plot.subtitle = element_text(colour = "#000000", size = 10), 
     axis.title = element_blank(),     
     panel.grid.major.x = element_blank(), 
     panel.grid.minor.x = element_blank(), 
@@ -642,14 +655,14 @@ map_1 <- ggplot() +
                aes(x=long,
                    y=lat,
                    group = group,
-                   fill = Rate_decile),
+                   fill = bins),
                color="#ffffff",
                size = .1,
                alpha = 1,
                show.legend = TRUE) +
   scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
                     name = 'Decile of cumulative\nrate per 100k') +
-  labs(title = paste0('Cumulative rate of confirmed Covid-19 cases per 100,000 population (all ages); Pillar 1 and 2 combined;\nUpper Tier Local and Unitary Authorities'),
+  labs(title = paste0('Cumulative rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Upper Tier Local and Unitary Authorities'),
        subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')))  +
   theme(legend.position = c(.1,.55))
 
@@ -660,7 +673,7 @@ coord_fixed(1.5) +
                             aes(x=long,
                                 y=lat,
                                 group = group,
-                                fill = Rate_decile),
+                                fill = bins),
                             color="#ffffff",
                             size = .1,
                             alpha = 1,
@@ -757,6 +770,16 @@ ltla_rate <- p12_test_df %>%
   mutate(Rate_decile = factor(ifelse(Rate_decile == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
   arrange(Code)
 
+ltla_bins <- ltla_rate %>% 
+  group_by(Rate_decile) %>% 
+  summarise(bins = paste0(Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-',format(round(max(Cumulative_per_100000),1), big.mark = ','),')')) %>% 
+  ungroup() %>% 
+  unique() %>% 
+  mutate(bins = factor(bins, levels = bins))
+
+ltla_rate <- ltla_rate %>% 
+  left_join(ltla_bins, by = 'Rate_decile')
+
 summary_table_rate <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>% 
@@ -782,8 +805,62 @@ ltla_rate_wsx <- ltla_rate %>%
          ` = Cumulate_rate_rank,
          `Decile of rate per 100,000` = Rate_decile) 
 
-ltla_boundaries <- geojson_read('https://opendata.arcgis.com/datasets/54b65ffb42c2480b88a20899aff750de_0.geojson',  what = "sp") #%>% 
-    # filter(substr(ctyua20cd, 1,1 ) == 'E')
+ltla_rate_wsx %>% 
+  write.csv(., paste0(output_directory_x, '/ltla_rate_wsx.csv'), row.names = FALSE)
+
+ltla_boundaries <- geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
+
+ltla_ua_boundaries <- ltla_boundaries %>% 
+    filter(lad19cd %in% ltla_rate$Code) %>% 
+    fortify(region = "lad19cd") %>% 
+    rename(lad19cd = id) %>% 
+    left_join(ltla_rate, by = c('lad19cd' = 'Code'))
+
+map_1_ltla <- ggplot() +
+  coord_fixed(1.5) +
+  map_theme() +
+  geom_polygon(data = ltla_ua_boundaries,
+               aes(x=long,
+                   y=lat,
+                   group = group,
+                   fill = bins),
+               color="#ffffff",
+               size = .1,
+               alpha = 1,
+               show.legend = TRUE) +
+  scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
+                    name = 'Decile of cumulative\nrate per 100k',
+                    drop = FALSE) +
+  labs(title = paste0('Cumulative rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Lower Tier Local and Unitary Authorities'),
+       subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')))  +
+  theme(legend.position = c(.1,.55))
+
+inset_1_ltla <- ggplot() +
+  coord_fixed(1.5) +
+  map_theme() +
+  geom_polygon(data = subset(ltla_ua_boundaries, Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')),
+               aes(x=long,
+                   y=lat,
+                   group = group,
+                   fill = bins),
+               color="#ffffff",
+               size = .1,
+               alpha = 1,
+               show.legend = FALSE) +
+  scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
+                    name = 'Decile of cumulative\nrate per 100k',
+                    drop = FALSE) +
+  labs(title = 'West Sussex') +
+  theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
+        plot.title = element_text(size = 8))
+
+png(paste0(output_directory_x, '/Covid_19_cumulative_rate_ltla_latest.png'),
+    width = 1480,
+    height = 1480,
+    res = 180)
+print(map_1_ltla)
+print(inset_1_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
+dev.off()
 
 # NHS Pathways ####
 
@@ -978,7 +1055,7 @@ whole_timeseries_plot <- ggplot(pathways_x,
            hjust = 0,
            vjust = -.5)
 
-png(paste0(output_directory_x, '/Covid_complete_triages_nhs_pathways_', gsub(' ', '_', Area_x), '.png'),
+png(paste0(output_directory_x, '/Covid_complete_triages_nhs_pathways_Wsx.png'),
     width = 1580, 
     height = 1300, 
     res = 200)
@@ -1128,7 +1205,7 @@ area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
        x = 'Week',
        y = 'Number of deaths') +
   scale_fill_manual(values = c('#2F5597','#BDD7EE'),
-                    name = 'Cause of death mentioned on certificate\n(number of deaths so far\nsince week ending 3rd Jan 2020\ngiven in brackets)') +
+                    name = 'Number of deaths since\nweek ending 3rd Jan 2020') +
   scale_colour_manual(values = c('#000000', '#ffffff')) +
   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
                      limits = c(0,max_deaths_limit)) +
@@ -1197,7 +1274,7 @@ area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
        x = 'Week',
        y = 'Number of deaths') +
   scale_fill_manual(values = c('#ED7D31','#FFD966'),
-                    name = 'Cause of death mentioned on certificate\n(number of deaths so far\nsince week ending 3rd Jan 2020\ngiven in brackets)') +
+                    name = 'Number of deaths since\nweek ending 3rd Jan 2020)') +
   scale_colour_manual(values = c('#000000', '#ffffff')) +
   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
                      limits = c(0,max_deaths_limit)) +
