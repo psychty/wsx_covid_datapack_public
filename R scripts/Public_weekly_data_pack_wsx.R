@@ -119,13 +119,17 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Cumulative_per_100000 = (Cumulative_cases / Population) * 100000) %>% 
   mutate(New_cases_per_100000 = (New_cases / Population) * 100000) %>% 
   mutate(new_case_key = factor(ifelse(New_cases == 0, 'No new cases', ifelse(New_cases >= 1 & New_cases <= 10, '1-10 cases', ifelse(New_cases >= 11 & New_cases <= 25, '11-25 cases', ifelse(New_cases >= 26 & New_cases <= 50, '26-50 cases', ifelse(New_cases >= 51 & New_cases <= 75, '51-75 cases', ifelse(New_cases >= 76 & New_cases <= 100, '76-100 cases', ifelse(New_cases >100, 'More than 100 cases', NA))))))), levels =  c('No new cases', '1-10 cases', '11-25 cases', '26-50 cases', '51-75 cases', '76-100 cases', 'More than 100 cases'))) %>%
-  mutate(new_case_per_100000_key = factor(ifelse(New_cases_per_100000 < 0, 'Data revised down', ifelse(round(New_cases_per_100000,0) == 0, 'No new cases', ifelse(round(New_cases_per_100000,0) > 0 & round(New_cases_per_100000, 0) <= 5, '1-5 new cases per 100,000', ifelse(round(New_cases_per_100000,0) >= 6 & round(New_cases_per_100000,0) <= 10, '6-10 new cases per 100,000', ifelse(round(New_cases_per_100000,0) >= 11 & round(New_cases_per_100000, 0) <= 15, '11-15 new cases per 100,000', ifelse(round(New_cases_per_100000,0) >= 16 & round(New_cases_per_100000,0) <= 20, '16-20 new cases per 100,000', ifelse(round(New_cases_per_100000,0) > 20, 'More than 20 new cases per 100,000', NA))))))), levels =  c('No new cases', '1-5 new cases per 100,000', '6-10 new cases per 100,000', '11-15 new cases per 100,000', '16-20 new cases per 100,000', 'More than 20 new cases per 100,000'))) %>% 
+  mutate(new_case_per_100000_key = factor(ifelse(New_cases_per_100000 < 0, 'Data revised down', ifelse(New_cases_per_100000 == 0, 'No new cases', ifelse(New_cases_per_100000 < 1, 'Less than 1 case per 100,000', ifelse(New_cases_per_100000 >= 1 & New_cases_per_100000 <= 2, '1-2 new cases per 100,000', ifelse(New_cases_per_100000 <= 4, '3-4 new cases per 100,000', ifelse(New_cases_per_100000 <= 6, '5-6 new cases per 100,000', ifelse(New_cases_per_100000 <= 8, '7-8 new cases per 100,000', ifelse(New_cases_per_100000 <= 10, '9-10 new cases per 100,000', ifelse(New_cases_per_100000 > 10, 'More than 10 new cases per 100,000', NA))))))))), levels =  c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000'))) %>% 
+  mutate(Case_label = paste0('A total of ', format(New_cases, big.mark = ',', trim = TRUE), ' patients who had sample specimens taken on this day (representing new cases) were confirmed to have the virus',  ifelse(Data_completeness == 'Considered incomplete', paste0('.<font color = "#bf260a"> However, these figures should be considered incomplete until at least ', format(Date + 5, '%d %B'),'.</font>'),'.'), 'The total (cumulative) number of cases reported for people with specimens taken by this date (', Period, ') was ', format(Cumulative_cases, big.mark = ',', trim = TRUE),'.')) %>% 
+  mutate(Rate_label = paste0('The new cases (swabbed on this date) represent <b>',format(round(New_cases_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population</p><p>The total (cumulative) number of Covid-19 cases per 100,000 population reported to date (', Period, ') is <b>', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population.')) %>% 
+  mutate(Seven_day_ave_new_label = ifelse(is.na(Seven_day_average_new_cases), paste0('It is not possible to calculate a seven day rolling average of new cases for this date (', Period, ') because one of the values in the last seven days is missing.'), ifelse(Data_completeness == 'Considered incomplete', paste0('It can take around five days for results to be fully reported and data for this date (', Period, ') should be considered incomplete.', paste0('As such, the rolling average number of new cases in the last seven days (<b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), ' cases</b>) should be treated with caution.')), paste0('The rolling average number of new cases in the last seven days is <b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), '  cases</b>.')))) %>% 
   ungroup() %>% 
   mutate(Name = ifelse(Name == 'South East', 'South East region', Name))  %>% 
   mutate(Test_pillar = 'Pillars 1 and 2') %>% 
   group_by(Name) %>% 
   mutate(Ten_day_average_new_cases = rollapply(New_cases, 10, mean, align = 'right', fill = NA)) %>% 
-  mutate(Fourteen_day_average_new_cases = rollapply(New_cases, 14, mean, align = 'right', fill = NA))
+  mutate(Fourteen_day_average_new_cases = rollapply(New_cases, 14, mean, align = 'right', fill = NA)) %>% 
+  mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA))
 
 rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_cases_reworked)
 
@@ -133,7 +137,7 @@ rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_case
 
 p12_test_df_2 <- p12_test_df_raw %>% 
   group_by(Name) %>% 
-  filter(Date %in% c(complete_date, complete_date - 7)) %>% 
+  filter(Date %in% c(last_date, last_date - 7)) %>% 
   select(Name, Date, Seven_day_average_new_cases) %>% 
   arrange(desc(Date)) %>% 
   mutate(Date = c('Latest_7_day_average', 'Previous_7_day_average')) %>% 
@@ -211,7 +215,7 @@ total_cases_reported_plot <- ggplot(area_x_df_1,
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
   theme(legend.position = 'none')
 
-png(paste0(output_directory_x, '/Covid_19_confirmed_cases_', gsub(' ', '_', area_x), '.png'),
+png(paste0(output_directory_x, '/Figure_1_', gsub(' ', '_', area_x), '_confirmed_daily_cases.png'),
     width = 1580,
     height = 750,
     res = 200)
@@ -280,7 +284,7 @@ total_cases_reported_plot_2 <- ggplot(ltla_p12_test_df,
   facet_wrap(~Name, ncol = 3) +
   theme(legend.position = 'none')
 
-png(paste0(output_directory_x, '/Covid_19_confirmed_cases_wsx_ltlas.png'),
+png(paste0(output_directory_x, '/Small_multiples_covid_19_confirmed_cases.png'),
     width = 1580,
     height = 1050,
     res = 120)
@@ -338,19 +342,104 @@ total_cases_reported_plot_3 <-  ggplot(ltla_p12_test_df) +
        y = 'Number of daily confirmed cases',
        title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; West Sussex lower tier Local Authorities'),
        subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')),
-       caption = paste0('The line represents the average number of new cases confirmed in the previous seven days.\nA change in cases is identified by comparing the most recent complete 7 day period (average number of new cases between ', format(complete_date - 6, '%d %B') , ' and ', format(complete_date, '%d %B'), ') with the previous 7 day period (', format(complete_date - 13, '%d %B') , '-', format(complete_date - 7, '%d %B'),').')) +
+       caption = paste0('The line represents the average number of new cases confirmed in the previous seven days.\nA change in cases is identified by comparing the most recent 7 day period (including incomplete days, with average number of new cases between ', format(last_date - 6, '%d %B') , ' and ', format(last_date, '%d %B'), ') with the previous 7 day period (', format(last_date - 13, '%d %B') , '-', format(last_date - 7, '%d %B'),').')) +
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
         legend.position = c(.7,.125)) +
   facet_wrap(~Name, ncol = 3) +
   guides(fill = guide_legend(nrow = 3, byrow = TRUE))
 
-png(paste0(output_directory_x, '/Covid_19_confirmed_cases_wsx_ltlas_colour_coded.png'),
+png(paste0(output_directory_x, '/Small_multiples_covid_19_confirmed_cases_by_latest_change.png'),
     width = 1580,
     height = 1050,
     res = 120)
 print(total_cases_reported_plot_3)
 dev.off()
+
+# exporting for web ####
+
+test_timeline <- data.frame(Date_label_2 = c('27 Mar', '15 Apr','17 Apr','23 Apr','28 Apr', '18 May', '27 May', '06 Jul'), Change = c('front-line NHS Staff', 'those in social care settings','additional front-line workers', 'all symptomatic essential worker and members of their households','anyone aged 65+ who must leave their home for work plus asymptomatic NHS and Social Care staff and care home residents', 'anyone aged 5+ who is showing signs of Covid-19', 'anyone with Covid-19 symptoms regardless of age', 'care homes receive more frequent routine testing and even without symptoms')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/uk_testing_key_dates.json'))
+
+wsx_summary_p1 <- p12_test_df %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000, Seven_day_average_new_cases, Rolling_7_day_new_cases) %>% 
+  rename('Total confirmed cases so far' = Cumulative_cases,
+         'Total cases per 100,000 population' = Cumulative_per_100000,
+         'Average number of confirmed cases tested in most recent seven days' = Seven_day_average_new_cases,
+         'Total cases confirmed in most recent seven days' = Rolling_7_day_new_cases)
+
+wsx_summary_p2 <- p12_test_df %>% 
+  filter(Data_completeness == 'Complete') %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, New_cases, New_cases_per_100000, Colour_key) %>% 
+  rename('Confirmed cases swabbed on most recent complete day' = New_cases,
+         'Confirmed cases swabbed per 100,000 population on most recent complete day' = New_cases_per_100000,
+         'Change in average cases' = Colour_key)
+
+wsx_summary <- wsx_summary_p1 %>% 
+  left_join(wsx_summary_p2, by = 'Name')
+
+wsx_summary %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/wsx_case_summary.json'))
+
+wsx_daily_cases <- p12_test_df %>% 
+mutate(Date_label = format(Date, '%a %d %B')) %>% 
+select(Name, Date, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Case_label, Rate_label, Seven_day_ave_new_label, Colour_key, Cumulative_cases)
+
+wsx_daily_cases %>% 
+  filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing')) %>% 
+  mutate(Period = format(Date, '%d %B')) %>% 
+  mutate(Date_label = format(Date, '%a %d %B')) %>% 
+  mutate(Date_label_2 = format(Date, '%d %b')) %>% 
+  mutate(Colour_key = gsub('\n',' ', Colour_key)) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/wsx_daily_cases.json'))
+
+levels(wsx_daily_cases$new_case_key) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/daily_cases_bands.json'))
+
+levels(wsx_daily_cases$new_case_per_100000_key) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/daily_cases_per_100000_bands.json'))
+
+wsx_daily_cases %>% 
+  ungroup() %>% 
+  filter(Date == min(Date) | Date == max(Date)) %>% 
+  select(Date) %>% 
+  unique() %>% 
+  add_row(Date = complete_date) %>% 
+  add_row(Date = complete_date + 1) %>% 
+  mutate(Period = format(Date, '%d %B')) %>% 
+  mutate(Date_label = format(Date, '%a %d %B')) %>% 
+  arrange(Date) %>% 
+  add_column(Order = c('First', 'Complete', 'First_incomplete', 'Last')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/range_dates.json'))
+
+p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 14)) %>% 
+  mutate(Date_label = format(Date, '%d %b')) %>% 
+  select(Date_label) %>% 
+  unique() %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/case_change_dates.json'))
+
+data.frame(time = c('Latest', 'Previous'), range = c(paste0(format(last_date - 6, '%d %b') , ' and ', format(last_date, '%d %b')),  paste0(format(last_date - 13, '%d %b') , '-', format(last_date - 7, '%d %b')))) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/case_change_date_range.json'))
+
+format(complete_date+1, '%d %b') %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/first_incomplete_daily_case.json'))
+
+format(last_date, '%d %b') %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/latest_daily_case.json'))
 
 # Heatmap of cases ####
 
@@ -412,148 +501,12 @@ new_case_rate_plot <- ggplot(hm_df, aes(x = Date,
                size = .15,
                linetype = "dashed") 
 
-png(paste0(output_directory_x, '/WSx_Covid_19_confirmed_heatmap_rate.png'),
+png(paste0(output_directory_x, '/Figure_2_confirmed_heatmap_rate.png'),
     width = 1480,
     height = 650,
     res = 200)
 print(new_case_rate_plot)
 dev.off()
-
-# Calendar view ####
-
-# This is the calendar theme I have created
-ph_cal_theme = function(){
-  theme( 
-    legend.position = "bottom", 
-    legend.title = element_text(colour = "#000000", size = 10), 
-    legend.key.size = unit(0.5, "lines"), 
-    legend.background = element_rect(fill = "#ffffff"), 
-    legend.key = element_rect(fill = "#ffffff", colour = "#E2E2E3"), 
-    legend.text = element_text(colour = "#000000", size = 10), 
-    plot.background = element_rect(fill = "white", colour = "#E2E2E3"), 
-    panel.background = element_rect(fill = "white"), 
-    axis.text.y = element_blank(),
-    axis.text.x = element_text(colour = "#000000", size = 9), 
-    plot.title = element_text(colour = "#000000", face = "bold", size = 12, vjust = 1), 
-    axis.title = element_text(colour = "#327d9c", face = "bold", size = 10),     
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(), 
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor.y = element_blank(), 
-    strip.text = element_text(colour = "#000000", face = "bold"),
-    strip.background = element_rect(fill = "#ffffff"), 
-    axis.ticks = element_blank() 
-  )}
-
-for(i in 1:length(areas_to_loop)){
-  
-  area_x <- areas_to_loop[i]
-  
-  cal_df_raw <- hm_df %>% 
-    filter(Name == area_x) %>% 
-    select(Name, Date, New_cases_per_100000, new_case_per_100000_key)
-  
-  # I need to find a way of back filling the dates if the data starts part way through a month.
-  # Later we will be getting the days to be plotted on a grid of 42 days (six times seven day weeks) and so the data needs to begin at the beginning of the month to be plotted correctly).
-  
-  # In this case I think the site went live on the first but had not hits so I'm going to add it in.
-  # Add the 1/11/2013 to the dataset (it won't be created otherwise)
-  cases_date_add <- data.frame(Date = seq.Date(as.Date('2020-01-01'), min(cal_df_raw$Date) - 1, by = '1 day'), Name = area_x, New_cases = 0, new_case_key = 'No new cases', new_case_per_100000_key = 'No new cases')
-  
-  cal_df <- cases_date_add %>% 
-    bind_rows(cal_df_raw) %>% 
-    mutate(Year = format(Date, "%Y"),
-           Month_n = format(Date, "%m"),
-           Month_name = format(Date, "%b"),
-           Weekday = format(Date, "%w"),
-           Weekday = ifelse(Weekday == 0, 7, Weekday),
-           Weekday_name = format(Date, "%a"),
-           Month_year = format(Date, "%m-%Y"))
-  
-  months_in_between <- data.frame(Date = seq.Date(from = min(cal_df$Date), to = max(cal_df$Date), by = "months"))
-  
-  # This asks if the first day of the month for the first observation is '01'. If it is then it will skip over the next three lines, if it is not then it will create a new field that concatenates the month-year of the date with 01 at the start, and then overwrites the date field with the dates starting on the 1st of the month. The third line removes the created field.
-  
-  if (!(format(months_in_between$Date, "%d")[1] == "01")){
-    months_in_between$Date_1 <- paste("01", format(months_in_between$Date, "%m-%Y"), sep = "-")
-    months_in_between$Date <-as.Date(months_in_between$Date_1, format="%d-%m-%Y")
-    months_in_between$Date_1 <- NULL
-  }  
-  
-  # For this data, the week ends on a friday (so friday is the cut off date for each week of data). It might be helpful for us to say as at this date this is the number of deaths. To do this we need to convert each week number into a 'friday date'.
-  
-  # Day of the week (name and then number)
-  months_in_between <- months_in_between %>% 
-    mutate(dw = format(Date, "%A"),
-           dw_n = format(Date, "%w")) %>% 
-    mutate(dw_n = ifelse(dw_n == 0, 7, dw_n),
-           Month_year = format(Date, "%m-%Y"))
-  
-  # To make the calendar plot we are going to need to create a grid of 42 tiles (representing seven days in each week for six weeks, as any outlook calendar shows). From this we can start the data somewhere between tile one and tile seven depending on the day of the week the month starts (e.g. if the month starts on a wednesday, then we want the data to start on tile three).
-  
-  # Make an empty dataframe with each month of the 'months_in_between' dataframe repeated 42 times
-  df_1 <- data.frame(Month_year = rep(months_in_between$Month_year, 42)) %>% 
-    group_by(Month_year) %>% 
-    mutate(id = row_number())
-  
-  # Add the information we created about the day each month starts
-  cal_df <- cal_df %>% 
-    left_join(months_in_between[c("Month_year", "dw_n")], by = "Month_year") %>% 
-    mutate(dw_n = as.numeric(dw_n)) %>% 
-    group_by(Month_year) %>% 
-    mutate(id = row_number()) %>% 
-    mutate(id = id + dw_n - 1) %>% # If we add this id number to the dw (day of the week that the month starts) number, the id number becomes the position in our grid of 42 that the date should be. As we can only start a sequence from 1 onwards, and not zero, we need to subtract one from the total otherwise the position is offset too far.
-    mutate(Week = ifelse(id <= 7, 1, ifelse(id >= 8 & id <= 14, 2, ifelse(id >= 15 & id <= 21, 3, ifelse(id >= 22 & id <= 28, 4, ifelse(id >= 29 & id <= 35, 5, 6)))))) %>%  #  We can now overwrite the Week field in our dataframe to show what it should be given the grid of 42 days
-    left_join(df_1, by = c("Month_year", "id")) %>% 
-    mutate(Year = substr(Month_year, 4, 7), # We can now rebuild the artificially created grid with the year, month, and weekday information. Take the four to seventh characters from the Month_year field to create the year
-           Month_n = substr(Month_year, 1, 2)) %>% # take the first and second characters from the Month_year field to create the month number
-    mutate(Weekday_name = ifelse(id %in% c(1,8,15,22,29,36) & is.na(Date), "Mon", ifelse(id %in% c(2,9,16,23,30,37) & is.na(Date), "Tue", ifelse(id %in% c(3,10,17,24,31,38) & is.na(Date), "Wed", ifelse(id %in% c(4,11,18,25,32,39) & is.na(Date), "Thu", ifelse(id %in% c(5,12,19,26,33,40) & is.na(Date), "Fri", ifelse(id %in% c(6,13,20,27,34,41) & is.na(Date), "Sat", ifelse(id %in% c(7,14,21,28,35,42) & is.na(Date), "Sun", Weekday_name )))))))) %>% # look through the dataframe and where the date is missing (indicating a non-date filler value within our 42 grid) and the id value is 1,8,15,22,29, or 36 (i.e. the monday value in our 42 grid for the month) then add a "Mon" for the day of the week and so on.
-    mutate(Weekday = ifelse(id %in% c(1,8,15,22,29,36) & is.na(Date), 1,ifelse(id %in% c(2,9,16,23,30,37) & is.na(Date), 2, ifelse(id %in% c(3,10,17,24,31,38) & is.na(Date), 3, ifelse(id %in% c(4,11,18,25,32,39) & is.na(Date), 4, ifelse(id %in% c(5,12,19,26,33,40) & is.na(Date), 5, ifelse(id %in% c(6,13,20,27,34,41) & is.na(Date), 6, ifelse(id %in% c(7,14,21,28,35,42) & is.na(Date), 7, Weekday )))))))) %>% 
-    mutate(Week = factor(ifelse(id >= 1 & id  <= 7, 1,  ifelse(id >= 8 & id <= 14, 2,  ifelse(id >= 15 & id <= 21, 3,  ifelse(id >= 22 & id <= 28, 4,  ifelse(id >= 29 & id <= 35, 5,  ifelse(id >= 36 & id <= 42, 6, NA)))))), levels = c(6,5,4,3,2,1))) %>% # Add a calendar week value for faceting (1-6 from our 42 tile grid). This is not the same as the week of the month and save the levels of this field so R knows how to plot them.
-    mutate(Month_name = factor(ifelse(Month_n == "01", "Jan",ifelse(Month_n == "02", "Feb", ifelse(Month_n == "03", "Mar",ifelse(Month_n == "04", "Apr",ifelse(Month_n == "05", "May",ifelse(Month_n == "06", "Jun",ifelse(Month_n == "07", "Jul",ifelse(Month_n == "08", "Aug",ifelse(Month_n == "09", "Sep",ifelse(Month_n == "10", "Oct",ifelse(Month_n == "11", "Nov", ifelse(Month_n == "12", "Dec", NA)))))))))))), levels = c('Jan', 'Feb', 'Mar', 'Apr', 'May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'))) %>% # Fill in the blanks of month name using the value in Month_n
-    mutate(Weekday_name = factor(ifelse(Weekday_name == "Mon", "Monday", ifelse(Weekday_name == "Tue", "Tuesday", ifelse(Weekday_name == "Wed", "Wednesday", ifelse(Weekday_name == "Thu", "Thursday", ifelse(Weekday_name == "Fri", "Friday", ifelse(Weekday_name == "Sat", "Saturday", ifelse(Weekday_name == "Sun", "Sunday", Weekday_name))))))), levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))) %>% 
-    arrange(Month_n, id) %>% 
-    mutate(new_case_per_100000_key_v2 = factor(ifelse(is.na(new_case_per_100000_key), 'Not date', new_case_per_100000_key), levels =  c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000', 'Not date')))
-  
-cal_df_comp<- cal_df %>% 
-  filter(Date == complete_date)
-  
-
-calendar_cases_plot <- ggplot(cal_df, 
-                                aes(x = Weekday_name, 
-                                    y = Week, 
-                                    fill = new_case_per_100000_key_v2)) + 
-    geom_tile(colour = "#ffffff") + 
-    facet_grid(Year ~ Month_name) +
-    scale_x_discrete(expand = c(0,0.1)) +
-    scale_fill_manual(values = c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026', '#bbc2c8'),
-                      breaks = c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000'),
-                      name = 'Tile\ncolour\nkey',
-                      drop = FALSE) +
-    labs(title =  paste0('Summary of new confirmed Covid-19 cases per 100,000 population (all ages); ', area_x, '; ', format(min(cal_df$Date, na.rm = TRUE), '%d %B'), ' to ',format(max(cal_df$Date, na.rm = TRUE), '%d %B')),
-         x = NULL, 
-         y = NULL,
-         caption = 'Cases for dates after the red dashed line are not considered complete due to a lag in test result reporting.') +
-    geom_segment(data = cal_df_comp,
-                 aes(
-                   x = Weekday_name,
-                   xend = Weekday_name,
-                   y = as.numeric(Week) - .5,
-                   yend = as.numeric(Week) + .5),
-                 color = "red",
-                 linetype = "dashed") +
-    ph_cal_theme() +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.25)) +
-    guides(fill = guide_legend(nrow = 3, byrow = TRUE))
-  
-  png(paste0(output_directory_x, '/Covid_19_calendar_cases_rate', gsub(' ', '_', area_x), '.png'),
-      width = 1280,
-      height = 550,
-      res = 120)
-  print(calendar_cases_plot)
-  dev.off()
-  
-}
 
 # Cumulative rate map utla ####
 
@@ -613,8 +566,6 @@ utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b2
   summarise() %>% 
   arrange(ctyua19cd) %>% 
   left_join(utla_rate, by = c('ctyua19cd' = 'Code')) 
-
-geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_json), keep = 0.2), file = paste0(github_repo_dir, '/utla_covid_cumulative_rate_latest.geojson'))
 
 utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
   fortify(region = "ctyua19cd") %>% 
@@ -684,13 +635,23 @@ coord_fixed(1.5) +
   theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
         plot.title = element_text(size = 8))
 
-png(paste0(output_directory_x, '/Covid_19_cumulative_rate_utla_latest.png'),
+png(paste0(output_directory_x, '/Figure_3_cumulative_rate_utla_latest.png'),
     width = 1480,
     height = 1480,
     res = 180)
 print(map_1)
 print(inset_1, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
+
+utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
+  mutate(Label_1 = paste0('<b>', Name, '</b><br>', '<b>Number of cases so far as at ', format(Date, '%d %B'), ': ', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)<br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  select(Name, Label_1, bins, Colour_key)
+
+geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_cumulative_rate_latest.geojson'))
+
+levels(utla_rate_bins$bins) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/utla_rate_bins.json'))
 
 # map_2 <- ggplot() +
 #   coord_fixed(1.5) +
@@ -854,13 +815,26 @@ inset_1_ltla <- ggplot() +
   theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
         plot.title = element_text(size = 8))
 
-png(paste0(output_directory_x, '/Covid_19_cumulative_rate_ltla_latest.png'),
+png(paste0(output_directory_x, '/Figure_4_cumulative_rate_ltla_latest.png'),
     width = 1480,
     height = 1480,
     res = 180)
 print(map_1_ltla)
 print(inset_1_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
+
+ltla_ua_boundaries_rate_geo <- ltla_boundaries %>% 
+  left_join(ltla_rate, by = c('lad19cd' = 'Code')) %>% 
+  mutate(Label_1 = paste0('<b>', Name, '</b><br>', '<b>Number of cases so far as at ', format(Date, '%d %B'), ': ', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)<br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  select(Name, Label_1, bins, Colour_key)
+
+geojson_write(ms_simplify(geojson_json(ltla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/ltla_covid_cumulative_rate_latest.geojson'))
+
+ltla_bins %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/ltla_rate_bins.json'))
+
+
 
 # NHS Pathways ####
 

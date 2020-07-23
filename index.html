@@ -5,7 +5,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>Covid-19 summary South East</title>
+<title>West Sussex C19 summary</title>
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
 <link rel="stylesheet" type="text/css" href="style.css">
 <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -17,15 +20,17 @@
   <h1>West Sussex Coronavirus (COVID-19) local summary</h1>
 </div>
 
-<div class="main" id = 'data_pack_intro'>
+<div class= "main" id = 'data_pack_intro'>
 <h4 class = 'small_screen_show'>The size of this browser window or screen is a little too small to read the data visualisation without some of it overlapping. This will be fixed at some point in the future, but for now please use a larger screen to view.</h4>
 <h2 style = "padding-left: 25px;">West Sussex COVID-19 Weekly data supplement</h2>
-<div class = "content">
+<div class = "content" id = 'content_size'>
 <p>This pack brings together information relating to COVID-19 in West Sussex.</p>
 <p>West Sussex County Council Public Health Department monitors information on a daily basis, and summary packs will be published weekly. Links are provided to public data sources available, with a summary of current sources available below.</p>
 <p>Local authorities currently have access to some information that is not in the public domain, which may be due to small numbers or due to data being provisional.</p>
 <p>The landscape of available data is changing all the time, and we hope to be able to publish as much as possible.</p>
-<p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a> for more information </p>
+<p id = 'data_recency'></p>
+<!-- <p>In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days.</p> -->
+<p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
   <p class = 'side'>This page works best in certain browsers such as Chrome, Firefox, and Safari, and does not currently work well in Internet Explorer or Edge.</p>
@@ -33,20 +38,116 @@
 </div>
 </div>
 
+<div class = 'main' id = 'cases_come_updown'>
+<div class = 'content'>
+<h4>Daily case changes and initial peaks</h4>
+<p>The figure below shows the daily confirmed cases of Covid-19 over time by area (showing West Sussex by default), but you can change this to any lower tier area within the county. The black line represents the rolling average number of new cases confirmed in the previous seven days. The last five days of data are greyed out and should be treated as incomplete as more cases may be added to these days.</p>
+<p>The figure includes key dates when changes to testing capacity and eligibility were announced. These are adapted from The Health Foundation <a href = 'https://www.health.org.uk/news-and-comment/charts-and-infographics/covid-19-policy-tracker'>Covid-19 Policy Tracker</a>.</p>
+</div>
+<h4 style = 'padding-left: 25px; padding-top: 10px;' id = 'selected_daily_cases_bars_1_compare_title'></h4>
+<div class = 'content'>
+<span class = 'give_me_space'>Area: </span>
+<select id='select_bars_daily_cases_1_area_button'></select>
+<div id = 'daily_new_case_bars'></div>
+<p id = 'x_latest_figures'></p>
+</div>
+<div class = 'right-sidebar'>
+  <p class = 'side'>The grey lines with circles at the top show dates on which the Covid-19 testing eligibility criteria was amended to include a wider population. Hover over each point to see which population groups were added to the test eligibility criteria.</p>
+</div>
+</div>
+
+<div class = 'main' id = 'ltlas_cases'>
+<h3 style="padding-left:25px;">Lower tier authority cases</h3>
+<div class = 'content'>
+<p>The next set of figures shows a quick glance of the lower tier local authorities within West Sussex.</p>
+<p id = 'case_key_title'></p>
+<p>The black lines (shown on the actual numbers figures only) on each figure represent the rolling average number of new cases confirmed in the previous seven days.</p>
+<!-- <p><b>We have coloured the bars according to the latest change in  -->
+<h4 id = 'selected_ltla_sm_title'></h4>
+<div class = 'drop'>
+<form class="btn-group btn-group-toggle stay-left-classy" data-toggle="buttons">
+  <label class="btn btn-secondary active">
+    <input type="radio" name = 'toggle_sm_rate' value = 'raw' checked = 'checked' onchange="toggle_sm_rate_func();">actual case numbers<br>
+  </label>
+  <label class="btn btn-secondary">
+    <input type="radio" name = 'toggle_sm_rate' value = 'rate' onchange ='toggle_sm_rate_func();'>rate per 100,000<br>
+  </label>
+</form>
+
+</div>
+</div>
+<div class = 'right-sidebar'>
+  <p class = 'side'>As with other figures, the most recent five days are to be considered incomplete. As such, these dates are excluded from the calculation of change in confirmed cases.</p>
+</div>
+<div class = 'content'>
+<div id = 'my_sm_dataviz' class = 'sm-container'></div>
+</div>
+<div class = 'right-sidebar'>
+  <h5>Colour key for plots</h5>
+  <div id = 'ltla_sm_key_figure'></div>
+<p>Hover over a bar to see the number of new cases and cumulative cases to date.</p>
+</div>
+</div>
+
+<div class= 'main' id = 'heatmap'>
+<h2 style = "padding-left: 25px;"></h2>
+<div class = 'content'>
+<p>The next table and visualisation shows the most recently recorded confirmed cases and the number of new confirmed cases by day from pillar 1 (NHS and PHE laboratories) and pillar 2 (commercial testing) combined. You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population (crude, all age population as at 2018). </p>
+<p>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size.</p>
+<h4 id = 'summary_cases_title'></h4>
+</div>
+<div class = 'right-sidebar'>
+<p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</font></p>
+<p>A Surge in cases can in part be due to the amount of testing done locally from one day to the next. We do not currently have information on the total number of tests being conducted locally.</p>
+</div>
+
+<div class = 'content'>
+<form class="btn-group btn-group-toggle stay-right-classy" data-toggle="buttons">
+  <label class="btn btn-secondary active">
+    <input type="radio" name = 'toggle_count_rate' value = 'counts' onchange="toggle_count_rate_func();">actual cases<br>
+  </label>
+  <label class="btn btn-secondary">
+    <input type="radio" name = 'toggle_count_rate' value = 'rate'  checked = 'checked' onchange ='toggle_count_rate_func();'>cases per 100,000<br>
+  </label>
+</form>
+</div>
+<div class = 'content'>
+<div id = 'case_headings'></div>
+<div id = 'new_cases_plotted'></div>
+<p id = 'complete_seven'></p>
+</div>
+
+<div class = 'right-sidebar'>
+  <p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
+  <div id = 'new_case_key_figure'></div>
+
+</div>
+</div>
+
+<div class = 'main' id = 'maps'>
+<h2 style = "padding-left: 25px;">Confirmed case rate maps</h2>
+<div class = 'content'>
+<p>This map shows the latest cumulative rate of confirmed COVID-19 cases per 100,000 population at Upper Tier Local Authority level.</p>
+<div id = 'rate_map_1'></div>
+</div>
+<div class = 'right-sidebar'>
+<p class = 'side'>What is a decile?</p>
+</div>
+</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
 <script src="https://d3js.org/d3-format.v1.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-
+<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src = "Javascripts/object_setup.js"></script>
+<script src = "Javascripts/figure_1a_daily_bars.js"></script>
+<script src = "Javascripts/figure_1b_daily_bars.js"></script>
+<script src = "Javascripts/wsx_heatmap.js"></script>
+<script src = "Javascripts/rate_maps.js"></script>
 
-<script src = "Javascripts/covid_tracking_data_summary.js"></script>
-<script src = "Javascripts/covid_heatmap.js"></script>
-<script src = "Javascripts/covid_se_time_series.js"></script>
-<script src = 'Javascripts/covid_ltla_small_multiples.js'></script>
-<script src = 'Javascripts/covid_mortality.js'></script>
-<script src = 'Javascripts/google_mobility_trends.js'></script>
 
 
 </body>
