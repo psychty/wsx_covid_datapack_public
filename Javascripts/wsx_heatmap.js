@@ -201,7 +201,7 @@ svg_title
   .attr('y1', 0)
   .attr('x2', x(first_incomplete_date))
   .attr('y2', height_hm_title)
-  .attr('stroke', incomplete_colour)
+  .attr('stroke', 'red')
   .attr("stroke-dasharray", ("3, 3"))
 
 svg_title

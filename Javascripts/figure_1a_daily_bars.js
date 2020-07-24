@@ -26,7 +26,7 @@ var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_
 // Update text based on selected area
 d3.select("#selected_daily_cases_bars_1_compare_title")
   .html(function(d) {
-    return 'Covid-19 pillar 1 and 2 confirmed new daily confirmed cases over time; ' + selected_figure_1a_area_option
+    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option
   });
 
 var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
@@ -43,33 +43,34 @@ var x_daily_cases = d3.scaleBand()
 
 var xAxis_daily_cases = svg_daily_new_case_bars
   .append("g")
-  .attr("transform", 'translate(0,' + (height_line - 120 ) + ")")
+  .attr("transform", 'translate(0,' + (height_line - 80 ) + ")")
    .call(d3.axisBottom(x_daily_cases).tickValues(data_dates));
 
 xAxis_daily_cases
   .selectAll("text")
   .attr("transform", 'translate(-' + (x_daily_cases.bandwidth() + 10) + ',10)rotate(-90)')
   .style("text-anchor", "end")
-  // .each(function(d,i) { // find the text in that tick and remove it: Thanks Gerardo Furtado on stackoverflow
-  //   if (i%2 == 0) d3.select(this).remove();
-  //   });
+
+x_summary = case_summary.filter(function(d, i) {
+  return d.Name === selected_figure_1a_area_option
+})
+
+d3.select("#x_latest_figures")
+  .data(x_summary)
+  .html(function(d) {
+    return 'The total number of confirmed Covid-19 cases so far in ' + selected_figure_1a_area_option + ' is ' + d3.format(',.0f')(d['Total confirmed cases so far'])  + '. This is ' + d3.format(',.0f')(d['Total cases per 100,000 population']) + ' cases per 100,000 population. The current daily case count (using data from ' + complete_date + ') is ' + d3.format(',.0f')(d['Confirmed cases swabbed on most recent complete day']) + ' new confirmed cases swabbed (' + d3.format(',.1f')(d['Confirmed cases swabbed per 100,000 population on most recent complete day']) + ' per 100,000).' });
+
+max_limit_x = daily_case_limits.filter(function(d){
+  return d.Name === selected_figure_1a_area_option})[0]['Max_limit']
 
 var y_daily_cases = d3.scaleLinear()
-  .domain([0, d3.max(bars_daily_cases_1_chosen, function(d) {
-    return +d.New_cases;
-  })])
-  .range([height_line - 120 , 0])
+  .domain([0, max_limit_x])
+  .range([height_line - 80 , 0])
   .nice();
 
 var yAxis_daily_cases = svg_daily_new_case_bars
 .append("g")
 .call(d3.axisLeft(y_daily_cases));
-
-// testing policy timelines
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/uk_testing_key_dates.json", false);
-request.send(null);
-var uk_testing_key_dates = JSON.parse(request.responseText);
 
 var tooltip_testing_key_dates = d3.select("#daily_new_case_bars")
   .append("div")
@@ -108,7 +109,7 @@ svg_daily_new_case_bars
 .attr("x", function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
 .attr("y", 0)
 .attr("width", 2)
-.attr("height", function(d) { return (height_line - 120 )})
+.attr("height", function(d) { return (height_line - 80 )})
 .style("fill", incomplete_colour)
 .on("mousemove", showTooltip_testing_key_dates)
 .on('mouseout', mouseleave_testing_key_dates);
@@ -133,6 +134,74 @@ svg_daily_new_case_bars
   .attr("y", 2)
   .text('Testing eligibility changes -')
   .attr("text-anchor", "end")
+
+// Restriction changes
+
+var tooltip_restrictions_key_dates = d3.select("#daily_new_case_bars")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px")
+
+var showTooltip_restrictions_key_dates = function(d) {
+  tooltip_restrictions_key_dates
+    .html("<h5>" + d.Date_label_2 + '</h5><p>' + d.Change + '</p>')
+    .style("opacity", 1)
+    .style("top", (event.pageY - 10) + "px")
+    .style("left", (event.pageX + 10) + "px")
+    .style('opacity', 1)
+    .style("visibility", "visible")
+}
+
+var mouseleave_restrictions_key_dates = function(d) {
+  tooltip_restrictions_key_dates
+    .style('opacity', 0)
+    .style("visibility", "hidden")
+}
+
+// We can treat this as a set of thin bars. With tooltips (maybe adding a dot or symbol at the top of each line as a easier thing to mouseover)
+svg_daily_new_case_bars
+.selectAll("testing_timeline")
+.data(uk_restrictions_key_dates)
+.enter()
+.append('line')
+.attr('x1', function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
+.attr('y1', 40)
+.attr('x2',  function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
+.attr('y2', height_line - 80 )
+.attr('stroke', '#ec0909')
+.attr("stroke-dasharray", ("3, 3"))
+
+// We can treat this like a set of thin bars. With tooltips (maybe adding a dot or symbol at the top of each line as a easier thing to mouseover)
+svg_daily_new_case_bars
+.selectAll("testing_timeline")
+.data(uk_restrictions_key_dates)
+.enter()
+.append("circle")
+.attr("cx", function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
+.attr("cy", 40)
+.attr("r", 6)
+.style("fill", '#ec0909')
+.on("mousemove", showTooltip_restrictions_key_dates)
+.on('mouseout', mouseleave_restrictions_key_dates);
+
+svg_daily_new_case_bars
+  .append("text")
+  .attr('id', 'test_milestones')
+  .attr("x", function(d) { return x_daily_cases('22 Mar') + (x_daily_cases.bandwidth()/2)})
+  .attr("y", 42)
+  .text('Lockdown begins -')
+  .attr("text-anchor", "end")
+
+
+
+// Bars
 
 var tooltip_daily_case_1 = d3.select("#daily_new_case_bars")
   .append("div")
@@ -164,51 +233,10 @@ var mouseleave_daily_case_1 = function(d) {
 
 svg_daily_new_case_bars
   .append('line')
-  .attr('x1', x_daily_cases('23 Mar') + (x_daily_cases.bandwidth() / 2))
-  .attr('y1', 30)
-  .attr('x2', x_daily_cases('23 Mar') + (x_daily_cases.bandwidth() / 2))
-  .attr('y2', height_line - 120 )
-  .attr('stroke', 'red')
-  .attr("stroke-dasharray", ("3, 3"))
-
-svg_daily_new_case_bars
-  .append("text")
-  .attr("x", x_daily_cases('23 Mar'))
-  .attr("y", 31)
-  .text('lockdown starts -')
-  .attr("text-anchor", "end")
-
-svg_daily_new_case_bars
-  .append('line')
-  .attr('x1', x_daily_cases('13 May') + (x_daily_cases.bandwidth() / 2))
-  .attr('y1', 30)
-  .attr('x2', x_daily_cases('13 May') + (x_daily_cases.bandwidth() / 2))
-  .attr('y2', height_line - 120 )
-  .attr('stroke', 'red')
-  .attr("stroke-dasharray", ("3, 3"))
-
-// svg_daily_new_case_bars
-//   .append("text")
-//   .attr("x", x_daily_cases('13 May'))
-//   .attr("y", 22)
-//   .text('more people')
-//   .attr("text-anchor", "end")
-//
-// svg_daily_new_case_bars
-//   .append("text")
-//   .attr("x", x_daily_cases('13 May'))
-//   .attr("y", 31)
-//   .text('return to work -')
-//   .attr("text-anchor", "end")
-
-
-
-svg_daily_new_case_bars
-  .append('line')
   .attr('x1', x_daily_cases(incomplete_sm_date))
   .attr('y1', 0)
   .attr('x2', x_daily_cases(incomplete_sm_date))
-  .attr('y2', height_line - 120 )
+  .attr('y2', height_line - 80 )
   .attr('stroke', incomplete_colour)
   .attr("stroke-dasharray", ("3, 3"))
 
@@ -217,7 +245,7 @@ svg_daily_new_case_bars
   .attr('x', x_daily_cases(incomplete_sm_date))
   .attr('y1', 0)
   .attr('width', (x_daily_cases(latest_sm_date) + x_daily_cases.bandwidth()) - x_daily_cases(incomplete_sm_date))
-  .attr('height', height_line - 120 )
+  .attr('height', height_line - 80 )
   .style('fill', incomplete_colour)
   .style('stroke', 'none')
   .style('opacity', 0.2)
@@ -231,7 +259,7 @@ var daily_new_case_bars = svg_daily_new_case_bars
 .attr("x", function(d) { return x_daily_cases(d.Date_label_2)})
 .attr("y", function(d) { return y_daily_cases(d.New_cases); })
 .attr("width", x_daily_cases.bandwidth())
-.attr("height", function(d) { return (height_line - 120 ) - y_daily_cases(d.New_cases); })
+.attr("height", function(d) { return (height_line - 80 ) - y_daily_cases(d.New_cases); })
 .style("fill", function(d) { return '#071b7c'})
 .on("mousemove", showTooltip_daily_case_1)
 .on('mouseout', mouseleave_daily_case_1);
@@ -265,25 +293,26 @@ svg_daily_new_case_bars
 
 svg_daily_new_case_bars
   .append("text")
-  .attr("x", x_daily_cases('13 May'))
-  .attr("y", 22)
+  .attr("x", x_daily_cases('12 May'))
+  .attr("y", 30)
   .text('more people')
   .attr("text-anchor", "end")
 
 svg_daily_new_case_bars
   .append("text")
   .attr("x", x_daily_cases('13 May'))
-  .attr("y", 31)
+  .attr("y", 40)
   .text('return to work -')
   .attr("text-anchor", "end")
 
 function update_daily_bars() {
 
+
 var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_button').property("value")
 
 d3.select("#selected_daily_cases_bars_1_compare_title")
   .html(function(d) {
-    return 'Covid-19 pillar 1 and 2 confirmed new daily confirmed cases over time; ' + selected_figure_1a_area_option
+    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option
   });
 
 var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
@@ -292,6 +321,16 @@ var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
 
 var total_cases_daily_chosen = case_summary.filter(function(d){
   return d.Name === selected_figure_1a_area_option})[0]['Cumulative_cases']
+
+x_summary = case_summary.filter(function(d, i) {
+  return d.Name === selected_figure_1a_area_option
+})
+
+d3.select("#x_latest_figures")
+  .data(x_summary)
+  .html(function(d) {
+    return 'The total number of confirmed Covid-19 cases so far in ' + selected_figure_1a_area_option + ' is ' + d3.format(',.0f')(d['Total confirmed cases so far'])  + '. This is ' + d3.format(',.0f')(d['Total cases per 100,000 population']) + ' cases per 100,000 population. The current daily case count (using data from ' + complete_date + ') is ' + d3.format(',.0f')(d['Confirmed cases swabbed on most recent complete day']) + ' new confirmed cases swabbed (' + d3.format(',.1f')(d['Confirmed cases swabbed per 100,000 population on most recent complete day']) + ' per 100,000).' });
+
 
 var showTooltip_daily_case_1 = function(d) {
   tooltip_daily_case_1
@@ -303,10 +342,11 @@ var showTooltip_daily_case_1 = function(d) {
     .style("visibility", "visible")
 }
 
+max_limit_x = daily_case_limits.filter(function(d){
+  return d.Name === selected_figure_1a_area_option})[0]['Max_limit']
+
 y_daily_cases
-  .domain([0, d3.max(bars_daily_cases_1_chosen, function(d) {
-    return +d.New_cases;
-  })])
+  .domain([0, max_limit_x])
   .nice();
 
 // Redraw axis
@@ -331,7 +371,7 @@ daily_new_case_bars
 .attr("x", function(d) { return x_daily_cases(d.Date_label_2)})
 .attr("y", function(d) { return y_daily_cases(d.New_cases); })
 // .attr("width", x_daily_cases.bandwidth())
-.attr("height", function(d) { return (height_line - 120 ) - y_daily_cases(d.New_cases); })
+.attr("height", function(d) { return (height_line - 80 ) - y_daily_cases(d.New_cases); })
 .style("fill", function(d) { return '#071b7c' })
 
 daily_new_case_bars

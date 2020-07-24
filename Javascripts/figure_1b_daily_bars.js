@@ -3,11 +3,6 @@ d3.select("#data_recency")
   .html(function(d) {
     return 'The latest available data in this analysis are for <b>' + latest_date + '</b>. However, whilst the capacity for testing and returning results has increased with new results reported in as soon as 24 hours, there can be some delay and as such data for very recent days are likely to change, and so <b>only data up to ' + complete_date + ' should be treated as complete.</b> In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days.' });
 
-d3.select("#x_latest_figures")
-  .data(wsx_summary)
-  .html(function(d) {
-    return 'The total number of confirmed Covid-19 cases so far in West Sussex is <b>' + d3.format(',.0f')(d['Total confirmed cases so far'])  + '</b>. This is ' + d3.format(',.0f')(d['Total cases per 100,000 population']) + ' cases per 100,000 population. The current daily case count (using data from ' + complete_date + ') is ' + d3.format(',.0f')(d['Confirmed cases swabbed on most recent complete day']) + ' new confirmed cases swabbed (' + d3.format(',.1f')(d['Confirmed cases swabbed per 100,000 population on most recent complete day']) + ' per 100,000).' });
-
 var tooltip_area_sm = d3.select("#my_sm_dataviz")
   .append("div")
   .style("opacity", 0)

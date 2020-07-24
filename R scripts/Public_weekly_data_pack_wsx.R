@@ -120,7 +120,7 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(New_cases_per_100000 = (New_cases / Population) * 100000) %>% 
   mutate(new_case_key = factor(ifelse(New_cases == 0, 'No new cases', ifelse(New_cases >= 1 & New_cases <= 10, '1-10 cases', ifelse(New_cases >= 11 & New_cases <= 25, '11-25 cases', ifelse(New_cases >= 26 & New_cases <= 50, '26-50 cases', ifelse(New_cases >= 51 & New_cases <= 75, '51-75 cases', ifelse(New_cases >= 76 & New_cases <= 100, '76-100 cases', ifelse(New_cases >100, 'More than 100 cases', NA))))))), levels =  c('No new cases', '1-10 cases', '11-25 cases', '26-50 cases', '51-75 cases', '76-100 cases', 'More than 100 cases'))) %>%
   mutate(new_case_per_100000_key = factor(ifelse(New_cases_per_100000 < 0, 'Data revised down', ifelse(New_cases_per_100000 == 0, 'No new cases', ifelse(New_cases_per_100000 < 1, 'Less than 1 case per 100,000', ifelse(New_cases_per_100000 >= 1 & New_cases_per_100000 <= 2, '1-2 new cases per 100,000', ifelse(New_cases_per_100000 <= 4, '3-4 new cases per 100,000', ifelse(New_cases_per_100000 <= 6, '5-6 new cases per 100,000', ifelse(New_cases_per_100000 <= 8, '7-8 new cases per 100,000', ifelse(New_cases_per_100000 <= 10, '9-10 new cases per 100,000', ifelse(New_cases_per_100000 > 10, 'More than 10 new cases per 100,000', NA))))))))), levels =  c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000'))) %>% 
-  mutate(Case_label = paste0('A total of ', format(New_cases, big.mark = ',', trim = TRUE), ' patients who had sample specimens taken on this day (representing new cases) were confirmed to have the virus',  ifelse(Data_completeness == 'Considered incomplete', paste0('.<font color = "#bf260a"> However, these figures should be considered incomplete until at least ', format(Date + 5, '%d %B'),'.</font>'),'.'), 'The total (cumulative) number of cases reported for people with specimens taken by this date (', Period, ') was ', format(Cumulative_cases, big.mark = ',', trim = TRUE),'.')) %>% 
+  mutate(Case_label = paste0('A total of ', format(New_cases, big.mark = ',', trim = TRUE), ' people who had sample specimens taken on this day (representing new cases) were confirmed to have the virus',  ifelse(Data_completeness == 'Considered incomplete', paste0('.<font color = "#bf260a"> However, these figures should be considered incomplete until at least ', format(Date + 5, '%d %B'),'.</font>'),'.'), 'The total (cumulative) number of cases reported for people with specimens taken by this date (', Period, ') was ', format(Cumulative_cases, big.mark = ',', trim = TRUE),'.')) %>% 
   mutate(Rate_label = paste0('The new cases (swabbed on this date) represent <b>',format(round(New_cases_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population</p><p>The total (cumulative) number of Covid-19 cases per 100,000 population reported to date (', Period, ') is <b>', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population.')) %>% 
   mutate(Seven_day_ave_new_label = ifelse(is.na(Seven_day_average_new_cases), paste0('It is not possible to calculate a seven day rolling average of new cases for this date (', Period, ') because one of the values in the last seven days is missing.'), ifelse(Data_completeness == 'Considered incomplete', paste0('It can take around five days for results to be fully reported and data for this date (', Period, ') should be considered incomplete.', paste0('As such, the rolling average number of new cases in the last seven days (<b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), ' cases</b>) should be treated with caution.')), paste0('The rolling average number of new cases in the last seven days is <b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), '  cases</b>.')))) %>% 
   ungroup() %>% 
@@ -362,6 +362,10 @@ test_timeline <- data.frame(Date_label_2 = c('27 Mar', '15 Apr','17 Apr','23 Apr
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/uk_testing_key_dates.json'))
 
+easing_timeline <- data.frame(Date_label_2 = c('23 Mar', '13 May', '01 Jun', '15 Jun', '04 Jul', '24 Jul'), Change = c('Lockdown starts, schools were closed to all but a few children and people are asked to stay at home.', 'Some people began returning to work if they were unable to work from home.', 'Schools reopened for more pupils in early years, reception, and years 1 and 6.<br>People were allowed to meet outdoors and those who were sheilding advised that they could now go outdoors with people in their household.', 'Non-essential shops were allowed to reopen if safe, more year groups back to school, and face coverings became mandatory on public transport.', 'Change to social distancing advice from 2m to 1m+, some hospitality and leisure businesses allow to reopen, and two households allowed to meet inside whilst up to six people from different households allowed to meet outside.', 'Face coverings became mandatory in many enclosed public spaces such as shops and banks.')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/uk_restrictions_key_dates.json'))
+
 wsx_summary_p1 <- p12_test_df %>% 
   filter(Date == max(Date)) %>% 
   select(Name, Cumulative_cases, Cumulative_per_100000, Seven_day_average_new_cases, Rolling_7_day_new_cases) %>% 
@@ -397,6 +401,15 @@ wsx_daily_cases %>%
   mutate(Colour_key = gsub('\n',' ', Colour_key)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/wsx_daily_cases.json'))
+
+wsx_daily_cases %>% 
+  ungroup() %>% 
+  filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing')) %>% 
+  group_by(Name) %>% 
+  summarise(Max_limit = round_any(max(New_cases), 10, ceiling)) %>% 
+  ungroup() %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/wsx_daily_case_limits.json'))
 
 levels(wsx_daily_cases$new_case_key) %>% 
   toJSON() %>% 
@@ -442,7 +455,6 @@ format(last_date, '%d %b') %>%
   write_lines(paste0(output_directory_x,'/latest_daily_case.json'))
 
 # Heatmap of cases ####
-
 hm_theme = function(){
   theme(
     axis.text.x = element_text(angle = 90, hjust = 0, vjust = 0),
@@ -643,13 +655,19 @@ print(map_1)
 print(inset_1, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
 
+geo_rate_utla_bins <- utla_rate_bins %>% 
+  mutate(bins = gsub('\n',' ', bins)) %>% 
+  mutate(bins = factor(bins, levels = bins))
+
 utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
   mutate(Label_1 = paste0('<b>', Name, '</b><br>', '<b>Number of cases so far as at ', format(Date, '%d %B'), ': ', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)<br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
-  select(Name, Label_1, bins, Colour_key)
+  select(Name, Label_1, bins, Colour_key) %>% 
+  mutate(bins = gsub('\n',' ', bins)) %>% 
+  mutate(bins = factor(bins, levels = levels(geo_rate_utla_bins$bins)))
 
 geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_cumulative_rate_latest.geojson'))
 
-levels(utla_rate_bins$bins) %>% 
+levels(geo_rate_utla_bins$bins) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/utla_rate_bins.json'))
 
@@ -771,6 +789,38 @@ ltla_rate_wsx %>%
 
 ltla_boundaries <- geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
 
+geo_rate_ltla_bins <- ltla_bins %>% 
+  mutate(bins = gsub('\n',' ', bins)) %>% 
+  mutate(bins = factor(bins, levels = bins))
+
+levels(geo_rate_ltla_bins$bins) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/ltla_rate_bins.json'))
+
+ltla_boundaries_geo <- ltla_boundaries %>% 
+  filter(lad19cd %in% ltla_rate$Code) %>% 
+  arrange(lad19cd)
+
+ltla_boundaries_geo_df <- as.data.frame(ltla_rate %>% 
+    arrange(Code) %>% 
+    mutate(Label_1 = paste0('<b>', Name, '</b><br>', '<b>Number of cases so far as at ', format(Date, '%d %B'), ': ', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)<br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+    # select(Name, Label_1, bins, Colour_key) %>% 
+    mutate(bins = gsub('\n',' ', bins))) 
+    
+df <- data.frame(ID = character())
+
+# Get the IDs of spatial polygon
+  for (i in ltla_boundaries_geo@polygons ) { df <- rbind(df, data.frame(ID = i@ID, stringsAsFactors = FALSE))  }
+
+# and set rowname = ID
+row.names(ltla_boundaries_geo_df) <- df$ID
+
+# Then use df as the second argument to the spatial dataframe conversion function:
+ltla_boundaries_json <- SpatialPolygonsDataFrame(ltla_boundaries_geo, ltla_boundaries_geo_df)  
+
+geojson_write(ms_simplify(geojson_json(ltla_boundaries_json), keep = 0.2), file = paste0(output_directory_x, '/ltla_covid_cumulative_rate_latest.geojson'))
+
+# For ggplot
 ltla_ua_boundaries <- ltla_boundaries %>% 
     filter(lad19cd %in% ltla_rate$Code) %>% 
     fortify(region = "lad19cd") %>% 
@@ -822,17 +872,6 @@ png(paste0(output_directory_x, '/Figure_4_cumulative_rate_ltla_latest.png'),
 print(map_1_ltla)
 print(inset_1_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
-
-ltla_ua_boundaries_rate_geo <- ltla_boundaries %>% 
-  left_join(ltla_rate, by = c('lad19cd' = 'Code')) %>% 
-  mutate(Label_1 = paste0('<b>', Name, '</b><br>', '<b>Number of cases so far as at ', format(Date, '%d %B'), ': ', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)<br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
-  select(Name, Label_1, bins, Colour_key)
-
-geojson_write(ms_simplify(geojson_json(ltla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/ltla_covid_cumulative_rate_latest.geojson'))
-
-ltla_bins %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/ltla_rate_bins.json'))
 
 
 

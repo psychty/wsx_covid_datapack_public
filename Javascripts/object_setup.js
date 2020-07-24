@@ -20,10 +20,6 @@ request.open("GET", "./Outputs/wsx_case_summary.json", false);
 request.send(null);
 var case_summary = JSON.parse(request.responseText); // parse the fetched json data into a variable
 
-var wsx_summary = case_summary.filter(function(d, i) {
-  return d.Name === 'West Sussex'
-})
-
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/wsx_daily_cases.json", false);
 request.send(null);
@@ -82,8 +78,6 @@ var first_incomplete_date_actual = JSON.parse(request.responseText).filter(funct
   return d.Order == 'First_incomplete'
 })[0]['Date']
 
-
-
 var latest_date = JSON.parse(request.responseText).filter(function(d) {
   return d.Order == 'Last'
 })[0]['Date_label']
@@ -131,6 +125,12 @@ var change_case_label = d3.scaleOrdinal()
 // Maps
 
 var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/ltla_rate_bins.json", false);
+request.send(null);
+
+var ltla_rate_bins = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/utla_rate_bins.json", false);
 request.send(null);
 
@@ -148,3 +148,29 @@ var utla = $.ajax({
     alert(xhr.statusText)
   }
 })
+
+// Add AJAX request for data
+var ltla = $.ajax({
+  url:"./Outputs/ltla_covid_cumulative_rate_latest.geojson",
+  dataType: "json",
+  success: console.log("LTLA boundary data successfully loaded."),
+  error: function (xhr) {
+    alert(xhr.statusText)
+  }
+})
+
+// testing policy timelines
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/uk_testing_key_dates.json", false);
+request.send(null);
+var uk_testing_key_dates = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/uk_restrictions_key_dates.json", false);
+request.send(null);
+var uk_restrictions_key_dates = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_daily_case_limits.json", false);
+request.send(null);
+var daily_case_limits = JSON.parse(request.responseText);
