@@ -44,15 +44,15 @@ var x_daily_cases = d3.scaleBand()
 var xAxis_daily_cases = svg_daily_new_case_bars
   .append("g")
   .attr("transform", 'translate(0,' + (height_line - 120 ) + ")")
-  .call(d3.axisBottom(x_daily_cases));
+   .call(d3.axisBottom(x_daily_cases).tickValues(data_dates));
 
 xAxis_daily_cases
   .selectAll("text")
-  .attr("transform", 'translate(0,10)rotate(-90)')
+  .attr("transform", 'translate(-' + (x_daily_cases.bandwidth() + 10) + ',10)rotate(-90)')
   .style("text-anchor", "end")
-  .each(function(d,i) { // find the text in that tick and remove it: Thanks Gerardo Furtado on stackoverflow
-    if (i%2 == 0) d3.select(this).remove();
-    });
+  // .each(function(d,i) { // find the text in that tick and remove it: Thanks Gerardo Furtado on stackoverflow
+  //   if (i%2 == 0) d3.select(this).remove();
+  //   });
 
 var y_daily_cases = d3.scaleLinear()
   .domain([0, d3.max(bars_daily_cases_1_chosen, function(d) {
@@ -251,8 +251,16 @@ svg_daily_new_case_bars
   .append("text")
   .attr('id', 'test_milestones')
   .attr("x", function(d) { return x_daily_cases('31 Jan') + (x_daily_cases.bandwidth()/2)})
+  .attr("y", function(d) { return height_line - 165 })
+  .text('The black line represents')
+  .attr("text-anchor", "start")
+
+svg_daily_new_case_bars
+  .append("text")
+  .attr('id', 'test_milestones')
+  .attr("x", function(d) { return x_daily_cases('31 Jan') + (x_daily_cases.bandwidth()/2)})
   .attr("y", function(d) { return height_line - 150 })
-  .text('The black line represents seven day average new cases')
+  .text('seven day average new cases')
   .attr("text-anchor", "start")
 
 svg_daily_new_case_bars

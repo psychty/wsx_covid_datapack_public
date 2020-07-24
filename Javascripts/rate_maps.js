@@ -17,18 +17,33 @@ function UTLA_rate_colour(d) {
                     '#feebe2';
 }
 
+function style(feature) {
+    return {
+        fillColor: UTLA_rate_colour(feature.properties.bins),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 1
+    };
+}
+
+
+
 $.when(utla).done(function() {
 
 var utla_map = L.map('rate_map_1');
 
 var basemap = L.tileLayer(tileUrl, {
   attribution,
-  maxZoom: 17,
+  minZoom: 6,
 })
     .addTo(utla_map);
 
+
+
 var utla_rate_boundary = L.geoJSON(utla.responseJSON,
-      {style: UTLA_rate_colour})
+      {style: style})
       .addTo(utla_map)
       .bindPopup(function (layer) {
         return layer.feature.properties.Label_1});

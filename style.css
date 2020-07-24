@@ -6,12 +6,12 @@
 
 
 #rate_map_1 {
- height: 550px
+ height: 600px
  }
 
 @media screen and (max-width: 1400px) {
 #rate_map_1 {
- height: 450px
+ height: 500px
  }
 
 }
