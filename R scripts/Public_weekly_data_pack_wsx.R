@@ -1,7 +1,7 @@
 # Public facing data pack - West Sussex and LTLAs
 library(easypackages)
 
-libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest'))
+libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer'))
 
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
@@ -529,8 +529,8 @@ utla_rate <- p12_test_df %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority')) %>% 
   select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Colour_key) %>%
   mutate(Cumulate_rate_rank = rank(-Cumulative_per_100000)) %>% 
-  mutate(Rate_decile = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
-  mutate(Rate_decile = factor(ifelse(Rate_decile == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  mutate(Rate_decile_actual = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
+  mutate(Rate_decile = factor(ifelse(Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
   arrange(Code)
 
 utla_rate_bins <- utla_rate %>% 
@@ -873,8 +873,6 @@ print(map_1_ltla)
 print(inset_1_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
 
-
-
 # NHS Pathways ####
 
 ccg_region_2019 <- read_csv('https://opendata.arcgis.com/datasets/40f816a75fb14dfaaa6db375e6c3d5e6_0.csv') %>% 
@@ -1089,6 +1087,17 @@ latest_report_date_minus1 <- Report_df_x %>%
 paste0('In the seven days leading to ', format(latest_report_date$Date, '%d %B'), ' there were ', format(latest_report_date$seven_day_total_triages, big.mark = ','), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(latest_report_date$seven_day_average_triages, 0), big.mark = ','), ' each day.')
 
 paste0('In the last 24 hours there were ', format(latest_report_date$Triage_count, big.mark = ','), ' triages made. This is an ', ifelse(latest_report_date$Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(latest_report_date$Number_change), big.mark = ','), ' triages compared to the previous day (', format(latest_report_date_minus1$Triage_count, big.mark = ',') ,' triages).') 
+
+# Exporting for web
+
+Report_df_x %>% 
+  ungroup() %>% 
+  mutate(label_1 = paste0('In the seven days leading to ', format(Date, '%d %B'), ' there were ', format(seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')) %>% 
+  mutate(label_2 = paste0('In the last 24 hours there were ', format(Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(lag(Triage_count,1), big.mark = ',', trim = TRUE) ,' triages).')) %>% 
+  mutate(Date = format(Date, '%d %b')) %>% 
+  select(Date, Triage_count, label_1, label_2) %>%
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/NHS_pathways_wsx.json'))
 
 # Mortality ####
 
@@ -1384,3 +1393,107 @@ png(paste0(output_directory_x, '/Covid_19_deaths_in_carehomes_wsx_ltlas.png'),
     res = 120)
 print(ltla_deaths_plot_2)
 dev.off()
+
+# Export to powerpoint ####
+
+wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx'))
+
+layout_summary(wkly_template)
+layout_properties(wkly_template, 'rate_map_layout')
+
+# Start powerpoint
+wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx')) %>%  
+  add_slide(layout = "Intro_page", master = "Office Theme") %>% 
+  ph_with(value = paste0('Pack date: ',format(Sys.Date(), '%d %B %Y')), 
+          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+  ph_with(value = 'West Sussex COVID-19 Weekly Data', 
+          location = ph_location_label(ph_label = 'Text Placeholder 9')) %>% 
+  ph_with(value = paste0('This pack brings together information relating to COVID-19 in West Sussex.\nWest Sussex County Council Public Health Department monitors information on a daily basis, summary packs will be published weekly. Links are provided to the public data sources available, a summary of current sources is provided at the end of this pack.\nLocal authorities have access to some information that is not in the public domain, this may be due to small numbers or data being provisional.'), 
+          location = ph_location_label(ph_label = 'Text Placeholder 11')) %>% 
+  ph_with(value = 'Contact', 
+          location = ph_location_label(ph_label = 'Text Placeholder 13')) %>% 
+  ph_with(value = 'publichealth@westsussex.gov.uk', 
+          location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
+  ph_with(value = paste0('Slide ', length(.)-1), 
+          location = ph_location_label(ph_label = 'Text Placeholder 12'))
+  
+for(i in 1:length(areas_to_loop)){
+  
+area_x <- areas_to_loop[i]
+
+wkly_template <- wkly_template %>% 
+  add_slide(layout = "Daily_case_layout", master = "Office Theme") %>% 
+  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
+          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_1_', gsub(' ' , '_', area_x), '_confirmed_daily_cases.png')), 
+          location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
+  ph_with(value = 'Source: https://coronavirus.data.gov.uk/', 
+          href = 'https://coronavirus.data.gov.uk',
+          location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
+  ph_with(value = paste0('Slide ', length(.) -1), 
+          location = ph_location_label(ph_label = 'Text Placeholder 12'))
+}
+
+# heatmap plot 
+
+wkly_template <- wkly_template %>% 
+  add_slide(layout = "Heatmap_layout", master = "Office Theme") %>% 
+  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
+          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_2_confirmed_heatmap_rate.png')), 
+          location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
+  ph_with(value = 'Source: https://coronavirus.data.gov.uk/', 
+          href = 'https://coronavirus.data.gov.uk',
+          location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
+  ph_with(value = paste0('Slide ', length(.) -1), 
+          location = ph_location_label(ph_label = 'Text Placeholder 12')) %>% 
+  add_slide(layout = "rate_map_layout", master = "Office Theme") %>% 
+  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_3_cumulative_rate_utla_latest.png')), 
+          location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
+  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
+          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+  ph_with(value = 'Source: https://coronavirus.data.gov.uk/', 
+          href = 'https://coronavirus.data.gov.uk',
+          location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
+  ph_with(value = paste0('Slide ', length(.) -1), 
+          location = ph_location_label(ph_label = 'Text Placeholder 19')) %>% 
+  ph_with(value = paste0('Cumulative cases as at ', format(last_date, '%d %B')), 
+          location = ph_location_label(ph_label = 'Text Placeholder 3')) %>% 
+  ph_with(value = 'What is a decile?',
+          location = ph_location_label(ph_label = 'Text Placeholder 12')) %>%
+  ph_with(value = paste0('Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.'), 
+          location = ph_location_label(ph_label = 'Text Placeholder 14')) %>% 
+  ph_with(value = paste0('West Sussex is in the ', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Rate_decile_actual'))) == '1st', 'highest 10% of local authorities.', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Rate_decile_actual')))== '10th', 'lowest 10% of local authorities.', paste0(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Rate_decile_actual'))), ' decile.')))), 
+          location = ph_location_label(ph_label = 'Text Placeholder 6')) 
+
+# Last one - move the data source slide
+wkly_template <- wkly_template %>% 
+  move_slide(index = 1, to = length(.))
+
+wkly_template %>%  
+  print(paste0(github_repo_dir, '/Latest_West_Sussex_C19_slide_deck.pptx'))
+# 
+# wkly_template %>%  
+#   add_slide(layout = "pathways_summary", master = "Office Theme") %>% 
+#   ph_with(value = format(latest_report_date$Date, '%d %B %Y'), 
+#           location = ph_location_label(ph_label = 'Text Placeholder 4')) %>% 
+#   ph_with(value = Area_x, 
+#           location = ph_location_label(ph_label = 'Text Placeholder 8')) %>% 
+#   ph_with(value = format(as.numeric(latest_report_date$Triage_count), big.mark = ','), 
+#           location = ph_location_label(ph_label = 'Text Placeholder 12')) %>% # number 
+#   ph_with(value = format(as.numeric(latest_report_date$Number_change), big.mark = ','), 
+#           location = ph_location_label(ph_label = 'Text Placeholder 16')) %>% # number change
+#   ph_with(value = paste0('This is a change of ', round(as.numeric(latest_report_date$Percentage_change)*100,1), '% compared to the previous day.'), 
+#           location = ph_location_label(ph_label = 'Text Placeholder 18')) %>% # the percentage change
+#   ph_with(value = format(as.numeric(latest_report_date$seven_day_total_triages), big.mark = ','),
+#           location = ph_location_label(ph_label = 'Text Placeholder 3')) %>% # number last 7 days
+#   ph_with(value = format(as.numeric(latest_report_date$seven_day_average_triages), big.mark = ','),
+#           location = ph_location_label(ph_label = 'Text Placeholder 5')) %>% # rolling average over last seven days 
+#   ph_with(value = 'It should be noted that these are counts of triages completed and not counts of the number of people triaged, people might not use this system or might use it multiple times over the course of their symptoms (and maybe not at the onset of their symptoms).',
+#           location = ph_location_label(ph_label = 'Text Placeholder 7')) %>%
+#   ph_with(value = external_img(src = paste0('//chi_nas_prod2.corporate.westsussex.gov.uk/groups2.bu/Public Health Directorate/PH Research Unit/COVID-19/Local Outbreak Control Plan/NHS Pathway Triages/Covid_complete_triages_nhs_pathways_', gsub(' ', '_',Area_x) , '.png')), 
+#           location = ph_location_label(ph_label = 'Picture Placeholder 6'))
+# 
+# 
+# 
+

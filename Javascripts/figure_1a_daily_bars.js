@@ -26,7 +26,7 @@ var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_
 // Update text based on selected area
 d3.select("#selected_daily_cases_bars_1_compare_title")
   .html(function(d) {
-    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option
+    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option + '; ' + first_date + ' - ' + latest_date
   });
 
 var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
@@ -312,7 +312,7 @@ var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_
 
 d3.select("#selected_daily_cases_bars_1_compare_title")
   .html(function(d) {
-    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option
+    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option + '; ' + first_date + ' - ' + latest_date
   });
 
 var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
