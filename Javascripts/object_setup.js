@@ -121,9 +121,7 @@ var change_case_label = d3.scaleOrdinal()
   .domain(case_change_values)
   .range(['the average number of cases has not changed','7 day average cases appear to be increasing', '7 day average cases appear to be decreasing', 'average number of cases half what it was in previous 7 days', 'no confirmed cases in most recent complete 7 day period'])
 
-
 // Maps
-
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/ltla_rate_bins.json", false);
 request.send(null);
@@ -136,6 +134,14 @@ request.send(null);
 
 var utla_rate_bins = JSON.parse(request.responseText);
 var decile_colours = ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']
+
+var utla_decile_colour_func = d3.scaleOrdinal()
+  .domain(utla_rate_bins)
+  .range(decile_colours)
+
+var ltla_decile_colour_func = d3.scaleOrdinal()
+  .domain(ltla_rate_bins)
+  .range(decile_colours)
 
 var width_map = document.getElementById("content_size").offsetWidth;
 
@@ -174,3 +180,19 @@ var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/wsx_daily_case_limits.json", false);
 request.send(null);
 var daily_case_limits = JSON.parse(request.responseText);
+
+// Pathways
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/NHS_pathways_df.json", false);
+request.send(null);
+var pathways_df = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/NHS_pathways_dates.json", false);
+request.send(null);
+var pathway_dates = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/pathways_changes.json", false);
+request.send(null);
+var pathway_changes = JSON.parse(request.responseText);

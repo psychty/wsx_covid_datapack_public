@@ -681,7 +681,7 @@ geo_rate_utla_bins <- utla_rate_bins %>%
   mutate(bins = factor(bins, levels = bins))
 
 utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
-  mutate(Label_1 = paste0('<b>', Name, '</b><br>', '<b>Number of cases so far as at ', format(Date, '%d %B'), ': ', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)<br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   select(Name, Label_1, bins, Colour_key) %>% 
   mutate(bins = gsub('\n',' ', bins)) %>% 
   mutate(bins = factor(bins, levels = levels(geo_rate_utla_bins$bins)))
@@ -692,71 +692,6 @@ levels(geo_rate_utla_bins$bins) %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/utla_rate_bins.json'))
 
-# map_2 <- ggplot() +
-#   coord_fixed(1.5) +
-#   map_theme() +
-#   geom_polygon(data = utla_ua_boundaries,
-#                aes(x=long,
-#                    y=lat,
-#                    group = group,
-#                    fill = Colour_key),
-#                color="#ffffff",
-#                size = .1,
-#                alpha = 1,
-#                show.legend = TRUE) +
-#   scale_fill_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
-#                     name = 'Change in average new cases',
-#                     drop = FALSE) +
-#   labs(title = paste0('Recent changes in number of confirmed Covid-19 cases; Pillar 1 and 2 combined;\nUpper Tier Local and Unitary Authorities'),
-#        subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')),
-#        caption = paste0('A change in cases is identified by comparing the cases in the  most recent complete 7 day\nperiod (average number of new cases between ', format(complete_date - 6, '%d %B') , ' and ', format(complete_date, '%d %B'), ') with the previous 7 day period (', format(complete_date - 13, '%d %B') , '-', format(complete_date - 7, '%d %B'),').'))  +
-#   theme(legend.position = c(.1,.55))
-# 
-# 
-# inset_2 <- ggplot() +
-#   coord_fixed(1.5) +
-#   map_theme() +
-#   geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
-#                aes(x=long,
-#                    y=lat,
-#                    group = group,
-#                    fill = Colour_key),
-#                color="#ffffff",
-#                size = .1,
-#                alpha = 1,
-#                show.legend = FALSE) +
-#   scale_fill_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
-#                     name = 'Change in average new cases',
-#                     drop = FALSE) +
-#   labs(title = 'London') +
-#   theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
-#         plot.title = element_text(size = 8))
-# 
-# png(paste0(output_directory_x, '/Covid_19_case_change_utla_latest.png'),
-#     width = 1480,
-#     height = 1480,
-#     res = 180)
-# print(map_2)
-# print(inset_2, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
-# dev.off()
-
-# utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
-#   filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
-#   mutate(ctyua19nm = ifelse(ctyua19nm == 'Cornwall', 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
-#   group_by(ctyua19nm) %>% 
-#   summarise(do_union = TRUE)  %>% 
-#   filter(ctyua19nm != 'Isles of Scilly') 
-# 
-# df <- data.frame(ID=character())
-# 
-# # Get the IDs of spatial polygon
-#   for (i in utla_ua_boundaries_json@polygons ) { df <- rbind(df, data.frame(ID=i@ID, stringsAsFactors=FALSE))  }
-# 
-# # and set rowname=ID
-# row.names(df) <- df$ID
-# 
-# #Then use df as the second argument to the spatial dataframe conversion function:
-# utla_ua_boundaries_json <- SpatialPolygonsDataFrame(utla_ua_boundaries_json, df)
 
 # LTLA rate ####
 
@@ -841,7 +776,7 @@ ltla_boundaries_geo <- ltla_boundaries %>%
 
 ltla_boundaries_geo_df <- as.data.frame(ltla_rate %>% 
     arrange(Code) %>% 
-    mutate(Label_1 = paste0('<b>', Name, '</b><br>', '<b>Number of cases so far as at ', format(Date, '%d %B'), ': ', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)<br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
     # select(Name, Label_1, bins, Colour_key) %>% 
     mutate(bins = gsub('\n',' ', bins))) 
     
@@ -1036,6 +971,10 @@ latest_triage_date = nhs_pathways %>%
 pathways_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
   filter(Area_Name == 'NHS West Sussex CCG')
 
+
+utla_pathways <- read_csv('https://files.digital.nhs.uk/46/536793/NHS%20Pathways%20Covid-19%20data_UTLA_2020-07-27.csv') %>% 
+  mutate(Date = as.character.Date(CallDate))
+
 whole_timeseries_plot <- ggplot(pathways_x,
        aes(x = Date,
            y = Triage_count,
@@ -1135,7 +1074,21 @@ Report_df_x %>%
   mutate(Date = format(Date, '%d %b')) %>% 
   select(Date, Triage_count, label_1, label_2) %>%
   toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/NHS_pathways_wsx.json'))
+  write_lines(paste0(output_directory_x,'/NHS_pathways_df.json'))
+
+pathways_dates <- Report_df_x %>% 
+  ungroup() %>% 
+  filter(Date %in% seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 2)) %>% 
+  select(Date) %>% 
+  mutate(Date = format(Date, '%d %b'))
+  
+pathways_dates$Date %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/NHS_pathways_dates.json'))
+
+data.frame(Date = c('09 Apr', '23 Apr', '18 May'), lab_1 = c('111 online removed', '111 online reinstated', 'Pathway case'), lab_2 = c('for 0-18 year olds', 'for 5-18 year olds', 'definition change'), direction = c('red', 'blue', 'red'), Triage_count = c(565, 292,334)) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/pathways_changes.json'))
 
 # Mortality ####
 

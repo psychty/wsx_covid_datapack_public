@@ -29,7 +29,6 @@
 <p>Local authorities currently have access to some information that is not in the public domain, which may be due to small numbers or due to data being provisional.</p>
 <p>The landscape of available data is changing all the time, and we hope to be able to publish as much as possible.</p>
 <p id = 'data_recency'></p>
-<!-- <p>In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days.</p> -->
 <p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
@@ -95,7 +94,6 @@
 </div>
 
 <div class= 'main' id = 'heatmap'>
-<h2 style = "padding-left: 25px;"></h2>
 <div class = 'content'>
 <p>The next table and visualisation shows the most recently recorded confirmed cases and the number of new confirmed cases by day from pillar 1 (NHS and PHE laboratories) and pillar 2 (commercial testing) combined. You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population (crude, all age population as at 2018). </p>
 <p>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size.</p>
@@ -123,14 +121,13 @@
 </div>
 
 <div class = 'right-sidebar'>
-  <p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
-  <div id = 'new_case_key_figure'></div>
-
+<p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
+<div id = 'new_case_key_figure'></div>
 </div>
 </div>
 
 <div class = 'main' id = 'maps'>
-<h2 style = "padding-left: 25px;">Confirmed case rate maps</h2>
+<h4>Confirmed case rate maps</h4>
 <div class = 'content'>
 <p>This map shows the latest cumulative rate of confirmed COVID-19 cases per 100,000 population at Upper Tier Local Authority level.</p>
 <div id = 'rate_map_1'></div>
@@ -138,7 +135,7 @@
 <div class = 'right-sidebar'>
 <p class = 'side'><b>What is a decile?</b></p>
 <p>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.</p>
-<p>Upper Tier Decile Key (range of values given in brackets)</p>
+<p><b>Upper Tier Decile Key</b> (range of values given in brackets)</p>
 <div id = 'utla_decile_key'></div>
 </div>
 <div class = 'content'>
@@ -146,44 +143,32 @@
 <div id = 'rate_map_2'></div>
 </div>
 <div class = 'right-sidebar'>
-<p>Lower Tier Decile Key (range of values given in brackets)</p>
+<p><b>Lower Tier Decile Key</b> (range of values given in brackets)</p>
 <div id = 'ltla_decile_key'></div>
 </div>
 </div>
 
 <div class= 'main' id = 'pathways'>
-<h2 style = "padding-left: 25px;"></h2>
+<h4>NHS Pathways</h4>
 <div class = 'content'>
-<p></p>
-<p>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size.</p>
-<h4 id = 'summary_cases_title'></h4>
+<p>The NHS Pathways dataset outlining the number of triages made to NHS 111 or 999 for COVID-19 symptoms has been suggested as a potential early warning indicator of an increase in potential cases, although it is not based on any outcomes of tests for COVID-19.</p>
+<p>There are a few caveats to be aware of when using this information. The data are not counts of people but rather assessments, and people with symptoms might not use this or might use it multiple times over the course of their symptoms (and maybe not at the start of their symptoms). People were encouraged intially NOT to call NHS 111 to report COVID-19 symptoms unless they were worried but instead were asked to complete an NHS 111 online triage assessment. Moreover, the criteria for inclusion on this pathway changed over time, particularly in the early weeks of the pandemic.</p>
+<p>However, this data may give some indication of the symptom reporting locally and a view of service contacts and an early view of people concerned about their symptoms.</p>
+<h4 id = 'pathways_title'></h4>
+<div id = 'pathways_fig'></div>
+<p class = 'highlight_dl' id = 'pathways_label_1'></p>
+<p class = 'highlight_dl' id = 'pathways_label_2'></p>
 </div>
 <div class = 'right-sidebar'>
-<p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</font></p>
-<p>A Surge in cases can in part be due to the amount of testing done locally from one day to the next. We do not currently have information on the total number of tests being conducted locally.</p>
+<p>The criteria of who would be included in this pathway, including which symptoms would be flagged, changed in the beginning of the pandemic. Key change points are highlighted on the figure with dashed lines (red showing people excluded and blue showing more people included).</p>
+<p>Hover over a dot to find out more about the number of triages in the last 24 hours and last seven days.</p>
+</div>
 </div>
 
-<div class = 'content'>
-<form class="btn-group btn-group-toggle stay-right-classy" data-toggle="buttons">
-  <label class="btn btn-secondary active">
-    <input type="radio" name = 'toggle_count_rate' value = 'counts' onchange="toggle_count_rate_func();">actual cases<br>
-  </label>
-  <label class="btn btn-secondary">
-    <input type="radio" name = 'toggle_count_rate' value = 'rate'  checked = 'checked' onchange ='toggle_count_rate_func();'>cases per 100,000<br>
-  </label>
-</form>
-</div>
-<div class = 'content'>
-<div id = 'case_headings'></div>
-<div id = 'new_cases_plotted'></div>
-<p id = 'complete_seven'></p>
-</div>
 
-<div class = 'right-sidebar'>
-  <p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
-  <div id = 'new_case_key_figure'></div>
 
-</div>
+
+
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -196,8 +181,9 @@
 <script src = "Javascripts/object_setup.js"></script>
 <script src = "Javascripts/figure_1a_daily_bars.js"></script>
 <script src = "Javascripts/figure_1b_daily_bars.js"></script>
-<script src = "Javascripts/wsx_heatmap.js"></script>
-<script src = "Javascripts/rate_maps.js"></script>
+<script src = "Javascripts/figure_2_heatmap.js"></script>
+<script src = "Javascripts/figure_3_4_rate_maps.js"></script>
+<script src = "Javascripts/figure_5_pathways.js"></script>
 
 
 

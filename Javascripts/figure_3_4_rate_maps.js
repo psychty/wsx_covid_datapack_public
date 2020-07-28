@@ -47,33 +47,25 @@ utla_map
 
 });
 
+function key_utla_rate_deciles() {
+  utla_rate_bins.forEach(function(item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = 'key_list_rate';
+    list.style.borderColor = utla_decile_colour_func(index);
+      var tt = document.createElement('div');
+    tt.className = 'side_tt';
+    tt.style.borderColor = utla_decile_colour_func(index);
+    var tt_h3_1 = document.createElement('h3');
+    tt_h3_1.innerHTML = item.Cause;
 
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("utla_decile_key");
+    div.appendChild(list);
+    })
+}
 
-
-
-//
-// // Legend
-// var utla_rate_legend = L.control({position: 'bottomright'});
-//
-// utla_rate_legend.onAdd = function (utla_map) {
-//     var div = L.DomUtil.create('div', 'legend'),
-//         grades = [0, 2000, 4000, 6000, 8000, 10000, 12000, 14000];
-//
-//         // add title
-//       div.innerHTML += "<p><b>Decile of cumulative<br>rate per 100,000</b></p>";
-//
-// // loop through our density intervals and generate a label with a colored square for each interval
-//   for (var i = 0; i < grades.length; i++) {
-//     div.innerHTML +=
-//     '<i style="background:' + get_density_colour(grades[i]) + '"></i> ' +
-//     d3.format(',.0f')(grades[i]) + (grades[i + 1] ? '&ndash;' + d3.format(',.0f')(grades[i + 1] -1) + '<br>' : '+');
-//     }
-//
-//     return div;
-// };
-//
-// utla_rate_legend
-// .addTo(utla_map);
+key_utla_rate_deciles();
 
 function LTLA_rate_colour(d) {
     return d === ltla_rate_bins[0] ? decile_colours[0] :
@@ -120,3 +112,24 @@ ltla_map
 .fitBounds(ltla_rate_boundary.getBounds());
 
 });
+
+
+function key_ltla_rate_deciles() {
+  ltla_rate_bins.forEach(function(item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = 'key_list_rate';
+    list.style.borderColor = ltla_decile_colour_func(index);
+      var tt = document.createElement('div');
+    tt.className = 'side_tt';
+    tt.style.borderColor = ltla_decile_colour_func(index);
+    var tt_h3_1 = document.createElement('h3');
+    tt_h3_1.innerHTML = item.Cause;
+
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("ltla_decile_key");
+    div.appendChild(list);
+    })
+}
+
+key_ltla_rate_deciles();

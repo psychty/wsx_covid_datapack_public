@@ -142,9 +142,6 @@ svg_title
   .style('font-weight', 'bold')
   .style("font-size", "10px")
 
-
-
-
 svg_title
   .append("text")
   .attr("x", start_tile_x_pos)
