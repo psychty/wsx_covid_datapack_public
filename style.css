@@ -32,8 +32,6 @@
  }
 }
 
-
-
 @media screen and (max-width: 64px) {
     .small_screen_adapt {
         display: none !important;
@@ -176,6 +174,17 @@ text-align: justify;
 color: red;
 text-justify: inter-word;
  }
+
+p.highlight_dl {
+font-size: 1.3rem;
+color: #273f8a;
+}
+
+a.highlight_dl {
+font-size: 1.3rem;
+color: #ff004d;
+text-decoration: underline;
+}
 
 .footer {
  font-size: .8rem;

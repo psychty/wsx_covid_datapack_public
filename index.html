@@ -24,8 +24,8 @@
 <h4 class = 'small_screen_show'>The size of this browser window or screen is a little too small to read the data visualisation without some of it overlapping. This will be fixed at some point in the future, but for now please use a larger screen to view.</h4>
 <h2 style = "padding-left: 25px;">West Sussex COVID-19 Weekly data supplement</h2>
 <div class = "content" id = 'content_size'>
-<p>This pack brings together information relating to COVID-19 in West Sussex.</p>
-<p>West Sussex County Council Public Health Department monitors information on a daily basis, and summary packs will be published weekly. Links are provided to public data sources available, with a summary of current sources available below.</p>
+<p>This data analysis brings together information relating to COVID-19 in West Sussex.</p>
+<p>West Sussex County Council Public Health Department monitors information on a daily basis, and a summary pack will be published weekly as a <a href = 'https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx'>powerpoint slide deck</a> . Links are provided to public data sources available, with a summary of current sources available below.</p>
 <p>Local authorities currently have access to some information that is not in the public domain, which may be due to small numbers or due to data being provisional.</p>
 <p>The landscape of available data is changing all the time, and we hope to be able to publish as much as possible.</p>
 <p id = 'data_recency'></p>
@@ -35,6 +35,7 @@
 <div class = 'right-sidebar'>
   <p class = 'side'>This page works best in certain browsers such as Chrome, Firefox, and Safari, and does not currently work well in Internet Explorer or Edge.</p>
   <p class = 'side'>This analysis has been created by Dr Rich Tyler at the West Sussex Public Health and Social Research Unit.</p>
+<p class = 'highlight_dl'>A powerpoint slide deck is available to <a class = 'highlight_dl' href = 'https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx' >download here</a></p>
 </div>
 </div>
 
@@ -55,6 +56,8 @@
   <p class = 'side'>The grey lines with circles at the top show dates on which the Covid-19 testing eligibility criteria was amended to include a wider population. Hover over each point to see which population groups were added to the test eligibility criteria.</p>
   <p class = 'side'>The red lines with circles at the top show dates on which restrictions were added and eased, starting with the national lockdown on 23rd March 2020. Hover over each point to see which population groups were added to the test eligibility criteria.</p>
   <p class = 'side_important'>Note that the scale may change as a new area is selected.</p>
+<p>Pillar 1 testing includes NHS testing, such as tests of people being admitted to hospital or being discharged to a health/care home setting, pre-operative testing etc.</p>
+<p>Pillar 2 testing is wider community testing</p>
 </div>
 </div>
 
@@ -132,12 +135,54 @@
 <p>This map shows the latest cumulative rate of confirmed COVID-19 cases per 100,000 population at Upper Tier Local Authority level.</p>
 <div id = 'rate_map_1'></div>
 </div>
+<div class = 'right-sidebar'>
+<p class = 'side'><b>What is a decile?</b></p>
+<p>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.</p>
+<p>Upper Tier Decile Key (range of values given in brackets)</p>
+<div id = 'utla_decile_key'></div>
+</div>
 <div class = 'content'>
 <p>This map shows the latest cumulative rate of confirmed COVID-19 cases per 100,000 population at Lower Tier Local Authority level.</p>
 <div id = 'rate_map_2'></div>
 </div>
 <div class = 'right-sidebar'>
-<p class = 'side'>What is a decile?</p>
+<p>Lower Tier Decile Key (range of values given in brackets)</p>
+<div id = 'ltla_decile_key'></div>
+</div>
+</div>
+
+<div class= 'main' id = 'pathways'>
+<h2 style = "padding-left: 25px;"></h2>
+<div class = 'content'>
+<p></p>
+<p>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size.</p>
+<h4 id = 'summary_cases_title'></h4>
+</div>
+<div class = 'right-sidebar'>
+<p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</font></p>
+<p>A Surge in cases can in part be due to the amount of testing done locally from one day to the next. We do not currently have information on the total number of tests being conducted locally.</p>
+</div>
+
+<div class = 'content'>
+<form class="btn-group btn-group-toggle stay-right-classy" data-toggle="buttons">
+  <label class="btn btn-secondary active">
+    <input type="radio" name = 'toggle_count_rate' value = 'counts' onchange="toggle_count_rate_func();">actual cases<br>
+  </label>
+  <label class="btn btn-secondary">
+    <input type="radio" name = 'toggle_count_rate' value = 'rate'  checked = 'checked' onchange ='toggle_count_rate_func();'>cases per 100,000<br>
+  </label>
+</form>
+</div>
+<div class = 'content'>
+<div id = 'case_headings'></div>
+<div id = 'new_cases_plotted'></div>
+<p id = 'complete_seven'></p>
+</div>
+
+<div class = 'right-sidebar'>
+  <p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
+  <div id = 'new_case_key_figure'></div>
+
 </div>
 </div>
 
