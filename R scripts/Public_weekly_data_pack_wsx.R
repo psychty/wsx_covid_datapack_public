@@ -1389,7 +1389,7 @@ wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly data
           location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
   ph_with(value = 'West Sussex COVID-19 Weekly Data', 
           location = ph_location_label(ph_label = 'Text Placeholder 9')) %>% 
-  ph_with(value = paste0('This pack brings together information relating to COVID-19 in West Sussex.\nWest Sussex County Council Public Health Department monitors information on a daily basis, summary packs will be published weekly. Links are provided to the public data sources available, a summary of current sources is provided at the end of this pack.\nLocal authorities have access to some information that is not in the public domain, this may be due to small numbers or data being provisional.'), 
+  ph_with(value = paste0('This pack brings together information relating to COVID-19 in West Sussex.\nWest Sussex County Council Public Health Department monitors information on a daily basis and summary packs will be published weekly. Links are provided to the public data sources available and a summary of current sources is provided at the end of this pack.\nLocal authorities have access to some information that is not in the public domain, this may be due to small numbers or data being provisional.'), 
           location = ph_location_label(ph_label = 'Text Placeholder 11')) %>% 
   ph_with(value = 'Contact', 
           location = ph_location_label(ph_label = 'Text Placeholder 13')) %>% 
