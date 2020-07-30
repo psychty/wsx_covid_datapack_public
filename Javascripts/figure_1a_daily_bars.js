@@ -106,13 +106,12 @@ svg_daily_new_case_bars
 .data(uk_testing_key_dates)
 .enter()
 .append("rect")
+.attr('class', 'test_notes')
 .attr("x", function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
 .attr("y", 0)
 .attr("width", 2)
 .attr("height", function(d) { return (height_line - 80 )})
-.style("fill", incomplete_colour)
-.on("mousemove", showTooltip_testing_key_dates)
-.on('mouseout', mouseleave_testing_key_dates);
+.style("fill", incomplete_colour);
 
 // We can treat this like a set of thin bars. With tooltips (maybe adding a dot or symbol at the top of each line as a easier thing to mouseover)
 svg_daily_new_case_bars
@@ -120,6 +119,7 @@ svg_daily_new_case_bars
 .data(uk_testing_key_dates)
 .enter()
 .append("circle")
+.attr('class', 'test_notes')
 .attr("cx", function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
 .attr("y", 0)
 .attr("r", 6)
@@ -128,26 +128,27 @@ svg_daily_new_case_bars
 .on('mouseout', mouseleave_testing_key_dates);
 
 svg_daily_new_case_bars
-  .append("text")
-  .attr('id', 'test_milestones')
-  .attr("x", function(d) { return x_daily_cases('26 Mar') + (x_daily_cases.bandwidth()/2)})
-  .attr("y", 2)
-  .text('Testing eligibility changes -')
-  .attr("text-anchor", "end")
+.append("text")
+.attr('id', 'test_milestones')
+.attr('class', 'test_notes')
+.attr("x", function(d) { return x_daily_cases('26 Mar') + (x_daily_cases.bandwidth()/2)})
+.attr("y", 2)
+.text('Testing eligibility changes -')
+.attr("text-anchor", "end")
 
 // Restriction changes
 
 var tooltip_restrictions_key_dates = d3.select("#daily_new_case_bars")
-  .append("div")
-  .style("opacity", 0)
-  .attr("class", "tooltip_class")
-  .style("position", "absolute")
-  .style("z-index", "10")
-  .style("background-color", "white")
-  .style("border", "solid")
-  .style("border-width", "1px")
-  .style("border-radius", "5px")
-  .style("padding", "10px")
+.append("div")
+.style("opacity", 0)
+.attr("class", "tooltip_class")
+.style("position", "absolute")
+.style("z-index", "10")
+.style("background-color", "white")
+.style("border", "solid")
+.style("border-width", "1px")
+.style("border-radius", "5px")
+.style("padding", "10px")
 
 var showTooltip_restrictions_key_dates = function(d) {
   tooltip_restrictions_key_dates
@@ -171,6 +172,7 @@ svg_daily_new_case_bars
 .data(uk_restrictions_key_dates)
 .enter()
 .append('line')
+.attr('class', 'restriction_notes')
 .attr('x1', function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
 .attr('y1', 40)
 .attr('x2',  function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
@@ -184,6 +186,7 @@ svg_daily_new_case_bars
 .data(uk_restrictions_key_dates)
 .enter()
 .append("circle")
+.attr('class', 'restriction_notes')
 .attr("cx", function(d) { return x_daily_cases(d.Date_label_2) + (x_daily_cases.bandwidth()/2)})
 .attr("cy", 40)
 .attr("r", 6)
@@ -192,17 +195,15 @@ svg_daily_new_case_bars
 .on('mouseout', mouseleave_restrictions_key_dates);
 
 svg_daily_new_case_bars
-  .append("text")
-  .attr('id', 'test_milestones')
-  .attr("x", function(d) { return x_daily_cases('22 Mar') + (x_daily_cases.bandwidth()/2)})
-  .attr("y", 42)
-  .text('Lockdown begins -')
-  .attr("text-anchor", "end")
-
-
+.append("text")
+.attr('id', 'test_milestones')
+.attr('class', 'restriction_notes')
+.attr("x", function(d) { return x_daily_cases('22 Mar') + (x_daily_cases.bandwidth()/2)})
+.attr("y", 42)
+.text('Lockdown begins -')
+.attr("text-anchor", "end")
 
 // Bars
-
 var tooltip_daily_case_1 = d3.select("#daily_new_case_bars")
   .append("div")
   .style("opacity", 0)
@@ -295,6 +296,7 @@ svg_daily_new_case_bars
   .append("text")
   .attr("x", x_daily_cases('12 May'))
   .attr("y", 30)
+  .attr('class', 'restriction_notes')
   .text('more people')
   .attr("text-anchor", "end")
 
@@ -302,11 +304,11 @@ svg_daily_new_case_bars
   .append("text")
   .attr("x", x_daily_cases('13 May'))
   .attr("y", 40)
+  .attr('class', 'restriction_notes')
   .text('return to work -')
   .attr("text-anchor", "end")
 
 function update_daily_bars() {
-
 
 var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_button').property("value")
 
@@ -384,3 +386,31 @@ d3.select("#select_bars_daily_cases_1_area_button").on("change", function(d) {
   var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_button').property("value")
   update_daily_bars()
 })
+
+// This function is gonna change the opacity and size of selected and unselected circles
+function update_annotations_f1(){
+
+// For each check box:
+d3.selectAll(".checkbox").each(function(d){
+  cb = d3.select(this);
+  grp = cb.property("value")
+
+// If the box is check, show the notes
+  if(cb.property("checked")){
+svg_daily_new_case_bars.selectAll("."+grp)
+.transition()
+.duration(1000)
+.style("opacity", 1)
+  }
+else{
+svg_daily_new_case_bars.selectAll("."+grp)
+.transition()
+.duration(1000)
+.style("opacity", 0)}
+  })
+  };
+
+// When a button change, I run the update function
+d3.selectAll(".checkbox").on("change",update_annotations_f1);
+
+update_annotations_f1()

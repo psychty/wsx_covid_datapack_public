@@ -1240,9 +1240,9 @@ care_home_ons_all_deaths <- Occurrences %>%
 carehome_weekly_deaths <- Occurrences %>%
   filter(Place_of_death %in% 'Care home') %>% 
   arrange(Week_number) %>% 
-  select(Name, Cause, Week_ending, Deaths) %>% 
+  select(Name, Cause, Week_ending, Week_number, Deaths) %>% 
   mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
-  pivot_wider(id_cols = c(Name, Week_ending),
+  pivot_wider(id_cols = c(Name, Week_ending, Week_number),
               names_from = Cause,
               values_from = Deaths) %>% 
   mutate(`Non-Covid` = `All causes` - `COVID 19`) %>%
@@ -1374,6 +1374,71 @@ png(paste0(output_directory_x, '/Covid_19_deaths_in_carehomes_wsx_ltlas.png'),
     res = 120)
 print(ltla_deaths_plot_2)
 dev.off()
+
+# Exporting for figures #
+
+ all_deaths_json_export <- All_settings_occurrences %>%
+  ungroup() %>%
+  select(Name, Week_number, Week_ending, Cause, Deaths) %>%
+  group_by(Name, Week_number, Week_ending) %>%
+  spread(Cause, Deaths) %>%
+  mutate(`Not attributed to Covid-19` = `All causes` - `COVID 19`) %>%
+  rename(`Covid-19` = `COVID 19`) %>%
+  mutate(Deaths_in_week_label = paste0('The total number of deaths occurring in the week ending ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' was<b> ', format(`All causes`, big.mark = ',', trim = TRUE), '</b>. Of these, <b>', format(`Covid-19`, big.mark = ',', trim = TRUE), ifelse(`Covid-19` == 1, ' death</b> was', ' deaths</b> were'), ' attributed to Covid-19. This is ',  round((`Covid-19`/`All causes`) * 100, 1), '% of deaths occuring in this week.')) %>%
+  group_by(Name) %>%
+  mutate(Cumulative_deaths_all_cause = cumsum(`All causes`)) %>%
+  mutate(Cumulative_covid_deaths = cumsum(`Covid-19`)) %>%
+  mutate(Cumulative_deaths_label = paste0('As at ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' the total cumulative number of deaths for 2020 was<b> ', format(Cumulative_deaths_all_cause, big.mark = ',', trim = TRUE), '</b>. The cumulative number of deaths where Covid-19 is recorded as a cause by this date was ', format(Cumulative_covid_deaths, big.mark = ',', trim = TRUE), '. This is ', round((Cumulative_covid_deaths/Cumulative_deaths_all_cause) * 100, 1), '% of deaths occuring by this week.')) %>% 
+   mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label))
+     
+all_deaths_json_export %>% 
+  select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause) %>% 
+  toJSON() %>%
+  write_lines(paste0(output_directory_x, '/deaths_all_settings.json'))
+
+all_deaths_json_export %>% 
+  select(Name, `All causes`) %>% 
+  group_by(Name) %>% 
+  filter(`All causes` == max(`All causes`)) %>% 
+  mutate(Limit = ifelse(`All causes`<= 50, round_any(`All causes`, 5, ceiling), ifelse(`All causes` <= 100, round_any(`All causes`, 10, ceiling), ifelse(`All causes` <= 250, round_any(`All causes`, 25, ceiling), ifelse(`All causes` <= 500, round_any(`All causes`, 50, ceiling), round_any(`All causes`, 100, ceiling)))))) %>% 
+  ungroup() %>% 
+  toJSON() %>%
+  write_lines(paste0(output_directory_x, '/deaths_limits_by_area.json'))
+
+carehome_deaths_json_export <- Occurrences %>% 
+  filter(Place_of_death %in% 'Care home') %>% 
+  arrange(Week_number) %>% 
+  select(Name, Cause, Week_ending, Week_number, Deaths) %>% 
+  mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
+  pivot_wider(id_cols = c(Name, Week_ending, Week_number, Date_label),
+              names_from = Cause,
+              values_from = Deaths) %>% 
+  mutate(`Not attributed to Covid-19` = `All causes` - `COVID 19`) %>%
+  gather(key = 'Cause', value = 'Deaths', `All causes`:`Not attributed to Covid-19`) %>% 
+  select(Name, Week_number, Week_ending, Cause, Date_label, Deaths) %>%
+  group_by(Name, Week_number, Week_ending, Date_label) %>%
+  spread(Cause, Deaths) %>%
+  rename(`Covid-19` = `COVID 19`) %>%
+  mutate(Deaths_in_week_label = paste0('The total number of deaths occurring in care homes in the week ending ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' was<b> ', format(`All causes`, big.mark = ',', trim = TRUE), '</b>. Of these, <b>', format(`Covid-19`, big.mark = ',', trim = TRUE), ifelse(`Covid-19` == 1, ' death</b> was', ' deaths</b> were'), ' attributed to Covid-19. This is ',  round((`Covid-19`/`All causes`) * 100, 1), '% of deaths occuring in care homes in this week.')) %>%
+  group_by(Name) %>%
+  mutate(Cumulative_deaths_all_cause = cumsum(`All causes`)) %>%
+  mutate(Cumulative_covid_deaths = cumsum(`Covid-19`)) %>%
+  mutate(Cumulative_deaths_label = paste0('As at ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' the total cumulative number of deaths in care homes for 2020 was<b> ', format(Cumulative_deaths_all_cause, big.mark = ',', trim = TRUE), '</b>. The cumulative number of care home deaths where Covid-19 is recorded as a cause by this date was ', format(Cumulative_covid_deaths, big.mark = ',', trim = TRUE), '. This is ', round((Cumulative_covid_deaths/Cumulative_deaths_all_cause) * 100, 1), '% of deaths occuring by this week.')) 
+
+carehome_deaths_json_export %>% 
+  select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause) %>% 
+  toJSON() %>%
+  write_lines(paste0(output_directory_x, '/deaths_carehomes.json'))
+ 
+Occurrences %>% 
+  select(Week_ending) %>% 
+  unique() %>% 
+  filter(Week_ending == max(Week_ending)) %>% 
+  rename(Occurring_week_ending = Week_ending) %>% 
+  mutate(Reported_week_ending = format(Occurring_week_ending + 8, '%B %d %Y')) %>% 
+  mutate(Occurring_week_ending = format(Occurring_week_ending, '%B %d %Y')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/ons_weekly_mortality_dates.json'))
 
 # Export to powerpoint ####
 

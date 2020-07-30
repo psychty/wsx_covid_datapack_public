@@ -24,10 +24,12 @@
 <h4 class = 'small_screen_show'>The size of this browser window or screen is a little too small to read the data visualisation without some of it overlapping. This will be fixed at some point in the future, but for now please use a larger screen to view.</h4>
 <h2 style = "padding-left: 25px;">West Sussex COVID-19 Weekly data supplement</h2>
 <div class = "content" id = 'content_size'>
-<p>This data analysis brings together information relating to COVID-19 in West Sussex.</p>
-<p>West Sussex County Council Public Health Department monitors information on a daily basis, and a summary pack will be published weekly as a <a href = 'https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx'>powerpoint slide deck</a> . Links are provided to public data sources available, with a summary of current sources available below.</p>
+<p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published weekly as a powerpoint slide deck. Links are provided to public data sources available.</p>
+
+<p>This data analysis is intended to supplement the published data pack by allowing a user to explore more detail in the charts such as finding out the number of cases in an area on a particular day by hovering over one of the bars or points. <b>This website is updated more frequently than the weekly powerpoint file </b>on the West Sussex County Council website, in order to show the very latest data available so note that the figures may be different.</p>
+
 <p>Local authorities currently have access to some information that is not in the public domain, which may be due to small numbers or due to data being provisional.</p>
-<p>The landscape of available data is changing all the time, and we hope to be able to publish as much as possible.</p>
+<p>The landscape of available data is also changing all the time, and we hope to be able to publish as much as possible.</p>
 <p id = 'data_recency'></p>
 <p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
 </div>
@@ -49,11 +51,15 @@
 <span class = 'give_me_space'>Area: </span>
 <select id='select_bars_daily_cases_1_area_button'></select>
 <div id = 'daily_new_case_bars'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 <h5 id = 'x_latest_figures'></h5>
 </div>
 <div class = 'right-sidebar'>
+<span class = 'give_me_space'><input type="checkbox" class="checkbox" value="test_notes" checked><label>Show eligibility changes</label></span>
+<span class = 'give_me_space'><input type="checkbox" class="checkbox" value="restriction_notes" checked><label> Show restriction changes</label></span>
   <p class = 'side'>The grey lines with circles at the top show dates on which the Covid-19 testing eligibility criteria was amended to include a wider population. Hover over each point to see which population groups were added to the test eligibility criteria.</p>
-  <p class = 'side'>The red lines with circles at the top show dates on which restrictions were added and eased, starting with the national lockdown on 23rd March 2020. Hover over each point to see which population groups were added to the test eligibility criteria.</p>
+  <p class = 'side'>The red lines with circles at the top show dates on which restrictions were added and eased, starting with the national lockdown on 23rd March 2020. Hover over each point to see key changes.</p>
+
   <p class = 'side_important'>Note that the scale may change as a new area is selected.</p>
 <p>Pillar 1 testing includes NHS testing, such as tests of people being admitted to hospital or being discharged to a health/care home setting, pre-operative testing etc.</p>
 <p>Pillar 2 testing is wider community testing</p>
@@ -85,6 +91,7 @@
 </div>
 <div class = 'content'>
 <div id = 'my_sm_dataviz' class = 'sm-container'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
   <h5>Colour key for plots</h5>
@@ -117,6 +124,7 @@
 <div class = 'content'>
 <div id = 'case_headings'></div>
 <div id = 'new_cases_plotted'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 <p id = 'complete_seven'></p>
 </div>
 
@@ -131,6 +139,7 @@
 <div class = 'content'>
 <p>This map shows the latest cumulative rate of confirmed COVID-19 cases per 100,000 population at Upper Tier Local Authority level.</p>
 <div id = 'rate_map_1'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
 <p class = 'side'><b>What is a decile?</b></p>
@@ -141,6 +150,7 @@
 <div class = 'content'>
 <p>This map shows the latest cumulative rate of confirmed COVID-19 cases per 100,000 population at Lower Tier Local Authority level.</p>
 <div id = 'rate_map_2'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
 <p><b>Lower Tier Decile Key</b> (range of values given in brackets)</p>
@@ -156,6 +166,7 @@
 <p>However, this data may give some indication of the symptom reporting locally and a view of service contacts and an early view of people concerned about their symptoms.</p>
 <h4 id = 'pathways_title'></h4>
 <div id = 'pathways_fig'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://digital.nhs.uk/dashboards/nhs-pathways#dashboard' >NHS Digital</a></p>
 <p class = 'highlight_dl' id = 'pathways_label_1'></p>
 <p class = 'highlight_dl' id = 'pathways_label_2'></p>
 </div>
@@ -165,10 +176,24 @@
 </div>
 </div>
 
-
-
-
-
+<div class = 'main' id = 'deaths'>
+<h4>Deaths</h4>
+<div class = 'content'>
+<p>The Office for National Statistics publishes weekly data at lower tier local authority for the number of deaths occurring in each week in the 2020 calendar year. From 31 March 2020 these figures also show the number of deaths involving coronavirus (COVID-19), based on any mention of COVID-19 on the death certificate. These are aggregated to upper tier local authority for this analysis.</p>
+<p id = 'ons_dates_mortality'></p>
+<h4 id = 'selected_m1_title'></h4>
+<p id = 'selected_m1_subtitle'></p>
+<span class = 'give_me_space'>Area: </span>
+<select id='select_mortality_1_area_button'></select>
+<div id = 'covid_non_covid_mortality_all_settings'></div>
+<h4 id = 'selected_m2_title'></h4>
+<p id = 'selected_m2_subtitle'></p>
+<div id = 'covid_non_covid_mortality_carehomes'></div>
+</div>
+<div class = 'right-sidebar'>
+  <p class = 'side'>The ONS weekly release of mortality at local authority level can be found <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard'>here</a>. Figures for previous weeks can be revised when new data are published to reflect more complete registrations.</p>
+</div>
+</div>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -184,8 +209,7 @@
 <script src = "Javascripts/figure_2_heatmap.js"></script>
 <script src = "Javascripts/figure_3_4_rate_maps.js"></script>
 <script src = "Javascripts/figure_5_pathways.js"></script>
-
-
+<script src = "Javascripts/figure_6_mortality.js"></script>
 
 </body>
 </html>
