@@ -33,20 +33,20 @@ d3.select("#selected_ltla_sm_title")
   .html(function(d) {
     return 'Covid-19 pillar 1 and 2 confirmed new daily confirmed cases over time; areas within ' +  'West Sussex' + '; ' + first_date + ' - ' + latest_date});
 
-d3.select("#case_key_title")
-  .html(function(d) {
-    return 'The bars on each figure are also coloured to show the most recent changes in case growth, by comparing the average number of cases in the last complete seven day period (' + data_date_range[0]['range'] + ') with the average number of cases in the seven day period prior to that (' + data_date_range[1]['range'] + '). Areas with bars coloured in red indicate that there is an increase in cases, whilst blue areas show a decline in confirmed cases and green areas indicate no confirmed cases in the most recent 7 day period (excluding incomplete days - see right).'});
+// d3.select("#case_key_title")
+//   .html(function(d) {
+//     return 'The bars on each figure are also coloured to show the most recent changes in case growth, by comparing the average number of cases in the last complete seven day period (' + data_date_range[0]['range'] + ') with the average number of cases in the seven day period prior to that (' + data_date_range[1]['range'] + '). Areas with bars coloured in red indicate that there is an increase in cases, whilst blue areas show a decline in confirmed cases and green areas indicate no confirmed cases in the most recent 7 day period (excluding incomplete days - see right).'});
 
-chosen_ltla_df = daily_cases.filter(function(d) { // gets a subset of the json data
+chosen_utla_df = daily_cases.filter(function(d) { // gets a subset of the json data
   return d.Name !== 'West Sussex'
   })
 
 var areas_for_sm_1 = d3.nest()
   .key(function(d) { return d.Name;})
-  .entries(chosen_ltla_df);
+  .entries(chosen_utla_df);
 
 var small_areas = areas_for_sm_1.map(function(d){return d.key})
-var date_points_n = d3.map(chosen_ltla_df, function(d){return(d.Date_label_2)}).keys()
+var date_points_n = d3.map(chosen_utla_df, function(d){return(d.Date_label_2)}).keys()
 
 var x_sm_1 = d3.scaleBand()
    .domain(date_points_n)
@@ -54,7 +54,7 @@ var x_sm_1 = d3.scaleBand()
 
 //Add Y axis
 var y_sm_1 = d3.scaleLinear()
-    .domain([0, d3.max(chosen_ltla_df, function(d) { return +d.New_cases; })])
+    .domain([0, d3.max(chosen_utla_df, function(d) { return +d.New_cases; })])
     .range([height_sm, 0 ])
     .nice();
 
@@ -98,7 +98,9 @@ sm_svg_1_bars = sm_svg_1.selectAll(".bar")
       .attr("width", x_sm_1.bandwidth())
       .attr("y", function(d) { return y_sm_1(d.New_cases); })
       .attr("height", function(d) { return height_sm - y_sm_1(d.New_cases); })
-      .attr("fill", function(d) {return case_change_colour(d.Colour_key)})
+      // .attr("fill", function(d) {return case_change_colour(d.Colour_key)})
+.attr("fill", function(d) { return '#071b7c'})
+.style('opacity', .75)
   .on("mousemove", showTooltip_sm1)
   .on('mouseout', mouseleave_sm);
 
@@ -168,13 +170,13 @@ sm_svg_1
 
 
 function update_ltla_sm(chosen_utla_area){
-chosen_ltla_df = daily_cases.filter(function(d) { // gets a subset of the json data
+chosen_utla_df = daily_cases.filter(function(d) { // gets a subset of the json data
   return d.Name !== 'West Sussex'
   })
 
 var areas_for_sm_1 = d3.nest()
   .key(function(d) { return d.Name;})
-  .entries(chosen_ltla_df);
+  .entries(chosen_utla_df);
 
 // Which areas are present
 small_areas = areas_for_sm_1.map(function(d){return d.key})
@@ -195,18 +197,17 @@ var type_sm_scale = document.getElementsByName('toggle_sm_rate');
 
 var areas_for_sm_1 = d3.nest()
   .key(function(d) { return d.Name;})
-  .entries(chosen_ltla_df);
+  .entries(chosen_utla_df);
 
 // Which areas are present
 small_areas = areas_for_sm_1.map(function(d){return d.key})
 
   if (type_sm_scale[0].checked) {
-
 console.log('User selected actual numbers')
 
 //Add Y axis
 var y_sm_1 = d3.scaleLinear()
-    .domain([0, d3.max(chosen_ltla_df, function(d) { return +d.New_cases; })])
+    .domain([0, d3.max(chosen_utla_df, function(d) { return +d.New_cases; })])
     .range([height_sm, 0 ])
     .nice();
 
@@ -233,7 +234,9 @@ sm_svg_1_bars = sm_svg_1.selectAll(".bar")
       .attr("width", x_sm_1.bandwidth())
       .attr("y", function(d) { return y_sm_1(d.New_cases); })
       .attr("height", function(d) { return height_sm - y_sm_1(d.New_cases); })
-      .attr("fill", function(d) {return case_change_colour(d.Colour_key)})
+      // .attr("fill", function(d) {return case_change_colour(d.Colour_key)})
+.attr("fill", function(d) { return '#071b7c'})
+.style('opacity', .75)
 .on("mousemove", showTooltip_sm1)
 .on('mouseout', mouseleave_sm);
 
@@ -314,7 +317,7 @@ console.log('User selected rate per 100,000')
 
 //Add Y axis
 var y_sm_1 = d3.scaleLinear()
-    .domain([0, d3.max(chosen_ltla_df, function(d) { return +d.New_cases_per_100000; })])
+    .domain([0, d3.max(chosen_utla_df, function(d) { return +d.New_cases_per_100000; })])
     .range([height_sm, 0 ])
     .nice();
 
@@ -333,15 +336,17 @@ sm_svg_1_x_axis
   .style("text-anchor", "end")
 
 sm_svg_1_bars = sm_svg_1.selectAll(".bar")
-      .data(function(d) {return d.values;})
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x_sm_1(d.Date_label_2); })
-      .attr("width", x_sm_1.bandwidth())
-      .attr("y", function(d) { return y_sm_1(d.New_cases_per_100000); })
-      .attr("height", function(d) { return height_sm - y_sm_1(d.New_cases_per_100000); })
-      .attr("fill", function(d) {return case_change_colour(d.Colour_key)})
+.data(function(d) {return d.values;})
+.enter()
+.append("rect")
+.attr("class", "bar")
+.attr("x", function(d) { return x_sm_1(d.Date_label_2); })
+.attr("width", x_sm_1.bandwidth())
+.attr("y", function(d) { return y_sm_1(d.New_cases_per_100000); })
+.attr("height", function(d) { return height_sm - y_sm_1(d.New_cases_per_100000); })
+      // .attr("fill", function(d) {return case_change_colour(d.Colour_key)})
+.attr("fill", function(d) { return '#071b7c'})
+.style('opacity', .75)
 .on("mousemove", showTooltip_sm1)
 .on('mouseout', mouseleave_sm);
 
@@ -358,7 +363,7 @@ sm_svg_1
   .attr("text-anchor", "start")
   .attr("y", 25)
   .attr("x", 10)
-  .text(function(d){ return(d3.format(',.1f')(d.values[date_points_n.length - 6]['Seven_day_average_new_cases']) + ' cases in last 7 complete days')})
+  .text(function(d){ return(d3.format(',.1f')(d.values[date_points_n.length - 6]['Rolling_7_day_new_cases_per_100000']) + ' cases per 100,000 in last 7 complete days')})
   .style("font-size", ".7rem")
   .style('fill', '#383838')
 
@@ -367,7 +372,7 @@ sm_svg_1
   .attr("text-anchor", "start")
   .attr("y", 40)
   .attr("x", 10)
-  .text(function(d){ return(d3.format(',.1f')(d.values[date_points_n.length - 13]['Seven_day_average_new_cases']) + ' cases in previous 7 days')})
+  .text(function(d){ return(d3.format(',.1f')(d.values[date_points_n.length - 13]['Rolling_7_day_new_cases_per_100000']) + ' cases per 100,000 in previous 7 days')})
   .style("font-size", ".7rem")
   .style('fill', '#383838')
 
@@ -376,18 +381,18 @@ sm_svg_1
   .attr("y", 10)
   .attr("x", width_sm - 80)
   .attr("text-anchor", "end")
-  .text('Showing rate')
+  .text('Showing rate per 100,000')
   .style("font-size", ".7rem")
   .style('fill', 'red')
 
-sm_svg_1
-  .append("text")
-  .attr("y", 25)
-  .attr("x", width_sm - 80)
-  .attr("text-anchor", "end")
-  .text('per 100,000')
-  .style("font-size", ".7rem")
-  .style('fill', 'red')
+// sm_svg_1
+//   .append("text")
+//   .attr("y", 25)
+//   .attr("x", width_sm - 80)
+//   .attr("text-anchor", "end")
+//   .text('per 100,000')
+//   .style("font-size", ".7rem")
+//   .style('fill', 'red')
 
 sm_svg_1
   .append('line')
@@ -410,25 +415,25 @@ sm_svg_1
 
 }};
 
-  function key_2_sm_cases() {
-    case_change_values.forEach(function(item, index) {
-      var list = document.createElement("li");
-      list.innerHTML = item;
-      list.className = 'key_list';
-      list.style.borderColor = case_change_colour(index);
-      var tt = document.createElement('div');
-      tt.className = 'side_tt';
-      tt.style.borderColor = case_change_colour(index);
-      var tt_h3_1 = document.createElement('h3');
-      tt_h3_1.innerHTML = item.Cause;
-
-      tt.appendChild(tt_h3_1);
-      var div = document.getElementById("ltla_sm_key_figure");
-      div.appendChild(list);
-    })
-  }
-
-  key_2_sm_cases();
+  // function key_2_sm_cases() {
+  //   case_change_values.forEach(function(item, index) {
+  //     var list = document.createElement("li");
+  //     list.innerHTML = item;
+  //     list.className = 'key_list';
+  //     list.style.borderColor = case_change_colour(index);
+  //     var tt = document.createElement('div');
+  //     tt.className = 'side_tt';
+  //     tt.style.borderColor = case_change_colour(index);
+  //     var tt_h3_1 = document.createElement('h3');
+  //     tt_h3_1.innerHTML = item.Cause;
+  //
+  //     tt.appendChild(tt_h3_1);
+  //     var div = document.getElementById("ltla_sm_key_figure");
+  //     div.appendChild(list);
+  //   })
+  // }
+  //
+  // key_2_sm_cases();
 
 update_ltla_sm()
 

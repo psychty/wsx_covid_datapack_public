@@ -50,13 +50,14 @@
 <div class = 'content'>
 <span class = 'give_me_space'>Area: </span>
 <select id='select_bars_daily_cases_1_area_button'></select>
+<span class = 'give_me_space'><input type="checkbox" class="checkbox" value="test_notes" checked><label>Show eligibility changes</label></span>
+<span class = 'give_me_space'><input type="checkbox" class="checkbox" value="restriction_notes" checked><label> Show restriction changes</label></span>
 <div id = 'daily_new_case_bars'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 <h5 id = 'x_latest_figures'></h5>
 </div>
 <div class = 'right-sidebar'>
-<span class = 'give_me_space'><input type="checkbox" class="checkbox" value="test_notes" checked><label>Show eligibility changes</label></span>
-<span class = 'give_me_space'><input type="checkbox" class="checkbox" value="restriction_notes" checked><label> Show restriction changes</label></span>
+
   <p class = 'side'>The grey lines with circles at the top show dates on which the Covid-19 testing eligibility criteria was amended to include a wider population. Hover over each point to see which population groups were added to the test eligibility criteria.</p>
   <p class = 'side'>The red lines with circles at the top show dates on which restrictions were added and eased, starting with the national lockdown on 23rd March 2020. Hover over each point to see key changes.</p>
 
@@ -70,9 +71,9 @@
 <h4 style="padding-left:25px;">Lower tier authority cases</h3>
 <div class = 'content'>
 <p>The next set of figures shows a quick glance of the lower tier local authorities within West Sussex.</p>
-<p id = 'case_key_title'></p>
+<!-- <p id = 'case_key_title'></p> -->
 <p>The black lines (shown on the actual numbers figures only) on each figure represent the rolling average number of new cases confirmed in the previous seven days.</p>
-<!-- <p><b>We have coloured the bars according to the latest change in  -->
+<p>The total number of confirmed COVID-19 cases in the most recent seven day period as well as the number of cases in the seven days before that are given on the figure to show changes over time</p>
 <h4 id = 'selected_ltla_sm_title'></h4>
 <div class = 'drop'>
 <form class="btn-group btn-group-toggle stay-left-classy" data-toggle="buttons">
@@ -88,14 +89,15 @@
 </div>
 <div class = 'right-sidebar'>
   <p class = 'side'>As with other figures, the most recent five days are to be considered incomplete. As such, these dates are excluded from the calculation of change in confirmed cases.</p>
+<p class = 'side'>You can toggle between looking at actual case numbers and rates of confirmed cases per 100,000 population.</p>
 </div>
 <div class = 'content'>
 <div id = 'my_sm_dataviz' class = 'sm-container'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
-  <h5>Colour key for plots</h5>
-  <div id = 'ltla_sm_key_figure'></div>
+  <!-- <h5>Colour key for plots</h5>
+  <div id = 'ltla_sm_key_figure'></div> -->
 <p>Hover over a bar to see the number of new cases and cumulative cases to date.</p>
 </div>
 </div>

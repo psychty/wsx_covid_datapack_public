@@ -261,7 +261,8 @@ var daily_new_case_bars = svg_daily_new_case_bars
 .attr("y", function(d) { return y_daily_cases(d.New_cases); })
 .attr("width", x_daily_cases.bandwidth())
 .attr("height", function(d) { return (height_line - 80 ) - y_daily_cases(d.New_cases); })
-.style("fill", function(d) { return '#071b7c'})
+.attr("fill", function(d) { return '#071b7c'})
+.style('opacity', .75)
 .on("mousemove", showTooltip_daily_case_1)
 .on('mouseout', mouseleave_daily_case_1);
 
@@ -292,21 +293,21 @@ svg_daily_new_case_bars
   .text('seven day average new cases')
   .attr("text-anchor", "start")
 
-svg_daily_new_case_bars
-  .append("text")
-  .attr("x", x_daily_cases('12 May'))
-  .attr("y", 30)
-  .attr('class', 'restriction_notes')
-  .text('more people')
-  .attr("text-anchor", "end")
-
-svg_daily_new_case_bars
-  .append("text")
-  .attr("x", x_daily_cases('13 May'))
-  .attr("y", 40)
-  .attr('class', 'restriction_notes')
-  .text('return to work -')
-  .attr("text-anchor", "end")
+// svg_daily_new_case_bars
+//   .append("text")
+//   .attr("x", x_daily_cases('12 May'))
+//   .attr("y", 30)
+//   .attr('class', 'restriction_notes')
+//   .text('more people')
+//   .attr("text-anchor", "end")
+//
+// svg_daily_new_case_bars
+//   .append("text")
+//   .attr("x", x_daily_cases('13 May'))
+//   .attr("y", 40)
+//   .attr('class', 'restriction_notes')
+//   .text('return to work -')
+//   .attr("text-anchor", "end")
 
 function update_daily_bars() {
 
@@ -374,7 +375,8 @@ daily_new_case_bars
 .attr("y", function(d) { return y_daily_cases(d.New_cases); })
 // .attr("width", x_daily_cases.bandwidth())
 .attr("height", function(d) { return (height_line - 80 ) - y_daily_cases(d.New_cases); })
-.style("fill", function(d) { return '#071b7c' })
+.attr("fill", function(d) { return '#071b7c' })
+.style('opacity', .75)
 
 daily_new_case_bars
   .on("mousemove", showTooltip_daily_case_1)

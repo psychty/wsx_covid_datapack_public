@@ -9,8 +9,8 @@ var width_hm = document.getElementById("content_size").offsetWidth,
 var width_sm = (width_hm / 3) - 10
 
 // We dont want the small plots to be less than 325 pixels wide so this says if the
-if (width_sm < 325){
- width_sm = 325
+if (width_sm < 300){
+ width_sm = 300
 }
 
 var areas = ['West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing']
