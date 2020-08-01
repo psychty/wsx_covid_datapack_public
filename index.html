@@ -70,10 +70,9 @@
 <div class = 'main' id = 'ltlas_cases'>
 <h4 style="padding-left:25px;">Lower tier authority cases</h3>
 <div class = 'content'>
-<p>The next set of figures shows a quick glance of the lower tier local authorities within West Sussex.</p>
-<!-- <p id = 'case_key_title'></p> -->
-<p>The black lines (shown on the actual numbers figures only) on each figure represent the rolling average number of new cases confirmed in the previous seven days.</p>
-<p>The total number of confirmed COVID-19 cases in the most recent seven day period as well as the number of cases in the seven days before that are given on the figure to show changes over time</p>
+<p>The next set of figures shows a quick glance of the lower tier local authorities within West Sussex. The black lines (shown on the actual numbers figures only) on each figure represent the rolling average number of new cases confirmed in the previous seven days.</p>
+<p>You can toggle between looking at actual case numbers and rates of confirmed cases per 100,000 population.</p>
+<p id = 'case_recency_text'></p>
 <h4 id = 'selected_ltla_sm_title'></h4>
 <div class = 'drop'>
 <form class="btn-group btn-group-toggle stay-left-classy" data-toggle="buttons">
@@ -84,28 +83,20 @@
     <input type="radio" name = 'toggle_sm_rate' value = 'rate' onchange ='toggle_sm_rate_func();'>rate per 100,000<br>
   </label>
 </form>
-
 </div>
-</div>
-<div class = 'right-sidebar'>
-  <p class = 'side'>As with other figures, the most recent five days are to be considered incomplete. As such, these dates are excluded from the calculation of change in confirmed cases.</p>
-<p class = 'side'>You can toggle between looking at actual case numbers and rates of confirmed cases per 100,000 population.</p>
-</div>
-<div class = 'content'>
 <div id = 'my_sm_dataviz' class = 'sm-container'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
-  <!-- <h5>Colour key for plots</h5>
-  <div id = 'ltla_sm_key_figure'></div> -->
-<p>Hover over a bar to see the number of new cases and cumulative cases to date.</p>
+<p class = 'side'>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size.</p>
+<p class = 'side'>Hover over a bar to see the number of new cases and cumulative cases to date.</p>
+<p class = 'side_important'>It is important to check for any big spikes in the 'incomplete' period as these may not be highlighted by methods that exclude the last five days of information.</p>
 </div>
 </div>
 
 <div class= 'main' id = 'heatmap'>
 <div class = 'content'>
-<p>The next table and visualisation shows the most recently recorded confirmed cases and the number of new confirmed cases by day from pillar 1 (NHS and PHE laboratories) and pillar 2 (commercial testing) combined. You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population (crude, all age population as at 2018). </p>
-<p>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size.</p>
+<p>The next visualisation shows another way to explore confirmed cases over time and across areas quickly as a heatmap with a single tile for each day colour coded by the number of new cases (the darker red tiles denoting more cases). You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population.</p>
 <h4 id = 'summary_cases_title'></h4>
 </div>
 <div class = 'right-sidebar'>
@@ -138,7 +129,7 @@
 <div class = 'main' id = 'maps'>
 <h4>Confirmed case rate maps</h4>
 <div class = 'content'>
-<p>This map shows the latest cumulative rate of confirmed COVID-19 cases per 100,000 population at Upper Tier Local Authority level.</p>
+<p>This map shows the Upper Tier local authority and Unitary authority level areas in England. This helps to show West Sussex compared to other areas around the country.</p>
 <div id = 'rate_map_1'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>

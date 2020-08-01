@@ -2,7 +2,7 @@
 
 d3.select("#summary_cases_title")
   .html(function(d) {
-    return 'Summary of Covid-19 pillar 1 and 2 confirmed cases; ' + first_date + ' - ' + latest_date
+    return 'Heatmap of Covid-19 pillar 1 and 2 confirmed cases; ' + first_date + ' - ' + latest_date
   });
 
 d3.select("#complete_seven")

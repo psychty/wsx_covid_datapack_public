@@ -3,6 +3,10 @@ d3.select("#data_recency")
   .html(function(d) {
     return 'The latest available data in this analysis are for <b>' + latest_date + '</b>. However, whilst the capacity for testing and returning results has increased with new results reported in as soon as 24 hours, there can be some delay and as such data for very recent days are likely to change, and so <b>only data up to ' + complete_date + ' should be treated as complete.</b> In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days.' });
 
+d3.select("#case_recency_text")
+  .html(function(d) {
+    return 'As noted above, the most recent five days are to be considered incomplete and may underestimate the true number of new cases. As such, the total number of confirmed COVID-19 cases in the most recent complete seven day period (seven days leading to ' + complete_date + ') as well as the number of cases in the seven days before that (up to ' + seven_days_date + ') are given on the figure to show changes over time.' });
+
 var tooltip_area_sm = d3.select("#my_sm_dataviz")
   .append("div")
   .style("opacity", 0)
@@ -17,7 +21,7 @@ var tooltip_area_sm = d3.select("#my_sm_dataviz")
 
   var showTooltip_sm1 = function(d) {
     tooltip_area_sm
-    .html("<h4>" + d.Name + "</h4><p><b>" + d.Date_label + "</b></p><p>Current change status: <b>" + change_case_label(d.Colour_key) + "</b></p><p>" + d3.format(',.0f')(d.New_cases) + ' new cases (' + d3.format(',.0f')(d.New_cases_per_100000) + ' per 100,000 population)</p><p>' + d.Case_label + '</p>')
+    .html("<h4>" + d.Name + "</h4><p><b>" + d.Date_label + "</b></p><p>Current change status: <b>" + change_case_label(d.Colour_key) + "</b></p><p>" + d3.format(',.0f')(d.New_cases) + ' new cases (' + d3.format(',.1f')(d.New_cases_per_100000) + ' per 100,000 population)</p><p>' + d.Case_label + '</p>')
     .style("opacity", 1)
     .style("top", (event.pageY - 10) + "px")
     .style("left", (event.pageX + 10) + "px")
@@ -136,7 +140,7 @@ sm_svg_1
   .attr("text-anchor", "start")
   .attr("y", 25)
   .attr("x", 10)
-  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 1]['Rolling_7_day_new_cases']) + ' cases in last 7 days')})
+  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 6]['Rolling_7_day_new_cases']) + ' cases in last 7 complete days')})
   .style("font-size", ".7rem")
   .style('fill', '#383838')
 
@@ -145,7 +149,7 @@ sm_svg_1
   .attr("text-anchor", "start")
   .attr("y", 40)
   .attr("x", 10)
-  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 6]['Rolling_7_day_new_cases']) + ' cases in previous 7 days')})
+  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 13]['Rolling_7_day_new_cases']) + ' cases in previous 7 days')})
   .style("font-size", ".7rem")
   .style('fill', '#383838')
 
@@ -270,7 +274,7 @@ sm_svg_1
   .attr("text-anchor", "start")
   .attr("y", 25)
   .attr("x", 10)
-  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 1]['Rolling_7_day_new_cases']) + ' cases in last 7 days')})
+  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 6]['Rolling_7_day_new_cases']) + ' cases in last 7 complete days')})
   .style("font-size", ".7rem")
   .style('fill', '#383838')
 
@@ -279,7 +283,7 @@ sm_svg_1
   .attr("text-anchor", "start")
   .attr("y", 40)
   .attr("x", 10)
-  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 6]['Rolling_7_day_new_cases']) + ' cases in previous 7 days')})
+  .text(function(d){ return(d3.format(',.0f')(d.values[date_points_n.length - 13]['Rolling_7_day_new_cases']) + ' cases in previous 7 days')})
   .style("font-size", ".7rem")
   .style('fill', '#383838')
 

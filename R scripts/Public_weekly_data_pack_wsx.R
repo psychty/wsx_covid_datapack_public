@@ -132,7 +132,23 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Ten_day_average_new_cases = rollapply(New_cases, 10, mean, align = 'right', fill = NA)) %>% 
   mutate(Fourteen_day_average_new_cases = rollapply(New_cases, 14, mean, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA)) %>% 
-  mutate(Rolling_7_day_new_cases_per_100000 = ifelse(is.na(Rolling_7_day_new_cases), NA, (Rolling_7_day_new_cases / Population) * 100000))
+  mutate(Rolling_7_day_new_cases_per_100000 = ifelse(is.na(Rolling_7_day_new_cases), NA, (Rolling_7_day_new_cases / Population) * 100000)) %>% 
+  mutate(Perc_change_on_rolling_7_days_actual = (Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7))/ lag(Rolling_7_day_new_cases, 7)) %>% 
+  mutate(Perc_change_on_rolling_7_days_tidy = ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous seven days', ifelse(Perc_change_on_rolling_7_days_actual )) %>% 
+  mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B'), ' compared to seven days to ', format(lag(Date,7), '%d %B'))) %>% 
+  ungroup()
+
+'0 cases in previous seven days', '100% fewer cases (zero cases in recent period)', '75-99% fewer cases', '50-74.9% fewer cases',
+
+# Three options - Cumulative rate per 100,000 population. This standardises areas to say if they all had the same number of people living in the area, how many have COVID-19. As a cumulative number, it does not really show what is happening right now, as spikes in cases (or dips in cases) can be masked over the longer term.
+
+# Number of new cases in the most recent complete seven days (excluding the very recent five days of data as incomplete) expressed as a rate per 100,000 population. Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture and areas with a lot of new infections now but does not tell us a lot about how the cases have changed over the recent past.
+
+# The third option is to view the rolling 7-day total compared to the previous period (most recent seven complete days compared to the seven days before that) as a percentage increase or decrease. Interpreting this value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than an are with one case in one week and six in the next, yet the percentage increase is impossible to show from a starting value of zero. As such, 
+
+la_perc_change <- p12_test_df_raw %>% 
+  filter(Perc_change_on_rolling_7_days_actual != Inf) %>% 
+  filter(!Type %in% c('Country', 'Region')) 
 
 rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_cases_reworked)
 
@@ -371,11 +387,12 @@ easing_timeline <- data.frame(Date_label_2 = c('23 Mar', '13 May', '01 Jun', '15
 
 wsx_summary_p1 <- p12_test_df %>% 
   filter(Date == max(Date)) %>% 
-  select(Name, Cumulative_cases, Cumulative_per_100000, Seven_day_average_new_cases, Rolling_7_day_new_cases) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000) %>% 
   rename('Total confirmed cases so far' = Cumulative_cases,
          'Total cases per 100,000 population' = Cumulative_per_100000,
          'Average number of confirmed cases tested in most recent seven days' = Seven_day_average_new_cases,
-         'Total cases confirmed in most recent seven days' = Rolling_7_day_new_cases)
+         'Total cases confirmed in most recent seven days' = Rolling_7_day_new_cases,
+         'Total cases per 100,000 population confirmed in most recent seven days' = Rolling_7_day_new_cases_per_100000)
 
 wsx_summary_p2 <- p12_test_df %>% 
   filter(Data_completeness == 'Complete') %>% 
@@ -427,12 +444,13 @@ wsx_daily_cases %>%
   filter(Date == min(Date) | Date == max(Date)) %>% 
   select(Date) %>% 
   unique() %>% 
+  add_row(Date = complete_date - 7) %>% 
   add_row(Date = complete_date) %>% 
   add_row(Date = complete_date + 1) %>% 
   mutate(Period = format(Date, '%d %B')) %>% 
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
   arrange(Date) %>% 
-  add_column(Order = c('First', 'Complete', 'First_incomplete', 'Last')) %>% 
+  add_column(Order = c('First', 'Seven_days_ago', 'Complete', 'First_incomplete', 'Last')) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/range_dates.json'))
 
@@ -530,11 +548,18 @@ utla_rate <- p12_test_df %>%
   filter(Date == max(Date)) %>%
   # filter(Date == '2020-07-12') %>% 
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority')) %>% 
-  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Colour_key) %>%
-  mutate(Cumulate_rate_rank = rank(-Cumulative_per_100000)) %>% 
-  mutate(Rate_decile_actual = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
-  mutate(Rate_decile = factor(ifelse(Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Rolling_7_day_new_cases_per_100000, Perc_change_on_rolling_7_days) %>%
+  mutate(Cumulative_rate_rank = rank(-Cumulative_per_100000)) %>% 
+  mutate(Cumulative_Rate_decile_actual = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
+  mutate(Cumulative_Rate_decile = factor(ifelse(Cumulative_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Cumulative_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Cumulative_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  mutate(Rolling_rate_rank = rank(-Rolling_7_day_new_cases_per_100000)) %>% 
+  mutate(Rolling_Rate_decile_actual = abs(ntile(Rolling_7_day_new_cases_per_100000, 10) - 11)) %>% 
+  mutate(Rolling_Rate_decile = factor(ifelse(Rolling_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Rolling_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rolling_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
   arrange(Code)
+
+summary(utla_rate$Perc_change_on_rolling_7_days)
+
+
 
 utla_rate_bins <- utla_rate %>% 
   group_by(Rate_decile) %>% 

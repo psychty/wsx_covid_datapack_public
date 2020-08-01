@@ -62,6 +62,10 @@ var complete_date = JSON.parse(request.responseText).filter(function(d) {
   return d.Order == 'Complete'
 })[0]['Date_label']
 
+var seven_days_date = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Seven_days_ago'
+})[0]['Date_label']
+
 var complete_date_actual = JSON.parse(request.responseText).filter(function(d) {
   return d.Order == 'Complete'
 })[0]['Date']
