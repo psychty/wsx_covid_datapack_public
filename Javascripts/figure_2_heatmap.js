@@ -56,7 +56,7 @@ svg_title
   .append("text")
   .attr("x", 125)
   .attr("y", 40)
-  .text(latest_date.substring(4, complete_date.length))
+  .text('so far')
   .attr("text-anchor", "start")
   .style('font-weight', 'bold')
   .style("font-size", "10px")

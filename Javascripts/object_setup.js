@@ -133,7 +133,7 @@ request.send(null);
 var ltla_rate_bins = JSON.parse(request.responseText);
 
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/utla_rate_bins.json", false);
+request.open("GET", "./Outputs/utla_cumulative_rate_bins.json", false);
 request.send(null);
 
 var utla_rate_bins = JSON.parse(request.responseText);
@@ -151,7 +151,7 @@ var width_map = document.getElementById("content_size").offsetWidth;
 
 // Add AJAX request for data
 var utla = $.ajax({
-  url:"./Outputs/utla_covid_cumulative_rate_latest.geojson",
+  url:"./Outputs/utla_covid_rate_latest.geojson",
   dataType: "json",
   success: console.log("UTLA boundary data successfully loaded."),
   error: function (xhr) {

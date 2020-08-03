@@ -17,7 +17,7 @@ function UTLA_rate_colour(d) {
 
 function style(feature) {
     return {
-        fillColor: UTLA_rate_colour(feature.properties.bins),
+        fillColor: UTLA_rate_colour(feature.properties.cumulative_bins),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -40,7 +40,7 @@ var utla_rate_boundary = L.geoJSON(utla.responseJSON,
       {style: style})
       .addTo(utla_map)
       .bindPopup(function (layer) {
-        return layer.feature.properties.Label_1});
+        return layer.feature.properties.Label_1 + '<br><br>' + layer.feature.properties.Label_2});
 
 utla_map
 .fitBounds(utla_rate_boundary.getBounds());

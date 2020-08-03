@@ -1,7 +1,7 @@
 # Public facing data pack - West Sussex and LTLAs
 library(easypackages)
 
-libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable'))
+libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis'))
 
 start <- Sys.time()
 
@@ -121,7 +121,7 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Cumulative_per_100000 = (Cumulative_cases / Population) * 100000) %>% 
   mutate(New_cases_per_100000 = (New_cases / Population) * 100000) %>% 
   mutate(new_case_key = factor(ifelse(New_cases == 0, 'No new cases', ifelse(New_cases >= 1 & New_cases <= 10, '1-10 cases', ifelse(New_cases >= 11 & New_cases <= 25, '11-25 cases', ifelse(New_cases >= 26 & New_cases <= 50, '26-50 cases', ifelse(New_cases >= 51 & New_cases <= 75, '51-75 cases', ifelse(New_cases >= 76 & New_cases <= 100, '76-100 cases', ifelse(New_cases >100, 'More than 100 cases', NA))))))), levels =  c('No new cases', '1-10 cases', '11-25 cases', '26-50 cases', '51-75 cases', '76-100 cases', 'More than 100 cases'))) %>%
-  mutate(new_case_per_100000_key = factor(ifelse(New_cases_per_100000 < 0, 'Data revised down', ifelse(New_cases_per_100000 == 0, 'No new cases', ifelse(New_cases_per_100000 < 1, 'Less than 1 case per 100,000', ifelse(New_cases_per_100000 >= 1 & New_cases_per_100000 <= 2, '1-2 new cases per 100,000', ifelse(New_cases_per_100000 <= 4, '3-4 new cases per 100,000', ifelse(New_cases_per_100000 <= 6, '5-6 new cases per 100,000', ifelse(New_cases_per_100000 <= 8, '7-8 new cases per 100,000', ifelse(New_cases_per_100000 <= 10, '9-10 new cases per 100,000', ifelse(New_cases_per_100000 > 10, 'More than 10 new cases per 100,000', NA))))))))), levels =  c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000'))) %>% 
+  mutate(new_case_per_100000_key = factor(ifelse(New_cases_per_100000 < 0, 'Data revised down', ifelse(New_cases_per_100000 == 0, 'No new cases', ifelse(New_cases_per_100000 < 1, 'Less than 1 case per 100,000', ifelse(New_cases_per_100000 >= 1 & New_cases_per_100000 <= 2, '1-2 new cases per 100,000', ifelse(New_cases_per_100000 <= 4, '3-4 new cases per 100,000', ifelse(New_cases_per_100000 <= 6, '5-6 new cases per 100,000', ifelse(New_cases_per_100000 <= 8, '7-8 new cases per 100,000', ifelse(New_cases_per_100000 <= 10, '9-10 new cases per 100,000', ifelse(New_cases_per_100000 > 10, 'More than 10 new cases per 100,000', NA))))))))), levels =  c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000'))) %>%
   mutate(Case_label = paste0('A total of ', format(New_cases, big.mark = ',', trim = TRUE), ' people who had sample specimens taken on this day (representing new cases) were confirmed to have the virus',  ifelse(Data_completeness == 'Considered incomplete', paste0('.<font color = "#bf260a"> However, these figures should be considered incomplete until at least ', format(Date + 5, '%d %B'),'.</font>'),'.'), 'The total (cumulative) number of cases reported for people with specimens taken by this date (', Period, ') was ', format(Cumulative_cases, big.mark = ',', trim = TRUE),'.')) %>% 
   mutate(Rate_label = paste0('The new cases (swabbed on this date) represent <b>',format(round(New_cases_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population</p><p>The total (cumulative) number of Covid-19 cases per 100,000 population reported to date (', Period, ') is <b>', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population.')) %>% 
   mutate(Seven_day_ave_new_label = ifelse(is.na(Seven_day_average_new_cases), paste0('It is not possible to calculate a seven day rolling average of new cases for this date (', Period, ') because one of the values in the last seven days is missing.'), ifelse(Data_completeness == 'Considered incomplete', paste0('It can take around five days for results to be fully reported and data for this date (', Period, ') should be considered incomplete.', paste0('As such, the rolling average number of new cases in the last seven days (<b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), ' cases</b>) should be treated with caution.')), paste0('The rolling average number of new cases in the last seven days is <b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), '  cases</b>.')))) %>% 
@@ -133,22 +133,27 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Fourteen_day_average_new_cases = rollapply(New_cases, 14, mean, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases_per_100000 = ifelse(is.na(Rolling_7_day_new_cases), NA, (Rolling_7_day_new_cases / Population) * 100000)) %>% 
-  mutate(Perc_change_on_rolling_7_days_actual = (Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7))/ lag(Rolling_7_day_new_cases, 7)) %>% 
-  mutate(Perc_change_on_rolling_7_days_tidy = ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous seven days', ifelse(Perc_change_on_rolling_7_days_actual )) %>% 
-  mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B'), ' compared to seven days to ', format(lag(Date,7), '%d %B'))) %>% 
+  mutate(Perc_change_on_rolling_7_days_actual = round((Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7))/ lag(Rolling_7_day_new_cases, 7), 1)) %>% 
+  # mutate(Perc_change_on_rolling_7_days_tidy = ifelse(Rolling_7_day_new_cases == 0 & lag(Rolling_7_day_new_cases, 7) == 0, 'No change (zero cases)') ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous seven days', ifelse(Perc_change_on_rolling_7_days_actual == -1, '100% fewer cases (now zero cases in recent period)', ifelse(Perc_change_on_rolling_7_days_actual <= -.75, '75% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.25, '25% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'No change', ifelse(Perc_change_on_rolling_7_days_actual > 0 & Perc_change_on_rolling_7_days_actual <= .25, '1-25% more cases', ifelse(Perc_change_on_rolling_7_days_actual <= .5, 'Up to 50% more cases', ifelse(Perc_change_on_rolling_7_days_actual <= ))))))) )) %>% 
+  mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B')),
+         Rolling_compare_period = paste0('seven days to ', format(Date, '%d %B')), ' compared to seven days to ', format(lag(Date,7), '%d %B')) %>% 
   ungroup()
 
-'0 cases in previous seven days', '100% fewer cases (zero cases in recent period)', '75-99% fewer cases', '50-74.9% fewer cases',
+#c('0 cases in previous seven days', '100% fewer cases (zero cases in recent period)', '75% fewer cases', '50% fewer cases', '25% fewer cases', 'No change', '25% more cases', '50% more cases', '100% more (double the cases from the previous week)', '200% more (triple the cases from the previous week)', '300% more (4x the cases from the previous week)', 'at least 5x the number of cases from the week before')
+
+viridis(11)
 
 # Three options - Cumulative rate per 100,000 population. This standardises areas to say if they all had the same number of people living in the area, how many have COVID-19. As a cumulative number, it does not really show what is happening right now, as spikes in cases (or dips in cases) can be masked over the longer term.
 
 # Number of new cases in the most recent complete seven days (excluding the very recent five days of data as incomplete) expressed as a rate per 100,000 population. Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture and areas with a lot of new infections now but does not tell us a lot about how the cases have changed over the recent past.
 
-# The third option is to view the rolling 7-day total compared to the previous period (most recent seven complete days compared to the seven days before that) as a percentage increase or decrease. Interpreting this value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than an are with one case in one week and six in the next, yet the percentage increase is impossible to show from a starting value of zero. As such, 
+# The third option is to view the rolling 7-day total compared to the previous period (most recent seven complete days compared to the seven days before that) as a percentage increase or decrease. Interpreting this value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than having one case in one week and six in the next, yet the percentage increase is impossible to show from a starting value of zero. Equally, no change can mean two weeks of no new cases, or one case each week or 10. 
 
-la_perc_change <- p12_test_df_raw %>% 
-  filter(Perc_change_on_rolling_7_days_actual != Inf) %>% 
-  filter(!Type %in% c('Country', 'Region')) 
+# It is important to consider each of these measures together; what are the cases now, what were the cases last week, how many cases so far.
+
+# la_perc_change <- p12_test_df_raw %>% 
+#   filter(Perc_change_on_rolling_7_days_actual != Inf) %>% 
+#   filter(!Type %in% c('Country', 'Region')) 
 
 rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_cases_reworked)
 
@@ -543,61 +548,96 @@ dev.off()
 
 # Cumulative rate map utla ####
 
-utla_rate <- p12_test_df %>% 
+utla_rate_1 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>%
   # filter(Date == '2020-07-12') %>% 
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority')) %>% 
-  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Rolling_7_day_new_cases_per_100000, Perc_change_on_rolling_7_days) %>%
+  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000) %>%
   mutate(Cumulative_rate_rank = rank(-Cumulative_per_100000)) %>% 
   mutate(Cumulative_Rate_decile_actual = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
-  mutate(Cumulative_Rate_decile = factor(ifelse(Cumulative_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Cumulative_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Cumulative_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  mutate(Cumulative_Rate_decile = factor(ifelse(Cumulative_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Cumulative_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Cumulative_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) 
+
+utla_rate_2 <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == complete_date) %>%
+  filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority')) %>% 
+  select(Code, Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period) %>%
   mutate(Rolling_rate_rank = rank(-Rolling_7_day_new_cases_per_100000)) %>% 
   mutate(Rolling_Rate_decile_actual = abs(ntile(Rolling_7_day_new_cases_per_100000, 10) - 11)) %>% 
   mutate(Rolling_Rate_decile = factor(ifelse(Rolling_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Rolling_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rolling_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
   arrange(Code)
 
-summary(utla_rate$Perc_change_on_rolling_7_days)
+utla_rate <- utla_rate_1 %>% 
+  left_join(utla_rate_2, by = c('Code', 'Name'))
 
+rm(utla_rate_1, utla_rate_2)
 
-
-utla_rate_bins <- utla_rate %>% 
-  group_by(Rate_decile) %>% 
-  summarise(bins = paste0(Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-', format(round(max(Cumulative_per_100000)),big.mark = ','), ')')) %>% 
+utla_cumulative_rate_bins <- utla_rate %>% 
+  group_by(Cumulative_Rate_decile) %>% 
+  summarise(cumulative_bins = paste0(Cumulative_Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-', format(round(max(Cumulative_per_100000)),big.mark = ','), ')')) %>% 
   unique() %>% 
   ungroup() %>% 
-  mutate(bins = factor(bins, levels = bins))
+  mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
+
+utla_rolling_rate_bins <- utla_rate %>% 
+  group_by(Rolling_Rate_decile) %>% 
+  summarise(rolling_bins = paste0(Rolling_Rate_decile, ' (', format(round(min(Rolling_7_day_new_cases_per_100000),1), big.mark = ','), '-', format(round(max(Rolling_7_day_new_cases_per_100000)),big.mark = ','), ')')) %>% 
+  unique() %>% 
+  ungroup() %>% 
+  mutate(rolling_bins = factor(rolling_bins, levels = rolling_bins))
 
 utla_rate <- utla_rate %>% 
-  left_join(utla_rate_bins, by = 'Rate_decile')
+  left_join(utla_cumulative_rate_bins, by = 'Cumulative_Rate_decile') %>% 
+  left_join(utla_rolling_rate_bins, by = 'Rolling_Rate_decile')
 
-summary_table_rate <- p12_test_df %>% 
+summary_table_rate_1 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>% 
   select(Name, Cumulative_cases, Cumulative_per_100000) %>% 
   filter(Name %in% c('South East region', 'England')) %>% 
-  mutate(Cumulate_rate_rank = '-',
-         Rate_decile = '-')
+  mutate(Cumulative_rate_rank = '-',
+         Cumulative_Rate_decile = '-')
+
+summary_table_rate_2 <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == complete_date) %>% 
+  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period) %>% 
+  filter(Name %in% c('South East region', 'England')) %>% 
+  mutate(Rolling_rate_rank = '-',
+         Rolling_Rate_decile = '-')
+
+summary_table_rate <- summary_table_rate_1 %>% 
+  left_join(summary_table_rate_2, by = 'Name')
 
 utla_rate_wsx <- utla_rate %>% 
-  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulate_rate_rank, Rate_decile) %>% 
-  mutate(Cumulate_rate_rank = ordinal(Cumulate_rate_rank)) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulative_rate_rank, Cumulative_Rate_decile, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_rate_rank, Rolling_Rate_decile, Rolling_period) %>% 
+  mutate(Cumulative_rate_rank = ordinal(Cumulative_rate_rank)) %>% 
+  mutate(Rolling_rate_rank = ordinal(Rolling_rate_rank)) %>% 
   filter(Name == 'West Sussex') %>% 
   bind_rows(summary_table_rate) %>% 
   mutate(Cumulative_cases = format(Cumulative_cases, big.mark = ',', trim = TRUE),
-         Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
-  rename(Cases = Cumulative_cases,
-        `Rate per 100,000 residents` =  Cumulative_per_100000,
-        `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000
-` = Cumulate_rate_rank,
-        `Decile of rate per 100,000` =  Rate_decile)
+         Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE),
+         Rolling_7_day_new_cases = format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE),
+         Rolling_7_day_new_cases_per_100000 = format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
+  rename(`Cumulative cases` = Cumulative_cases,
+        `Cumulative rate per 100,000 residents` =  Cumulative_per_100000,
+        `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000` = Cumulative_rate_rank,
+        `Decile of cumulative rate per 100,000` =  Cumulative_Rate_decile,
+        `Rolling 7-day new cases` = Rolling_7_day_new_cases,
+        `Rolling 7-day case rate per 100,000` = Rolling_7_day_new_cases_per_100000,
+        `Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000` = Rolling_rate_rank,
+        `Decile of rolling rate per 100,000` =  Rolling_Rate_decile)
 
 utla_rate_wsx %>% 
   write.csv(., paste0(output_directory_x, '/utla_rate_wsx.csv'), row.names = FALSE)
 
 bord_style <- fp_border(color = "black", style = "solid", width = .5)
 
-ft_utla_rate_wsx <- flextable(utla_rate_wsx) %>% 
+cum_utla_rate_wsx <- utla_rate_wsx %>% 
+  select(Name, `Cumulative cases`, `Cumulative rate per 100,000 residents`, `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000`, `Decile of cumulative rate per 100,000`)
+
+ft_utla_rate_wsx <- flextable(cum_utla_rate_wsx) %>% 
   width(width = .9) %>%
   align(j = 1, align = 'left') %>% 
   width(j = 1, width = 1.3) %>%
@@ -665,7 +705,7 @@ map_1 <- ggplot() +
                aes(x=long,
                    y=lat,
                    group = group,
-                   fill = bins),
+                   fill = cumulative_bins),
                color="#ffffff",
                size = .1,
                alpha = 1,
@@ -683,7 +723,7 @@ coord_fixed(1.5) +
                             aes(x=long,
                                 y=lat,
                                 group = group,
-                                fill = bins),
+                                fill = cumulative_bins),
                             color="#ffffff",
                             size = .1,
                             alpha = 1,
@@ -702,22 +742,28 @@ print(map_1)
 print(inset_1, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
 
-geo_rate_utla_bins <- utla_rate_bins %>% 
-  mutate(bins = gsub('\n',' ', bins)) %>% 
-  mutate(bins = factor(bins, levels = bins))
+utla_cumulative_rate_bins <- utla_cumulative_rate_bins %>% 
+  mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
+  mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
 
 utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
-  mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
-  select(Name, Label_1, bins, Colour_key) %>% 
-  mutate(bins = gsub('\n',' ', bins)) %>% 
-  mutate(bins = factor(bins, levels = levels(geo_rate_utla_bins$bins)))
+  mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  mutate(Label_2 = paste0('<b>', Name, '</b><br>', 'Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  select(Name, Label_1, Label_2, cumulative_bins, rolling_bins) %>% 
+  mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
+  mutate(cumulative_bins = factor(cumulative_bins, levels = levels(utla_cumulative_rate_bins$cumulative_bins))) %>% 
+  mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
+  mutate(rolling_bins = factor(rolling_bins, levels = levels(utla_rolling_rate_bins$rolling_bins)))
 
-geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_cumulative_rate_latest.geojson'))
+geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
 
-levels(geo_rate_utla_bins$bins) %>% 
+levels(utla_cumulative_rate_bins$cumulative_bins) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/utla_rate_bins.json'))
+  write_lines(paste0(output_directory_x, '/utla_cumulative_rate_bins.json'))
 
+levels(utla_rolling_rate_bins$rolling_bins) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/utla_rolling_rate_bins.json'))
 
 # LTLA rate ####
 
@@ -1535,7 +1581,7 @@ wkly_template <- wkly_template %>%
           location = ph_location_label(ph_label = 'Text Placeholder 12')) %>%
   ph_with(value = paste0('Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.'), 
           location = ph_location_label(ph_label = 'Text Placeholder 14')) %>% 
-  ph_with(value = paste0('West Sussex is in the ', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Rate_decile_actual'))) == '1st', 'highest 10% of local authorities.', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Rate_decile_actual')))== '10th', 'lowest 10% of local authorities.', paste0(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Rate_decile_actual'))), ' decile.')))), 
+  ph_with(value = paste0('West Sussex is in the ', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual'))) == '1st', 'highest 10% of local authorities.', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual')))== '10th', 'lowest 10% of local authorities.', paste0(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual'))), ' decile.')))), 
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>% 
   ph_with(value = ft_utla_rate_wsx, 
           location = ph_location_label(ph_label = 'Table Placeholder 7')) %>% 
