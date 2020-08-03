@@ -1,5 +1,58 @@
 
-// testing policy timelines
+// Maps
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/ltla_rate_bins.json", false);
+request.send(null);
+
+var ltla_rate_bins = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/utla_cumulative_rate_bins.json", false);
+request.send(null);
+
+var utla_cumulative_rate_bins = JSON.parse(request.responseText);
+var decile_colours = ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']
+
+var utla_decile_cumulative_colour_func = d3.scaleOrdinal()
+  .domain(utla_cumulative_rate_bins)
+  .range(decile_colours)
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/utla_rolling_rate_bins.json", false);
+request.send(null);
+
+var utla_rolling_rate_bins = JSON.parse(request.responseText);
+
+var utla_decile_rolling_colour_func = d3.scaleOrdinal()
+  .domain(utla_rolling_rate_bins)
+  .range(decile_colours)
+
+var ltla_decile_colour_func = d3.scaleOrdinal()
+  .domain(ltla_rate_bins)
+  .range(decile_colours)
+
+var width_map = document.getElementById("content_size").offsetWidth;
+
+// Add AJAX request for data
+var utla = $.ajax({
+  url:"./Outputs/utla_covid_rate_latest.geojson",
+  dataType: "json",
+  success: console.log("UTLA boundary data successfully loaded."),
+  error: function (xhr) {
+    alert(xhr.statusText)
+  }
+})
+
+// Add AJAX request for data
+var ltla = $.ajax({
+  url:"./Outputs/ltla_covid_cumulative_rate_latest.geojson",
+  dataType: "json",
+  success: console.log("LTLA boundary data successfully loaded."),
+  error: function (xhr) {
+    alert(xhr.statusText)
+  }
+})
+
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/england_cumulative.json", false);
 request.send(null);

@@ -1,4 +1,24 @@
 
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/daily_cases_bands.json", false);
+request.send(null);
+var new_cases_bands = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var new_cases_colours = ['#ffffb2','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026']
+var color_new_cases = d3.scaleOrdinal()
+  .domain(new_cases_bands)
+  .range(new_cases_colours)
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/daily_cases_per_100000_bands.json", false);
+request.send(null);
+var new_cases_per_100000_bands = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var new_case_rate_colours = ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026']
+var color_new_per_100000_cases = d3.scaleOrdinal()
+  .domain(new_cases_per_100000_bands)
+  .range(new_case_rate_colours)
+
 
 d3.select("#summary_cases_title")
   .html(function(d) {

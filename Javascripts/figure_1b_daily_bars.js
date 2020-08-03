@@ -1,4 +1,14 @@
 
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/first_incomplete_daily_case.json", false);
+request.send(null);
+var incomplete_sm_date = JSON.parse(request.responseText)[0]
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/latest_daily_case.json", false);
+request.send(null);
+var latest_sm_date = JSON.parse(request.responseText)[0]
+
 d3.select("#data_recency")
   .html(function(d) {
     return 'The latest available data in this analysis are for <b>' + latest_date + '</b>. However, whilst the capacity for testing and returning results has increased with new results reported in as soon as 24 hours, there can be some delay and as such data for very recent days are likely to change, and so <b>only data up to ' + complete_date + ' should be treated as complete.</b> In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days.' });

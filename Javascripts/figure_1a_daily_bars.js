@@ -1,3 +1,97 @@
+var width_hm = document.getElementById("content_size").offsetWidth,
+    height_hm = 25,
+    height_hm_title = 45,
+    height_hm_explainer = 15,
+    height_sm = 210,
+    incomplete_colour = '#999999',
+    height_line = 400;
+
+var width_sm = (width_hm / 3) - 10
+
+// We dont want the small plots to be less than 325 pixels wide so this says if the
+if (width_sm < 300){
+ width_sm = 300
+}
+
+var areas = ['West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing']
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_case_summary.json", false);
+request.send(null);
+var case_summary = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_daily_cases.json", false);
+request.send(null);
+var daily_cases = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+
+var dates = d3.map(daily_cases, function(d) {
+    return (d.Date_label)
+  })
+  .keys()
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/range_dates.json", false);
+request.send(null);
+
+var first_date = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'First'
+})[0]['Date_label']
+
+var complete_date = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Complete'
+})[0]['Date_label']
+
+var seven_days_date = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Seven_days_ago'
+})[0]['Date_label']
+
+var complete_date_actual = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Complete'
+})[0]['Date']
+
+var first_incomplete_date = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'First_incomplete'
+})[0]['Date_label']
+
+var first_incomplete_period = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'First_incomplete'
+})[0]['Period']
+
+var first_incomplete_date_actual = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'First_incomplete'
+})[0]['Date']
+
+var latest_date = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Last'
+})[0]['Date_label']
+
+var most_recent = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Last'
+})[0]['Date']
+
+var most_recent_period = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Last'
+})[0]['Period']
+
+
+// testing policy timelines
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/uk_testing_key_dates.json", false);
+request.send(null);
+var uk_testing_key_dates = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/uk_restrictions_key_dates.json", false);
+request.send(null);
+var uk_restrictions_key_dates = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_daily_case_limits.json", false);
+request.send(null);
+var daily_case_limits = JSON.parse(request.responseText);
+
 
 // Daily cases bar chart
 var svg_daily_new_case_bars = d3.select("#daily_new_case_bars")

@@ -196,6 +196,7 @@ svg_fg_mortality_1
     }})
   .attr("y", 70)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('deaths attributed to Covid-19')
 
 svg_fg_mortality_1
@@ -213,6 +214,7 @@ svg_fg_mortality_1
     }})
   .attr("y", 80)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('so far in 2020 up to ' + ons_mortality_figures_dates[0].Occurring_week_ending)
 
 svg_fg_mortality_1
@@ -221,6 +223,7 @@ svg_fg_mortality_1
   .attr("x", width_hm_mort * .65)
   .attr("y", 112)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('out of ')
 
 svg_fg_mortality_1
@@ -250,6 +253,7 @@ svg_fg_mortality_1
   .attr("y", 110)
   .attr('id', 'm1_selected_cumulative_all_text_1')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('total deaths registered up')
 
 svg_fg_mortality_1
@@ -269,6 +273,7 @@ svg_fg_mortality_1
   .attr("y", 122)
   .attr('id', 'm1_selected_cumulative_all_text_2')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('to ' + ons_mortality_figures_dates[0].Reported_week_ending)
 
 svg_fg_mortality_1
@@ -277,6 +282,7 @@ svg_fg_mortality_1
   .attr("y", 145)
   .attr('id', 'm1_selected_cumulative_all_text_3')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('The total deaths attributed to Covid-19')
 
 svg_fg_mortality_1
@@ -285,6 +291,7 @@ svg_fg_mortality_1
   .attr("y", 157)
   .attr('id', 'm1_selected_cumulative_all_text_4')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('represent ' + d3.format('0.1%')(chosen_latest[0]['Cumulative_covid_deaths']/ chosen_latest[0]['Cumulative_deaths_all_cause']) + ' of all deaths.')
 
 ///// Figure 2
@@ -425,6 +432,7 @@ svg_fg_mortality_2
     }})
   .attr("y", 70)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('care home deaths attributed to Covid-19')
 
 svg_fg_mortality_2
@@ -442,6 +450,7 @@ svg_fg_mortality_2
     }})
   .attr("y", 80)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('so far in 2020 up to ' + ons_mortality_figures_dates[0].Occurring_week_ending)
 
 svg_fg_mortality_2
@@ -450,6 +459,7 @@ svg_fg_mortality_2
   .attr("x", width_hm_mort * .65)
   .attr("y", 112)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('out of ')
 
 svg_fg_mortality_2
@@ -479,6 +489,7 @@ svg_fg_mortality_2
   .attr("y", 110)
   .attr('id', 'm2_selected_cumulative_all_text_1')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('total deaths registered up')
 
 svg_fg_mortality_2
@@ -498,6 +509,7 @@ svg_fg_mortality_2
   .attr("y", 122)
   .attr('id', 'm2_selected_cumulative_all_text_2')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('to ' + ons_mortality_figures_dates[0].Reported_week_ending)
 
 svg_fg_mortality_2
@@ -506,6 +518,7 @@ svg_fg_mortality_2
   .attr("y", 145)
   .attr('id', 'm2_selected_cumulative_all_text_3')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('The total deaths attributed to Covid-19')
 
 svg_fg_mortality_2
@@ -514,6 +527,7 @@ svg_fg_mortality_2
   .attr("y", 157)
   .attr('id', 'm2_selected_cumulative_all_text_4')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('represent ' + d3.format('0.1%')(chosen_latest_ch[0]['Cumulative_covid_deaths']/ chosen_latest_ch[0]['Cumulative_deaths_all_cause']) + ' of all deaths.')
 
 function update_m12(){
@@ -685,6 +699,7 @@ svg_fg_mortality_1
     }})
   .attr("y", 70)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('deaths attributed to Covid-19')
 
 svg_fg_mortality_1
@@ -702,6 +717,7 @@ svg_fg_mortality_1
     }})
   .attr("y", 80)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('so far in 2020 up to ' + ons_mortality_figures_dates[0].Occurring_week_ending)
 
 svg_fg_mortality_1
@@ -710,6 +726,7 @@ svg_fg_mortality_1
   .attr("x", width_hm_mort * .65)
   .attr("y", 112)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('out of ')
 
 svg_fg_mortality_1
@@ -739,6 +756,7 @@ svg_fg_mortality_1
   .attr("y", 110)
   .attr('id', 'm1_selected_cumulative_all_text_1')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('total deaths registered up')
 
 svg_fg_mortality_1
@@ -758,6 +776,7 @@ svg_fg_mortality_1
   .attr("y", 122)
   .attr('id', 'm1_selected_cumulative_all_text_2')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('to ' + ons_mortality_figures_dates[0].Reported_week_ending)
 
 svg_fg_mortality_1
@@ -766,6 +785,7 @@ svg_fg_mortality_1
   .attr("y", 145)
   .attr('id', 'm1_selected_cumulative_all_text_3')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('The total deaths attributed to Covid-19')
 
 svg_fg_mortality_1
@@ -774,6 +794,7 @@ svg_fg_mortality_1
   .attr("y", 157)
   .attr('id', 'm1_selected_cumulative_all_text_4')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('represent ' + d3.format('0.1%')(chosen_latest[0]['Cumulative_covid_deaths']/ chosen_latest[0]['Cumulative_deaths_all_cause']) + ' of all deaths.')
 
 d3.select("#selected_m2_title")
@@ -914,6 +935,7 @@ svg_fg_mortality_2
     }})
   .attr("y", 70)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('care home deaths attributed to Covid-19')
 
 svg_fg_mortality_2
@@ -931,6 +953,7 @@ svg_fg_mortality_2
     }})
   .attr("y", 80)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('so far in 2020 up to ' + ons_mortality_figures_dates[0].Occurring_week_ending)
 
 svg_fg_mortality_2
@@ -939,6 +962,7 @@ svg_fg_mortality_2
   .attr("x", width_hm_mort * .65)
   .attr("y", 112)
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('out of ')
 
 svg_fg_mortality_2
@@ -968,6 +992,7 @@ svg_fg_mortality_2
   .attr("y", 110)
   .attr('id', 'm2_selected_cumulative_all_text_1')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('total deaths registered up')
 
 svg_fg_mortality_2
@@ -987,6 +1012,7 @@ svg_fg_mortality_2
   .attr("y", 122)
   .attr('id', 'm2_selected_cumulative_all_text_2')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('to ' + ons_mortality_figures_dates[0].Reported_week_ending)
 
 svg_fg_mortality_2
@@ -995,6 +1021,7 @@ svg_fg_mortality_2
   .attr("y", 145)
   .attr('id', 'm2_selected_cumulative_all_text_3')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('The total deaths attributed to Covid-19')
 
 svg_fg_mortality_2
@@ -1003,6 +1030,7 @@ svg_fg_mortality_2
   .attr("y", 157)
   .attr('id', 'm2_selected_cumulative_all_text_4')
   .attr("text-anchor", "start")
+  .style('font-size', '10px')
   .text('represent ' + d3.format('0.1%')(chosen_latest_ch[0]['Cumulative_covid_deaths']/ chosen_latest_ch[0]['Cumulative_deaths_all_cause']) + ' of all deaths.')
 
 }

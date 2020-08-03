@@ -1,4 +1,21 @@
-latest_triage_date = '27 July'
+
+// Pathways
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/NHS_pathways_df.json", false);
+request.send(null);
+var pathways_df = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/NHS_pathways_dates.json", false);
+request.send(null);
+var pathway_dates = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/pathways_changes.json", false);
+request.send(null);
+var pathway_changes = JSON.parse(request.responseText);
+
+latest_triage_date = pathway_dates[pathway_dates.length -1]
 
 d3.select("#pathways_title")
   .html(function(d) {
@@ -9,7 +26,7 @@ var svg_pathways_fig = d3.select("#pathways_fig")
 .attr("width", width_hm)
 .attr("height", height_line)
 .append("g")
-.attr("transform", "translate(" + 60 + "," + 20 + ")");
+.attr("transform", "translate(" + 50 + "," + 20 + ")");
 
 var x_pathways = d3.scaleBand()
     .domain(pathways_df.map(function(d) { return d.Date}))
@@ -21,12 +38,13 @@ return d.Date === pathway_dates[pathway_dates.length-1]})[0];
 var xAxis_pathways = svg_pathways_fig
   .append("g")
   .attr("transform", 'translate(0,' + (height_line - 80 ) + ")")
-   .call(d3.axisBottom(x_pathways).tickValues(pathway_dates));
+  .call(d3.axisBottom(x_pathways).tickValues(pathway_dates))
 
 xAxis_pathways
   .selectAll("text")
   .attr("transform", 'translate(-' + (x_pathways.bandwidth() + 5) + ',10)rotate(-90)')
   .style("text-anchor", "end")
+.style("font-size", "10px")
 
 //Add Y axis
 var y_pathways = d3.scaleLinear()
@@ -103,6 +121,7 @@ svg_pathways_fig
   .attr("y", function(d) { return y_pathways(+565) + 5})
   .text('9th April')
   .style('font-weight', 'bold')
+  .style('font-size', '10px')
   .attr("text-anchor", "end")
 
 svg_pathways_fig
@@ -111,6 +130,7 @@ svg_pathways_fig
   .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
   .attr("y", function(d) { return y_pathways(+565) + 15})
   .text('111 online removed')
+.style('font-size', '10px')
   .attr("text-anchor", "end")
 
 svg_pathways_fig
@@ -119,6 +139,7 @@ svg_pathways_fig
   .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
   .attr("y", function(d) { return y_pathways(+565) + 25})
   .text('for 0-18 year olds')
+.style('font-size', '10px')
   .attr("text-anchor", "end")
 
 svg_pathways_fig
@@ -128,6 +149,7 @@ svg_pathways_fig
   .attr("y", function(d) { return y_pathways(+292) - 45})
   .text('23rd April')
   .style('font-weight', 'bold')
+.style('font-size', '10px')
   .attr("text-anchor", "start")
 
 svg_pathways_fig
@@ -136,6 +158,7 @@ svg_pathways_fig
   .attr("x", function(d) { return x_pathways('23 Apr') + (x_pathways.bandwidth()/2)})
   .attr("y", function(d) { return y_pathways(+292) - 35})
   .text('111 online reinstated')
+.style('font-size', '10px')
   .attr("text-anchor", "start")
 
 svg_pathways_fig
@@ -144,6 +167,7 @@ svg_pathways_fig
   .attr("x", function(d) { return x_pathways('23 Apr') + (x_pathways.bandwidth()/2)})
   .attr("y", function(d) { return y_pathways(+292) - 25})
   .text('for 5-18 year olds')
+.style('font-size', '10px')
   .attr("text-anchor", "start")
 
 svg_pathways_fig
@@ -153,6 +177,7 @@ svg_pathways_fig
   .attr("y", function(d) { return y_pathways(+334) - 35})
   .text('18 May')
   .style('font-weight', 'bold')
+.style('font-size', '10px')
   .attr("text-anchor", "start")
 
 svg_pathways_fig
@@ -161,6 +186,7 @@ svg_pathways_fig
   .attr("x", function(d) { return x_pathways('18 May') + (x_pathways.bandwidth()/2)})
   .attr("y", function(d) { return y_pathways(+334) - 25})
   .text('Pathway case')
+.style('font-size', '10px')
   .attr("text-anchor", "start")
 
 svg_pathways_fig
@@ -169,6 +195,7 @@ svg_pathways_fig
   .attr("x", function(d) { return x_pathways('18 May') + (x_pathways.bandwidth()/2)})
   .attr("y", function(d) { return y_pathways(+334) - 15})
   .text('definition change')
+.style('font-size', '10px')
   .attr("text-anchor", "start")
 
 svg_pathways_fig

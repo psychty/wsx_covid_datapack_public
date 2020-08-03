@@ -427,6 +427,7 @@ wsx_daily_cases %>%
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
   mutate(Date_label_2 = format(Date, '%d %b')) %>% 
   mutate(Colour_key = gsub('\n',' ', Colour_key)) %>% 
+  select(Name, Date, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/wsx_daily_cases.json'))
 
