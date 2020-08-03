@@ -5,7 +5,7 @@ d3.select("#data_recency")
 
 d3.select("#case_recency_text")
   .html(function(d) {
-    return 'As noted above, the most recent five days are to be considered incomplete and may underestimate the true number of new cases. As such, the total number of confirmed COVID-19 cases in the most recent complete seven day period (seven days leading to ' + complete_date + ') as well as the number of cases in the seven days before that (up to ' + seven_days_date + ') are given on the figure to show changes over time.' });
+    return 'As noted above, the most recent four days are to be considered incomplete and may underestimate the true number of new cases. As such, the total number of confirmed COVID-19 cases in the most recent complete seven day period (seven days leading to ' + complete_date + ') as well as the number of cases in the seven days before that (up to ' + seven_days_date + ') are given on the figure to show changes over time.' });
 
 var tooltip_area_sm = d3.select("#my_sm_dataviz")
   .append("div")

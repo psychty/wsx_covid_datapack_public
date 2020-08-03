@@ -100,14 +100,14 @@ daily_cases_reworked <- data.frame(Name = rep(Areas$Name, length(Dates)), Code =
   filter(!is.na(Cumulative_cases)) %>% 
   mutate(Calculated_same_as_original = ifelse(Cumulative_cases == New_cumulative, 'Yaas', 'Negative'))
 
-# PHE say the last five data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
-complete_date <- max(daily_cases_reworked$Date) - 5
+# PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
+complete_date <- max(daily_cases_reworked$Date) - 4
 
 p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(Areas$Code, length(Dates)), Type = rep(Areas$Type, length(Dates)), check.names = FALSE) %>% 
   arrange(Name) %>% 
   group_by(Name) %>% 
   mutate(Date = seq.Date(first_date, last_date, by = '1 day')) %>% 
-  mutate(Data_completeness = ifelse(Date >= max(Date) - 4, 'Considered incomplete', 'Complete')) %>% 
+  mutate(Data_completeness = ifelse(Date >= max(Date) - 3, 'Considered incomplete', 'Complete')) %>% 
   left_join(daily_cases, by = c('Name', 'Code', 'Type', 'Date')) %>% 
   mutate(New_cases = ifelse(is.na(New_cases), 0, New_cases)) %>% 
   rename(Original_cumulative = Cumulative_cases) %>% # We should keep the original cumulative cases for reference
@@ -122,7 +122,7 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(New_cases_per_100000 = (New_cases / Population) * 100000) %>% 
   mutate(new_case_key = factor(ifelse(New_cases == 0, 'No new cases', ifelse(New_cases >= 1 & New_cases <= 10, '1-10 cases', ifelse(New_cases >= 11 & New_cases <= 25, '11-25 cases', ifelse(New_cases >= 26 & New_cases <= 50, '26-50 cases', ifelse(New_cases >= 51 & New_cases <= 75, '51-75 cases', ifelse(New_cases >= 76 & New_cases <= 100, '76-100 cases', ifelse(New_cases >100, 'More than 100 cases', NA))))))), levels =  c('No new cases', '1-10 cases', '11-25 cases', '26-50 cases', '51-75 cases', '76-100 cases', 'More than 100 cases'))) %>%
   mutate(new_case_per_100000_key = factor(ifelse(New_cases_per_100000 < 0, 'Data revised down', ifelse(New_cases_per_100000 == 0, 'No new cases', ifelse(New_cases_per_100000 < 1, 'Less than 1 case per 100,000', ifelse(New_cases_per_100000 >= 1 & New_cases_per_100000 <= 2, '1-2 new cases per 100,000', ifelse(New_cases_per_100000 <= 4, '3-4 new cases per 100,000', ifelse(New_cases_per_100000 <= 6, '5-6 new cases per 100,000', ifelse(New_cases_per_100000 <= 8, '7-8 new cases per 100,000', ifelse(New_cases_per_100000 <= 10, '9-10 new cases per 100,000', ifelse(New_cases_per_100000 > 10, 'More than 10 new cases per 100,000', NA))))))))), levels =  c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000'))) %>%
-  mutate(Case_label = paste0('A total of ', format(New_cases, big.mark = ',', trim = TRUE), ' people who had sample specimens taken on this day (representing new cases) were confirmed to have the virus',  ifelse(Data_completeness == 'Considered incomplete', paste0('.<font color = "#bf260a"> However, these figures should be considered incomplete until at least ', format(Date + 5, '%d %B'),'.</font>'),'.'), 'The total (cumulative) number of cases reported for people with specimens taken by this date (', Period, ') was ', format(Cumulative_cases, big.mark = ',', trim = TRUE),'.')) %>% 
+  mutate(Case_label = paste0('A total of ', format(New_cases, big.mark = ',', trim = TRUE), ' people who had sample specimens taken on this day (representing new cases) were confirmed to have the virus',  ifelse(Data_completeness == 'Considered incomplete', paste0('.<font color = "#bf260a"> However, these figures should be considered incomplete until at least ', format(Date + 4, '%d %B'),'.</font>'),'.'), 'The total (cumulative) number of cases reported for people with specimens taken by this date (', Period, ') was ', format(Cumulative_cases, big.mark = ',', trim = TRUE),'.')) %>% 
   mutate(Rate_label = paste0('The new cases (swabbed on this date) represent <b>',format(round(New_cases_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population</p><p>The total (cumulative) number of Covid-19 cases per 100,000 population reported to date (', Period, ') is <b>', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population.')) %>% 
   mutate(Seven_day_ave_new_label = ifelse(is.na(Seven_day_average_new_cases), paste0('It is not possible to calculate a seven day rolling average of new cases for this date (', Period, ') because one of the values in the last seven days is missing.'), ifelse(Data_completeness == 'Considered incomplete', paste0('It can take around five days for results to be fully reported and data for this date (', Period, ') should be considered incomplete.', paste0('As such, the rolling average number of new cases in the last seven days (<b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), ' cases</b>) should be treated with caution.')), paste0('The rolling average number of new cases in the last seven days is <b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), '  cases</b>.')))) %>% 
   ungroup() %>% 
@@ -134,14 +134,17 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases_per_100000 = ifelse(is.na(Rolling_7_day_new_cases), NA, (Rolling_7_day_new_cases / Population) * 100000)) %>% 
   mutate(Perc_change_on_rolling_7_days_actual = round((Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7))/ lag(Rolling_7_day_new_cases, 7), 1)) %>% 
-  # mutate(Perc_change_on_rolling_7_days_tidy = ifelse(Rolling_7_day_new_cases == 0 & lag(Rolling_7_day_new_cases, 7) == 0, 'No change (zero cases)') ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous seven days', ifelse(Perc_change_on_rolling_7_days_actual == -1, '100% fewer cases (now zero cases in recent period)', ifelse(Perc_change_on_rolling_7_days_actual <= -.75, '75% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.25, '25% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'No change', ifelse(Perc_change_on_rolling_7_days_actual > 0 & Perc_change_on_rolling_7_days_actual <= .25, '1-25% more cases', ifelse(Perc_change_on_rolling_7_days_actual <= .5, 'Up to 50% more cases', ifelse(Perc_change_on_rolling_7_days_actual <= ))))))) )) %>% 
+  mutate(Perc_change_on_rolling_7_days_tidy = factor(ifelse(Rolling_7_day_new_cases == 0 & lag(Rolling_7_day_new_cases, 7) == 0, 'No change (zero cases)', ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous 7 days', ifelse(Perc_change_on_rolling_7_days_actual == -1, '100% fewer cases (now zero cases in recent period)', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50%+ fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual < 0, 'Up to 50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'No change', ifelse(Perc_change_on_rolling_7_days_actual > 0  & Perc_change_on_rolling_7_days_actual <= .5, 'Up to 50% more cases', ifelse(Perc_change_on_rolling_7_days_actual > .5 & Perc_change_on_rolling_7_days_actual <= 1, 'Up to 100% more cases (double the cases from the previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 1 & Perc_change_on_rolling_7_days_actual <= 2, 'Up to 200% more cases (3x the cases in previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 2 & Perc_change_on_rolling_7_days_actual <= 5, 'Up to 5x the cases in previous 7 days', 'More than 5x the cases in the previous 7 days'))))))))))), levels = c("0 cases in previous 7 days","No change (zero cases)", "100% fewer cases (now zero cases in recent period)",   "50%+ fewer cases" ,  "Up to 50% fewer cases" ,  "No change" ,   "Up to 50% more cases" ,      "Up to 100% more cases (double the cases from the previous 7 days)", "Up to 200% more cases (3x the cases in previous 7 days)","Up to 5x the cases in previous 7 days", "More than 5x the cases in the previous 7 days"))) %>% 
   mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B')),
-         Rolling_compare_period = paste0('seven days to ', format(Date, '%d %B')), ' compared to seven days to ', format(lag(Date,7), '%d %B')) %>% 
+         Rolling_compare_period = paste0('seven days to ', format(Date, '%d %B'), ' compared to seven days to ', format(lag(Date,7), '%d %B'))) %>% 
   ungroup()
 
-#c('0 cases in previous seven days', '100% fewer cases (zero cases in recent period)', '75% fewer cases', '50% fewer cases', '25% fewer cases', 'No change', '25% more cases', '50% more cases', '100% more (double the cases from the previous week)', '200% more (triple the cases from the previous week)', '300% more (4x the cases from the previous week)', 'at least 5x the number of cases from the week before')
 
-viridis(11)
+# https://www.theguardian.com/world/2020/aug/01/coronavirus-near-me-are-uk-covid-19-cases-rising-in-your-local-area?utm_term=Autofeed&CMP=twt_gu&utm_medium&utm_source=Twitter#Echobox=1596276218
+
+
+
+# viridis(11)
 
 # Three options - Cumulative rate per 100,000 population. This standardises areas to say if they all had the same number of people living in the area, how many have COVID-19. As a cumulative number, it does not really show what is happening right now, as spikes in cases (or dips in cases) can be masked over the longer term.
 
@@ -227,7 +230,7 @@ total_cases_reported_plot <- ggplot(area_x_df_1,
   annotate('text',
            x = complete_date,
            y = max_daily_case_limit * .8,
-           label = 'Last 5 days\nnot considered\ncomplete:',
+           label = 'Last 4 days\nnot considered\ncomplete:',
            size = 2.5,
            hjust = 1) +
   labs(x = 'Date',
@@ -295,7 +298,7 @@ total_cases_reported_plot_2 <- ggplot(ltla_p12_test_df,
   annotate('text',
            x = complete_date,
            y = max_daily_case_limit * .8,
-           label = 'Last 5 days\nnot considered\ncomplete:',
+           label = 'Last 4 days\nnot considered\ncomplete:',
            size = 2.5,
            hjust = 1) +
   labs(x = 'Date',
@@ -359,7 +362,7 @@ total_cases_reported_plot_3 <-  ggplot(ltla_p12_test_df) +
   annotate('text',
            x = complete_date,
            y = max_daily_case_limit * .8,
-           label = 'Last 5 days\nnot considered\ncomplete:',
+           label = 'Last 4 days\nnot considered\ncomplete:',
            size = 2.25,
            hjust = 1) +
   labs(x = 'Date',
@@ -558,6 +561,22 @@ utla_rate_1 <- p12_test_df %>%
   mutate(Cumulative_Rate_decile_actual = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
   mutate(Cumulative_Rate_decile = factor(ifelse(Cumulative_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Cumulative_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Cumulative_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) 
 
+england_cumulative <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == max(Date)) %>% 
+  filter(Name == 'England') %>% 
+  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000)
+
+england_rolling <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == complete_date) %>% 
+  filter(Name == 'England') %>% 
+  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period)
+
+paste0('The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ','), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000 population</b>). In the last ', england_rolling$Rolling_period, ' the number of confirmed COVID-19 cases in England was ', format(england_rolling$Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(england_rolling$Rolling_7_day_new_cases_per_100000, 1), big.mark = ','), ' per 100,000 population).') %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/england_cumulative.json'))
+
 utla_rate_2 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == complete_date) %>%
@@ -585,6 +604,7 @@ utla_rolling_rate_bins <- utla_rate %>%
   summarise(rolling_bins = paste0(Rolling_Rate_decile, ' (', format(round(min(Rolling_7_day_new_cases_per_100000),1), big.mark = ','), '-', format(round(max(Rolling_7_day_new_cases_per_100000)),big.mark = ','), ')')) %>% 
   unique() %>% 
   ungroup() %>% 
+  mutate(rolling_bins = gsub('\n', ' ', rolling_bins)) %>% 
   mutate(rolling_bins = factor(rolling_bins, levels = rolling_bins))
 
 utla_rate <- utla_rate %>% 
@@ -673,8 +693,6 @@ utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c
   left_join(utla_rate, by = c('ctyua19cd' = 'Code')) %>% 
   filter(!is.na(Cumulative_per_100000))
 
-# utla_map_cumulative_rate
-
 map_theme = function(){
   theme( 
     legend.position = "left", 
@@ -748,14 +766,16 @@ utla_cumulative_rate_bins <- utla_cumulative_rate_bins %>%
 
 utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
   mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
-  mutate(Label_2 = paste0('<b>', Name, '</b><br>', 'Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   select(Name, Label_1, Label_2, cumulative_bins, rolling_bins) %>% 
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = levels(utla_cumulative_rate_bins$cumulative_bins))) %>% 
   mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
   mutate(rolling_bins = factor(rolling_bins, levels = levels(utla_rolling_rate_bins$rolling_bins)))
 
-geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
+# geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
+
+geojson_write(geojson_json(utla_ua_boundaries_rate_geo), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
 
 levels(utla_cumulative_rate_bins$cumulative_bins) %>% 
   toJSON() %>% 
@@ -863,7 +883,9 @@ row.names(ltla_boundaries_geo_df) <- df$ID
 # Then use df as the second argument to the spatial dataframe conversion function:
 ltla_boundaries_json <- SpatialPolygonsDataFrame(ltla_boundaries_geo, ltla_boundaries_geo_df)  
 
-geojson_write(ms_simplify(geojson_json(ltla_boundaries_json), keep = 0.2), file = paste0(output_directory_x, '/ltla_covid_cumulative_rate_latest.geojson'))
+# geojson_write(ms_simplify(geojson_json(ltla_boundaries_json), keep = 0.2), file = paste0(output_directory_x, '/ltla_covid_cumulative_rate_latest.geojson'))
+
+geojson_write(geojson_json(ltla_boundaries_json), file = paste0(output_directory_x, '/ltla_covid_cumulative_rate_latest.geojson'))
 
 # For ggplot
 ltla_ua_boundaries <- ltla_boundaries %>% 

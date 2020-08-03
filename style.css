@@ -6,7 +6,7 @@
 #rate_map_1 {
  height: 600px;
  width: 550px;
- margin: auto;
+ /* margin: auto; */
 
  }
 
@@ -14,21 +14,21 @@
 #rate_map_1 {
  height: 500px;
  width: 550px;
- margin: auto;
+ /* margin: auto; */
  }
 }
 
 #rate_map_2 {
  height: 600px;
  width: 550px;
- margin: auto;
+ /* margin: auto; */
  }
 
 @media screen and (max-width: 1400px) {
 #rate_map_2 {
  height: 500px;
  width: 550px;
- margin: auto;
+ /* margin: auto; */
  }
 }
 
@@ -206,7 +206,7 @@ text-decoration: underline;
   font-family: inherit;
   margin: 0 0 1px;
   border-left: 13px solid #ccc;
-  opacity: .8;
+  /* opacity: .8; */
   position: relative;
 }
 
@@ -214,7 +214,22 @@ p.key_list .side_tt {
     font-size: .8rem !important;
 }
 
-.key_list_rate {
+.key_list_rate_utla {
+  display: block;
+  padding: 0.5em 0.5em;
+  border-radius: 4px;
+  color: #000000;
+  background: #ffffff;
+  text-align: left;
+  font-size: .8rem;
+  font-family: inherit;
+  margin: 0 0 1px;
+  border-left: 13px solid #ccc;
+  opacity: 1;
+  position: relative;
+}
+
+.key_list_rate_ltla {
   display: block;
   padding: 0.5em 0.5em;
   border-radius: 4px;

@@ -34,7 +34,7 @@ var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
 });
 
 var total_cases_daily_chosen = case_summary.filter(function(d){
-  return d.Name === selected_figure_1a_area_option})[0]['Cumulative_cases']
+  return d.Name === selected_figure_1a_area_option})[0]['Total confirmed cases so far']
 
 var x_daily_cases = d3.scaleBand()
     .domain(bars_daily_cases_1_chosen.map(function(d) {
@@ -323,7 +323,7 @@ var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
 });
 
 var total_cases_daily_chosen = case_summary.filter(function(d){
-  return d.Name === selected_figure_1a_area_option})[0]['Cumulative_cases']
+  return d.Name === selected_figure_1a_area_option})[0]['Total confirmed cases so far']
 
 x_summary = case_summary.filter(function(d, i) {
   return d.Name === selected_figure_1a_area_option
@@ -333,6 +333,8 @@ d3.select("#x_latest_figures")
   .data(x_summary)
   .html(function(d) {
     return 'The total number of confirmed Covid-19 cases so far in ' + selected_figure_1a_area_option + ' is ' + d3.format(',.0f')(d['Total confirmed cases so far'])  + '. This is ' + d3.format(',.0f')(d['Total cases per 100,000 population']) + ' cases per 100,000 population. The current daily case count (using data from ' + complete_date + ') is ' + d3.format(',.0f')(d['Confirmed cases swabbed on most recent complete day']) + ' new confirmed cases swabbed (' + d3.format(',.1f')(d['Confirmed cases swabbed per 100,000 population on most recent complete day']) + ' per 100,000).' });
+
+
 
 
 var showTooltip_daily_case_1 = function(d) {
