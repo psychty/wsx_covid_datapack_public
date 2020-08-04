@@ -272,7 +272,7 @@ function counts_new_cases_tile_plot() {
 
     var mousemove = function(d) {
       tooltip_new_case_day
-        .html('<h4>' + d.Name + ' - ' + d.Period + '</h4><p>' + d.Case_label + '</p><p>' + d.Rate_label + '</p>')
+        .html('<h4>' + d.Name + ' - ' + d.Date_label + '</h4><p>' + d.Case_label + '</p><p>' + d.Rate_label + '</p>')
         .style("top", (event.pageY - 10) + "px")
         .style("left", (event.pageX + 10) + "px")
         .style('opacity', 1)
@@ -511,7 +511,7 @@ var mouseover = function(d) {
 
 var mousemove = function(d) {
   tooltip_new_case_day
-    .html('<h4>' + d.Name + ' - ' + d.Period + '</h4><p>' + d.Case_label + '</p><p>' + d.Rate_label + '</p>')
+    .html('<h4>' + d.Name + ' - ' + d.Date_label + '</h4><p>' + d.Case_label + '</p><p>' + d.Rate_label + '</p>')
     .style("top", (event.pageY - 10) + "px")
     .style("left", (event.pageX + 10) + "px")
     .style('opacity', 1)

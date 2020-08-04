@@ -1,13 +1,4 @@
 
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/first_incomplete_daily_case.json", false);
-request.send(null);
-var incomplete_sm_date = JSON.parse(request.responseText)[0]
-
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/latest_daily_case.json", false);
-request.send(null);
-var latest_sm_date = JSON.parse(request.responseText)[0]
 
 d3.select("#data_recency")
   .html(function(d) {
@@ -31,7 +22,7 @@ var tooltip_area_sm = d3.select("#my_sm_dataviz")
 
   var showTooltip_sm1 = function(d) {
     tooltip_area_sm
-    .html("<h4>" + d.Name + "</h4><p><b>" + d.Date_label + "</b></p><p>Current change status: <b>" + change_case_label(d.Colour_key) + "</b></p><p>" + d3.format(',.0f')(d.New_cases) + ' new cases (' + d3.format(',.1f')(d.New_cases_per_100000) + ' per 100,000 population)</p><p>' + d.Case_label + '</p>')
+    .html("<h4>" + d.Name + "</h4><p><b>" + d.Date_label + "</b></p><p>" + d3.format(',.0f')(d.New_cases) + ' new cases (' + d3.format(',.1f')(d.New_cases_per_100000) + ' per 100,000 population)</p><p>' + d.Case_label + '</p>')
     .style("opacity", 1)
     .style("top", (event.pageY - 10) + "px")
     .style("left", (event.pageX + 10) + "px")

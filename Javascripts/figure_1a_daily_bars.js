@@ -16,6 +16,11 @@ if (width_sm < 300){
 var areas = ['West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing']
 
 var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/case_change_dates.json", false);
+request.send(null);
+var data_dates = JSON.parse(request.responseText).map(function(d){return d.Date_label});
+
+var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/wsx_case_summary.json", false);
 request.send(null);
 var case_summary = JSON.parse(request.responseText); // parse the fetched json data into a variable
@@ -75,6 +80,16 @@ var most_recent_period = JSON.parse(request.responseText).filter(function(d) {
   return d.Order == 'Last'
 })[0]['Period']
 
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/first_incomplete_daily_case.json", false);
+request.send(null);
+var incomplete_sm_date = JSON.parse(request.responseText)[0]
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/latest_daily_case.json", false);
+request.send(null);
+var latest_sm_date = JSON.parse(request.responseText)[0]
 
 // testing policy timelines
 var request = new XMLHttpRequest();
