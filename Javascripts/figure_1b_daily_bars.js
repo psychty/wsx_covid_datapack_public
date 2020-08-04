@@ -65,29 +65,31 @@ var y_sm_1 = d3.scaleLinear()
 
 // Add an svg element for each group. The will be one beside each other and will go on the next row when no more room available
 var sm_svg_1 = d3.select("#my_sm_dataviz")
-   .selectAll("small_multiples")
-   .data(areas_for_sm_1)
-   .enter()
-   .append("svg")
-   .attr("width", width_sm)
-   .attr("height", height_sm + 70)
-   .append("g")
-   .attr("transform", "translate(" + 50 + "," + 20 + ")");
+ .selectAll("small_multiples")
+ .data(areas_for_sm_1)
+ .enter()
+ .append("svg")
+ .attr("width", width_sm)
+ .attr("height", height_sm + 70)
+ .append("g")
+ .attr("transform", "translate(" + 50 + "," + 20 + ")");
 
 // Add axes
  sm_svg_1_y_axis = sm_svg_1
-   .append("g")
-   .call(d3.axisLeft(y_sm_1).ticks(6));
+ .append("g")
+ .call(d3.axisLeft(y_sm_1).ticks(6));
 
  sm_svg_1_x_axis = sm_svg_1
-   .append("g")
-   .attr("transform", "translate(0," + height_sm + ")")
-   .call(d3.axisBottom(x_sm_1).tickValues(data_dates));
+ .append("g")
+ .attr("transform", "translate(0," + height_sm + ")")
+ .call(d3.axisBottom(x_sm_1).tickValues(data_dates));
 
 sm_svg_1_x_axis
-  .selectAll("text")
-  .attr("transform", 'translate(-10,10)rotate(-90)')
-  .style("text-anchor", "end")
+.selectAll("text")
+.attr("transform", 'translate(-10,10)rotate(-90)')
+.style("text-anchor", "end")
+.style("font-size", "10px")
+
   // .each(function(d,i) {
     // if (i%2 != 0) d3.select(this).remove();
     // });
@@ -226,9 +228,11 @@ var y_sm_1 = d3.scaleLinear()
    .call(d3.axisBottom(x_sm_1).tickValues(data_dates));
 
 sm_svg_1_x_axis
-  .selectAll("text")
-  .attr("transform", 'translate(-10,10)rotate(-90)')
-  .style("text-anchor", "end")
+.selectAll("text")
+.attr("transform", 'translate(-10,10)rotate(-90)')
+.style("text-anchor", "end")
+.style("font-size", "10px")
+
 
 sm_svg_1_bars = sm_svg_1.selectAll(".bar")
       .data(function(d) {return d.values;})

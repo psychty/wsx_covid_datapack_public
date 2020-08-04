@@ -156,9 +156,11 @@ var xAxis_daily_cases = svg_daily_new_case_bars
    .call(d3.axisBottom(x_daily_cases).tickValues(data_dates));
 
 xAxis_daily_cases
-  .selectAll("text")
-  .attr("transform", 'translate(-' + (x_daily_cases.bandwidth() + 10) + ',10)rotate(-90)')
-  .style("text-anchor", "end")
+.selectAll("text")
+.attr("transform", 'translate(-' + (x_daily_cases.bandwidth() + 10) + ',10)rotate(-90)')
+.style("text-anchor", "end")
+.style("font-size", "10px")
+
 
 x_summary = case_summary.filter(function(d, i) {
   return d.Name === selected_figure_1a_area_option

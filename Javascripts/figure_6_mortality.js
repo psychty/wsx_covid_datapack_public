@@ -125,14 +125,16 @@ var x_m1 = d3.scaleBand()
   .padding([0.2]);
 
 var xAxis_mortality_1 = svg_fg_mortality_1
-  .append("g")
-  .attr("transform", 'translate(0,' + (height_line_mort - 120 ) + ")")
-  .call(d3.axisBottom(x_m1).tickSizeOuter(0));
+.append("g")
+.attr("transform", 'translate(0,' + (height_line_mort - 120 ) + ")")
+.call(d3.axisBottom(x_m1).tickSizeOuter(0));
 
 xAxis_mortality_1
-  .selectAll("text")
-  .attr("transform", 'translate(-10,10)rotate(-90)')
-  .style("text-anchor", "end")
+.selectAll("text")
+.attr("transform", 'translate(-10,10)rotate(-90)')
+.style("text-anchor", "end")
+.style("font-size", "10px")
+
 
 var y_m1_ts = d3.scaleLinear()
   .domain([0, chosen_limits[0].Limit])
@@ -353,14 +355,16 @@ var x_m2 = d3.scaleBand()
   .padding([0.2]);
 
 var xAxis_mortality_2 = svg_fg_mortality_2
-  .append("g")
-  .attr("transform", 'translate(0,' + (height_line_mort - 120 ) + ")")
-  .call(d3.axisBottom(x_m2).tickSizeOuter(0));
+.append("g")
+.attr("transform", 'translate(0,' + (height_line_mort - 120 ) + ")")
+.call(d3.axisBottom(x_m2).tickSizeOuter(0));
 
 xAxis_mortality_2
-  .selectAll("text")
-  .attr("transform", 'translate(-10,10)rotate(-90)')
-  .style("text-anchor", "end")
+.selectAll("text")
+.attr("transform", 'translate(-10,10)rotate(-90)')
+.style("text-anchor", "end")
+.style("font-size", "10px")
+
 
 var y_m2_ts = d3.scaleLinear()
   .domain([0, chosen_limits[0].Limit])

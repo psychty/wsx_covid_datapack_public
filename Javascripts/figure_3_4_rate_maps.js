@@ -1,7 +1,7 @@
 
 // Maps
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/ltla_rate_bins.json", false);
+request.open("GET", "./Outputs/ltla_cumulative_rate_bins.json", false);
 request.send(null);
 
 var ltla_rate_bins = JSON.parse(request.responseText);
@@ -256,7 +256,7 @@ function LTLA_rate_colour(d) {
 
 function style_ltla(feature) {
     return {
-        fillColor: LTLA_rate_colour(feature.properties.bins),
+        fillColor: LTLA_rate_colour(feature.properties.cumulative_bins),
         weight: 2,
         opacity: 1,
         color: 'white',

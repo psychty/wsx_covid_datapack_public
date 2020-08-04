@@ -41,9 +41,9 @@ var xAxis_pathways = svg_pathways_fig
   .call(d3.axisBottom(x_pathways).tickValues(pathway_dates))
 
 xAxis_pathways
-  .selectAll("text")
-  .attr("transform", 'translate(-' + (x_pathways.bandwidth() + 5) + ',10)rotate(-90)')
-  .style("text-anchor", "end")
+.selectAll("text")
+.attr("transform", 'translate(-' + (x_pathways.bandwidth() + 5) + ',10)rotate(-90)')
+.style("text-anchor", "end")
 .style("font-size", "10px")
 
 //Add Y axis

@@ -1,5 +1,5 @@
-"Name","Cases","Rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000
-         ","Decile of rate per 100,000"
+"Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000
+         ","Decile of cumulative rate per 100,000"
 "Adur","190","295.5","251st","Decile 8"
 "Arun","330","205.3","296th","10% of authorities
 with lowest rate"

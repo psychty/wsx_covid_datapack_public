@@ -788,50 +788,75 @@ levels(utla_rolling_rate_bins$rolling_bins) %>%
 
 # LTLA rate ####
 
-ltla_rate <- p12_test_df %>% 
+ltla_rate_1 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>%
+  # filter(Date == '2020-07-12') %>% 
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority')) %>% 
-  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000, Colour_key) %>%
-  mutate(Cumulate_rate_rank = rank(-Cumulative_per_100000)) %>% 
-  mutate(Rate_decile = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
-  mutate(Rate_decile = factor(ifelse(Rate_decile == 1, '10% of authorities\nwith highest rate', ifelse(Rate_decile == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rate_decile))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000) %>%
+  mutate(Cumulative_rate_rank = rank(-Cumulative_per_100000)) %>% 
+  mutate(Cumulative_Rate_decile_actual = abs(ntile(Cumulative_per_100000, 10) - 11)) %>% 
+  mutate(Cumulative_Rate_decile = factor(ifelse(Cumulative_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Cumulative_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Cumulative_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
   arrange(Code)
 
-ltla_bins <- ltla_rate %>% 
-  group_by(Rate_decile) %>% 
-  summarise(bins = paste0(Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-',format(round(max(Cumulative_per_100000),1), big.mark = ','),')')) %>% 
+ltla_rate_2 <- p12_test_df %>% 
   ungroup() %>% 
+  filter(Date == complete_date) %>%
+  filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority')) %>% 
+  select(Code, Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period) %>%
+  mutate(Rolling_rate_rank = rank(-Rolling_7_day_new_cases_per_100000)) %>% 
+  mutate(Rolling_Rate_decile_actual = abs(ntile(Rolling_7_day_new_cases_per_100000, 10) - 11)) %>% 
+  mutate(Rolling_Rate_decile = factor(ifelse(Rolling_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Rolling_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rolling_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
+  arrange(Code)
+
+ltla_rate <- ltla_rate_1 %>% 
+  left_join(ltla_rate_2, by = c('Code', 'Name'))
+
+rm(ltla_rate_1, ltla_rate_2)
+
+ltla_cumulative_rate_bins <- ltla_rate %>% 
+  group_by(Cumulative_Rate_decile) %>% 
+  summarise(cumulative_bins = paste0(Cumulative_Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-', format(round(max(Cumulative_per_100000)),big.mark = ','), ')')) %>% 
   unique() %>% 
-  mutate(bins = factor(bins, levels = bins))
+  ungroup() %>% 
+  mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
+
+ltla_rolling_rate_bins <- ltla_rate %>% 
+  group_by(Rolling_Rate_decile) %>% 
+  summarise(rolling_bins = paste0(Rolling_Rate_decile, ' (', format(round(min(Rolling_7_day_new_cases_per_100000),1), big.mark = ','), '-', format(round(max(Rolling_7_day_new_cases_per_100000)),big.mark = ','), ')')) %>% 
+  unique() %>% 
+  ungroup() %>% 
+  mutate(rolling_bins = gsub('\n', ' ', rolling_bins)) %>% 
+  mutate(rolling_bins = factor(rolling_bins, levels = rolling_bins))
 
 ltla_rate <- ltla_rate %>% 
-  left_join(ltla_bins, by = 'Rate_decile')
+  left_join(ltla_cumulative_rate_bins, by = 'Cumulative_Rate_decile') %>% 
+  left_join(ltla_rolling_rate_bins, by = 'Rolling_Rate_decile')
 
 summary_table_rate <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>% 
   select(Name, Cumulative_cases, Cumulative_per_100000) %>% 
   filter(Name %in% c('West Sussex','South East region', 'England')) %>% 
-  mutate(Cumulate_rate_rank = '-',
-         Rate_decile = '-') %>% 
+  mutate(Cumulative_rate_rank = '-',
+         Cumulative_Rate_decile = '-') %>% 
   mutate(Cumulative_cases = format(Cumulative_cases, big.mark = ',', trim = TRUE),
          Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
   mutate(Name = factor(Name, levels = c('West Sussex', 'South East region', 'England'))) %>% 
   arrange(Name)
 
 ltla_rate_wsx <- ltla_rate %>% 
-  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulate_rate_rank, Rate_decile) %>% 
-  mutate(Cumulate_rate_rank = ordinal(Cumulate_rate_rank)) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulative_rate_rank, Cumulative_Rate_decile) %>% 
+  mutate(Cumulative_rate_rank = ordinal(Cumulative_rate_rank)) %>% 
   filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
   mutate(Cumulative_cases = format(Cumulative_cases, big.mark = ',', trim = TRUE),
          Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
   bind_rows(summary_table_rate) %>% 
-  rename(Cases = Cumulative_cases,
-         `Rate per 100,000 residents` =  Cumulative_per_100000,
+  rename(`Cumulative cases` = Cumulative_cases,
+         `Cumulative rate per 100,000 residents` =  Cumulative_per_100000,
          `Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000
-         ` = Cumulate_rate_rank,
-         `Decile of rate per 100,000` = Rate_decile) 
+         ` = Cumulative_rate_rank,
+         `Decile of cumulative rate per 100,000` = Cumulative_Rate_decile) 
 
 ltla_rate_wsx %>% 
   write.csv(., paste0(output_directory_x, '/ltla_rate_wsx.csv'), row.names = FALSE)
@@ -855,13 +880,21 @@ ft_ltla_rate_wsx <- flextable(ltla_rate_wsx) %>%
 
 ltla_boundaries <- geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
 
-geo_rate_ltla_bins <- ltla_bins %>% 
-  mutate(bins = gsub('\n',' ', bins)) %>% 
-  mutate(bins = factor(bins, levels = bins))
+geo_rate_cumulative_ltla_bins <- ltla_cumulative_rate_bins %>% 
+  mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
+  mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
 
-levels(geo_rate_ltla_bins$bins) %>% 
+levels(geo_rate_cumulative_ltla_bins$cumulative_bins) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/ltla_rate_bins.json'))
+  write_lines(paste0(output_directory_x, '/ltla_cumulative_rate_bins.json'))
+
+geo_rate_rolling_ltla_bins <- ltla_rolling_rate_bins %>% 
+  mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
+  mutate(rolling_bins = factor(rolling_bins, levels = rolling_bins))
+
+levels(geo_rate_rolling_ltla_bins$rolling_bins) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/ltla_rolling_rate_bins.json'))
 
 ltla_boundaries_geo <- ltla_boundaries %>% 
   filter(lad19cd %in% ltla_rate$Code) %>% 
@@ -869,10 +902,14 @@ ltla_boundaries_geo <- ltla_boundaries %>%
 
 ltla_boundaries_geo_df <- as.data.frame(ltla_rate %>% 
     arrange(Code) %>% 
-    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulate_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
-    # select(Name, Label_1, bins, Colour_key) %>% 
-    mutate(bins = gsub('\n',' ', bins))) 
-    
+    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
+    mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
+    select(Name, Label_1, Label_2, cumulative_bins, rolling_bins) %>% 
+    mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
+    mutate(cumulative_bins = factor(cumulative_bins, levels = levels(geo_rate_cumulative_ltla_bins$cumulative_bins))) %>% 
+    mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
+    mutate(rolling_bins = factor(rolling_bins, levels = levels(geo_rate_rolling_ltla_bins$rolling_bins))))
+
 df <- data.frame(ID = character())
 
 # Get the IDs of spatial polygon
@@ -902,7 +939,7 @@ map_1_ltla <- ggplot() +
                aes(x=long,
                    y=lat,
                    group = group,
-                   fill = bins),
+                   fill = cumulative_bins),
                color="#ffffff",
                size = .1,
                alpha = 1,
@@ -921,7 +958,7 @@ inset_1_ltla <- ggplot() +
                aes(x=long,
                    y=lat,
                    group = group,
-                   fill = bins),
+                   fill = cumulative_bins),
                color="#ffffff",
                size = .1,
                alpha = 1,
