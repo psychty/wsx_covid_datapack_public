@@ -4,7 +4,14 @@ var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/ltla_cumulative_rate_bins.json", false);
 request.send(null);
 
-var ltla_rate_bins = JSON.parse(request.responseText);
+var ltla_cumulative_rate_bins = JSON.parse(request.responseText);
+
+// Maps
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/ltla_rolling_rate_bins.json", false);
+request.send(null);
+
+var ltla_rolling_rate_bins = JSON.parse(request.responseText);
 
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/utla_cumulative_rate_bins.json", false);
@@ -27,8 +34,12 @@ var utla_decile_rolling_colour_func = d3.scaleOrdinal()
   .domain(utla_rolling_rate_bins)
   .range(decile_colours)
 
-var ltla_decile_colour_func = d3.scaleOrdinal()
-  .domain(ltla_rate_bins)
+var ltla_decile_cumulative_colour_func = d3.scaleOrdinal()
+  .domain(ltla_cumulative_rate_bins)
+  .range(decile_colours)
+
+var ltla_decile_rolling_colour_func = d3.scaleOrdinal()
+  .domain(ltla_rolling_rate_bins)
   .range(decile_colours)
 
 var width_map = document.getElementById("content_size").offsetWidth;
@@ -236,34 +247,58 @@ d3.select("#selected_utla_key_title")
     })
 }
 
-
 key_cumulative_utla_rate_deciles();
 
-
-function LTLA_rate_colour(d) {
-    return d === ltla_rate_bins[0] ? decile_colours[0] :
-           d === ltla_rate_bins[1] ? decile_colours[1] :
-           d === ltla_rate_bins[2] ? decile_colours[2] :
-           d === ltla_rate_bins[3] ? decile_colours[3] :
-           d === ltla_rate_bins[4] ? decile_colours[4] :
-           d === ltla_rate_bins[5] ? decile_colours[5] :
-           d === ltla_rate_bins[6] ? decile_colours[6] :
-           d === ltla_rate_bins[7] ? decile_colours[7] :
-           d === ltla_rate_bins[8] ? decile_colours[8] :
-           d === ltla_rate_bins[9] ? decile_colours[9] :
+function LTLA_cumulative_rate_colour(d) {
+    return d === ltla_cumulative_rate_bins[0] ? decile_colours[0] :
+           d === ltla_cumulative_rate_bins[1] ? decile_colours[1] :
+           d === ltla_cumulative_rate_bins[2] ? decile_colours[2] :
+           d === ltla_cumulative_rate_bins[3] ? decile_colours[3] :
+           d === ltla_cumulative_rate_bins[4] ? decile_colours[4] :
+           d === ltla_cumulative_rate_bins[5] ? decile_colours[5] :
+           d === ltla_cumulative_rate_bins[6] ? decile_colours[6] :
+           d === ltla_cumulative_rate_bins[7] ? decile_colours[7] :
+           d === ltla_cumulative_rate_bins[8] ? decile_colours[8] :
+           d === ltla_cumulative_rate_bins[9] ? decile_colours[9] :
                     '#feebe2';
 }
 
-function style_ltla(feature) {
+function style_cumulative_ltla(feature) {
     return {
-        fillColor: LTLA_rate_colour(feature.properties.cumulative_bins),
+        fillColor: LTLA_cumulative_rate_colour(feature.properties.cumulative_bins),
         weight: 2,
         opacity: 1,
         color: 'white',
         dashArray: '3',
-        fillOpacity: 1
+        fillOpacity: .8
     };
 }
+
+function LTLA_rolling_rate_colour(d) {
+    return d === ltla_rolling_rate_bins[0] ? decile_colours[0] :
+           d === ltla_rolling_rate_bins[1] ? decile_colours[1] :
+           d === ltla_rolling_rate_bins[2] ? decile_colours[2] :
+           d === ltla_rolling_rate_bins[3] ? decile_colours[3] :
+           d === ltla_rolling_rate_bins[4] ? decile_colours[4] :
+           d === ltla_rolling_rate_bins[5] ? decile_colours[5] :
+           d === ltla_rolling_rate_bins[6] ? decile_colours[6] :
+           d === ltla_rolling_rate_bins[7] ? decile_colours[7] :
+           d === ltla_rolling_rate_bins[8] ? decile_colours[8] :
+           d === ltla_rolling_rate_bins[9] ? decile_colours[9] :
+                    '#feebe2';
+}
+
+function style_rolling_ltla(feature) {
+    return {
+        fillColor: LTLA_rolling_rate_colour(feature.properties.rolling_bins),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: .8
+    };
+}
+
 
 $.when(ltla).done(function() {
 
@@ -275,34 +310,113 @@ var basemap = L.tileLayer(tileUrl, {
 })
     .addTo(ltla_map);
 
-var ltla_rate_boundary = L.geoJSON(ltla.responseJSON,
-      {style: style_ltla})
+var ltla_rate_boundary_cumulative = L.geoJSON(ltla.responseJSON,
+      {style: style_cumulative_ltla})
       .addTo(ltla_map)
       .bindPopup(function (layer) {
-        return layer.feature.properties.Label_1});
+        return layer.feature.properties.Label_1 + '<br><br>' + layer.feature.properties.Label_2});
+
+var ltla_rate_boundary_rolling = L.geoJSON(ltla.responseJSON,
+      {style: style_rolling_ltla})
+      // .addTo(utla_map)
+      .bindPopup(function (layer) {
+        return layer.feature.properties.Label_1 + '<br><br>' + layer.feature.properties.Label_2});
+
+var baseMaps = {
+  'Cumulative rate per 100k': ltla_rate_boundary_cumulative,
+  'Rolling 7-day rate per 100k': ltla_rate_boundary_rolling
+}
+
+L.control.layers(baseMaps, null, { collapsed:false}).addTo(ltla_map);
 
 ltla_map
-.fitBounds(ltla_rate_boundary.getBounds());
+.fitBounds(ltla_rate_boundary_cumulative.getBounds());
+
+ltla_map.on('baselayerchange', function(ev){
+            console.log("Base layer changes")
+          var selected_base_layer = ev.name
+
+if(selected_base_layer === 'Cumulative rate per 100k'){
+key_cumulative_ltla_rate_deciles();
+}
+if(selected_base_layer === 'Rolling 7-day rate per 100k'){
+key_rolling_ltla_rate_deciles();
+}
+
+        })
 
 });
 
+function key_cumulative_ltla_rate_deciles() {
 
-function key_ltla_rate_deciles() {
-  ltla_rate_bins.forEach(function(item, index) {
+  $('.key_list_rate_ltla').remove();
+
+d3.select("#summary_ltla_rate_title")
+  .html(function(d) {
+    return 'Cumulative rate of confirmed COVID-19 cases per 100,000 population (all ages);'
+  });
+
+d3.select("#summary_ltla_rate_subtitle")
+  .html(function(d) {
+    return 'Pillar 1 and 2 confirmed cases; specimen dates ' + first_date + ' - ' + latest_date +';'
+  });
+
+d3.select("#selected_ltla_key_title")
+  .html(function(d) {
+    return '<b>Lower Tier Decile Key for cumulative rate per 100,000</b> (range of values given in brackets)'
+});
+
+  ltla_cumulative_rate_bins.forEach(function(item, index) {
     var list = document.createElement("li");
-    list.innerHTML = item;
+    list.innerHTML = item.replace(')',' cases per 100,000)');
     list.className = 'key_list_rate_ltla';
-    list.style.borderColor = ltla_decile_colour_func(index);
+    list.style.borderColor = ltla_decile_cumulative_colour_func(index);
       var tt = document.createElement('div');
     tt.className = 'side_tt';
-    tt.style.borderColor = ltla_decile_colour_func(index);
+    tt.style.borderColor = ltla_decile_cumulative_colour_func(index);
     var tt_h3_1 = document.createElement('h3');
     tt_h3_1.innerHTML = item.Cause;
 
     tt.appendChild(tt_h3_1);
-    var div = document.getElementById("ltla_decile_key");
+    var div = document.getElementById("ltla_map_key");
     div.appendChild(list);
     })
 }
 
-key_ltla_rate_deciles();
+function key_rolling_ltla_rate_deciles() {
+
+    $('.key_list_rate_ltla').remove();
+
+d3.select("#summary_ltla_rate_title")
+  .html(function(d) {
+    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages);'
+  });
+
+d3.select("#summary_ltla_rate_subtitle")
+  .html(function(d) {
+    return 'Pillar 1 and 2 confirmed cases; seven days to ' + complete_date +';'
+  });
+
+d3.select("#selected_ltla_key_title")
+  .html(function(d) {
+    return '<b>Lower Tier Decile Key for rolling rate per 100,000</b> (range of values given in brackets)'
+});
+
+  ltla_rolling_rate_bins.forEach(function(item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item.replace(')',' new cases per 100,000)');
+    list.className = 'key_list_rate_ltla';
+    list.style.borderColor = ltla_decile_rolling_colour_func(index);
+      var tt = document.createElement('div');
+    tt.className = 'side_tt';
+    tt.style.borderColor = ltla_decile_rolling_colour_func(index);
+    var tt_h3_1 = document.createElement('h3');
+    tt_h3_1.innerHTML = item.Cause;
+
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("ltla_map_key");
+    div.appendChild(list);
+    })
+}
+
+key_cumulative_ltla_rate_deciles();
