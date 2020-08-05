@@ -90,7 +90,7 @@ request.open("GET", "./Outputs/percentage_change_bins.json", false);
 request.send(null);
 
 var percentage_change_bins = JSON.parse(request.responseText);
-var change_colours = ['#313695',"#276419", "#4d9221", "#7fbc41", "#b8e186", "#e6f5d0", "#fde0ef", "#f1b6da", '#de77ae', '#c51b7d', "#8e0152"]
+var change_colours = ["#276419", "#4d9221", "#7fbc41", "#b8e186", "#e6f5d0", "#fde0ef", "#f1b6da", '#de77ae', '#c51b7d', "#8e0152",'#313695']
 perc_change_colour_func = d3.scaleOrdinal()
 .domain(percentage_change_bins)
 .range(change_colours)
@@ -195,13 +195,13 @@ var utla_rate_boundary_rolling = L.geoJSON(utla.responseJSON,
       {style: style_rolling})
       // .addTo(utla_map)
       .bindPopup(function (layer) {
-        return layer.feature.properties.Name + '<br><br>' + layer.feature.properties.Label_2});
+        return '<b>' +layer.feature.properties.Name + '</b><br><br>' + layer.feature.properties.Label_2});
 
 var utla_rate_boundary_change = L.geoJSON(utla.responseJSON,
       {style: style_change})
       // .addTo(utla_map)
       .bindPopup(function (layer) {
-        return layer.feature.properties.Name + '<br>' +layer.feature.properties.Label_3 });
+        return '<b>' + layer.feature.properties.Name + '</b><br>' +layer.feature.properties.Label_3 });
 
 var baseMaps = {
   'Cumulative rate per 100,000': utla_rate_boundary_cumulative,
@@ -411,12 +411,12 @@ var ltla_rate_boundary_cumulative = L.geoJSON(ltla.responseJSON,
 var ltla_rate_boundary_rolling = L.geoJSON(ltla.responseJSON,
       {style: style_rolling_ltla})
       .bindPopup(function (layer) {
-        return layer.feature.properties.Name + '<br><br>' + layer.feature.properties.Label_2});
+        return '<b>' + layer.feature.properties.Name + '</b><br><br>' + layer.feature.properties.Label_2});
 
 var ltla_rate_boundary_change = L.geoJSON(ltla.responseJSON,
       {style: style_change})
       .bindPopup(function (layer) {
-        return layer.feature.properties.Name + '<br>' +layer.feature.properties.Label_3});
+        return '<b>' + layer.feature.properties.Name + '</b><br>' +layer.feature.properties.Label_3});
 
 var baseMaps = {
   'Cumulative rate per 100,000': ltla_rate_boundary_cumulative,
@@ -488,7 +488,7 @@ function key_cumulative_ltla_rate_deciles() {
 
 d3.select("#summary_ltla_rate_title")
   .html(function(d) {
-    return 'Cumulative rate of confirmed COVID-19 cases per 100,000 population (all ages);'
+    return 'Cumulative rate of confirmed COVID-19 cases per 100,000 population (all ages); Lower Tier Local Authorities;'
   });
 
 d3.select("#summary_ltla_rate_subtitle")
@@ -524,7 +524,7 @@ function key_rolling_ltla_rate_deciles() {
 
 d3.select("#summary_ltla_rate_title")
   .html(function(d) {
-    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages);'
+    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages); Lower Tier Local Authorities;'
   });
 
 d3.select("#summary_ltla_rate_subtitle")
