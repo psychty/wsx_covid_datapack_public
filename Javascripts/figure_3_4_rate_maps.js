@@ -75,8 +75,55 @@ d3.select("#england_cumulative_text")
     return england_cumulative_text_obj
   });
 
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_cumulative_rolling_label.json", false);
+request.send(null);
+var wsx_cumulative_text_obj = JSON.parse(request.responseText);
+
+d3.select("#west_sussex_cumulative_text")
+  .html(function(d) {
+    return wsx_cumulative_text_obj
+  });
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/percentage_change_bins.json", false);
+request.send(null);
+
+var percentage_change_bins = JSON.parse(request.responseText);
+var change_colours = ['#313695',"#276419", "#4d9221", "#7fbc41", "#b8e186", "#e6f5d0", "#fde0ef", "#f1b6da", '#de77ae', '#c51b7d', "#8e0152"]
+perc_change_colour_func = d3.scaleOrdinal()
+.domain(percentage_change_bins)
+.range(change_colours)
+
 var tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 var attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a><br> Contains Ordnance Survey data © Crown copyright and database right 2020.<br>Zoom in/out using your mouse wheel or the plus (+) and minus (-) buttons. Click on an area to find out more';
+
+
+ function perc_change_rate_colour(d) {
+     return d === percentage_change_bins[0] ? change_colours[0] :
+            d === percentage_change_bins[1] ? change_colours[1] :
+            d === percentage_change_bins[2] ? change_colours[2] :
+            d === percentage_change_bins[3] ? change_colours[3] :
+            d === percentage_change_bins[4] ? change_colours[4] :
+            d === percentage_change_bins[5] ? change_colours[5] :
+            d === percentage_change_bins[6] ? change_colours[6] :
+            d === percentage_change_bins[7] ? change_colours[7] :
+            d === percentage_change_bins[8] ? change_colours[8] :
+            d === percentage_change_bins[9] ? change_colours[9] :
+            d === percentage_change_bins[10] ? change_colours[10] :
+                     '#feebe2';
+ }
+
+ function style_change(feature) {
+     return {
+         fillColor: perc_change_rate_colour(feature.properties.Perc_change_on_rolling_7_days_tidy),
+         weight: 2,
+         opacity: 1,
+         color: 'white',
+         dashArray: '3',
+         fillOpacity: 1
+     };
+ }
 
 function UTLA_cumulative_rate_colour(d) {
     return d === utla_cumulative_rate_bins[0] ? decile_colours[0] :
@@ -148,11 +195,18 @@ var utla_rate_boundary_rolling = L.geoJSON(utla.responseJSON,
       {style: style_rolling})
       // .addTo(utla_map)
       .bindPopup(function (layer) {
-        return layer.feature.properties.Label_1 + '<br><br>' + layer.feature.properties.Label_2});
+        return layer.feature.properties.Name + '<br><br>' + layer.feature.properties.Label_2});
+
+var utla_rate_boundary_change = L.geoJSON(utla.responseJSON,
+      {style: style_change})
+      // .addTo(utla_map)
+      .bindPopup(function (layer) {
+        return layer.feature.properties.Name + '<br>' +layer.feature.properties.Label_3 });
 
 var baseMaps = {
-  'Cumulative rate per 100k': utla_rate_boundary_cumulative,
-  'Rolling 7-day rate per 100k': utla_rate_boundary_rolling
+  'Cumulative rate per 100,000': utla_rate_boundary_cumulative,
+  'Rolling 7-day rate per 100,000': utla_rate_boundary_rolling,
+  'Percentage change rolling 7-day cases': utla_rate_boundary_change
 }
 
 L.control.layers(baseMaps, null, { collapsed:false}).addTo(utla_map);
@@ -164,13 +218,15 @@ utla_map.on('baselayerchange', function(ev){
             console.log("Base layer changes")
           var selected_base_layer = ev.name
 
-if(selected_base_layer === 'Cumulative rate per 100k'){
+if(selected_base_layer === 'Cumulative rate per 100,000'){
 key_cumulative_utla_rate_deciles();
 }
-if(selected_base_layer === 'Rolling 7-day rate per 100k'){
+if(selected_base_layer === 'Rolling 7-day rate per 100,000'){
 key_rolling_utla_rate_deciles();
 }
-
+if(selected_base_layer === 'Percentage change rolling 7-day cases'){
+key_change_utla_rate_keys();
+}
         })
 
 });
@@ -181,7 +237,7 @@ function key_cumulative_utla_rate_deciles() {
 
 d3.select("#summary_utla_rate_title")
   .html(function(d) {
-    return 'Cumulative rate of confirmed COVID-19 cases per 100,000 population (all ages);'
+    return 'Cumulative rate of confirmed COVID-19 cases per 100,000 population (all ages); Upper Tier Local Authorities;'
   });
 
 d3.select("#summary_utla_rate_subtitle")
@@ -217,7 +273,7 @@ function key_rolling_utla_rate_deciles() {
 
 d3.select("#summary_utla_rate_title")
   .html(function(d) {
-    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages);'
+    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages); Upper Tier Local Authorities;'
   });
 
 d3.select("#summary_utla_rate_subtitle")
@@ -238,6 +294,42 @@ d3.select("#selected_utla_key_title")
       var tt = document.createElement('div');
     tt.className = 'side_tt';
     tt.style.borderColor = utla_decile_rolling_colour_func(index);
+    var tt_h3_1 = document.createElement('h3');
+    tt_h3_1.innerHTML = item.Cause;
+
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("utla_map_key");
+    div.appendChild(list);
+    })
+}
+
+function key_change_utla_rate_keys() {
+
+    $('.key_list_rate_utla').remove();
+
+d3.select("#summary_utla_rate_title")
+  .html(function(d) {
+    return 'Percentage change in recent confirmed COVID-19 case rate cases per 100,000 population (all ages); Upper Tier Local Authorities;'
+  });
+
+d3.select("#summary_utla_rate_subtitle")
+  .html(function(d) {
+    return 'Pillar 1 and 2 confirmed cases; seven days to ' + complete_date +' compared to seven days leading to ' + rolling_seven_days_ago + ';'
+  });
+
+d3.select("#selected_utla_key_title")
+  .html(function(d) {
+    return '<b>Colour key</b>'
+});
+
+  percentage_change_bins.forEach(function(item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = 'key_list_rate_utla';
+    list.style.borderColor = perc_change_colour_func(index);
+      var tt = document.createElement('div');
+    tt.className = 'side_tt';
+    tt.style.borderColor = perc_change_colour_func(index);
     var tt_h3_1 = document.createElement('h3');
     tt_h3_1.innerHTML = item.Cause;
 
@@ -318,13 +410,18 @@ var ltla_rate_boundary_cumulative = L.geoJSON(ltla.responseJSON,
 
 var ltla_rate_boundary_rolling = L.geoJSON(ltla.responseJSON,
       {style: style_rolling_ltla})
-      // .addTo(utla_map)
       .bindPopup(function (layer) {
-        return layer.feature.properties.Label_1 + '<br><br>' + layer.feature.properties.Label_2});
+        return layer.feature.properties.Name + '<br><br>' + layer.feature.properties.Label_2});
+
+var ltla_rate_boundary_change = L.geoJSON(ltla.responseJSON,
+      {style: style_change})
+      .bindPopup(function (layer) {
+        return layer.feature.properties.Name + '<br>' +layer.feature.properties.Label_3});
 
 var baseMaps = {
-  'Cumulative rate per 100k': ltla_rate_boundary_cumulative,
-  'Rolling 7-day rate per 100k': ltla_rate_boundary_rolling
+  'Cumulative rate per 100,000': ltla_rate_boundary_cumulative,
+  'Rolling 7-day rate per 100,000': ltla_rate_boundary_rolling,
+  'Percentage change rolling 7-day cases': ltla_rate_boundary_change
 }
 
 L.control.layers(baseMaps, null, { collapsed:false}).addTo(ltla_map);
@@ -336,16 +433,54 @@ ltla_map.on('baselayerchange', function(ev){
             console.log("Base layer changes")
           var selected_base_layer = ev.name
 
-if(selected_base_layer === 'Cumulative rate per 100k'){
+if(selected_base_layer === 'Cumulative rate per 100,000'){
 key_cumulative_ltla_rate_deciles();
 }
-if(selected_base_layer === 'Rolling 7-day rate per 100k'){
+if(selected_base_layer === 'Rolling 7-day rate per 100,000'){
 key_rolling_ltla_rate_deciles();
 }
-
+if(selected_base_layer === 'Percentage change rolling 7-day cases'){
+key_change_ltla_rate_keys();
+}
         })
 
 });
+
+function key_change_ltla_rate_keys() {
+
+    $('.key_list_rate_ltla').remove();
+
+d3.select("#summary_ltla_rate_title")
+  .html(function(d) {
+    return 'Percentage change in recent confirmed COVID-19 case rate cases per 100,000 population (all ages); Lower Tier Local Authorities;'
+  });
+
+d3.select("#summary_ltla_rate_subtitle")
+  .html(function(d) {
+    return 'Pillar 1 and 2 confirmed cases; seven days to ' + complete_date +' compared to seven days leading to ' + rolling_seven_days_ago + ';'
+  });
+
+d3.select("#selected_ltla_key_title")
+  .html(function(d) {
+    return '<b>Colour key</b>'
+});
+
+  percentage_change_bins.forEach(function(item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = 'key_list_rate_ltla';
+    list.style.borderColor = perc_change_colour_func(index);
+      var tt = document.createElement('div');
+    tt.className = 'side_tt';
+    tt.style.borderColor = perc_change_colour_func(index);
+    var tt_h3_1 = document.createElement('h3');
+    tt_h3_1.innerHTML = item.Cause;
+
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("ltla_map_key");
+    div.appendChild(list);
+    })
+}
 
 function key_cumulative_ltla_rate_deciles() {
 

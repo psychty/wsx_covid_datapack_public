@@ -80,6 +80,9 @@ var most_recent_period = JSON.parse(request.responseText).filter(function(d) {
   return d.Order == 'Last'
 })[0]['Period']
 
+var rolling_seven_days_ago = JSON.parse(request.responseText).filter(function(d) {
+  return d.Order == 'Seven_days_ago'
+})[0]['Date_label']
 
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/first_incomplete_daily_case.json", false);
@@ -141,6 +144,8 @@ d3.select("#selected_daily_cases_bars_1_compare_title")
 var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
   return d.Name === selected_figure_1a_area_option
 });
+
+
 
 var total_cases_daily_chosen = case_summary.filter(function(d){
   return d.Name === selected_figure_1a_area_option})[0]['Total confirmed cases so far']
@@ -329,7 +334,7 @@ var tooltip_daily_case_1 = d3.select("#daily_new_case_bars")
 
 var showTooltip_daily_case_1 = function(d) {
   tooltip_daily_case_1
-    .html("<h5>" + d.Name + '</h5><p><b>' + d.Date_label + '</b></p><p class = "side">In ' + d.Name + ' there were <b>' + d3.format(',.0f')(d.New_cases) + ' </b>specimens taken on this date which resulted in a positive result for Covid-19.</p><p class = "side">The new cases swabbed on this day represent ' + d3.format('0.1%')(d.New_cases / total_cases_daily_chosen) + ' of the total number of cases confirmed so far (' + d3.format(',.0f')(d.Cumulative_cases) + ') </p><p class = "side">' + d.Seven_day_ave_new_label + '</p>')
+    .html("<h5>" + d.Name + '</h5><p><b>' + d.Date_label + '</b></p><p class = "side">In ' + d.Name + ' there were <b>' + d3.format(',.0f')(d.New_cases) + ' </b>specimens taken on this date which resulted in a positive result for Covid-19.</p><p class = "side">The new cases swabbed on this day represent ' + d3.format('0.1%')(d.New_cases / total_cases_daily_chosen) + ' of the total number of cases confirmed so far (' + d3.format(',.0f')(total_cases_daily_chosen) + ') </p><p class = "side">In the last seven days there have been a total of ' + d3.format(',.0f')(d.Rolling_7_day_new_cases) + ' reported cases.</p>')
     .style("opacity", 1)
     .style("top", (event.pageY - 10) + "px")
     .style("left", (event.pageX + 10) + "px")
@@ -450,7 +455,7 @@ d3.select("#x_latest_figures")
 
 var showTooltip_daily_case_1 = function(d) {
   tooltip_daily_case_1
-    .html("<h5>" + d.Name + '</h5><p><b>' + d.Date_label + '</b></p><p class = "side">In ' + d.Name + ' there were <b>' + d3.format(',.0f')(d.New_cases) + ' </b>specimens taken on this date which resulted in a positive result for Covid-19.</p><p class = "side">The new cases swabbed on this day represent ' + d3.format('0.1%')(d.New_cases / total_cases_daily_chosen) + ' of the total number of cases confirmed so far (' + d3.format(',.0f')(total_cases_daily_chosen) + ') </p><p class = "side">' + d.Seven_day_ave_new_label + '</p>')
+    .html("<h5>" + d.Name + '</h5><p><b>' + d.Date_label + '</b></p><p class = "side">In ' + d.Name + ' there were <b>' + d3.format(',.0f')(d.New_cases) + ' </b>specimens taken on this date which resulted in a positive result for Covid-19.</p><p class = "side">The new cases swabbed on this day represent ' + d3.format('0.1%')(d.New_cases / total_cases_daily_chosen) + ' of the total number of cases confirmed so far (' + d3.format(',.0f')(total_cases_daily_chosen) + ') </p><p class = "side">In the last seven days there have been a total of ' + d3.format(',.0f')(d.Rolling_7_day_new_cases) + ' reported cases.</p>')
     .style("opacity", 1)
     .style("top", (event.pageY - 10) + "px")
     .style("left", (event.pageX + 10) + "px")

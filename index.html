@@ -54,7 +54,7 @@
 <span class = 'give_me_space'><input type="checkbox" class="checkbox" value="restriction_notes" checked><label> Show restriction changes</label></span>
 <div id = 'daily_new_case_bars'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-<h5 id = 'x_latest_figures'></h5>
+<p id = 'x_latest_figures'></p>
 </div>
 <div class = 'right-sidebar'>
 
@@ -131,17 +131,22 @@
 <div class = 'content'>
 <p>This section shows maps of upper tier (and lower tier further down the page) local authority areas in England to show differences in confirmed case rates across the country.</p>
 <p>The initial map shows the cumulative rate, which is the total confirmed cases so far, per 100,000 population. However, as a cumulative number, it does not really show what is happening right now, as spikes in cases (or dips in cases) can be masked over the longer term.</p>
-<p>As such, you can change the map using the buttons on the top right to show the number of new cases in the most recent complete seven days (this excludes the very recent four days of data as it is considered incomplete) and this is also expressed as a rate per 100,000 population. Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture and areas with a lot of new infections now.</p>
+<p>As such, you can change the map using the buttons on the top right to show the number of new cases in the most recent complete seven days (this excludes the very recent four days of data as it is considered incomplete) and this is also expressed as a rate per 100,000 population. Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture and areas with a lot of new infections although does not tell us a lot about how the cases have changed over the recent past and if they are decreasing or increasing.</p>
+<p>The third option is to view the rolling 7-day total compared to the previous period as a percentage increase or decrease. <b>It is important to consider each of these measures together; how many cases are there so far, what are the cases now, what were the cases last week.</b></p>
+
 <p id = 'england_cumulative_text'></p>
 <h4 id = 'summary_utla_rate_title'></h4>
 <p id= 'summary_utla_rate_subtitle'></p>
 <div id = 'rate_map_1'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+<p>Interpreting the percentage change value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than having one case in one week and two in the next, yet the percentage increase is impossible to show from a starting value of zero. Equally, no change can mean two weeks of no new cases, or one case each week or 10.</p>
+<p id = 'west_sussex_cumulative_text'></p>
 </div>
 <div class = 'right-sidebar'>
 <p>These maps use a rate per 100,000 to standardise populations across areas (because some areas are much bigger or more densely populated than others). This standardises areas to say if they all had the same number of people living in the area, how many have COVID-19.</p>
 <p class = 'side'><b>What is a decile?</b></p>
 <p>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided into 10 groups each representing 10% of the areas in England.</p>
+
 <p id = 'selected_utla_key_title'></p>
 <div id = 'utla_map_key'></div>
 

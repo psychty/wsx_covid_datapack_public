@@ -72,7 +72,7 @@ daily_cases <- read_csv('https://coronavirus.data.gov.uk/downloads/csv/coronavir
   select(Name, Code, `Area type`, Date, New_cases, Cumulative_cases) %>% 
   group_by(Name, Code, Date) %>% 
   mutate(Count = n()) %>% 
-  filter(!(`Area type` == 'Lower tier local authority' & Count == 2)) %>% 
+  filter(!(`Area type` == 'ltla' & Count == 2)) %>% 
   select(-c(`Area type`, Count)) %>% 
   left_join(mye_total, by = 'Code') %>% 
   select(-DATE_NAME) %>% 
@@ -133,18 +133,14 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Fourteen_day_average_new_cases = rollapply(New_cases, 14, mean, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases_per_100000 = ifelse(is.na(Rolling_7_day_new_cases), NA, (Rolling_7_day_new_cases / Population) * 100000)) %>% 
-  mutate(Perc_change_on_rolling_7_days_actual = round((Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7))/ lag(Rolling_7_day_new_cases, 7), 1)) %>% 
+  mutate(Perc_change_on_rolling_7_days_actual = round((Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7))/ lag(Rolling_7_day_new_cases, 7), 2)) %>% 
   mutate(Perc_change_on_rolling_7_days_tidy = factor(ifelse(Rolling_7_day_new_cases == 0 & lag(Rolling_7_day_new_cases, 7) == 0, 'No change (zero cases)', ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous 7 days', ifelse(Perc_change_on_rolling_7_days_actual == -1, '100% fewer cases (now zero cases in recent period)', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50%+ fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual < 0, 'Up to 50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'No change', ifelse(Perc_change_on_rolling_7_days_actual > 0  & Perc_change_on_rolling_7_days_actual <= .5, 'Up to 50% more cases', ifelse(Perc_change_on_rolling_7_days_actual > .5 & Perc_change_on_rolling_7_days_actual <= 1, 'Up to 100% more cases (double the cases from the previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 1 & Perc_change_on_rolling_7_days_actual <= 2, 'Up to 200% more cases (3x the cases in previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 2 & Perc_change_on_rolling_7_days_actual <= 5, 'Up to 5x the cases in previous 7 days', 'More than 5x the cases in the previous 7 days'))))))))))), levels = c("0 cases in previous 7 days","No change (zero cases)", "100% fewer cases (now zero cases in recent period)",   "50%+ fewer cases" ,  "Up to 50% fewer cases" ,  "No change" ,   "Up to 50% more cases" ,      "Up to 100% more cases (double the cases from the previous 7 days)", "Up to 200% more cases (3x the cases in previous 7 days)","Up to 5x the cases in previous 7 days", "More than 5x the cases in the previous 7 days"))) %>% 
   mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B')),
          Rolling_compare_period = paste0('seven days to ', format(Date, '%d %B'), ' compared to seven days to ', format(lag(Date,7), '%d %B'))) %>% 
+   mutate(Label_3 = paste0('In the ', Rolling_period, ', there ', ifelse(Rolling_7_day_new_cases == 1, paste0('was 1 new confirmed case (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). '),  paste0('were ', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' new confirmed cases (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). ')), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases == 0, paste0('This is the same as the ', lag(Rolling_period, 7), '.'), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases > 0, paste0('There were no cases in the ', lag(Rolling_period, 7), '.'), ifelse(Perc_change_on_rolling_7_days_actual == 0, paste0('There is <b>no change in cases</b> compared to those confirmed in the previous week (', lag(Rolling_period, 7), ').'), ifelse(Perc_change_on_rolling_7_days_actual < 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) ==1, 'was 1 new cases', paste0('were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),', and so the new cases have<b> decreased by ', abs(round(Perc_change_on_rolling_7_days_actual*100, 1)), '% (', format(lag(Rolling_7_day_new_cases, 7) - Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' fewer cases)</b>.'), ifelse(Perc_change_on_rolling_7_days_actual > 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) == 1, 'was 1 new case ', paste0(' were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),' and so the new cases have<b> risen by ', round(Perc_change_on_rolling_7_days_actual* 100, 1), '% (', ifelse(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7) == 1, '1 extra case).</b>', paste0(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7),' extra cases).</b>'))), NA))))))) %>% 
   ungroup()
 
-
 # https://www.theguardian.com/world/2020/aug/01/coronavirus-near-me-are-uk-covid-19-cases-rising-in-your-local-area?utm_term=Autofeed&CMP=twt_gu&utm_medium&utm_source=Twitter#Echobox=1596276218
-
-
-
-# viridis(11)
 
 # Three options - Cumulative rate per 100,000 population. This standardises areas to say if they all had the same number of people living in the area, how many have COVID-19. As a cumulative number, it does not really show what is happening right now, as spikes in cases (or dips in cases) can be masked over the longer term.
 
@@ -427,7 +423,8 @@ wsx_daily_cases %>%
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
   mutate(Date_label_2 = format(Date, '%d %b')) %>% 
   mutate(Colour_key = gsub('\n',' ', Colour_key)) %>% 
-  select(Name, Date, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label) %>% 
+  # select(Name, Date, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label) %>% 
+  select(Name, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label) %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/wsx_daily_cases.json'))
 
@@ -572,17 +569,33 @@ england_rolling <- p12_test_df %>%
   ungroup() %>% 
   filter(Date == complete_date) %>% 
   filter(Name == 'England') %>% 
-  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period)
+  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Label_3)
 
-paste0('The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ','), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000 population</b>). In the last ', england_rolling$Rolling_period, ' the number of confirmed COVID-19 cases in England was ', format(england_rolling$Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(england_rolling$Rolling_7_day_new_cases_per_100000, 1), big.mark = ','), ' per 100,000 population).') %>% 
+paste0('The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ','), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000 population</b>). ', england_rolling$Label_3) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/england_cumulative.json'))
+
+wsx_cumulative <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == max(Date)) %>% 
+  filter(Name == 'West Sussex') %>% 
+  select(Code, Name, Date, Cumulative_cases, Cumulative_per_100000)
+
+wsx_rolling <- p12_test_df %>% 
+  ungroup() %>% 
+  filter(Date == complete_date) %>% 
+  filter(Name == 'West Sussex') %>% 
+  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Label_3)
+
+paste0('The number of confirmed COVID-19 cases in West Sussex so far as at ', format(last_date, '%d %B'), ' is ', format(wsx_cumulative$Cumulative_cases, big.mark = ','), ' (<b>', format(round(wsx_cumulative$Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000 population</b>). ', wsx_rolling$Label_3) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/wsx_cumulative_rolling_label.json'))
 
 utla_rate_2 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == complete_date) %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority')) %>% 
-  select(Code, Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period) %>%
+  select(Code, Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Perc_change_on_rolling_7_days_tidy, Label_3) %>%
   mutate(Rolling_rate_rank = rank(-Rolling_7_day_new_cases_per_100000)) %>% 
   mutate(Rolling_Rate_decile_actual = abs(ntile(Rolling_7_day_new_cases_per_100000, 10) - 11)) %>% 
   mutate(Rolling_Rate_decile = factor(ifelse(Rolling_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Rolling_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rolling_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
@@ -675,9 +688,6 @@ ft_utla_rate_wsx <- flextable(cum_utla_rate_wsx) %>%
   hline_bottom(border = bord_style ) %>% 
   hline_top(border = bord_style, part = "all" )
 
-# library(classInt)
-# classIntervals(utla_rate$Cumulative_per_100000, n = 10, style = "quantile")
-
 utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
   filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
   mutate(ctyua19nm = ifelse(ctyua19nm %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
@@ -768,11 +778,15 @@ utla_cumulative_rate_bins <- utla_cumulative_rate_bins %>%
 utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
   mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
-  select(Name, Label_1, Label_2, cumulative_bins, rolling_bins) %>% 
+  select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = levels(utla_cumulative_rate_bins$cumulative_bins))) %>% 
   mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
   mutate(rolling_bins = factor(rolling_bins, levels = levels(utla_rolling_rate_bins$rolling_bins)))
+
+levels(utla_ua_boundaries_rate_geo@data$Perc_change_on_rolling_7_days_tidy)  %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/percentage_change_bins.json'))
 
 # geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
 
@@ -803,7 +817,7 @@ ltla_rate_2 <- p12_test_df %>%
   ungroup() %>% 
   filter(Date == complete_date) %>%
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority')) %>% 
-  select(Code, Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period) %>%
+  select(Code, Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Perc_change_on_rolling_7_days_tidy, Label_3) %>%
   mutate(Rolling_rate_rank = rank(-Rolling_7_day_new_cases_per_100000)) %>% 
   mutate(Rolling_Rate_decile_actual = abs(ntile(Rolling_7_day_new_cases_per_100000, 10) - 11)) %>% 
   mutate(Rolling_Rate_decile = factor(ifelse(Rolling_Rate_decile_actual == 1, '10% of authorities\nwith highest rate', ifelse(Rolling_Rate_decile_actual == 10, '10% of authorities\nwith lowest rate', paste0('Decile ', Rolling_Rate_decile_actual))), levels = c('10% of authorities\nwith highest rate','Decile 2','Decile 3','Decile 4','Decile 5','Decile 6','Decile 7','Decile 8','Decile 9','10% of authorities\nwith lowest rate'))) %>% 
@@ -904,7 +918,7 @@ ltla_boundaries_geo_df <- as.data.frame(ltla_rate %>%
     arrange(Code) %>% 
     mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
     mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
-    select(Name, Label_1, Label_2, cumulative_bins, rolling_bins) %>% 
+    select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
     mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
     mutate(cumulative_bins = factor(cumulative_bins, levels = levels(geo_rate_cumulative_ltla_bins$cumulative_bins))) %>% 
     mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
