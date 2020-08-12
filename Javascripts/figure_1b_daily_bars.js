@@ -2,11 +2,11 @@
 
 d3.select("#data_recency")
   .html(function(d) {
-    return 'The latest available data in this analysis are for <b>' + latest_date + '</b>. However, whilst the capacity for testing and returning results has increased with new results reported in as soon as 24 hours, there can be some delay and as such data for very recent days are likely to change, and so <b>only data up to ' + complete_date + ' should be treated as complete.</b> In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days.' });
+    return 'Whilst the capacity for testing and returning results has increased with new results reported in as soon as 24 hours, there can be some delay and as such data for very recent days are likely to change, and so <b>only data up to ' + complete_date + ' should be treated as complete.</b> In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days.' });
 
 d3.select("#case_recency_text")
   .html(function(d) {
-    return 'As noted above, the most recent four days are to be considered incomplete and may underestimate the true number of new cases. As such, the total number of confirmed COVID-19 cases in the most recent complete seven day period (seven days leading to ' + complete_date + ') as well as the number of cases in the seven days before that (up to ' + seven_days_date + ') are given on the figure to show changes over time.' });
+    return 'As noted above, the most recent days are to be considered incomplete and may underestimate the true number of new cases occurring each day. As such, the total number of confirmed COVID-19 cases in the most recent complete seven day period (seven days leading to ' + complete_date + ') as well as the number of cases in the seven days before that (up to ' + seven_days_date + ') are given on the figure to show changes over time.' });
 
 var tooltip_area_sm = d3.select("#my_sm_dataviz")
   .append("div")
@@ -36,7 +36,7 @@ var tooltip_area_sm = d3.select("#my_sm_dataviz")
 
 d3.select("#selected_ltla_sm_title")
   .html(function(d) {
-    return 'Covid-19 pillar 1 and 2 confirmed new daily confirmed cases over time; areas within ' +  'West Sussex' + '; ' + first_date + ' - ' + latest_date});
+    return 'Covid-19 pillar 1 and 2 confirmed new daily confirmed cases over time; areas within ' +  'West Sussex; as at ' + data_refreshed_date});
 
 // d3.select("#case_key_title")
 //   .html(function(d) {

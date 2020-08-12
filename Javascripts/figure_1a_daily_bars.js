@@ -20,6 +20,7 @@ request.open("GET", "./Outputs/case_change_dates.json", false);
 request.send(null);
 var data_dates = JSON.parse(request.responseText).map(function(d){return d.Date_label});
 
+
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/wsx_case_summary.json", false);
 request.send(null);
@@ -94,6 +95,17 @@ request.open("GET", "./Outputs/latest_daily_case.json", false);
 request.send(null);
 var latest_sm_date = JSON.parse(request.responseText)[0]
 
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/daily_case_update_date.json", false);
+request.send(null);
+var data_refreshed_date = JSON.parse(request.responseText)[0]
+
+// Update text based on selected area
+d3.select("#update_date")
+  .html(function(d) {
+    return 'The case data has been refreshed on ' + data_refreshed_date + ' with cases confirmed up to ' + latest_date
+  });
+
 // testing policy timelines
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/uk_testing_key_dates.json", false);
@@ -109,7 +121,6 @@ var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/wsx_daily_case_limits.json", false);
 request.send(null);
 var daily_case_limits = JSON.parse(request.responseText);
-
 
 // Daily cases bar chart
 var svg_daily_new_case_bars = d3.select("#daily_new_case_bars")
@@ -138,7 +149,7 @@ var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_
 // Update text based on selected area
 d3.select("#selected_daily_cases_bars_1_compare_title")
   .html(function(d) {
-    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option + '; ' + first_date + ' - ' + latest_date
+    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option + '; as at ' + data_refreshed_date
   });
 
 var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
@@ -431,7 +442,7 @@ var selected_figure_1a_area_option = d3.select('#select_bars_daily_cases_1_area_
 
 d3.select("#selected_daily_cases_bars_1_compare_title")
   .html(function(d) {
-    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option + '; ' + first_date + ' - ' + latest_date
+    return 'Pillar 1 and 2 combined daily confirmed COVID-19 cases; ' + selected_figure_1a_area_option + '; as at ' + data_refreshed_date
   });
 
 var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {

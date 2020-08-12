@@ -25,11 +25,10 @@
 <h2 style = "padding-left: 25px;">West Sussex COVID-19 Weekly data supplement</h2>
 <div class = "content" id = 'content_size'>
 <p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published weekly as a powerpoint slide deck. Links are provided to public data sources available.</p>
-
 <p>This data analysis is intended to supplement the published data pack by allowing a user to explore more detail in the charts such as finding out the number of cases in an area on a particular day by hovering over one of the bars or points. <b>This website is updated more frequently than the weekly powerpoint file </b>on the West Sussex County Council website, in order to show the very latest data available so note that the figures may be different.</p>
-
 <p>Local authorities currently have access to some information that is not in the public domain, which may be due to small numbers or due to data being provisional.</p>
 <p>The landscape of available data is also changing all the time, and we hope to be able to publish as much as possible.</p>
+<p class ='highlight_dl' id = 'update_date'></p>
 <p id = 'data_recency'></p>
 <p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
 </div>
@@ -43,7 +42,8 @@
 <div class = 'main' id = 'cases_come_updown'>
 <div class = 'content'>
 <h4>Daily case changes and initial peaks</h4>
-<p>The figure below shows the daily confirmed cases of Covid-19 over time by area (showing West Sussex by default), but you can change this to any lower tier area within the county. The black line represents the rolling average number of new cases confirmed in the previous seven days. The last four days of data are greyed out and should be treated as incomplete as more cases may be added to these days.</p>
+<p>The figure below shows the daily confirmed cases of Covid-19 over time by area (showing West Sussex by default), but you can change this to any lower tier area within the county. The black line represents the rolling average number of new cases confirmed in the previous seven days.</p>
+<p>Case results are generally published in the afternoon and represent cases reported up to 9am of the reporting day. However, cases are assigned to the date on which the specimen was taken rather than when it was reported. It would be very unlikely that a specimen would be taken on the day of reporting with results returned by 9am. It can take as many as four days for results to be reported (e.g. specimens taken on 1st August may not be reported until the 5th). As such, we consider the last four days as incomplete as more cases may be added to the totals for these days.</p>
 <p>The figure includes key dates when changes to testing capacity and eligibility were announced. These are adapted from The Health Foundation <a href = 'https://www.health.org.uk/news-and-comment/charts-and-infographics/covid-19-policy-tracker'>Covid-19 Policy Tracker</a>.</p>
 </div>
 <h4 style = 'padding-left: 25px; padding-top: 10px;' id = 'selected_daily_cases_bars_1_compare_title'></h4>
@@ -54,6 +54,7 @@
 <span class = 'give_me_space'><input type="checkbox" class="checkbox" value="restriction_notes" checked><label> Show restriction changes</label></span>
 <div id = 'daily_new_case_bars'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+
 <p id = 'x_latest_figures'></p>
 </div>
 <div class = 'right-sidebar'>
@@ -88,9 +89,9 @@
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
 <div class = 'right-sidebar'>
-<p class = 'side'>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size.</p>
+<p class = 'side'>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size. We have used the mid year estimates for 2019 from the <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates'>Office for National Statistics</a> to calculate these rates.</p>
 <p class = 'side'>Hover over a bar to see the number of new cases and cumulative cases to date.</p>
-<p class = 'side_important'>It is important to check for any big spikes in the 'incomplete' period as these may not be highlighted by methods that exclude the last four days of information.</p>
+<p class = 'side_important'>It is important to check for any big spikes in the 'incomplete' period as these may not be highlighted by methods that exclude the last few days of data.</p>
 </div>
 </div>
 
@@ -131,7 +132,7 @@
 <div class = 'content'>
 <p>This section shows maps of upper tier (and lower tier further down the page) local authority areas in England to show differences in confirmed case rates across the country.</p>
 <p>The initial map shows the cumulative rate, which is the total confirmed cases so far, per 100,000 population. However, as a cumulative number, it does not really show what is happening right now, as spikes in cases (or dips in cases) can be masked over the longer term.</p>
-<p>As such, you can change the map using the buttons on the top right to show the number of new cases in the most recent complete seven days (this excludes the very recent four days of data as it is considered incomplete) and this is also expressed as a rate per 100,000 population. Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture and areas with a lot of new infections although does not tell us a lot about how the cases have changed over the recent past and if they are decreasing or increasing.</p>
+<p>As such, you can change the map using the buttons on the top right to show the number of new cases in the most recent complete seven days (this excludes the very recent few days of data as they are considered incomplete) and this is also expressed as a rate per 100,000 population. Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture and areas with a lot of new infections although does not tell us a lot about how the cases have changed over the recent past and if they are decreasing or increasing.</p>
 <p>The third option is to view the rolling 7-day total compared to the previous period as a percentage increase or decrease. <b>It is important to consider each of these measures together; how many cases are there so far, what are the cases now, what were the cases last week.</b></p>
 
 <p id = 'england_cumulative_text'></p>
@@ -211,7 +212,6 @@
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 <script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script src = "Javascripts/object_setup.js"></script>
 <script src = "Javascripts/figure_1a_daily_bars.js"></script>
 <script src = "Javascripts/figure_1b_daily_bars.js"></script>
 <script src = "Javascripts/figure_2_heatmap.js"></script>

@@ -22,7 +22,7 @@ var color_new_per_100000_cases = d3.scaleOrdinal()
 
 d3.select("#summary_cases_title")
   .html(function(d) {
-    return 'Heatmap of Covid-19 pillar 1 and 2 confirmed cases; ' + first_date + ' - ' + latest_date
+    return 'Heatmap of Covid-19 pillar 1 and 2 confirmed cases; as at ' + data_refreshed_date
   });
 
 d3.select("#complete_seven")

@@ -1,4 +1,5 @@
 # Public facing data pack - West Sussex and LTLAs
+
 library(easypackages)
 
 libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis'))
@@ -40,7 +41,7 @@ github_repo_dir <- "~/Documents/Repositories/wsx_covid_datapack_public"
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
-# 2018 MYE
+# 2019 MYE
 mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=1816133633...1816133848,1820327937...1820328318,2092957697...2092957703,2013265921...2013265932&date=latest&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
   rename(Population = OBS_VALUE,
          Code = GEOGRAPHY_CODE,
@@ -82,18 +83,38 @@ daily_cases <- read_csv('https://coronavirus.data.gov.uk/downloads/csv/coronavir
 
 # One way to do this is to create a new dataframe with a row for each area and date, and left join the daily_cases data to it.
 first_date <- min(daily_cases$Date)
-last_date <- max(daily_cases$Date)
+last_case_date <- max(daily_cases$Date)
+
+# remotes::install_github("publichealthengland/coronavirus-dashboard-api-R-sdk")
+# install.packages("ukcovid19")
+library(ukcovid19)
+
+query_filters <- c(
+  # "areaType=utla"
+  'areaName=West Sussex'
+)
+
+query_structure <- list(
+  date = "date", 
+  name = "areaName", 
+  code = "areaCode", 
+  daily = "newCasesBySpecimenDate",
+  cumulative = "cumCasesBySpecimenDate"
+)
+
+last_date <- as.Date(last_update(filters = query_filters, structure = query_structure))
+# daily_cases <- get_data(filters = query_filters, structure = query_structure)
 
 Areas = daily_cases %>% 
   select(Name, Code, Type) %>% 
   unique()
 
-Dates = seq.Date(first_date, last_date, by = '1 day')
+Dates = seq.Date(first_date, last_case_date, by = '1 day')
 
 daily_cases_reworked <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(Areas$Code, length(Dates)), Type = rep(Areas$Type, length(Dates)), check.names = FALSE) %>% 
   arrange(Name) %>% 
   group_by(Name) %>% 
-  mutate(Date = seq.Date(first_date, last_date, by = '1 day')) %>% 
+  mutate(Date = seq.Date(first_date, last_case_date, by = '1 day')) %>% 
   left_join(daily_cases, by = c('Name', 'Code', 'Type', 'Date')) %>% 
   mutate(New_cases = ifelse(is.na(New_cases), 0, New_cases)) %>% 
   mutate(New_cumulative = cumsum(New_cases)) %>% 
@@ -101,13 +122,14 @@ daily_cases_reworked <- data.frame(Name = rep(Areas$Name, length(Dates)), Code =
   mutate(Calculated_same_as_original = ifelse(Cumulative_cases == New_cumulative, 'Yaas', 'Negative'))
 
 # PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
-complete_date <- max(daily_cases_reworked$Date) - 4
+complete_date <- last_date - 4
+# Case results are generally published in the afternoon and represent cases reported up to 9am of the reporting day. However, cases are assigned to the date of which the specimen was taken rather than when it was reported. This means it will be very unlikely that a specimen would be taken and results returned by 9am of the day of publication. As such, we consider the last five days (four days plus the day of reporting) as incomplete.
 
 p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(Areas$Code, length(Dates)), Type = rep(Areas$Type, length(Dates)), check.names = FALSE) %>% 
   arrange(Name) %>% 
   group_by(Name) %>% 
-  mutate(Date = seq.Date(first_date, last_date, by = '1 day')) %>% 
-  mutate(Data_completeness = ifelse(Date >= max(Date) - 3, 'Considered incomplete', 'Complete')) %>% 
+  mutate(Date = seq.Date(first_date, last_case_date, by = '1 day')) %>% 
+  mutate(Data_completeness = ifelse(Date > complete_date, 'Considered incomplete', 'Complete')) %>% 
   left_join(daily_cases, by = c('Name', 'Code', 'Type', 'Date')) %>% 
   mutate(New_cases = ifelse(is.na(New_cases), 0, New_cases)) %>% 
   rename(Original_cumulative = Cumulative_cases) %>% # We should keep the original cumulative cases for reference
@@ -124,13 +146,13 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(new_case_per_100000_key = factor(ifelse(New_cases_per_100000 < 0, 'Data revised down', ifelse(New_cases_per_100000 == 0, 'No new cases', ifelse(New_cases_per_100000 < 1, 'Less than 1 case per 100,000', ifelse(New_cases_per_100000 >= 1 & New_cases_per_100000 <= 2, '1-2 new cases per 100,000', ifelse(New_cases_per_100000 <= 4, '3-4 new cases per 100,000', ifelse(New_cases_per_100000 <= 6, '5-6 new cases per 100,000', ifelse(New_cases_per_100000 <= 8, '7-8 new cases per 100,000', ifelse(New_cases_per_100000 <= 10, '9-10 new cases per 100,000', ifelse(New_cases_per_100000 > 10, 'More than 10 new cases per 100,000', NA))))))))), levels =  c('No new cases', 'Less than 1 case per 100,000', '1-2 new cases per 100,000', '3-4 new cases per 100,000', '5-6 new cases per 100,000', '7-8 new cases per 100,000', '9-10 new cases per 100,000', 'More than 10 new cases per 100,000'))) %>%
   mutate(Case_label = paste0('A total of ', format(New_cases, big.mark = ',', trim = TRUE), ' people who had sample specimens taken on this day (representing new cases) were confirmed to have the virus',  ifelse(Data_completeness == 'Considered incomplete', paste0('.<font color = "#bf260a"> However, these figures should be considered incomplete until at least ', format(Date + 4, '%d %B'),'.</font>'),'.'), 'The total (cumulative) number of cases reported for people with specimens taken by this date (', Period, ') was ', format(Cumulative_cases, big.mark = ',', trim = TRUE),'.')) %>% 
   mutate(Rate_label = paste0('The new cases (swabbed on this date) represent <b>',format(round(New_cases_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population</p><p>The total (cumulative) number of Covid-19 cases per 100,000 population reported to date (', Period, ') is <b>', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), '</b> cases per 100,000 population.')) %>% 
-  mutate(Seven_day_ave_new_label = ifelse(is.na(Seven_day_average_new_cases), paste0('It is not possible to calculate a seven day rolling average of new cases for this date (', Period, ') because one of the values in the last seven days is missing.'), ifelse(Data_completeness == 'Considered incomplete', paste0('It can take around five days for results to be fully reported and data for this date (', Period, ') should be considered incomplete.', paste0('As such, the rolling average number of new cases in the last seven days (<b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), ' cases</b>) should be treated with caution.')), paste0('The rolling average number of new cases in the last seven days is <b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), '  cases</b>.')))) %>% 
+  mutate(Seven_day_ave_new_label = ifelse(is.na(Seven_day_average_new_cases), paste0('It is not possible to calculate a seven day rolling average of new cases for this date (', Period, ') because one of the values in the last seven days is missing.'), ifelse(Data_completeness == 'Considered incomplete', paste0('It can take around four days for results to be fully reported and data for this date (', Period, ') should be considered incomplete.', paste0('As such, the rolling average number of new cases in the last seven days (<b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), ' cases</b>) should be treated with caution.')), paste0('The rolling average number of new cases in the last seven days is <b>', format(round(Seven_day_average_new_cases, 0), big.mark = ',', trim = TRUE), '  cases</b>.')))) %>% 
   ungroup() %>% 
   mutate(Name = ifelse(Name == 'South East', 'South East region', Name))  %>% 
   mutate(Test_pillar = 'Pillars 1 and 2') %>% 
   group_by(Name) %>% 
-  mutate(Ten_day_average_new_cases = rollapply(New_cases, 10, mean, align = 'right', fill = NA)) %>% 
-  mutate(Fourteen_day_average_new_cases = rollapply(New_cases, 14, mean, align = 'right', fill = NA)) %>% 
+  # mutate(Ten_day_average_new_cases = rollapply(New_cases, 10, mean, align = 'right', fill = NA)) %>% 
+  # mutate(Fourteen_day_average_new_cases = rollapply(New_cases, 14, mean, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA)) %>% 
   mutate(Rolling_7_day_new_cases_per_100000 = ifelse(is.na(Rolling_7_day_new_cases), NA, (Rolling_7_day_new_cases / Population) * 100000)) %>% 
   mutate(Perc_change_on_rolling_7_days_actual = round((Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7))/ lag(Rolling_7_day_new_cases, 7), 2)) %>% 
@@ -160,7 +182,7 @@ rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_case
 
 p12_test_df_2 <- p12_test_df_raw %>% 
   group_by(Name) %>% 
-  filter(Date %in% c(last_date, last_date - 7)) %>% 
+  filter(Date %in% c(last_date - 1, last_date - 8)) %>% 
   select(Name, Date, Seven_day_average_new_cases) %>% 
   arrange(desc(Date)) %>% 
   mutate(Date = c('Latest_7_day_average', 'Previous_7_day_average')) %>% 
@@ -204,8 +226,8 @@ total_cases_reported_plot <- ggplot(area_x_df_1,
   scale_fill_manual(values = c('#071b7c'),
                     name = 'Pillar') +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(area_x_df_1$Date) -(52*7), max(area_x_df_1$Date), by = 7),
-               limits = c(min(area_x_df_1$Date), max(area_x_df_1$Date)),
+               breaks = seq.Date((last_date - 1) -(52*7), last_date -1, by = 7),
+               limits = c(min(area_x_df_1$Date), last_date),
                expand = c(0.01,0.01)) +
   scale_y_continuous(labels = label_comma(accuracy = 1),
                      breaks = seq(0,max_daily_case_limit, max_daily_case_break),
@@ -226,13 +248,13 @@ total_cases_reported_plot <- ggplot(area_x_df_1,
   annotate('text',
            x = complete_date,
            y = max_daily_case_limit * .8,
-           label = 'Last 4 days\nnot considered\ncomplete:',
+           label = 'Totals for\nthese days\nnot considered\ncomplete:',
            size = 2.5,
            hjust = 1) +
   labs(x = 'Date',
        y = 'Number of daily confirmed cases',
        title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; ', area_x),
-       subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(area_x_df_1$Date), '%d %B %Y')),
+       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')),
        caption = 'The black line represents the average number of new cases confirmed in the previous seven days.') +
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
@@ -272,8 +294,8 @@ total_cases_reported_plot_2 <- ggplot(ltla_p12_test_df,
   scale_fill_manual(values = c('#071b7c'),
                     name = 'Pillar') +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(ltla_p12_test_df$Date) -(52*7), max(ltla_p12_test_df$Date), by = 7),
-               limits = c(min(ltla_p12_test_df$Date), max(ltla_p12_test_df$Date)),
+               breaks = seq.Date((last_date -1) -(52*7), last_date-1, by = 7),
+               limits = c(min(ltla_p12_test_df$Date), last_date),
                expand = c(0.01,0.01)) +
   scale_y_continuous(labels = label_comma(accuracy = 1),
                      breaks = seq(0,max_daily_case_limit, max_daily_case_break),
@@ -294,13 +316,13 @@ total_cases_reported_plot_2 <- ggplot(ltla_p12_test_df,
   annotate('text',
            x = complete_date,
            y = max_daily_case_limit * .8,
-           label = 'Last 4 days\nnot considered\ncomplete:',
+           label = 'Totals for\nthese days\nnot considered\ncomplete:',
            size = 2.5,
            hjust = 1) +
   labs(x = 'Date',
        y = 'Number of daily confirmed cases',
        title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; West Sussex lower tier Local Authorities'),
-       subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')),
+       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')),
        caption = 'The black line represents the average number of new cases confirmed in the previous seven days.') +
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
@@ -312,71 +334,6 @@ png(paste0(output_directory_x, '/Small_multiples_covid_19_confirmed_cases.png'),
     height = 1050,
     res = 120)
 print(total_cases_reported_plot_2)
-dev.off()
-
-total_cases_reported_plot_3 <-  ggplot(ltla_p12_test_df) +
-  geom_bar(data = ltla_p12_test_df,
-           aes(x = Date,
-               y = New_cases,
-               fill = Colour_key),
-           width = 1,
-           stat = 'identity',
-           position = 'stack',
-           colour = '#ffffff') + 
-  geom_line(data = ltla_p12_test_df,
-            aes(x = Date,
-                y = Seven_day_average_new_cases,
-                colour = Colour_key),
-            group = 1) +
-  scale_fill_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
-                    name = 'Change in average new cases',
-                    drop = FALSE) +
-  scale_colour_manual(values = c('#aaaaaa','#721606', '#005bd6', '#1fbfbb', '#c2f792'),
-                    name = 'Change in average new cases',
-                    drop = FALSE) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(ltla_p12_test_df$Date) -(52*7), max(ltla_p12_test_df$Date), by = 7),
-               limits = c(min(ltla_p12_test_df$Date), max(ltla_p12_test_df$Date)),
-               expand = c(0.01,0.01)) +
-  scale_y_continuous(labels = label_comma(accuracy = 1),
-                     breaks = seq(0,max_daily_case_limit, max_daily_case_break),
-                     limits = c(0,max_daily_case_limit)) +
-  geom_segment(x = complete_date + 1,
-               y = 0,
-               xend = complete_date + 1,
-               yend = Inf,
-               color = "red",
-               size = .15,
-               linetype = "dashed") +
-  annotate('rect',
-           xmin = complete_date + 1,
-           xmax = max(ltla_p12_test_df$Date),
-           ymin = 0,
-           ymax = Inf,
-           fill = '#cccccc',
-           alpha = .25) +
-  annotate('text',
-           x = complete_date,
-           y = max_daily_case_limit * .8,
-           label = 'Last 4 days\nnot considered\ncomplete:',
-           size = 2.25,
-           hjust = 1) +
-  labs(x = 'Date',
-       y = 'Number of daily confirmed cases',
-       title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; West Sussex lower tier Local Authorities'),
-       subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')),
-       caption = paste0('The line represents the average number of new cases confirmed in the previous seven days.\nA change in cases is identified by comparing the most recent 7 day period (including incomplete days, with average number of new cases between ', format(last_date - 6, '%d %B') , ' and ', format(last_date, '%d %B'), ') with the previous 7 day period (', format(last_date - 13, '%d %B') , '-', format(last_date - 7, '%d %B'),').')) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-        legend.position = c(.7,.125)) +
-  facet_wrap(~Name, ncol = 3) +
-  guides(fill = guide_legend(nrow = 3, byrow = TRUE))
-
-png(paste0(output_directory_x, '/Small_multiples_covid_19_confirmed_cases_by_latest_change.png'),
-    width = 1580,
-    height = 1050,
-    res = 120)
-print(total_cases_reported_plot_3)
 dev.off()
 
 # exporting for web ####
@@ -447,7 +404,7 @@ levels(wsx_daily_cases$new_case_per_100000_key) %>%
 
 wsx_daily_cases %>% 
   ungroup() %>% 
-  filter(Date == min(Date) | Date == max(Date)) %>% 
+  filter(Date == min(Date) | Date == last_date -1) %>% 
   select(Date) %>% 
   unique() %>% 
   add_row(Date = complete_date - 7) %>% 
@@ -462,14 +419,14 @@ wsx_daily_cases %>%
 
 p12_test_df %>% 
   ungroup() %>% 
-  filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 14)) %>% 
+  filter(Date %in% seq.Date((last_date-1) -(52*7), last_date -1, by = 14)) %>% 
   mutate(Date_label = format(Date, '%d %b')) %>% 
   select(Date_label) %>% 
   unique() %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/case_change_dates.json'))
 
-data.frame(time = c('Latest', 'Previous'), range = c(paste0(format(last_date - 6, '%d %b') , ' and ', format(last_date, '%d %b')),  paste0(format(last_date - 13, '%d %b') , '-', format(last_date - 7, '%d %b')))) %>% 
+data.frame(time = c('Latest', 'Previous'), range = c(paste0(format(last_date - 7, '%d %b') , ' and ', format(last_date -1, '%d %b')),  paste0(format(last_date - 14, '%d %b') , '-', format(last_date - 8, '%d %b')))) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/case_change_date_range.json'))
 
@@ -477,9 +434,13 @@ format(complete_date+1, '%d %b') %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/first_incomplete_daily_case.json'))
 
-format(last_date, '%d %b') %>% 
+format(last_date - 1, '%d %b') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/latest_daily_case.json'))
+
+format(last_date, '%d %b %Y') %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/daily_case_update_date.json'))
 
 # Heatmap of cases ####
 hm_theme = function(){
@@ -517,12 +478,12 @@ new_case_rate_plot <- ggplot(hm_df, aes(x = Date,
                     name = 'Tile\ncolour\nkey',
                     drop = FALSE) +
   geom_tile(colour = "#ffffff") +
-  labs(title = paste0('Summary of new confirmed Covid-19 cases per 100,000 population (all ages); ', format(min(hm_df$Date), '%d %B'), ' to ',format(max(hm_df$Date), '%d %B')),
+  labs(title = paste0('Summary of new confirmed Covid-19 cases per 100,000 population (all ages); as at ', format(last_date, '%d %B')),
        x = NULL,
        y = NULL,
        caption = 'Cases for dates after the red dashed line are not considered complete due to a lag in test result reporting.') +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(hm_df$Date) -(52*7), max(hm_df$Date), by = 7),
+               breaks = seq.Date((last_date -1) -(52*7), last_date -1, by = 7),
                limits = c(min(hm_df$Date), max(hm_df$Date)),
                expand = c(0,0.0)) +
   # scale_y_discrete(position = 'right') +
@@ -742,7 +703,7 @@ map_1 <- ggplot() +
   scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
                     name = 'Decile of cumulative\nrate per 100k') +
   labs(title = paste0('Cumulative rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Upper Tier Local and Unitary Authorities'),
-       subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')))  +
+       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')))  +
   theme(legend.position = c(.1,.55))
 
 inset_1 <- ggplot() +
@@ -776,7 +737,7 @@ utla_cumulative_rate_bins <- utla_cumulative_rate_bins %>%
   mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
 
 utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
-  mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
@@ -916,7 +877,7 @@ ltla_boundaries_geo <- ltla_boundaries %>%
 
 ltla_boundaries_geo_df <- as.data.frame(ltla_rate %>% 
     arrange(Code) %>% 
-    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(Date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
+    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
     mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
     select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
     mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
@@ -962,7 +923,7 @@ map_1_ltla <- ggplot() +
                     name = 'Decile of cumulative\nrate per 100k',
                     drop = FALSE) +
   labs(title = paste0('Cumulative rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Lower Tier Local and Unitary Authorities'),
-       subtitle = paste0('Confirmed cases by specimen date; 01 March - ', format(max(ltla_p12_test_df$Date), '%d %B %Y')))  +
+       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')))  +
   theme(legend.position = c(.1,.55))
 
 inset_1_ltla <- ggplot() +
@@ -1131,7 +1092,7 @@ whole_timeseries_plot <- ggplot(pathways_x,
   geom_line() +
   geom_point() +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 2),
+               breaks = seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7),
                limits = c(min(nhs_pathways$Date), max(nhs_pathways$Date)),
                expand = c(0.01,0.01)) +
   scale_y_continuous(labels = comma,

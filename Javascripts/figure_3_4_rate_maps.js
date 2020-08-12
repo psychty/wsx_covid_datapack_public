@@ -242,7 +242,7 @@ d3.select("#summary_utla_rate_title")
 
 d3.select("#summary_utla_rate_subtitle")
   .html(function(d) {
-    return 'Pillar 1 and 2 confirmed cases; specimen dates ' + first_date + ' - ' + latest_date +';'
+    return 'Pillar 1 and 2 confirmed cases; as at ' + data_refreshed_date
   });
 
 d3.select("#selected_utla_key_title")
@@ -493,7 +493,7 @@ d3.select("#summary_ltla_rate_title")
 
 d3.select("#summary_ltla_rate_subtitle")
   .html(function(d) {
-    return 'Pillar 1 and 2 confirmed cases; specimen dates ' + first_date + ' - ' + latest_date +';'
+    return 'Pillar 1 and 2 confirmed cases; as at ' + data_refreshed_date
   });
 
 d3.select("#selected_ltla_key_title")
