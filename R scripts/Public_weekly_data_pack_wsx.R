@@ -438,7 +438,7 @@ format(last_date - 1, '%d %b') %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/latest_daily_case.json'))
 
-format(last_date, '%d %b %Y') %>% 
+format(last_date, '%d %B %Y') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/daily_case_update_date.json'))
 
