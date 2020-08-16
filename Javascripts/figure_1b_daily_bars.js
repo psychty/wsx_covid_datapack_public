@@ -43,8 +43,8 @@ d3.select("#selected_ltla_sm_title")
 //     return 'The bars on each figure are also coloured to show the most recent changes in case growth, by comparing the average number of cases in the last complete seven day period (' + data_date_range[0]['range'] + ') with the average number of cases in the seven day period prior to that (' + data_date_range[1]['range'] + '). Areas with bars coloured in red indicate that there is an increase in cases, whilst blue areas show a decline in confirmed cases and green areas indicate no confirmed cases in the most recent 7 day period (excluding incomplete days - see right).'});
 
 chosen_utla_df = daily_cases.filter(function(d) { // gets a subset of the json data
-  return d.Name !== 'West Sussex'
-  })
+  return ['Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing'].indexOf(d.Name) >= 0
+        })
 
 var areas_for_sm_1 = d3.nest()
   .key(function(d) { return d.Name;})
@@ -178,7 +178,7 @@ sm_svg_1
 
 function update_ltla_sm(chosen_utla_area){
 chosen_utla_df = daily_cases.filter(function(d) { // gets a subset of the json data
-  return d.Name !== 'West Sussex'
+  return ['Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing'].indexOf(d.Name) >= 0
   })
 
 var areas_for_sm_1 = d3.nest()

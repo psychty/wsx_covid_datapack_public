@@ -15,6 +15,8 @@ if (width_sm < 300){
 
 var areas = ['West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing']
 
+var areas_1a = ['West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'South East region', 'England']
+
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/case_change_dates.json", false);
 request.send(null);
@@ -133,7 +135,7 @@ var svg_daily_new_case_bars = d3.select("#daily_new_case_bars")
 // We need to create a dropdown button for the user to choose which area to be displayed on the figure.
 d3.select("#select_bars_daily_cases_1_area_button")
   .selectAll('myOptions')
-  .data(areas)
+  .data(areas_1a)
   .enter()
   .append('option')
   .text(function(d) {
@@ -156,8 +158,6 @@ var bars_daily_cases_1_chosen = daily_cases.filter(function(d) {
   return d.Name === selected_figure_1a_area_option
 });
 
-
-
 var total_cases_daily_chosen = case_summary.filter(function(d){
   return d.Name === selected_figure_1a_area_option})[0]['Total confirmed cases so far']
 
@@ -176,7 +176,6 @@ xAxis_daily_cases
 .attr("transform", 'translate(-' + (x_daily_cases.bandwidth() + 10) + ',10)rotate(-90)')
 .style("text-anchor", "end")
 .style("font-size", "10px")
-
 
 x_summary = case_summary.filter(function(d, i) {
   return d.Name === selected_figure_1a_area_option

@@ -375,7 +375,7 @@ mutate(Date_label = format(Date, '%a %d %B')) %>%
 select(Name, Date, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label, Colour_key, Cumulative_cases)
 
 wsx_daily_cases %>% 
-  filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing')) %>% 
+  filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'South East region', 'England')) %>% 
   mutate(Period = format(Date, '%d %B')) %>% 
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
   mutate(Date_label_2 = format(Date, '%d %b')) %>% 
@@ -387,7 +387,7 @@ wsx_daily_cases %>%
 
 wsx_daily_cases %>% 
   ungroup() %>% 
-  filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing')) %>% 
+  filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'South East region', 'England')) %>% 
   group_by(Name) %>% 
   summarise(Max_limit = round_any(max(New_cases), 10, ceiling)) %>% 
   ungroup() %>% 
