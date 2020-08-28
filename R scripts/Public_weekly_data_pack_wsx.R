@@ -104,6 +104,7 @@ query_structure <- list(
 
 last_date <- as.Date(last_update(filters = query_filters, structure = query_structure))
 # daily_cases <- get_data(filters = query_filters, structure = query_structure)
+# last_date <- as.Date('2020-08-26')
 
 Areas = daily_cases %>% 
   select(Name, Code, Type) %>% 
