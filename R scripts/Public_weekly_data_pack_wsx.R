@@ -733,6 +733,50 @@ print(map_1)
 print(inset_1, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
 
+map_1b <- ggplot() +
+  coord_fixed(1.5) +
+  map_theme() +
+  geom_polygon(data = utla_ua_boundaries,
+               aes(x=long,
+                   y=lat,
+                   group = group,
+                   fill = rolling_bins),
+               color="#ffffff",
+               size = .1,
+               alpha = 1,
+               show.legend = TRUE) +
+  scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
+                    name = 'Decile of rolling\n7 day rate per 100k') +
+  labs(title = paste0('Rolling 7 day rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Upper Tier Local and Unitary Authorities'),
+       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')))  +
+  theme(legend.position = c(.1,.55))
+
+inset_1b <- ggplot() +
+  coord_fixed(1.5) +
+  map_theme() +
+  geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
+               aes(x=long,
+                   y=lat,
+                   group = group,
+                   fill = rolling_bins),
+               color="#ffffff",
+               size = .1,
+               alpha = 1,
+               show.legend = FALSE) +
+  scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
+                    name = 'Decile of rolling\nrate per 100k') +
+  labs(title = 'London') +
+  theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
+        plot.title = element_text(size = 8))
+
+png(paste0(output_directory_x, '/Figure_3_rolling_rate_utla_latest.png'),
+    width = 1480,
+    height = 1480,
+    res = 180)
+print(map_1b)
+print(inset_1b, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
+dev.off()
+
 utla_cumulative_rate_bins <- utla_cumulative_rate_bins %>% 
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
@@ -953,6 +997,54 @@ png(paste0(output_directory_x, '/Figure_4_cumulative_rate_ltla_latest.png'),
 print(map_1_ltla)
 print(inset_1_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
+
+
+map_1b_ltla <- ggplot() +
+  coord_fixed(1.5) +
+  map_theme() +
+  geom_polygon(data = ltla_ua_boundaries,
+               aes(x=long,
+                   y=lat,
+                   group = group,
+                   fill = rolling_bins),
+               color="#ffffff",
+               size = .1,
+               alpha = 1,
+               show.legend = TRUE) +
+  scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
+                    name = 'Decile of rolling\n7 day rate per 100k',
+                    drop = FALSE) +
+  labs(title = paste0('Rolling 7 day rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Lower Tier Local and Unitary Authorities'),
+       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')))  +
+  theme(legend.position = c(.1,.55))
+
+inset_1b_ltla <- ggplot() +
+  coord_fixed(1.5) +
+  map_theme() +
+  geom_polygon(data = subset(ltla_ua_boundaries, Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')),
+               aes(x=long,
+                   y=lat,
+                   group = group,
+                   fill = rolling_bins),
+               color="#ffffff",
+               size = .1,
+               alpha = 1,
+               show.legend = FALSE) +
+  scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
+                    name = 'Decile of rolling\n7 day rate per 100k',
+                    drop = FALSE) +
+  labs(title = 'West Sussex') +
+  theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
+        plot.title = element_text(size = 8))
+
+png(paste0(output_directory_x, '/Figure_4_rolling_rate_ltla_latest.png'),
+    width = 1480,
+    height = 1480,
+    res = 180)
+print(map_1b_ltla)
+print(inset_1b_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
+dev.off()
+
 
 # NHS Pathways ####
 
@@ -1621,6 +1713,26 @@ wkly_template <- wkly_template %>%
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>% 
   ph_with(value = ft_utla_rate_wsx, 
           location = ph_location_label(ph_label = 'Table Placeholder 7')) %>% 
+  add_slide(layout = "rate_map_rolling_layout", master = "Office Theme") %>% # UTLA Map
+  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_3_rolling_rate_utla_latest.png')), 
+          location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
+  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
+          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+  ph_with(value = 'Source: https://coronavirus.data.gov.uk/', 
+          href = 'https://coronavirus.data.gov.uk',
+          location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
+  ph_with(value = paste0('Slide ', length(.) -1), 
+          location = ph_location_label(ph_label = 'Text Placeholder 19')) %>% 
+  ph_with(value = paste0('Upper Tier Local Authority rolling 7 day cases as at ', format(last_date, '%d %B')), 
+          location = ph_location_label(ph_label = 'Text Placeholder 3')) %>% 
+  ph_with(value = 'What is a decile?',
+          location = ph_location_label(ph_label = 'Text Placeholder 12')) %>%
+  ph_with(value = paste0('Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.'), 
+          location = ph_location_label(ph_label = 'Text Placeholder 14')) %>%
+  # ph_with(value = paste0('West Sussex is in the ', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual'))) == '1st', 'highest 10% of local authorities.', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual')))== '10th', 'lowest 10% of local authorities.', paste0(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual'))), ' decile.')))), 
+  #         location = ph_location_label(ph_label = 'Text Placeholder 6')) %>% 
+  # ph_with(value = ft_utla_rate_wsx, 
+  #         location = ph_location_label(ph_label = 'Table Placeholder 7')) %>% 
 add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
   ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_4_cumulative_rate_ltla_latest.png')), 
           location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
@@ -1639,6 +1751,24 @@ add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
           location = ph_location_label(ph_label = 'Text Placeholder 14')) %>% 
   ph_with(value = ft_ltla_rate_wsx, 
           location = ph_location_label(ph_label = 'Table Placeholder 7')) %>% 
+  add_slide(layout = "rate_map_rolling_layout", master = "Office Theme") %>%  # LTLA map
+  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_4_rolling_rate_ltla_latest.png')), 
+          location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
+  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
+          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+  ph_with(value = 'Source: https://coronavirus.data.gov.uk/', 
+          href = 'https://coronavirus.data.gov.uk',
+          location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
+  ph_with(value = paste0('Slide ', length(.) -1), 
+          location = ph_location_label(ph_label = 'Text Placeholder 19')) %>% 
+  ph_with(value = paste0('Lower Tier Local Authority rolling cases as at ', format(last_date, '%d %B')), 
+          location = ph_location_label(ph_label = 'Text Placeholder 3')) %>% 
+  ph_with(value = 'What is a decile?',
+          location = ph_location_label(ph_label = 'Text Placeholder 12')) %>%
+  ph_with(value = paste0('Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.'), 
+          location = ph_location_label(ph_label = 'Text Placeholder 14')) %>% 
+  # ph_with(value = ft_ltla_rate_wsx, 
+  #         location = ph_location_label(ph_label = 'Table Placeholder 7')) %>% 
   add_slide(layout = "pathways_layout", master = "Office Theme") %>%
   ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')), 
           location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>% 
