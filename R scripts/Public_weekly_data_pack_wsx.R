@@ -4,8 +4,6 @@ library(easypackages)
 
 libraries(c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'fingertipsR', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis'))
 
-start <- Sys.time()
-
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
                           {s = substring(s, 2); if(strict) tolower(s) else s},sep = "", collapse = " " )
@@ -639,7 +637,29 @@ ft_utla_rate_wsx <- flextable(cum_utla_rate_wsx) %>%
   width(j = 1, width = 1.3) %>%
   width(j = 4, width = 1.3) %>%
   width(j = 5, width = 1.3) %>%
-  fontsize(part = "header", size = 11) %>% 
+  fontsize(part = "header", size = 10) %>% 
+  fontsize(part = "body", size = 11) %>% 
+  font(fontname = "Calibri") %>% 
+  height_all(height = .2) %>% 
+  valign(valign = "top", part = "all") %>% 
+  bold(part = "header")%>% 
+  align(j = 1, align = 'left') %>% 
+  hline(i = 1, border = bord_style, part = 'header') %>% 
+  hline_bottom(border = bord_style ) %>% 
+  hline_top(border = bord_style, part = "all" )
+
+rolling_utla_rate_wsx <- utla_rate_wsx %>% 
+  select(Name, `Rolling 7-day new cases`, `Rolling 7-day case rate per 100,000`, `Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000`, `Decile of rolling rate per 100,000`)
+
+rolling_period_x <- unique(utla_rate_wsx$Rolling_period)
+
+ft_utla_rolling_rate_wsx <- flextable(rolling_utla_rate_wsx) %>% 
+  width(width = .9) %>%
+  align(j = 1, align = 'left') %>% 
+  width(j = 1, width = 1.3) %>%
+  width(j = 4, width = 1.3) %>%
+  width(j = 5, width = 1.3) %>%
+  fontsize(part = "header", size = 10) %>% 
   fontsize(part = "body", size = 11) %>% 
   font(fontname = "Calibri") %>% 
   height_all(height = .2) %>% 
@@ -748,7 +768,7 @@ map_1b <- ggplot() +
   scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
                     name = 'Decile of rolling\n7 day rate per 100k') +
   labs(title = paste0('Rolling 7 day rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Upper Tier Local and Unitary Authorities'),
-       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')))  +
+       subtitle = paste0('Confirmed cases in the ', rolling_period_x, '; as at ', format(last_date, '%d %B %Y')))  +
   theme(legend.position = c(.1,.55))
 
 inset_1b <- ggplot() +
@@ -866,28 +886,64 @@ summary_table_rate <- p12_test_df %>%
   arrange(Name)
 
 ltla_rate_wsx <- ltla_rate %>% 
-  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulative_rate_rank, Cumulative_Rate_decile) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000, Cumulative_rate_rank, Cumulative_Rate_decile, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_rate_rank, Rolling_Rate_decile, Rolling_period) %>% 
   mutate(Cumulative_rate_rank = ordinal(Cumulative_rate_rank)) %>% 
-  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+  mutate(Rolling_rate_rank = ordinal(Rolling_rate_rank)) %>% 
+  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
   mutate(Cumulative_cases = format(Cumulative_cases, big.mark = ',', trim = TRUE),
-         Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
+         Cumulative_per_100000 = format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE),
+         Rolling_7_day_new_cases = format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE),
+         Rolling_7_day_new_cases_per_100000 = format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
   bind_rows(summary_table_rate) %>% 
   rename(`Cumulative cases` = Cumulative_cases,
          `Cumulative rate per 100,000 residents` =  Cumulative_per_100000,
-         `Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000
-         ` = Cumulative_rate_rank,
-         `Decile of cumulative rate per 100,000` = Cumulative_Rate_decile) 
+         `Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000` = Cumulative_rate_rank,
+         `Decile of cumulative rate per 100,000` =  Cumulative_Rate_decile,
+         `Rolling 7-day new cases` = Rolling_7_day_new_cases,
+         `Rolling 7-day case rate per 100,000` = Rolling_7_day_new_cases_per_100000,
+         `Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000` = Rolling_rate_rank,
+         `Decile of rolling rate per 100,000` =  Rolling_Rate_decile)
 
 ltla_rate_wsx %>% 
   write.csv(., paste0(output_directory_x, '/ltla_rate_wsx.csv'), row.names = FALSE)
 
-ft_ltla_rate_wsx <- flextable(ltla_rate_wsx) %>% 
+cum_ltla_rate_wsx <- ltla_rate_wsx %>% 
+  select(Name, `Cumulative cases`, `Cumulative rate per 100,000 residents`, `Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000`, `Decile of cumulative rate per 100,000`)
+
+ft_ltla_rate_wsx <- flextable(cum_ltla_rate_wsx) %>% 
   width(width = .9) %>%
   align(j = 1, align = 'left') %>% 
   width(j = 1, width = 1.3) %>%
   width(j = 4, width = 1.3) %>%
   width(j = 5, width = 1.3) %>%
-  fontsize(part = "header", size = 11) %>% 
+  fontsize(part = "header", size = 10) %>% 
+  fontsize(part = "body", size = 11) %>% 
+  font(fontname = "Calibri") %>% 
+  height_all(height = .2) %>% 
+  valign(valign = "top", part = "all") %>% 
+  bold(part = "header")%>% 
+  align(j = 1, align = 'left') %>% 
+  hline(i = 1, border = bord_style, part = 'header') %>% 
+  hline_bottom(border = bord_style ) %>% 
+  hline_top(border = bord_style, part = "all" )
+
+rolling_ltla_wsx_updte <- rolling_utla_rate_wsx %>% 
+  rename(`Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000` = `Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000`) %>% 
+  mutate(`Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000` = '-') %>% 
+  mutate(`Decile of rolling rate per 100,000` = '-')
+
+rolling_ltla_rate_wsx <- ltla_rate_wsx %>% 
+  select(Name, `Rolling 7-day new cases`, `Rolling 7-day case rate per 100,000`, `Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000`, `Decile of rolling rate per 100,000`) %>% 
+  filter(!Name %in% c('West Sussex', 'South East region', 'England')) %>% 
+  bind_rows(rolling_ltla_wsx_updte)
+
+ft_ltla_rolling_rate_wsx <- flextable(rolling_ltla_rate_wsx) %>% 
+  width(width = .9) %>%
+  align(j = 1, align = 'left') %>% 
+  width(j = 1, width = 1.3) %>%
+  width(j = 4, width = 1.3) %>%
+  width(j = 5, width = 1.3) %>%
+  fontsize(part = "header", size = 10) %>% 
   fontsize(part = "body", size = 11) %>% 
   font(fontname = "Calibri") %>% 
   height_all(height = .2) %>% 
@@ -998,7 +1054,6 @@ print(map_1_ltla)
 print(inset_1_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
 
-
 map_1b_ltla <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
@@ -1015,7 +1070,7 @@ map_1b_ltla <- ggplot() +
                     name = 'Decile of rolling\n7 day rate per 100k',
                     drop = FALSE) +
   labs(title = paste0('Rolling 7 day rate of confirmed Covid-19 cases per 100,000 population (all ages);\nPillar 1 and 2 combined; Lower Tier Local and Unitary Authorities'),
-       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')))  +
+       subtitle = paste0('Confirmed cases in the ', rolling_period_x, '; as at ', format(last_date, '%d %B %Y')))  +
   theme(legend.position = c(.1,.55))
 
 inset_1b_ltla <- ggplot() +
@@ -1044,7 +1099,6 @@ png(paste0(output_directory_x, '/Figure_4_rolling_rate_ltla_latest.png'),
 print(map_1b_ltla)
 print(inset_1b_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
-
 
 # NHS Pathways ####
 
@@ -1729,10 +1783,10 @@ wkly_template <- wkly_template %>%
           location = ph_location_label(ph_label = 'Text Placeholder 12')) %>%
   ph_with(value = paste0('Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.'), 
           location = ph_location_label(ph_label = 'Text Placeholder 14')) %>%
-  # ph_with(value = paste0('West Sussex is in the ', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual'))) == '1st', 'highest 10% of local authorities.', ifelse(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual')))== '10th', 'lowest 10% of local authorities.', paste0(ordinal(as.numeric(subset(utla_rate, Name == 'West Sussex', select = 'Cumulative_Rate_decile_actual'))), ' decile.')))), 
-  #         location = ph_location_label(ph_label = 'Text Placeholder 6')) %>% 
-  # ph_with(value = ft_utla_rate_wsx, 
-  #         location = ph_location_label(ph_label = 'Table Placeholder 7')) %>% 
+  ph_with(value = paste0('Note that the very recent days are excluded in the 7-day total as these are thought to be incomplete. As such, this data represents cases in the ', rolling_period_x), 
+          location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
+  ph_with(value = ft_utla_rolling_rate_wsx,
+          location = ph_location_label(ph_label = 'Table Placeholder 7')) %>%
 add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
   ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_4_cumulative_rate_ltla_latest.png')), 
           location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
@@ -1767,8 +1821,10 @@ add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
           location = ph_location_label(ph_label = 'Text Placeholder 12')) %>%
   ph_with(value = paste0('Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided 10 groups each representing 10% of the areas in England.'), 
           location = ph_location_label(ph_label = 'Text Placeholder 14')) %>% 
-  # ph_with(value = ft_ltla_rate_wsx, 
-  #         location = ph_location_label(ph_label = 'Table Placeholder 7')) %>% 
+  ph_with(value = paste0('Note that the very recent days are excluded in the 7-day total as these are thought to be incomplete. As such, this data represents cases in the ', rolling_period_x), 
+          location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
+  ph_with(value = ft_ltla_rolling_rate_wsx,
+          location = ph_location_label(ph_label = 'Table Placeholder 7')) %>%
   add_slide(layout = "pathways_layout", master = "Office Theme") %>%
   ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')), 
           location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>% 
@@ -1812,8 +1868,3 @@ wkly_template <- wkly_template %>%
 
 wkly_template %>%  
   print(paste0(github_repo_dir, '/Latest_West_Sussex_C19_slide_deck.pptx'))
-
-
-end <- Sys.time()
-
-paste0(end - start)
