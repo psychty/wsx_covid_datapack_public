@@ -1868,3 +1868,9 @@ wkly_template <- wkly_template %>%
 
 wkly_template %>%  
   print(paste0(github_repo_dir, '/Latest_West_Sussex_C19_slide_deck.pptx'))
+
+
+# Watchlist ####
+
+# https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/914840/LA_watchlist_data_file_week35.XLSX
+
