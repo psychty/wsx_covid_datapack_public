@@ -1225,7 +1225,6 @@ latest_triage_date = nhs_pathways %>%
 pathways_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
   filter(Area_Name == 'NHS West Sussex CCG')
 
-
 utla_pathways <- read_csv('https://files.digital.nhs.uk/46/536793/NHS%20Pathways%20Covid-19%20data_UTLA_2020-07-27.csv') %>% 
   mutate(Date = as.character.Date(CallDate))
 
