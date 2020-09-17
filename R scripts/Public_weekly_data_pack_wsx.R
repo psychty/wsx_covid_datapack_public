@@ -40,11 +40,13 @@ output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
 # 2019 MYE
+
 mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=1816133633...1816133848,1820327937...1820328318,2092957697...2092957703,2013265921...2013265932&date=latest&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
   rename(Population = OBS_VALUE,
          Code = GEOGRAPHY_CODE,
          Name = GEOGRAPHY_NAME,
          Type = GEOGRAPHY_TYPE) %>% 
+  select(-DATE_NAME) %>% 
   unique() %>% 
   group_by(Name, Code) %>% 
   mutate(Count = n()) %>% 
@@ -53,11 +55,18 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   select(-Count) %>% 
   unique()
 
+# if(exists('mye_total') == FALSE) {
+# mye_total <- read_csv('/Users/richtyler/Documents/Repositories/wsx_covid_datapack_public/Source files/mye2019_ltla.csv') %>% 
+  # rename(Population = `All ages`,
+         # Type = Geography1)
+# }
+
 area_code_names <- mye_total %>% 
   select(Code, Name)
 
 mye_total <- mye_total %>%
   select(-Name)
+
 
 # Pillar 1 and 2 combined time series ####
 
@@ -74,8 +83,9 @@ daily_cases <- read_csv('https://coronavirus.data.gov.uk/downloads/csv/coronavir
   filter(!(`Area type` == 'ltla' & Count == 2)) %>% 
   select(-c(`Area type`, Count)) %>% 
   left_join(mye_total, by = 'Code') %>% 
-  select(-DATE_NAME) %>% 
   ungroup()
+
+
 
 # If no specimens are taken on a day, there is no row for it, and it would be missing data. Indeed, the only zeros are on the latest day. We need to therefore backfill and say if no date exists where it should, then add it, with the cumulative total and zero for new cases.
 
@@ -508,7 +518,6 @@ print(new_case_rate_plot)
 dev.off()
 
 # Cumulative rate map utla ####
-
 utla_rate_1 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>%
