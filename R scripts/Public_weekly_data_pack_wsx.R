@@ -55,11 +55,14 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   select(-Count) %>% 
   unique()
 
-# if(exists('mye_total') == FALSE) {
-# mye_total <- read_csv('/Users/richtyler/Documents/Repositories/wsx_covid_datapack_public/Source files/mye2019_ltla.csv') %>% 
-  # rename(Population = `All ages`,
-         # Type = Geography1)
-# }
+mye_total %>% 
+ write.csv(., '/Users/richtyler/Documents/Repositories/wsx_covid_datapack_public/Source files/mye2019_ltla.csv', row.names = FALSE)
+
+if(exists('mye_total') == FALSE) {
+mye_total <- read_csv('/Users/richtyler/Documents/Repositories/wsx_covid_datapack_public/Source files/mye2019_ltla.csv') %>%
+rename(Population = `All ages`,
+Type = Geography1)
+}
 
 area_code_names <- mye_total %>% 
   select(Code, Name)

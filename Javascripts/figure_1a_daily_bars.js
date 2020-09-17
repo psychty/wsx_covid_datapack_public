@@ -6,7 +6,7 @@ var width_hm = document.getElementById("content_size").offsetWidth,
     incomplete_colour = '#999999',
     height_line = 400;
 
-var width_sm = (width_hm / 3) - 10
+var width_sm = (width_hm / 2) - 10
 
 // We dont want the small plots to be less than 325 pixels wide so this says if the
 if (width_sm < 300){
