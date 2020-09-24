@@ -147,6 +147,12 @@ p {
   font-size: .9rem;
 }
 
+.warn {
+font-size: 1.1rem;
+font-weight: bold;
+/* color: #256cb2; */
+}
+
 a {
 color: #cc0052;
 }
