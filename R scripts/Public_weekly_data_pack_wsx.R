@@ -70,7 +70,6 @@ area_code_names <- mye_total %>%
 mye_total <- mye_total %>%
   select(-Name)
 
-
 # Pillar 1 and 2 combined time series ####
 
 daily_cases <- read_csv('https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv') %>%   
@@ -87,8 +86,6 @@ daily_cases <- read_csv('https://coronavirus.data.gov.uk/downloads/csv/coronavir
   select(-c(`Area type`, Count)) %>% 
   left_join(mye_total, by = 'Code') %>% 
   ungroup()
-
-
 
 # If no specimens are taken on a day, there is no row for it, and it would be missing data. Indeed, the only zeros are on the latest day. We need to therefore backfill and say if no date exists where it should, then add it, with the cumulative total and zero for new cases.
 
