@@ -1,13 +1,15 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","264","410.6","257th","Decile 9","13","20.2","281st","Decile 9","seven days to 01 October"
-"Arun","475","295.5","296th","10% of authorities
-with lowest rate","42","26.1","253rd","Decile 9","seven days to 01 October"
-"Chichester","389","321.1","291st","10% of authorities
-with lowest rate","33","27.2","245th","Decile 8","seven days to 01 October"
-"Crawley","559","497.3","217th","Decile 7","25","22.2","269th","Decile 9","seven days to 01 October"
-"Horsham","677","470.8","232nd","Decile 8","46","32.0","221st","Decile 8","seven days to 01 October"
-"Mid Sussex","763","505.2","211th","Decile 7","39","25.8","254th","Decile 9","seven days to 01 October"
-"Worthing","566","511.9","207th","Decile 7","27","24.4","264th","Decile 9","seven days to 01 October"
-"West Sussex","3,693","427.4","-","-",NA,NA,NA,NA,NA
-"South East region","46,156","502.8","-","-",NA,NA,NA,NA,NA
-"England","441,528","784.4","-","-",NA,NA,NA,NA,NA
+"Adur","265","412.1","261st","Decile 9","13","20.2","293rd","10% of authorities
+with lowest rate","seven days to 02 October"
+"Arun","484","301.1","297th","10% of authorities
+with lowest rate","42","26.1","270th","Decile 9","seven days to 02 October"
+"Chichester","394","325.3","291st","10% of authorities
+with lowest rate","35","28.9","253rd","Decile 9","seven days to 02 October"
+"Crawley","574","510.6","214th","Decile 7","27","24.0","280th","Decile 9","seven days to 02 October"
+"Horsham","698","485.4","231st","Decile 8","49","34.1","236th","Decile 8","seven days to 02 October"
+"Mid Sussex","772","511.2","212th","Decile 7","43","28.5","257th","Decile 9","seven days to 02 October"
+"Worthing","572","517.3","208th","Decile 7","22","19.9","294th","10% of authorities
+with lowest rate","seven days to 02 October"
+"West Sussex","3,759","435.1","-","-",NA,NA,NA,NA,NA
+"South East region","46,815","510.0","-","-",NA,NA,NA,NA,NA
+"England","454,176","806.9","-","-",NA,NA,NA,NA,NA
