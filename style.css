@@ -3,6 +3,18 @@
   display: none;
 }
 
+#ltla_restrictions_map {
+height: 600px;
+width: 550px;
+}
+
+@media screen and (max-width: 1400px) {
+#ltla_restrictions_map {
+ height: 500px;
+ width: 550px;
+ }
+}
+
 #rate_map_1 {
  height: 600px;
  width: 550px;
@@ -236,6 +248,21 @@ p.key_list .side_tt {
 }
 
 .key_list_rate_ltla {
+  display: block;
+  padding: 0.5em 0.5em;
+  border-radius: 4px;
+  color: #000000;
+  background: #ffffff;
+  text-align: left;
+  font-size: .8rem;
+  font-family: inherit;
+  margin: 0 0 1px;
+  border-left: 13px solid #ccc;
+  opacity: 1;
+  position: relative;
+}
+
+.key_list_restrictions {
   display: block;
   padding: 0.5em 0.5em;
   border-radius: 4px;

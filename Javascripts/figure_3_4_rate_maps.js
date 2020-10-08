@@ -69,7 +69,6 @@ request.open("GET", "./Outputs/england_cumulative.json", false);
 request.send(null);
 var england_cumulative_text_obj = JSON.parse(request.responseText);
 
-
 d3.select("#england_cumulative_text")
   .html(function(d) {
     return england_cumulative_text_obj
