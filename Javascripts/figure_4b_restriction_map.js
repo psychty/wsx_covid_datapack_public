@@ -19,7 +19,7 @@ var ltla_restrictions = $.ajax({
 })
 
 var tileUrl = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-var attribution_2 = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a><br> Contains Ordnance Survey data © Crown copyright and database right 2020.<br>Contains Parliamentary information licensed under the Open Parliament Licence v3.0.<br>Zoom in/out using your mouse wheel or the plus (+) and minus (-) buttons. Click on an area to find out more.';
+var attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a><br> Contains Ordnance Survey data © Crown copyright and database right 2020.<br>Contains Parliamentary information licensed under the Open Parliament Licence v3.0.<br>Zoom in/out using your mouse wheel or the plus (+) and minus (-) buttons. Click on an area to find out more.';
 
 function restriction_ltla_colour(d) {
      return d === restriction_type[0] ? restriction_colours[0] :
@@ -43,7 +43,7 @@ $.when(ltla_restrictions).done(function() {
 var ltla_map_restrictions = L.map('ltla_restrictions_map');
 
 var basemap_restriction = L.tileLayer(tileUrl, {
-  attribution_2,
+  attribution,
   minZoom: 6,
 })
     .addTo(ltla_map_restrictions);
