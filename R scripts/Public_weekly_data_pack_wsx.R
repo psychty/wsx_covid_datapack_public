@@ -1918,9 +1918,9 @@ ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2c
   mutate(l_local_notstayingaway = ifelse(is.na(l_local_notstayingaway), 0, l_local_notstayingaway)) %>% 
   mutate(l_local_businessclosures = ifelse(is.na(l_local_businessclosures), 0, l_local_businessclosures)) %>% 
   mutate(l_local_openinghours = ifelse(is.na(l_local_openinghours), 0, l_local_openinghours)) %>% 
-  mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. These include:', ifelse(Restriction_type == 'Local', 'This area is currently subject to national as well as further <b>local</b> restrictions. National restrictions include:', '')), '<ul>', ifelse(l_national_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(l_national_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(l_national_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(l_national_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving the home without a reasonable excuse.</li>', ''), ifelse(l_national_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(l_national_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(l_national_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), paste0('<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>For further information see: ', l_url_national), ifelse(Restriction_type == 'Local', paste0('In addition to national restrictions, this area is subject to further local restrictions including: <br><ul>', ifelse(l_local_ruleofsix == 1, '<li>Not meeting with more than six people socially</li>', ''), ifelse(l_local_householdmixing == 1, '<li>Not mixing with people in other households</li>', ''),  ifelse(l_local_raves == 1, '<li>Not attending illegal raves</li>', ''), ifelse(l_local_stayinglocal == 1, '<li>Not leaving or entering a protected areas without reasonal excuse</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving home without reasonal excuse</li>', ''), ifelse(l_local_notstayingaway == 1, '<li>Not staying overnight somewhere other than home without reasonal excuse</li>', ''),  ifelse(l_local_businessclosures == 1, '<li>Some businesses are not permitted to open</li>', ''), ifelse(l_local_openinghours == 1, '<li>Some businesses are required to restrict openning times</li>', ''), '</ul>For further information see: ', l_url_local), ''))) %>% 
-  select(!c('lad19cd','LTLA19CD', 'UTLA19CD', 'UTLA19NM'))
-
+  mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. These include:', ifelse(Restriction_type == 'Local', 'This area is currently subject to national as well as further <b>local</b> restrictions. National restrictions include:', '')), '<ul>', ifelse(l_national_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(l_national_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(l_national_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(l_national_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving the home without a reasonable excuse.</li>', ''), ifelse(l_national_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(l_national_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(l_national_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), paste0('<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>'), ifelse(Restriction_type == 'Local', paste0('In addition to national restrictions, this area is subject to further local restrictions including: <br><ul>', ifelse(l_local_ruleofsix == 1, '<li>Not meeting with more than six people socially</li>', ''), ifelse(l_local_householdmixing == 1, '<li>Not mixing with people in other households</li>', ''),  ifelse(l_local_raves == 1, '<li>Not attending illegal raves</li>', ''), ifelse(l_local_stayinglocal == 1, '<li>Not leaving or entering a protected areas without reasonal excuse</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving home without reasonal excuse</li>', ''), ifelse(l_local_notstayingaway == 1, '<li>Not staying overnight somewhere other than home without reasonal excuse</li>', ''),  ifelse(l_local_businessclosures == 1, '<li>Some businesses are not permitted to open</li>', ''), ifelse(l_local_openinghours == 1, '<li>Some businesses are required to restrict openning times</li>', ''), '</ul>For further information see: ', l_url_local), ''))) %>% 
+  select(objectid, lad19nm, Restriction_type, label)
+    
 leaflet(ltla_restrictions) %>% 
   addTiles() %>%
   addPolygons(stroke = FALSE, 
@@ -1932,4 +1932,43 @@ leaflet(ltla_restrictions) %>%
 geojson_write(geojson_json(ltla_restrictions), file = paste0(output_directory_x, '/ltla_covid_restrictions_hcl_latest.geojson'))
 
 paste0('Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.')
+
+# incidence and growth rate ####
+
+# Exact Poisin confidence intervals are calculated using the pois.exact function from the epitools package (see https://www.rdocumentation.org/packages/epitools/versions/0.09/topics/pois.exact for details)
+
+library(epitools)
+
+growth_rate <- p12_test_df %>% 
+  select(Name, Code, Type, Date, Rolling_7_day_new_cases, Perc_change_on_rolling_7_days_actual, Perc_change_on_rolling_7_days_tidy, Cumulative_cases, Cumulative_per_100000, Population, Label_3, Rolling_7_day_new_cases_per_100000) %>%
+  mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
+  mutate(Rolling_7_day_rate = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
+  mutate(Rolling_rate_lcl = pois.exact(Rolling_7_day_new_cases, Population)[[4]]*100000) %>% 
+  mutate(Rolling_rate_ucl = pois.exact(Rolling_7_day_new_cases, Population)[[5]]*100000) %>% 
+  arrange(Name, Date) %>% 
+  group_by(Name) %>% 
+  mutate(Last_week_incidence_rate = lag(Rolling_7_day_rate, 7),
+         Last_week_date = lag(Date, 7)) %>% 
+  ungroup() %>% 
+  mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 0, Perc_change_on_rolling_7_days_actual))) 
+
+# growth_rate_se <- growth_rate %>% 
+#   filter(Name == 'South East region') %>% 
+#   rename(SE_rate = Rolling_7_day_rate,
+#          SE_lcl = Rolling_rate_lcl,
+#          SE_ucl = Rolling_rate_ucl) 
+
+growth_rate_england <- growth_rate %>% 
+  filter(Name == 'England') %>% 
+  rename(Eng_rate = Rolling_7_day_rate,
+         Eng_lci = Rolling_rate_lci,
+         Eng_uci = Rolling_rate_uci) 
+
+growth_rate <- growth_rate %>% 
+  left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date')
+  mutate(Label_2 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 2), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rollinf_rate_ucl < Eng_lcl, 'significantly lower than ', 'similar to ')), 'the national rate (', round(Eng_rate,2),')'))
+
+growth_rate_ltla <- growth_rate %>% 
+  filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority'))
+
 
