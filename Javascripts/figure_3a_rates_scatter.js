@@ -144,7 +144,7 @@ var utla_growth_colour_func = d3.scaleOrdinal()
 area_growth_comp.forEach(function(item, index) {
     var list = document.createElement("li");
     list.innerHTML = item;
-    list.className = 'key_list_rate_ltla';
+    list.className = 'key_growth_utla';
     list.style.borderColor = utla_growth_colour_func(index);
       var tt = document.createElement('div');
     tt.className = 'side_tt';
