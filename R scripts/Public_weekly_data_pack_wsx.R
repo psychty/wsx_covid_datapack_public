@@ -168,7 +168,7 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Perc_change_on_rolling_7_days_tidy = factor(ifelse(Rolling_7_day_new_cases == 0 & lag(Rolling_7_day_new_cases, 7) == 0, 'No change (zero cases)', ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous 7 days', ifelse(Perc_change_on_rolling_7_days_actual == -1, '100% fewer cases (now zero cases in recent period)', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50%+ fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual < 0, 'Up to 50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'No change', ifelse(Perc_change_on_rolling_7_days_actual > 0  & Perc_change_on_rolling_7_days_actual <= .5, 'Up to 50% more cases', ifelse(Perc_change_on_rolling_7_days_actual > .5 & Perc_change_on_rolling_7_days_actual <= 1, 'Up to 100% more cases (double the cases from the previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 1 & Perc_change_on_rolling_7_days_actual <= 2, 'Up to 200% more cases (3x the cases in previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 2 & Perc_change_on_rolling_7_days_actual <= 5, 'Up to 5x the cases in previous 7 days', 'More than 5x the cases in the previous 7 days'))))))))))), levels = c("No change (zero cases)", "100% fewer cases (now zero cases in recent period)",   "50%+ fewer cases" ,  "Up to 50% fewer cases" ,  "No change" ,   "Up to 50% more cases" ,      "Up to 100% more cases (double the cases from the previous 7 days)", "Up to 200% more cases (3x the cases in previous 7 days)","Up to 5x the cases in previous 7 days", "More than 5x the cases in the previous 7 days", "0 cases in previous 7 days"))) %>% 
   mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B')),
          Rolling_compare_period = paste0('seven days to ', format(Date, '%d %B'), ' compared to seven days to ', format(lag(Date,7), '%d %B'))) %>% 
-   mutate(Label_3 = paste0('In the ', Rolling_period, ', there ', ifelse(Rolling_7_day_new_cases == 1, paste0('was 1 new confirmed case (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). '),  paste0('were ', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' new confirmed cases (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). ')), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases == 0, paste0('This is the same as the ', lag(Rolling_period, 7), '.'), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases > 0, paste0('There were no cases in the ', lag(Rolling_period, 7), '.'), ifelse(Perc_change_on_rolling_7_days_actual == 0, paste0('There is <b>no change in cases</b> compared to those confirmed in the previous week (', lag(Rolling_period, 7), ').'), ifelse(Perc_change_on_rolling_7_days_actual < 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) ==1, 'was 1 new cases', paste0('were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),', and so the new cases have<b> decreased by ', abs(round(Perc_change_on_rolling_7_days_actual*100, 1)), '% (', format(lag(Rolling_7_day_new_cases, 7) - Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' fewer cases)</b>.'), ifelse(Perc_change_on_rolling_7_days_actual > 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) == 1, 'was 1 new case ', paste0(' were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),' and so the new cases have<b> risen by ', round(Perc_change_on_rolling_7_days_actual* 100, 1), '% (', ifelse(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7) == 1, '1 extra case).</b>', paste0(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7),' extra cases).</b>'))), NA))))))) %>% 
+   mutate(Label_3 = paste0('In the ', Rolling_period, ', there ', ifelse(Rolling_7_day_new_cases == 1, paste0('was 1 new confirmed case (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). '),  paste0('were ', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' new confirmed cases (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). ')), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases == 0, paste0('This is the same as the ', lag(Rolling_period, 7), '.'), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases > 0, paste0('There were no cases in the ', lag(Rolling_period, 7), '.'), ifelse(Perc_change_on_rolling_7_days_actual == 0, paste0('There is <b>no change in cases</b> compared to those confirmed in the previous week (', lag(Rolling_period, 7), ').'), ifelse(Perc_change_on_rolling_7_days_actual < 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) ==1, 'was 1 new cases', paste0('were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),', and so the new cases have<b> decreased by ', abs(round(Perc_change_on_rolling_7_days_actual*100, 1)), '% (', format(lag(Rolling_7_day_new_cases, 7) - Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' fewer cases)</b>.'), ifelse(Perc_change_on_rolling_7_days_actual > 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) == 1, 'was 1 new case ', paste0(' were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),' and so the new cases have<b> risen by ', round(Perc_change_on_rolling_7_days_actual* 100, 1), '% (', ifelse(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7) == 1, '1 extra case).</b>', paste0(format(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7), big.mark = ','),' extra cases).</b>'))), NA))))))) %>% 
   ungroup()
 
 # https://www.theguardian.com/world/2020/aug/01/coronavirus-near-me-are-uk-covid-19-cases-rising-in-your-local-area?utm_term=Autofeed&CMP=twt_gu&utm_medium&utm_source=Twitter#Echobox=1596276218
@@ -1241,8 +1241,8 @@ whole_timeseries_plot <- ggplot(pathways_x,
        aes(x = Date,
            y = Triage_count,
            group = 1)) +
-  geom_segment(x = as.Date('2020-04-09'), y = 0, xend = as.Date('2020-04-09'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)), color = "red", linetype = "dashed") +
-  geom_segment(x = as.Date('2020-04-23'), y = 0, xend = as.Date('2020-04-23'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)), color = "blue", linetype = "dashed") +
+  # geom_segment(x = as.Date('2020-04-09'), y = 0, xend = as.Date('2020-04-09'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)), color = "red", linetype = "dashed") +
+  # geom_segment(x = as.Date('2020-04-23'), y = 0, xend = as.Date('2020-04-23'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)), color = "blue", linetype = "dashed") +
   geom_segment(x = as.Date('2020-05-18'), y = 0, xend = as.Date('2020-05-18'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)), color = "red", linetype = "dashed") +
   geom_line() +
   geom_point() +
@@ -1259,36 +1259,36 @@ whole_timeseries_plot <- ggplot(pathways_x,
        caption = 'Note: red dashed line = some patients excluded,\nblue dashed line = additional patients added') +
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
-  annotate(geom = 'text',
-           x = as.Date('2020-04-08'), 
-           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
-           label = '9th April',
-           fontface = 'bold',
-           size = 2.5,
-           hjust = 1,
-           vjust = 1) +
-  annotate(geom = 'text',
-           x = as.Date('2020-04-08'), 
-           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
-           label = '111 online removed\nfor 0-18 year olds',
-           size = 2.5,
-           hjust = 1,
-           vjust = 1.75) +
-  annotate(geom = 'text',
-           x = as.Date('2020-04-23'), 
-           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
-           label = '23rd April',
-           fontface = 'bold',
-           size = 2.5,
-           hjust = 0,
-           vjust = -8) +
-  annotate(geom = 'text',
-           x = as.Date('2020-04-23'),
-           y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
-           label = '111 online reinstated\nfor 5-18 year olds',
-           size = 2.5,
-           hjust = 0,
-           vjust = -1.25) +
+  # annotate(geom = 'text',
+  #          x = as.Date('2020-04-08'), 
+  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
+  #          label = '9th April',
+  #          fontface = 'bold',
+  #          size = 2.5,
+  #          hjust = 1,
+  #          vjust = 1) +
+  # annotate(geom = 'text',
+  #          x = as.Date('2020-04-08'), 
+  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
+  #          label = '111 online removed\nfor 0-18 year olds',
+  #          size = 2.5,
+  #          hjust = 1,
+  #          vjust = 1.75) +
+  # annotate(geom = 'text',
+  #          x = as.Date('2020-04-23'), 
+  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
+  #          label = '23rd April',
+  #          fontface = 'bold',
+  #          size = 2.5,
+  #          hjust = 0,
+  #          vjust = -8) +
+  # annotate(geom = 'text',
+  #          x = as.Date('2020-04-23'),
+  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
+  #          label = '111 online reinstated\nfor 5-18 year olds',
+  #          size = 2.5,
+  #          hjust = 0,
+  #          vjust = -1.25) +
   annotate(geom = 'text',
            x = as.Date('2020-05-18'), 
            y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
@@ -1712,7 +1712,7 @@ Occurrences %>%
 # layout_properties(wkly_template, 'mortality')
 
 # Start powerpoint
-wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 datapack template.pptx')) %>%  
+wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx')) %>%  
   add_slide(layout = "Intro_page", master = "Office Theme") %>% 
   ph_with(value = paste0('Pack date: ',format(Sys.Date(), '%d %B %Y')), 
           location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
@@ -1879,7 +1879,6 @@ wkly_template <- wkly_template %>%
 wkly_template %>%  
   print(paste0(github_repo_dir, '/Latest_West_Sussex_C19_slide_deck.pptx'))
 
-
 # Watchlist ####
 
 # https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/914840/LA_watchlist_data_file_week35.XLSX
@@ -1939,6 +1938,7 @@ paste0('Information provided by the House of Commons Library Coronavirus Restric
 library(epitools)
 
 growth_rate <- p12_test_df %>% 
+  filter(Data_completeness == 'Complete') %>% 
   select(Name, Code, Type, Date, Rolling_7_day_new_cases, Perc_change_on_rolling_7_days_actual, Perc_change_on_rolling_7_days_tidy, Cumulative_cases, Cumulative_per_100000, Population, Label_3) %>%
   mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
   mutate(Rolling_7_day_rate = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
@@ -1949,25 +1949,67 @@ growth_rate <- p12_test_df %>%
   mutate(Last_week_incidence_rate = lag(Rolling_7_day_rate, 7),
          Last_week_date = lag(Date, 7)) %>% 
   ungroup() %>% 
-  mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 0, Perc_change_on_rolling_7_days_actual))) 
-
-# growth_rate_se <- growth_rate %>% 
-#   filter(Name == 'South East region') %>% 
-#   rename(SE_rate = Rolling_7_day_rate,
-#          SE_lcl = Rolling_rate_lcl,
-#          SE_ucl = Rolling_rate_ucl) 
+  mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 0, Perc_change_on_rolling_7_days_actual))) %>% 
+  rename(Label_2 = Label_3)
 
 growth_rate_england <- growth_rate %>% 
   filter(Name == 'England') %>% 
   rename(Eng_rate = Rolling_7_day_rate,
-         Eng_lci = Rolling_rate_lci,
-         Eng_uci = Rolling_rate_uci) 
-
-growth_rate <- growth_rate %>% 
-  left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
-  mutate(Label_2 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 2), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rollinf_rate_ucl < Eng_lcl, 'significantly lower than ', 'similar to ')), 'the national rate (', round(Eng_rate,2),')'))
+         Eng_lcl = Rolling_rate_lcl,
+         Eng_ucl = Rolling_rate_ucl) 
 
 growth_rate_ltla <- growth_rate %>% 
+  left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
+  mutate(Label_1 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>% 
+  mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ','), ' cases per 100,000).')) %>% 
+  mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>% 
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority'))
 
+growth_rate_ltla %>% 
+  filter(Date >= '2020-09-01') %>%
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/ltla_growth_since_september.json'))
 
+growth_rate_ltla %>% 
+  filter(Date == complete_date) %>% 
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/ltla_growth_latest.json'))
+
+growth_rate_utla <- growth_rate %>% 
+  left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
+  mutate(Label_1 = ifelse(Name == 'England', paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 2), ' per 100,000 population) and there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(Cumulative_per_100000, big.mark = ','), ' cases per 100,000).'), paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 2), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,2),')'))) %>% 
+  mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(Cumulative_per_100000, big.mark = ','), ' cases per 100,000).')) %>% 
+  mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>% 
+  filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
+
+growth_rate_utla %>% 
+  filter(Date >= '2020-09-01') %>%
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/utla_growth_since_september.json'))
+
+growth_rate_utla %>% 
+  filter(Date == complete_date) %>% 
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/utla_growth_latest.json'))
+
+  growth_rate_utla %>% 
+  filter(Date >= '2020-09-01') %>%
+  summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
+            Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
+  mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
+    toJSON() %>% 
+    write_lines(paste0(output_directory_x,'/utla_growth_limits.json'))
+  
+growth_rate_utla %>% 
+  filter(Date == complete_date) %>%
+  summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
+            Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
+    mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
+    toJSON() %>% 
+    write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
+  
+       

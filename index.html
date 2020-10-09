@@ -128,13 +128,33 @@
 </div>
 </div>
 
-<div class = 'main' id = 'maps'>
-<h4 style = 'padding-left: 25px; padding-top: 10px;'> Mapping rates across England</h4>
+<div class = 'main' id = 'growth'>
+<h4 style = 'padding-left: 25px; padding-top: 10px;'>Rates across England</h4>
+
 <div class = 'content'>
-<p>This section shows maps of upper tier (and lower tier further down the page) local authority areas in England to show differences in confirmed case rates across the country.</p>
-<p>The initial map shows the cumulative rate, which is the total confirmed cases so far, per 100,000 population. However, as a cumulative number, it does not really show what is happening right now, as spikes in cases (or dips in cases) can be masked over the longer term.</p>
-<p>As such, you can change the map using the buttons on the top right to show the number of new cases in the most recent complete seven days (this excludes the very recent few days of data as they are considered incomplete) and this is also expressed as a rate per 100,000 population. Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture and areas with a lot of new infections although does not tell us a lot about how the cases have changed over the recent past and if they are decreasing or increasing.</p>
-<p>The third option is to view the rolling 7-day total compared to the previous period as a percentage increase or decrease. It is important to consider each of these measures together; how many cases are there so far, what are the cases now, what were the cases last week.</p>
+<p>This section shows COVID-19 cases and growth rates for upper tier (and lower tier further down the page) local authority areas in England.</p>
+<p>The next figure shows every upper tier local authority in England with the most recent 7-day incidence rate per 100,000 population along the x axis (from left to right) and the percentage change in cases from the previous 7 days on the y ais (from bottom to top).</p>
+<p>The closer to the left of the chart an areas is, the lower the 7 day incidence rate, and the closer to the bottom of the chart, the smaller the change from the previous week. If the area is below the dashed line at 0%, the number of cases is decreasing compared to the previous week.</p>
+<p>West Sussex is highlighted in orange and England is highlighted in black. Hover over a dot to find out more.</p>
+<h4 id = 'utla_growth_rate_title'></h4>
+<div id = 'utla_latest_growth_rate'></div>
+<p id = 'wsx_growth_rate_latest'></p>
+</div>
+
+<div class = 'right-sidebar'>
+<h4>Rates and change</h4>
+<p>This figure uses a rate per 100,000 to standardise populations across areas (because some areas are much bigger or more densely populated than others).</p>
+<p>Using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture (compared to other areas) and how the cases have changed over the recent past and if they are decreasing or increasing.</p>
+<p class = 'side_important'>The rolling 7 day total excludes the very recent few days as these are considered incomplete</p>
+<div id = 'growth_key_utla'></div>
+<p>Interpreting the percentage change value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than having one case in one week and two in the next, yet the percentage increase is impossible to show from a starting value of zero. Equally, no change can mean two weeks of no new cases, or one case each week or 10.</p>
+</div>
+</div>
+
+<div class = 'main' id = 'maps'>
+<div class = 'content'>
+<p>The figure below shows broadly the same information as above but as a map, which you can zoom into using the mouse or pointer.</p>
+<p>The initial map shows the rolling 7-day incidence rate (up to the most recent date for which we believe we have complete data). You can change the map using the buttons on the top right to show the rolling 7-day total compared to the previous period as a percentage increase or decrease. Finally, you can look at the overall confirmed cases rate so far. It is important to consider each of these measures together;  what are the cases now, what were the cases last week, how many cases have there been so far.</p>
 
 <p id = 'england_cumulative_text'></p>
 <h4 id = 'summary_utla_rate_title'></h4>
@@ -172,7 +192,6 @@
 <div class = 'content'>
 <p>This section shows maps of lower tier local authority areas in England to show differences in "lockdown laws" across the country. The information contained here has been compiled by the House of Commons Library, and a briefing is available <a href = 'https://commonslibrary.parliament.uk/research-briefings/cbp-8875/'>here</a>. The map is a simplification of finer detail of rules in local areas and a link to the UK government web pages for each area (if local rules apply) can be found by clicking on an area of the map.</p>
 <p>The map covers restrictions outlined by the UK government for England. Local authorities also have statutory powers to issue "directions" which impose prohibitions or restrictions on premises, events and public spaces.</p>
-
 <div id = 'ltla_restrictions_map'></div>
 <p>Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: <a href = 'https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/'>https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/</a>'). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.</p>
 
@@ -235,10 +254,14 @@
 <script src = "Javascripts/figure_1a_daily_bars.js"></script>
 <script src = "Javascripts/figure_1b_daily_bars.js"></script>
 <script src = "Javascripts/figure_2_heatmap.js"></script>
+<script src = "Javascripts/figure_3a_rates_scatter.js"></script>
 <script src = "Javascripts/figure_3_4_rate_maps.js"></script>
 <script src = "Javascripts/figure_4b_restriction_map.js"></script>
 <script src = "Javascripts/figure_5_pathways.js"></script>
 <script src = "Javascripts/figure_6_mortality.js"></script>
+
+<script src = "Javascripts/test.js"></script>
+
 
 </body>
 </html>

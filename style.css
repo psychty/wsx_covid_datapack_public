@@ -4,41 +4,41 @@
 }
 
 #ltla_restrictions_map {
-height: 600px;
-width: 550px;
+height: 650px;
+width: 600px;
 }
 
 @media screen and (max-width: 1400px) {
 #ltla_restrictions_map {
- height: 500px;
+ height: 550px;
  width: 550px;
  }
 }
 
 #rate_map_1 {
- height: 600px;
- width: 550px;
+ height: 650px;
+ width: 600px;
  /* margin: auto; */
 
  }
 
 @media screen and (max-width: 1400px) {
 #rate_map_1 {
- height: 500px;
+ height: 550px;
  width: 550px;
  /* margin: auto; */
  }
 }
 
 #rate_map_2 {
- height: 600px;
- width: 550px;
+ height: 650px;
+ width: 600px;
  /* margin: auto; */
  }
 
 @media screen and (max-width: 1400px) {
 #rate_map_2 {
- height: 500px;
+ height: 550px;
  width: 550px;
  /* margin: auto; */
  }
@@ -279,6 +279,17 @@ p.key_list .side_tt {
 
 .tooltip_class {
   max-width: 280px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 5px;
+  border: 1px solid #000;
+  text-align: left !important;
+}
+
+.tooltip_class_scatter {
+  max-width: 380px;
   padding-left: 5px;
   padding-right: 5px;
   background: #ffffff;

@@ -186,13 +186,13 @@ var basemap = L.tileLayer(tileUrl, {
 
 var utla_rate_boundary_cumulative = L.geoJSON(utla.responseJSON,
       {style: style_cumulative})
-      .addTo(utla_map)
+      // .addTo(utla_map)
       .bindPopup(function (layer) {
         return layer.feature.properties.Label_1 + '<br><br>' + layer.feature.properties.Label_2});
 
 var utla_rate_boundary_rolling = L.geoJSON(utla.responseJSON,
       {style: style_rolling})
-      // .addTo(utla_map)
+      .addTo(utla_map)
       .bindPopup(function (layer) {
         return '<b>' +layer.feature.properties.Name + '</b><br><br>' + layer.feature.properties.Label_2});
 
@@ -203,9 +203,9 @@ var utla_rate_boundary_change = L.geoJSON(utla.responseJSON,
         return '<b>' + layer.feature.properties.Name + '</b><br>' +layer.feature.properties.Label_3 });
 
 var baseMaps = {
-  'Cumulative rate per 100,000': utla_rate_boundary_cumulative,
   'Rolling 7-day rate per 100,000': utla_rate_boundary_rolling,
-  'Percentage change rolling 7-day cases': utla_rate_boundary_change
+  'Percentage change rolling 7-day cases': utla_rate_boundary_change,
+  'Cumulative rate per 100,000': utla_rate_boundary_cumulative
 }
 
 L.control.layers(baseMaps, null, { collapsed:false}).addTo(utla_map);
@@ -338,7 +338,7 @@ d3.select("#selected_utla_key_title")
     })
 }
 
-key_cumulative_utla_rate_deciles();
+key_rolling_utla_rate_deciles();
 
 function LTLA_cumulative_rate_colour(d) {
     return d === ltla_cumulative_rate_bins[0] ? decile_colours[0] :
@@ -403,12 +403,12 @@ var basemap = L.tileLayer(tileUrl, {
 
 var ltla_rate_boundary_cumulative = L.geoJSON(ltla.responseJSON,
       {style: style_cumulative_ltla})
-      .addTo(ltla_map)
       .bindPopup(function (layer) {
         return layer.feature.properties.Label_1 + '<br><br>' + layer.feature.properties.Label_2});
 
 var ltla_rate_boundary_rolling = L.geoJSON(ltla.responseJSON,
       {style: style_rolling_ltla})
+      .addTo(ltla_map)
       .bindPopup(function (layer) {
         return '<b>' + layer.feature.properties.Name + '</b><br><br>' + layer.feature.properties.Label_2});
 
@@ -418,9 +418,9 @@ var ltla_rate_boundary_change = L.geoJSON(ltla.responseJSON,
         return '<b>' + layer.feature.properties.Name + '</b><br>' +layer.feature.properties.Label_3});
 
 var baseMaps = {
-  'Cumulative rate per 100,000': ltla_rate_boundary_cumulative,
   'Rolling 7-day rate per 100,000': ltla_rate_boundary_rolling,
-  'Percentage change rolling 7-day cases': ltla_rate_boundary_change
+  'Percentage change rolling 7-day cases': ltla_rate_boundary_change,
+  'Cumulative rate per 100,000': ltla_rate_boundary_cumulative,
 }
 
 L.control.layers(baseMaps, null, { collapsed:false}).addTo(ltla_map);
@@ -553,4 +553,4 @@ d3.select("#selected_ltla_key_title")
     })
 }
 
-key_cumulative_ltla_rate_deciles();
+key_rolling_ltla_rate_deciles();
