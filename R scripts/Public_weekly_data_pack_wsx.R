@@ -1245,7 +1245,7 @@ whole_timeseries_plot <- ggplot(pathways_x,
   # geom_segment(x = as.Date('2020-04-23'), y = 0, xend = as.Date('2020-04-23'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)), color = "blue", linetype = "dashed") +
   geom_segment(x = as.Date('2020-05-18'), y = 0, xend = as.Date('2020-05-18'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)), color = "red", linetype = "dashed") +
   geom_line() +
-  geom_point() +
+  geom_point(size = .8) +
   scale_x_date(date_labels = "%b %d",
                breaks = seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7),
                limits = c(min(nhs_pathways$Date), max(nhs_pathways$Date)),
@@ -1542,7 +1542,7 @@ area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
        y = 'Number of deaths') +
   scale_fill_manual(values = c('#ED7D31','#FFD966'),
                     name = 'Number of deaths since\nweek ending 3rd Jan 2020)') +
-  scale_colour_manual(values = c('#000000', '#ffffff')) +
+  scale_colour_manual(values = c('#ED7D31','#FFD966')) +
   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
                      limits = c(0,max_deaths_limit)) +
   ph_theme() +
@@ -1893,8 +1893,7 @@ lookup <- read_csv('https://opendata.arcgis.com/datasets/3e4f4af826d343349c13fb7
 rest_of_england_restrictions <- read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
   filter(l_Category == 'Rest of England')
 
-ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp")  %>% 
-  left_join(lookup, by = c('lad19nm' = 'LTLA19NM')) %>% 
+ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp")  %>%   left_join(lookup, by = c('lad19nm' = 'LTLA19NM')) %>% 
   filter(substr(lad19cd, 1, 1) == 'E') %>% 
   left_join(read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv'), by = c('lad19nm' = 'l_Category')) %>% 
   select(!c(l_Country, lad19nmw)) %>% 
@@ -1916,7 +1915,8 @@ ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2c
   mutate(l_local_stayinghome = ifelse(is.na(l_local_stayinghome), 0, l_local_stayinghome))%>% 
   mutate(l_local_notstayingaway = ifelse(is.na(l_local_notstayingaway), 0, l_local_notstayingaway)) %>% 
   mutate(l_local_businessclosures = ifelse(is.na(l_local_businessclosures), 0, l_local_businessclosures)) %>% 
-  mutate(l_local_openinghours = ifelse(is.na(l_local_openinghours), 0, l_local_openinghours)) %>% 
+  mutate(l_local_openinghours = ifelse(is.na(l_local_openinghours), 0, l_local_openinghours)) %>%
+  mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. These include:', ifelse(Restriction_type == 'Local', 'This area is currently subject to national as well as further <b>local</b> restrictions. National restrictions include:', '')), '<ul>', ifelse(l_national_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(l_national_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(l_national_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(l_national_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving the home without a reasonable excuse.</li>', ''), ifelse(l_national_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(l_national_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(l_national_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), paste0('<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>'), ifelse(Restriction_type == 'Local', paste0('In addition to national restrictions, this area is subject to further local restrictions including: <br><ul>', ifelse(l_local_ruleofsix == 1, '<li>Not meeting with more than six people socially</li>', ''), ifelse(l_local_householdmixing == 1, '<li>Not mixing with people in other households</li>', ''),  ifelse(l_local_raves == 1, '<li>Not attending illegal raves</li>', ''), ifelse(l_local_stayinglocal == 1, '<li>Not leaving or entering a protected areas without reasonal excuse</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving home without reasonal excuse</li>', ''), ifelse(l_local_notstayingaway == 1, '<li>Not staying overnight somewhere other than home without reasonal excuse</li>', ''),  ifelse(l_local_businessclosures == 1, '<li>Some businesses are not permitted to open</li>', ''), ifelse(l_local_openinghours == 1, '<li>Some businesses are required to restrict openning times</li>', ''), '</ul>For further information see: ', l_url_local), ''))) %>% 
   select(objectid, lad19nm, Restriction_type, label)
     
 leaflet(ltla_restrictions) %>% 
