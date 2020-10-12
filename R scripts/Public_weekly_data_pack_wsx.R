@@ -1445,7 +1445,7 @@ weekly_all_place_deaths <- All_settings_occurrences %>%
   left_join(weekly_all_place_all_deaths, by = c('Name', 'Week_ending'))
 
 for(i in 1:length(areas_to_loop)){
-  
+
 area_x <- areas_to_loop[i]
 
 area_x_cov_non_cov_raw <- weekly_all_place_deaths %>% 
@@ -1471,14 +1471,14 @@ area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
                                           colour = Cause_1,
                                           label = Deaths)) +
   geom_bar(stat = 'identity',
-           colour = '#ffffff') +
+           width = .8) +
   labs(title = paste0('Weekly deaths; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
        subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
        x = 'Week',
        y = 'Number of deaths') +
   scale_fill_manual(values = c('#2F5597','#BDD7EE'),
                     name = 'Number of deaths since\nweek ending 3rd Jan 2020') +
-  scale_colour_manual(values = c('#000000', '#ffffff')) +
+  scale_colour_manual(values = c('#2F5597','#BDD7EE')) +
   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
                      limits = c(0,max_deaths_limit)) +
   ph_theme() +
@@ -1489,7 +1489,7 @@ area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
 png(paste0(output_directory_x, '/Figure_6_wkly_deaths_', gsub(' ', '_', area_x), '.png'),
     width = 1280,
     height = 400,
-    res = 165)
+    res = 110)
 print(area_x_wk_cause_deaths_plot)
 dev.off()
 
@@ -1535,7 +1535,7 @@ area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
            colour = Cause_1,
            label = Deaths)) +
   geom_bar(stat = 'identity',
-           colour = '#ffffff') +
+           width = .8) +
   labs(title = paste0('Weekly deaths in care homes; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
        subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
        x = 'Week',
@@ -1553,7 +1553,7 @@ area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
 png(paste0(output_directory_x, '/Figure_7_wkly_deaths_carehomes_', gsub(' ', '_', area_x), '.png'),
     width = 1280,
     height = 400,
-    res = 165)
+    res = 110)
 print(area_x_wk_cause_deaths_plot_2)
 dev.off()
 
