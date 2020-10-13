@@ -3,12 +3,11 @@ request.open("GET", "./Outputs/utla_growth_since_september.json", false);
 request.send(null);
 var utla_growth_ts_data = JSON.parse(request.responseText);
 
+
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/utla_growth_limits.json", false);
 request.send(null);
 var utla_growth_ts_limits = JSON.parse(request.responseText);
-
-var height_scatter = 500;
 
 // append the svg object to the body of the page
 var growth_svg_2 = d3.select("#utla_ts_growth_rate")
@@ -22,6 +21,10 @@ var growth_svg_2 = d3.select("#utla_ts_growth_rate")
 var x_growth_utla_ts = d3.scaleLinear()
   .domain([0, utla_growth_ts_limits[0].Max_rolling_rate])
   .range([0, width_hm  - 80]);
+
+// https://bl.ocks.org/officeofjane/9b9e606e9876e34385cc4aeab188ed73
+
+// ts_date = ''
 
 d3.select("#utla_growth_rate_title_2")
   .html(function(d) {

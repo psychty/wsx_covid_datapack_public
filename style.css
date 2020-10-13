@@ -329,3 +329,25 @@ p.key_list .side_tt {
 .give_me_space {
 margin-left: 5px;
 }
+
+#slider_play_button {
+  position: relative;
+  background: #dbdbdb;
+  padding-right: 100px;
+  border-radius: 3px;
+  border: none;
+  color: black;
+  margin: 0;
+  padding: 0 12px;
+  height: 30px;
+    }
+
+#slider_play_button:hover {
+  background-color: #696969;
+  color: white;
+  }
+
+#utla_growth_slider_id {
+position: relative;
+margin-right: 15px;
+}
