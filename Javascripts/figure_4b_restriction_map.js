@@ -1,6 +1,6 @@
 
-var restriction_type = ['National', 'Local'];
-var restriction_colours = ['#ffb400', '#9762a2'];
+var restriction_type = ['Medium', 'High', 'Very High'];
+var restriction_colours = ['#ffb400', '#9762a2', '#374776'];
 
 var ltla_restriction_colour_func = d3.scaleOrdinal()
   .domain(restriction_type)
@@ -24,12 +24,13 @@ var attribution = '&copy; <a href="https://www.openstreetmap.org/copyright">Open
 function restriction_ltla_colour(d) {
      return d === restriction_type[0] ? restriction_colours[0] :
             d === restriction_type[1] ? restriction_colours[1] :
+            d === restriction_type[2] ? restriction_colours[2] :
            '#feebe2';
  }
 
  function style_restriction(feature) {
      return {
-         fillColor: restriction_ltla_colour(feature.properties.Restriction_type),
+         fillColor: restriction_ltla_colour(feature.properties.l_tier),
          weight: 1,
          opacity: .6,
          color: 'white',
