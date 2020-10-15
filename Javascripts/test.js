@@ -3,11 +3,15 @@ request.open("GET", "./Outputs/utla_growth_since_september.json", false);
 request.send(null);
 var utla_growth_ts_data = JSON.parse(request.responseText);
 
-
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/utla_growth_limits.json", false);
 request.send(null);
 var utla_growth_ts_limits = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/utla_growth_limits_dates.json", false);
+request.send(null);
+var utla_growth_ts_dates = JSON.parse(request.responseText);
 
 // append the svg object to the body of the page
 var growth_svg_2 = d3.select("#utla_ts_growth_rate")
@@ -22,9 +26,76 @@ var x_growth_utla_ts = d3.scaleLinear()
   .domain([0, utla_growth_ts_limits[0].Max_rolling_rate])
   .range([0, width_hm  - 80]);
 
-// https://bl.ocks.org/officeofjane/9b9e606e9876e34385cc4aeab188ed73
+function new_date_growth_utla() {
 
-// ts_date = ''
+d3.select('#value-time')
+  .html(function(d) {
+    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages) in the seven days to ' + d3.timeFormat('%A %d %B')(sliderTime.value()) + ' by week on week change in number of cases; Upper Tier Local Authorities;'});
+}
+
+////////// slider //////////
+// This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
+  var dataTime = d3.range(0, utla_growth_ts_dates.length).map(function(d) {
+    return new Date(2020, 08, 01 + d);
+  });
+
+var sliderTime = d3
+  .sliderBottom()
+  .min(d3.min(dataTime))
+  .max(d3.max(dataTime))
+  .width(300)
+  .tickFormat(d3.timeFormat(''))
+  .tickValues(dataTime)
+  .default(new Date(2020, 08, 1 + utla_growth_ts_dates.length))
+  .on('onchange', new_date_growth_utla);
+
+  var utla_growth_slider_svg = d3
+    .select('#utla_growth_slider')
+    .append('svg')
+    .attr('width', 350)
+    .attr('height', 40)
+    .append('g')
+    .attr('transform', 'translate(30,30)');
+
+  utla_growth_slider_svg.call(sliderTime);
+
+  d3.select('#value-time')
+      .html(function(d) {
+        return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages) in the seven days to ' + d3.timeFormat('%A %d %B')(sliderTime.value()) + ' by week on week change in number of cases; Upper Tier Local Authorities;'});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 d3.select("#utla_growth_rate_title_2")
   .html(function(d) {

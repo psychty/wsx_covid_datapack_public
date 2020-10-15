@@ -1879,7 +1879,7 @@ wkly_template <- wkly_template %>%
 wkly_template %>%  
   print(paste0(github_repo_dir, '/Latest_West_Sussex_C19_slide_deck.pptx'))
 
-# Watchlist ####
+# Restrictions ####
 
 # https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/914840/LA_watchlist_data_file_week35.XLSX
 
@@ -1899,8 +1899,8 @@ ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2c
   select(!c(l_Country, lad19nmw)) %>% 
   rename(Restriction_type = l_restrictions) %>% 
   mutate(Restriction_type = ifelse(is.na(Restriction_type), 'National', Restriction_type)) %>%
-  mutate(l_url_national = "https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do") %>% 
-  mutate(l_national_ruleofsix = ifelse(is.na(l_national_ruleofsix), rest_of_england_restrictions$l_national_ruleofsix, l_national_ruleofsix)) %>% 
+  mutate(l_tier = ifelse(is.na(l_tier), 'Medium', l_tier)) %>%
+   mutate(l_national_ruleofsix = ifelse(is.na(l_national_ruleofsix), rest_of_england_restrictions$l_national_ruleofsix, l_national_ruleofsix)) %>% 
   mutate(l_national_householdmixing = ifelse(is.na(l_national_householdmixing), rest_of_england_restrictions$l_national_householdmixing, l_national_householdmixing)) %>%  mutate(l_national_raves = ifelse(is.na(l_national_raves), rest_of_england_restrictions$l_national_raves, l_national_raves)) %>%
   mutate(l_national_stayinglocal = ifelse(is.na(l_national_stayinglocal), rest_of_england_restrictions$l_national_stayinglocal, l_national_stayinglocal)) %>%   
   mutate(l_national_stayinghome = ifelse(is.na(l_national_stayinghome), rest_of_england_restrictions$l_national_stayinghome, l_national_stayinghome)) %>% 
@@ -1916,16 +1916,20 @@ ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2c
   mutate(l_local_notstayingaway = ifelse(is.na(l_local_notstayingaway), 0, l_local_notstayingaway)) %>% 
   mutate(l_local_businessclosures = ifelse(is.na(l_local_businessclosures), 0, l_local_businessclosures)) %>% 
   mutate(l_local_openinghours = ifelse(is.na(l_local_openinghours), 0, l_local_openinghours)) %>%
-  mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. These include:', ifelse(Restriction_type == 'Local', 'This area is currently subject to national as well as further <b>local</b> restrictions. National restrictions include:', '')), '<ul>', ifelse(l_national_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(l_national_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(l_national_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(l_national_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving the home without a reasonable excuse.</li>', ''), ifelse(l_national_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(l_national_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(l_national_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), paste0('<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>'), ifelse(Restriction_type == 'Local', paste0('In addition to national restrictions, this area is subject to further local restrictions including: <br><ul>', ifelse(l_local_ruleofsix == 1, '<li>Not meeting with more than six people socially</li>', ''), ifelse(l_local_householdmixing == 1, '<li>Not mixing with people in other households</li>', ''),  ifelse(l_local_raves == 1, '<li>Not attending illegal raves</li>', ''), ifelse(l_local_stayinglocal == 1, '<li>Not leaving or entering a protected areas without reasonal excuse</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving home without reasonal excuse</li>', ''), ifelse(l_local_notstayingaway == 1, '<li>Not staying overnight somewhere other than home without reasonal excuse</li>', ''),  ifelse(l_local_businessclosures == 1, '<li>Some businesses are not permitted to open</li>', ''), ifelse(l_local_openinghours == 1, '<li>Some businesses are required to restrict openning times</li>', ''), '</ul>For further information see: ', l_url_local), ''))) %>% 
-  select(objectid, lad19nm, Restriction_type, label)
-    
-leaflet(ltla_restrictions) %>% 
-  addTiles() %>%
-  addPolygons(stroke = FALSE, 
-              smoothFactor = 0.3, 
-              fillOpacity = .6,
-              fillColor = ~ifelse(Restriction_type == 'National', '#ffb400', '#9762a2'),
-              label = ~label)
+  mutate(l_local_alcoholsalesrestrictions = ifelse(is.na(l_local_alcoholsalesrestrictions), 0, l_local_alcoholsalesrestrictions)) %>%
+  mutate(l_national_alcoholsalesrestrictions = ifelse(is.na(l_national_alcoholsalesrestrictions), 0, l_national_alcoholsalesrestrictions)) %>%
+  mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>This area is currently in the <Strong>', l_tier, ' </Strong>level of restrictions.<br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. These include:', ifelse(Restriction_type == 'Local', 'This area is currently subject to national as well as further <b>local</b> restrictions. National restrictions include:', '')), '<ul>', ifelse(l_national_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(l_national_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(l_national_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(l_national_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving the home without a reasonable excuse.</li>', ''), ifelse(l_national_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(l_national_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(l_national_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), paste0('<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>'), ifelse(Restriction_type == 'Local', paste0('In addition to national restrictions, this area is subject to further local restrictions including: <br><ul>', ifelse(l_local_ruleofsix == 1, '<li>Not meeting with more than six people socially</li>', ''), ifelse(l_local_householdmixing == 1, '<li>Not mixing with people in other households</li>', ''),  ifelse(l_local_raves == 1, '<li>Not attending illegal raves</li>', ''), ifelse(l_local_stayinglocal == 1, '<li>Not leaving or entering a protected areas without reasonal excuse</li>', ''), ifelse(l_local_stayinghome == 1, '<li>Not leaving home without reasonal excuse</li>', ''), ifelse(l_local_notstayingaway == 1, '<li>Not staying overnight somewhere other than home without reasonal excuse</li>', ''),  ifelse(l_local_businessclosures == 1, '<li>Some businesses are not permitted to open</li>', ''), ifelse(l_local_openinghours == 1, '<li>Some businesses are required to restrict openning times</li>', ''), '</ul>For further information see: ', l_url_local), '')))# %>% 
+  select(objectid, lad19nm, l_tier, label)
+
+View(ltla_restrictions@data)
+#     
+# leaflet(ltla_restrictions) %>% 
+#   addTiles() %>%
+#   addPolygons(stroke = FALSE, 
+#               smoothFactor = 0.3, 
+#               fillOpacity = .6,
+#               fillColor = ~ifelse(Restriction_type == 'National', '#ffb400', '#9762a2'),
+#               label = ~label)
 
 geojson_write(geojson_json(ltla_restrictions), file = paste0(output_directory_x, '/ltla_covid_restrictions_hcl_latest.geojson'))
 
@@ -2012,4 +2016,11 @@ growth_rate_utla %>%
     toJSON() %>% 
     write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
   
-       
+growth_rate_utla %>% 
+  filter(Date >= '2020-09-01') %>%
+  select(Date) %>% 
+  unique() %>% 
+  arrange(Date) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/utla_growth_limits_dates.json'))
+
