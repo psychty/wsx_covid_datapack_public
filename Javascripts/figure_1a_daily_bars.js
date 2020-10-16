@@ -460,9 +460,6 @@ d3.select("#x_latest_figures")
   .html(function(d) {
     return 'The total number of confirmed Covid-19 cases so far in ' + selected_figure_1a_area_option + ' is ' + d3.format(',.0f')(d['Total confirmed cases so far'])  + '. This is ' + d3.format(',.0f')(d['Total cases per 100,000 population']) + ' cases per 100,000 population. The current daily case count (using data from ' + complete_date + ') is ' + d3.format(',.0f')(d['Confirmed cases swabbed on most recent complete day']) + ' new confirmed cases swabbed (' + d3.format(',.1f')(d['Confirmed cases swabbed per 100,000 population on most recent complete day']) + ' per 100,000).' });
 
-
-
-
 var showTooltip_daily_case_1 = function(d) {
   tooltip_daily_case_1
     .html("<h5>" + d.Name + '</h5><p><b>' + d.Date_label + '</b></p><p class = "side">In ' + d.Name + ' there were <b>' + d3.format(',.0f')(d.New_cases) + ' </b>specimens taken on this date which resulted in a positive result for Covid-19.</p><p class = "side">The new cases swabbed on this day represent ' + d3.format('0.1%')(d.New_cases / total_cases_daily_chosen) + ' of the total number of cases confirmed so far (' + d3.format(',.0f')(total_cases_daily_chosen) + ') </p><p class = "side">In the last seven days there have been a total of ' + d3.format(',.0f')(d.Rolling_7_day_new_cases) + ' reported cases.</p>')

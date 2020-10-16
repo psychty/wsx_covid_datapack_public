@@ -1,39 +1,127 @@
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/utla_growth_latest.json", false);
+request.open("GET", "./Outputs/utla_growth_since_september.json", false);
 request.send(null);
-var utla_growth_latest_data = JSON.parse(request.responseText);
+var utla_growth_ts_data = JSON.parse(request.responseText);
 
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/utla_growth_limits_complete_date.json", false);
+request.open("GET", "./Outputs/utla_growth_limits_dates.json", false);
 request.send(null);
-var utla_growth_latest_limits = JSON.parse(request.responseText);
+var utla_growth_ts_dates = JSON.parse(request.responseText);
 
 var height_scatter = 500;
+var width_growth_utla = width_hm * .8
 
 // append the svg object to the body of the page
-var growth_svg_1 = d3.select("#utla_latest_growth_rate")
+var growth_svg_2 = d3.select("#utla_ts_growth_rate")
 .append("svg")
 .attr("width", width_hm)
 .attr("height", height_scatter)
 .append("g")
 .attr("transform", "translate(" + 60 + "," + 20 + ")");
 
-// Add X axis
-var x_growth_utla_latest = d3.scaleLinear()
-  .domain([0, utla_growth_latest_limits[0].Max_rolling_rate])
-  .range([0, width_hm  - 80]);
+// When the slider moves the figure should be redrawn.
+function new_date_growth_utla() {
 
-d3.select("#utla_growth_rate_title")
+d3.select('#utla_growth_ts_rate_title')
   .html(function(d) {
-    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages) in the seven days to ' + complete_date +' by week on week change in number of cases; Upper Tier Local Authorities;'
-  });
+    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages) in the seven days to ' + d3.timeFormat('%A %d %B')(sliderTime.value()) + ' by week on week change in number of cases; Upper Tier Local Authorities;'});
 
-wsx_latest_growth = utla_growth_latest_data.filter(function(d) {
-  return d.Name == 'West Sussex'
+chosen_utla_ts = d3.timeFormat('%Y-%m-%d')(sliderTime.value())
+
+chosen_time_utla_df = utla_growth_ts_data.filter(function(d, i) {
+  return d.Date === chosen_utla_ts
 })
 
-england_latest_growth = utla_growth_latest_data.filter(function(d) {
-  return d.Name == 'England'
+//
+y_growth_utla_ts
+  .domain([-1, d3.max(chosen_time_utla_df, function(d) { return +d.Change_actual_by_week; })])
+  .nice();
+//
+// Redraw axis
+y_growth_utla_ts_axis
+  .transition()
+  .duration(1000)
+  .call(d3.axisLeft(y_growth_utla_ts).tickFormat(d3.format('.0%')));
+
+x_growth_utla_ts
+  .domain([0, d3.max(chosen_time_utla_df, function(d) { return +d.Rolling_7_day_rate; })])
+  .nice();
+
+x_growth_utla_ts_axis
+  .transition()
+  .duration(1000)
+  .call(d3.axisBottom(x_growth_utla_ts));
+
+utla_growth_ts_dots
+  .data(chosen_time_utla_df)
+  .transition()
+  .duration(1000)
+  .attr("cx", function (d) { return x_growth_utla_ts(d.Rolling_7_day_rate); } )
+  .attr("cy", function (d) { return y_growth_utla_ts(d.Change_actual_by_week); } )
+  .style("fill", function(d){if(d.Name == 'Brighton and Hove'){return "#0000cc"} else if(d.Name == 'East Sussex'){return "#930157"} else if(d.Name == 'West Sussex'){return "orange"} else if (d.Name == 'England') {return 'black'} else {return "#69b3a2"}})
+
+utla_growth_ts_line
+.selectAll("#zero_line_utla_growth")
+.remove();
+
+growth_svg_2
+.selectAll("#zero_line_utla_growth_t1")
+.remove();
+
+growth_svg_2
+.selectAll("#zero_line_utla_growth_t2")
+.remove();
+
+growth_svg_2
+.selectAll("#zero_line_utla_growth_t3")
+.remove();
+
+utla_growth_ts_line
+  .attr('id', 'zero_line_utla_growth')
+  .attr('x1', 0)
+  .attr('y1', function (d) { return y_growth_utla_ts(0); } )
+  .attr('x2', width_growth_utla  - 80)
+  .attr('y2', function (d) { return y_growth_utla_ts(0); } )
+  .attr('stroke', '#000000')
+  .attr("stroke-dasharray", ("3, 3"))
+
+growth_svg_2
+  .append("text")
+  .attr("x", width_growth_utla - 70)
+  .attr("y", function (d) { return y_growth_utla_ts(0) - 10;})
+  .attr('id', 'zero_line_utla_growth_t1')
+  .attr("text-anchor", "start")
+  .style('font-size', '10px')
+  .text('Areas above this line are increasing')
+
+growth_svg_2
+  .append("text")
+  .attr("x", width_growth_utla - 70)
+  .attr("y", function (d) { return y_growth_utla_ts(0); } )
+  .attr('id', 'zero_line_utla_growth_t2')
+  .attr("text-anchor", "start")
+  .style('font-size', '10px')
+  .text('and areas below are decreasing')
+
+growth_svg_2
+  .append("text")
+  .attr("x", width_growth_utla - 70)
+  .attr("y", function(d){ return y_growth_utla_ts(0) + 10; })
+  .attr('id', 'zero_line_utla_growth_t3')
+  .attr("text-anchor", "start")
+  .style('font-size', '10px')
+  .text('compared to cases 7 days before.')
+
+}
+
+wsx_latest_growth = utla_growth_ts_data.filter(function(d) {
+  return d.Name == 'West Sussex' &
+         d.Date === complete_date_actual
+})
+
+england_latest_growth = utla_growth_ts_data.filter(function(d) {
+  return d.Name == 'England' &
+         d.Date === complete_date_actual
 })
 
 d3.select("#wsx_growth_rate_latest")
@@ -41,19 +129,56 @@ d3.select("#wsx_growth_rate_latest")
     return wsx_latest_growth[0]['Label_2'].replace('In ', 'In West Sussex, in ') + ' ' + wsx_latest_growth[0]['Label_1'] + '.'
   });
 
-growth_svg_1.append("g")
+
+////////// slider //////////
+// This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
+var dataTime = d3.range(0, utla_growth_ts_dates.length).map(function(d) {
+  return new Date(2020, 08, 01 + d);
+  });
+
+var sliderTime = d3
+  .sliderBottom()
+  .min(d3.min(dataTime))
+  .max(d3.max(dataTime))
+  .width(300)
+  .tickFormat(d3.timeFormat(''))
+  .tickValues(dataTime)
+  .default(new Date(2020, 08, 1 + utla_growth_ts_dates.length))
+  .on('onchange', new_date_growth_utla);
+
+var utla_growth_slider_svg = d3
+  .select('#utla_growth_slider')
+  .append('svg')
+  .attr('width', 400)
+  .attr('height', 40)
+  .append('g')
+  .attr('transform', 'translate(30,20)');
+
+utla_growth_slider_svg.call(sliderTime);
+
+chosen_utla_ts = d3.timeFormat('%Y-%m-%d')(sliderTime.value())
+chosen_time_utla_df = utla_growth_ts_data.filter(function(d, i) {
+  return d.Date === chosen_utla_ts
+})
+
+// Add X axis
+var x_growth_utla_ts = d3.scaleLinear()
+  .domain([0, d3.max(chosen_time_utla_df, function(d) { return +d.Rolling_7_day_rate; })])
+  .range([0, width_growth_utla  - 80]);
+
+var x_growth_utla_ts_axis = growth_svg_2.append("g")
   .attr("transform", 'translate(0,' + (height_scatter - 80 ) + ")")
-  .call(d3.axisBottom(x_growth_utla_latest));
+  .call(d3.axisBottom(x_growth_utla_ts));
 
 // Add Y axis
-var y_growth_utla_latest = d3.scaleLinear()
-   .domain([-1, utla_growth_latest_limits[0].Max_change_week])
-   .range([ height_scatter - 80, 0])
+var y_growth_utla_ts = d3.scaleLinear()
+   .domain([-1, d3.max(chosen_time_utla_df, function(d) { return +d.Change_actual_by_week; })])
+   .range([height_scatter - 80, 0])
 
-growth_svg_1.append("g")
-   .call(d3.axisLeft(y_growth_utla_latest).tickFormat(d3.format('.0%')));
+var y_growth_utla_ts_axis = growth_svg_2.append("g")
+   .call(d3.axisLeft(y_growth_utla_ts).tickFormat(d3.format('.0%')));
 
-var tooltip_growth_utla_latest = d3.select("#utla_latest_growth_rate")
+var tooltip_growth_utla_ts = d3.select("#utla_ts_growth_rate")
   .append("div")
   .style("opacity", 0)
   .attr("class", "tooltip_class_scatter")
@@ -65,10 +190,10 @@ var tooltip_growth_utla_latest = d3.select("#utla_latest_growth_rate")
   .style("border-radius", "5px")
   .style("padding", "10px")
 
-var showTooltip_growth_latest = function(d) {
+var showTooltip_growth_ts = function(d) {
 
-  tooltip_growth_utla_latest
-    .html("<h5>" + d.Name + '</h5><p>' + d.Label_2 + '</p><p>' + d.Label_1 + '</p><p>' + d.Label_3 + '</p>')
+  tooltip_growth_utla_ts
+   .html("<h5>" + d.Name + '</h5><p>' + d.Label_2 + '</p><p>' + d.Label_1 + '</p><p>' + d.Label_3 + '</p>')
     .style("opacity", 1)
     .style("top", (event.pageY - 10) + "px")
     .style("left", (event.pageX + 10) + "px")
@@ -76,70 +201,70 @@ var showTooltip_growth_latest = function(d) {
     .style("visibility", "visible")
 }
 
-var mouseleave_growth_utla_latest = function(d) {
-  tooltip_growth_utla_latest
+var mouseleave_growth_utla_ts = function(d) {
+  tooltip_growth_utla_ts
     .style('opacity', 0)
     .style("visibility", "hidden")
 }
 
-growth_svg_1.append('g')
+utla_growth_ts_dots = growth_svg_2.append('g')
   .selectAll("dot")
-  .data(utla_growth_latest_data) // the .filter part is just to keep a few dots on the chart, not all of them
+  .data(chosen_time_utla_df)
   .enter()
   .append("circle")
-  .attr("cx", function (d) { return x_growth_utla_latest(d.Rolling_7_day_rate); } )
-  .attr("cy", function (d) { return y_growth_utla_latest(d.Change_actual_by_week); } )
+  .attr("cx", function (d) { return x_growth_utla_ts(d.Rolling_7_day_rate); } )
+  .attr("cy", function (d) { return y_growth_utla_ts(d.Change_actual_by_week); } )
   .attr("r", 7)
-  .style("fill", function(d){if(d.Name == 'West Sussex'){return "orange"} else if (d.Name == 'England') {return 'black'} else {return "#69b3a2"}})
+  .style("fill", function(d){if(d.Name == 'Brighton and Hove'){return "#0000cc"} else if(d.Name == 'East Sussex'){return "#930157"} else if(d.Name == 'West Sussex'){return "orange"} else if (d.Name == 'England') {return 'black'} else {return "#69b3a2"}})
   .style("opacity", .8)
   .style("stroke", "white")
-  .on('mousemove', showTooltip_growth_latest)
-  .on('mouseout', mouseleave_growth_utla_latest)
+  .on('mousemove', showTooltip_growth_ts)
+  .on('mouseout', mouseleave_growth_utla_ts)
 
-growth_svg_1.append('g')
-  .selectAll("dot")
-  .data(england_latest_growth) // the .filter part is just to keep a few dots on the chart, not all of them
-  .enter()
-  .append("circle")
-  .attr("cx", function (d) { return x_growth_utla_latest(d.Rolling_7_day_rate); } )
-  .attr("cy", function (d) { return y_growth_utla_latest(d.Change_actual_by_week); } )
-  .attr("r", 7)
-  .style("fill", 'black')
-  .style("opacity", .8)
-  .style("stroke", "white")
-  .on('mousemove', showTooltip_growth_latest)
-  .on('mouseout', mouseleave_growth_utla_latest)
-
-growth_svg_1.append('g')
-  .selectAll("dot")
-  .data(wsx_latest_growth) // the .filter part is just to keep a few dots on the chart, not all of them
-  .enter()
-  .append("circle")
-  .attr("cx", function (d) { return x_growth_utla_latest(d.Rolling_7_day_rate); } )
-  .attr("cy", function (d) { return y_growth_utla_latest(d.Change_actual_by_week); } )
-  .attr("r", 7)
-  .style("fill", 'orange')
-  .style("opacity", 1)
-  .style("stroke", "white")
-  .on('mousemove', showTooltip_growth_latest)
-  .on('mouseout', mouseleave_growth_utla_latest)
-
-growth_svg_1
-  .append('line')
-  .attr('x1', function (d) { return x_growth_utla_latest(0); } )
-  .attr('y1', function (d) { return y_growth_utla_latest(0); } )
-  .attr('x2', function (d) { return  x_growth_utla_latest(utla_growth_latest_limits[0].Max_rolling_rate); } )
-  .attr('y2', function (d) { return y_growth_utla_latest(0); } )
+utla_growth_ts_line = growth_svg_2.append('line')
+  .attr('id', 'zero_line_utla_growth')
+  .attr('x1', 0)
+  .attr('y1', function (d) { return y_growth_utla_ts(0); } )
+  .attr('x2', width_growth_utla  - 80)
+  .attr('y2', function (d) { return y_growth_utla_ts(0); } )
   .attr('stroke', '#000000')
-  // .attr('stroke', 'red')
   .attr("stroke-dasharray", ("3, 3"))
 
+growth_svg_2
+  .append("text")
+  .attr("x", width_growth_utla - 70)
+  .attr("y", function (d) { return y_growth_utla_ts(0) - 10;})
+  .attr('id', 'zero_line_utla_growth_t1')
+  .attr("text-anchor", "start")
+  .style('font-size', '10px')
+  .text('Areas above this line are increasing')
 
-var area_growth_comp = ['West Sussex', 'Other UTLAs', 'England'];
+growth_svg_2
+  .append("text")
+  .attr("x", width_growth_utla - 70)
+  .attr("y", function (d) { return y_growth_utla_ts(0); } )
+  .attr('id', 'zero_line_utla_growth_t2')
+  .attr("text-anchor", "start")
+  .style('font-size', '10px')
+  .text('and areas below are decreasing')
+
+growth_svg_2
+  .append("text")
+  .attr("x", width_growth_utla - 70)
+  .attr("y", function(d){ return y_growth_utla_ts(0) + 10; })
+  .attr('id', 'zero_line_utla_growth_t3')
+  .attr("text-anchor", "start")
+  .style('font-size', '10px')
+  .text('compared to cases 7 days before.')
+
+// Run the function
+new_date_growth_utla()
+
+var area_growth_comp = ['Brighton and Hove','East Sussex','West Sussex', 'Other UTLAs', 'England'];
 
 var utla_growth_colour_func = d3.scaleOrdinal()
   .domain(area_growth_comp)
-  .range(['orange','#69b3a2', 'black'])
+  .range(['#0000cc','#930157','orange','#69b3a2', 'black'])
 
 area_growth_comp.forEach(function(item, index) {
     var list = document.createElement("li");

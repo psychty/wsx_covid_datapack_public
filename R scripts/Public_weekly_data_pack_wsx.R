@@ -1962,59 +1962,61 @@ growth_rate_england <- growth_rate %>%
          Eng_lcl = Rolling_rate_lcl,
          Eng_ucl = Rolling_rate_ucl) 
 
-growth_rate_ltla <- growth_rate %>% 
-  left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
-  mutate(Label_1 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>% 
-  mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ','), ' cases per 100,000).')) %>% 
-  mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>% 
-  filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority'))
-
-growth_rate_ltla %>% 
-  filter(Date >= '2020-09-01') %>%
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/ltla_growth_since_september.json'))
-
-growth_rate_ltla %>% 
-  filter(Date == complete_date) %>% 
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/ltla_growth_latest.json'))
+# growth_rate_ltla <- growth_rate %>% 
+#   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
+#   mutate(Label_1 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>% 
+#   mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ','), ' cases per 100,000).')) %>% 
+#   mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>% 
+#   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority'))
+# 
+# growth_rate_ltla %>% 
+#   filter(Date >= '2020-09-01') %>%
+#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/ltla_growth_since_september.json'))
+# 
+# growth_rate_ltla %>% 
+#   filter(Date == complete_date) %>% 
+#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/ltla_growth_latest.json'))
 
 growth_rate_utla <- growth_rate %>% 
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
-  mutate(Label_1 = ifelse(Name == 'England', paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 2), ' per 100,000 population) and there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(Cumulative_per_100000, big.mark = ','), ' cases per 100,000).'), paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 2), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,2),')'))) %>% 
+  mutate(Label_1 = ifelse(Name == 'England', paste0('The 7 day incidence rate (', round(Rolling_7_day_rate, 1), ' per 100,000 population) and there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ','), ' cases per 100,000).'), paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')'))) %>% 
   mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000).')) %>% 
   mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>% 
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_utla %>% 
   filter(Date >= '2020-09-01') %>%
+  mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_utla$Name), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')))) %>% 
+  arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/utla_growth_since_september.json'))
 
-growth_rate_utla %>% 
-  filter(Date == complete_date) %>% 
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/utla_growth_latest.json'))
+# growth_rate_utla %>% 
+#   filter(Date == complete_date) %>% 
+#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/utla_growth_latest.json'))
 
-  growth_rate_utla %>% 
-  filter(Date >= '2020-09-01') %>%
-  summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
-            Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
-  mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
-    toJSON() %>% 
-    write_lines(paste0(output_directory_x,'/utla_growth_limits.json'))
+  # growth_rate_utla %>% 
+  # filter(Date >= '2020-09-01') %>%
+  # summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
+  #           Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
+  # mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
+  #   toJSON() %>% 
+  #   write_lines(paste0(output_directory_x,'/utla_growth_limits.json'))
   
-growth_rate_utla %>% 
-  filter(Date == complete_date) %>%
-  summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
-            Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
-    mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
-    toJSON() %>% 
-    write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
+# growth_rate_utla %>% 
+#   filter(Date == complete_date) %>%
+#   summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
+#             Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
+#     mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
+#     toJSON() %>% 
+#     write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
   
 growth_rate_utla %>% 
   filter(Date >= '2020-09-01') %>%

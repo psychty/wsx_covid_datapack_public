@@ -318,6 +318,22 @@ p.key_list .side_tt {
   float: right;
 }
 
+.stay-left-classy_1 {
+  float: left;
+  display: block;
+  position: relative;
+  padding-left: 5px;
+
+}
+
+.stay-right-classy_1 {
+  float: right;
+  display: block;
+  position: relative;
+  padding-left: 5px;
+
+}
+
 .stay-left-classy{
   float: left;
 }
