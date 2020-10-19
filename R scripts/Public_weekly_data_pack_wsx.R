@@ -278,6 +278,8 @@ dev.off()
 
 }
 
+
+
 ltla_p12_test_df <- p12_test_df %>% 
   filter(Name %in% areas_to_loop) %>% 
   filter(Name != 'West Sussex')
@@ -450,6 +452,15 @@ format(last_date - 1, '%d %b') %>%
 format(last_date, '%d %B %Y') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/daily_case_update_date.json'))
+
+# Export df for KG - 7 day rolling trend ####
+
+per_day_trend <- p12_test_df %>% 
+  select(Code, Name, Type, Date, New_cases, Cumulative_cases, Rolling_7_day_new_cases, Seven_day_average_new_cases, Population) %>% 
+  rename(MYE2019 = Population)
+
+per_day_trend %>% 
+  write.csv(., paste0(output_directory_x, '/rolling_7_day_cases_all_areas.csv'), row.names = FALSE)
 
 # Heatmap of cases ####
 hm_theme = function(){
