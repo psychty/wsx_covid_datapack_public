@@ -99,8 +99,6 @@ var lines_triages = svg_pathways_fig
     .style("stroke-width", 2)
     .style("fill", "none");
 
-
-
 // We can treat this as a set of thin bars. With tooltips (maybe adding a dot or symbol at the top of each line as a easier thing to mouseover)
 svg_pathways_fig
 .selectAll("changes_timeline")
@@ -113,35 +111,35 @@ svg_pathways_fig
 .attr('y2', height_line - 80 )
 .attr('stroke', function(d) { return d.direction})
 .attr("stroke-dasharray", ("3, 3"))
-
-svg_pathways_fig
-  .append("text")
-  .attr('id', 'test_milestones')
-  .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
-  .attr("y", function(d) { return y_pathways(+565) + 5})
-  .text('9th April')
-  .style('font-weight', 'bold')
-  .style('font-size', '10px')
-  .attr("text-anchor", "end")
-
-svg_pathways_fig
-  .append("text")
-  .attr('id', 'test_milestones')
-  .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
-  .attr("y", function(d) { return y_pathways(+565) + 15})
-  .text('111 online removed')
-.style('font-size', '10px')
-  .attr("text-anchor", "end")
-
-svg_pathways_fig
-  .append("text")
-  .attr('id', 'test_milestones')
-  .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
-  .attr("y", function(d) { return y_pathways(+565) + 25})
-  .text('for 0-18 year olds')
-.style('font-size', '10px')
-  .attr("text-anchor", "end")
-
+//
+// svg_pathways_fig
+//   .append("text")
+//   .attr('id', 'test_milestones')
+//   .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
+//   .attr("y", function(d) { return y_pathways(+565) + 5})
+//   .text('9th April')
+//   .style('font-weight', 'bold')
+//   .style('font-size', '10px')
+//   .attr("text-anchor", "end")
+//
+// svg_pathways_fig
+//   .append("text")
+//   .attr('id', 'test_milestones')
+//   .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
+//   .attr("y", function(d) { return y_pathways(+565) + 15})
+//   .text('111 online removed')
+// .style('font-size', '10px')
+//   .attr("text-anchor", "end")
+//
+// svg_pathways_fig
+//   .append("text")
+//   .attr('id', 'test_milestones')
+//   .attr("x", function(d) { return x_pathways('08 Apr') + (x_pathways.bandwidth()/2)})
+//   .attr("y", function(d) { return y_pathways(+565) + 25})
+//   .text('for 0-18 year olds')
+// .style('font-size', '10px')
+//   .attr("text-anchor", "end")
+//
 svg_pathways_fig
   .append("text")
   .attr('id', 'test_milestones')
@@ -216,7 +214,7 @@ var dots_triages = svg_pathways_fig
   .append("circle")
   .attr("cx", function(d) { return x_pathways(d.Date) + (x_pathways.bandwidth() /2) } )
   .attr("cy", function(d) { return y_pathways(+d.Triage_count) } )
-  .attr("r", 3)
+  .attr("r", 2)
   .style("fill", '#000')
   // .attr("stroke", "white")
   .on('mousemove', showTooltip_pathways)

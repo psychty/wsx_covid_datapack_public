@@ -1351,7 +1351,7 @@ Report_df_x %>%
 
 pathways_dates <- Report_df_x %>% 
   ungroup() %>% 
-  filter(Date %in% seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 2)) %>% 
+  filter(Date %in% seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7)) %>% 
   select(Date) %>% 
   mutate(Date = format(Date, '%d %b'))
   
@@ -1359,7 +1359,7 @@ pathways_dates$Date %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/NHS_pathways_dates.json'))
 
-data.frame(Date = c('09 Apr', '23 Apr', '18 May'), lab_1 = c('111 online removed', '111 online reinstated', 'Pathway case'), lab_2 = c('for 0-18 year olds', 'for 5-18 year olds', 'definition change'), direction = c('red', 'blue', 'red'), Triage_count = c(565, 292,334)) %>% 
+data.frame(Date = c('23 Apr', '18 May'), lab_1 = c('111 online reinstated', 'Pathway case'), lab_2 = c( 'for 5-18 year olds', 'definition change'), direction = c('blue', 'red'), Triage_count = c(292,334)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/pathways_changes.json'))
 
