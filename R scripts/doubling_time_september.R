@@ -284,14 +284,23 @@ area_x_interpolated <- data.frame(Name = rep(area_x, length(area_dates))) %>%
   mutate(Date = as.character(Date)) %>% 
   left_join(area_x_double_df[c('Date', 'Cumulative_cases')], by = 'Date') %>% 
   mutate(Date = as.Date(Date)) %>% 
-  mutate(Data_completeness = 'Predicted')
+  mutate(Data_completeness = 'Predicted') %>% 
+  mutate(Cumulative_cases = na.approx(Cumulative_cases))
 
 area_x_double_df_complete <- area_x_double_df %>% 
   filter(Data_completeness == 'Complete') %>% 
   mutate(Date = as.Date(Date))
+
+area_x_double_df <- area_x_interpolated %>% 
+  filter(Date != complete_date) %>% 
+  bind_rows(area_x_double_df_complete) %>% 
+  arrange(Date) %>% 
+  mutate(New_cases = Cumulative_cases - lag(Cumulative_cases, 1)) %>% 
+  mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA)) %>% 
+  left_join(red_threshold, by = 'Name')
   
 ggplot() +
-  geom_point(area_x_double_df_complete,
+  geom_point(data = area_x_double_df,
              aes(x = Date,
                  y = Cumulative_cases,
                  group = Name,
@@ -300,9 +309,4 @@ ggplot() +
              aes(x = Date,
                  y = Cumulative_cases,
                  group = Name,
-                 colour = Data_completeness)) +
-  geom_point(area_x_interpolated,
-             aes(x = Date,
-                 y = Cumulative_cases,
-                 group = Name,
-                 colour = Data_completeness))
+                 colour = Data_completeness)) 
