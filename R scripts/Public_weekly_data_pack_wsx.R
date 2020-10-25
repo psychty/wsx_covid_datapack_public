@@ -974,6 +974,12 @@ ft_ltla_rolling_rate_wsx <- flextable(rolling_ltla_rate_wsx) %>%
 
 ltla_boundaries <- geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
 
+#download.file('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson', paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'), mode = 'wb')
+
+if(exists('ltla_boundaries') == FALSE) {
+  ltla_boundaries <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
+}
+
 geo_rate_cumulative_ltla_bins <- ltla_cumulative_rate_bins %>% 
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
@@ -1903,9 +1909,19 @@ read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restr
   View()
 
 rest_of_england_restrictions <- read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
-  filter(l_Category == 'Rest of England')
+  filter(l_Category == 'Rest of England') %>% 
+  mutate(l_national_ruleofsix = 1,
+         l_national_raves = 1,
+         l_national_openinghours = 1)
 
-ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp")  %>%   left_join(lookup, by = c('lad19nm' = 'LTLA19NM')) %>% 
+ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
+
+if(exists('ltla_restrictions') == FALSE) {
+  ltla_boundaries <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
+}
+
+ltla_restrictions <- ltla_restrictions  %>% 
+  left_join(lookup, by = c('lad19nm' = 'LTLA19NM')) %>% 
   filter(substr(lad19cd, 1, 1) == 'E') %>% 
   left_join(read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv'), by = c('lad19nm' = 'l_Category')) %>% 
   select(!c(l_Country, lad19nmw)) %>% 
@@ -1919,7 +1935,7 @@ ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2c
   mutate(l_national_notstayingaway = ifelse(is.na(l_national_notstayingaway), rest_of_england_restrictions$l_national_notstayingaway, l_national_notstayingaway)) %>% 
   mutate(l_national_businessclosures = ifelse(is.na(l_national_businessclosures), rest_of_england_restrictions$l_national_businessclosures, l_national_businessclosures)) %>% 
   mutate(l_national_openinghours = ifelse(is.na(l_national_openinghours), rest_of_england_restrictions$l_national_openinghours, l_national_openinghours)) %>% 
-  mutate(l_national_gatherings = ifelse(is.na(l_national_gatherings), rest_of_england_restrictions$l_national_gatherings, l_national_gatherings)) %>% 
+  mutate(l_national_socialgatherings = ifelse(is.na(l_national_socialgatherings), rest_of_england_restrictions$l_national_socialgatherings, l_national_socialgatherings)) %>% 
   mutate(l_local_ruleofsix = ifelse(is.na(l_local_ruleofsix), 0, l_local_ruleofsix))%>% 
   mutate(l_local_householdmixing = ifelse(is.na(l_local_householdmixing), 0, l_local_householdmixing))%>% 
   mutate(l_local_raves = ifelse(is.na(l_local_raves), 0, l_local_raves))%>% 
@@ -1943,7 +1959,7 @@ ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2c
 
 geojson_write(geojson_json(ltla_restrictions), file = paste0(output_directory_x, '/ltla_covid_restrictions_hcl_latest.geojson'))
 
-paste0('Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.')
+#paste0('Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.')
 
 # incidence and growth rate ####
 
