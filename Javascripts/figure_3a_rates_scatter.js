@@ -32,6 +32,9 @@ chosen_time_utla_df = utla_growth_ts_data.filter(function(d, i) {
   return d.Date === chosen_utla_ts
 })
 
+
+console.log(chosen_utla_ts)
+
 //
 y_growth_utla_ts
   .domain([-1, d3.max(chosen_time_utla_df, function(d) { return +d.Change_actual_by_week; })])
@@ -160,6 +163,8 @@ chosen_utla_ts = d3.timeFormat('%Y-%m-%d')(sliderTime.value())
 chosen_time_utla_df = utla_growth_ts_data.filter(function(d, i) {
   return d.Date === chosen_utla_ts
 })
+
+
 
 // Add X axis
 var x_growth_utla_ts = d3.scaleLinear()
