@@ -4,7 +4,7 @@ request.send(null);
 var utla_growth_ts_data = JSON.parse(request.responseText);
 
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/utla_growth_limits_dates.json", false);
+request.open("GET", "./Outputs/growth_limits_dates.json", false);
 request.send(null);
 var utla_growth_ts_dates = JSON.parse(request.responseText);
 
