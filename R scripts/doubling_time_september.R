@@ -134,13 +134,14 @@ complete_date <- last_date - 5
 
 # We create a doubling time using the most recent 5 day period (and doubling time is recalculated every day once new data is available)
 
+start_date <- as.Date('2020-09-01')
 double_time_period <- 7 # this could be 5 or 7
 case_x_number = 1 # This could be changed
 
 # I've made an ifelse function that identifies 7 day periods for 100 days or 140 days of data if 7 day doubling time is used and this may have to change in the future.
 
 daily_cases_reworked <- daily_cases_reworked %>%
-  filter(Date >= '2020-09-01') %>%
+  filter(Date >= start_date) %>%
   group_by(Name, Date) %>%
   summarise(New_cases = sum(New_cases, na.rm = 0)) %>%
   group_by(Name) %>%
@@ -255,7 +256,9 @@ daily_cases_final <- daily_cases_reworked %>%
   arrange(Name, desc(Date)) %>% 
   mutate(Date_label = format(Date, '%a %d %B'))
 
-i = 1
+double_df <- data.frame(Name = character(), Date = character(), Data_type = character(), Cumulative_cases = numeric(), Data_completeness = character(), New_cases = numeric(), Double_time = numeric(), Date_label = character(), Rolling_7_day_new_cases = numeric(), Population = numeric(), Threshold = numeric()) 
+
+for(i in 1:length(areas_to_loop)){
 
 area_x <- areas_to_loop[i]
 
@@ -279,7 +282,7 @@ area_x_double_df_incomplete <- daily_cases_final %>%
   filter(Data_completeness == 'Considered incomplete')
 
 area_x_interpolated <- data.frame(Name = rep(area_x, length(area_dates))) %>% 
-  mutate(Date = seq.Date(complete_date, area_x_predicted_double_date$Date, by = '1 day')) %>%
+  mutate(Date = seq.Date(complete_date, area_x_predicted_double$Date, by = '1 day')) %>%
   mutate(Data_type = 'Predicted') %>%
   mutate(Date = as.character(Date)) %>% 
   left_join(area_x_double_df[c('Date', 'Cumulative_cases')], by = 'Date') %>% 
@@ -295,7 +298,7 @@ area_x_double_df <- area_x_interpolated %>%
   filter(Date != complete_date) %>% 
   bind_rows(area_x_double_df_complete) %>% 
   arrange(Date) %>% 
-  mutate(New_cases = Cumulative_cases - lag(Cumulative_cases, 1)) %>% 
+  mutate(New_cases = ifelse(Date == start_date, Cumulative_cases, Cumulative_cases - lag(Cumulative_cases, 1))) %>% 
   mutate(Rolling_7_day_new_cases = rollapply(New_cases, 7, sum, align = 'right', fill = NA)) %>% 
   left_join(red_threshold, by = 'Name')
   
@@ -309,4 +312,31 @@ ggplot() +
              aes(x = Date,
                  y = Cumulative_cases,
                  group = Name,
-                 colour = Data_completeness)) 
+                 colour = Data_completeness)) +
+  scale_x_date(date_labels = "%b %d",
+               breaks = seq.Date(min(area_x_double_df$Date) -(52*7), max(area_x_double_df$Date), by = 7),
+               limits = c(min(area_x_double_df$Date), max(area_x_double_df$Date)),
+               expand = c(0.01,0.01)) +
+  ph_theme() +
+  theme(axis.text.x = element_text(angle = 90))
+
+area_x_double_df <- area_x_double_df %>% 
+  mutate(Date = as.character(Date))
+
+double_df <- double_df %>% 
+  bind_rows(area_x_double_df)
+
+}
+
+double_df_final <- double_df %>% 
+  mutate(Date = as.Date(Date)) %>% 
+  group_by(Name, Date) %>% 
+  mutate(Hits_100_per_100k_before_doubling = ifelse(Rolling_7_day_new_cases >= Threshold, 'Yes', 'No'))
+
+
+double_df_final %>% 
+  filter(Hits_100_per_100k_before_doubling == 'Yes') %>% 
+  select(Name, Date, Data_type, Rolling_7_day_new_cases, Threshold) %>% 
+  group_by(Name) %>% 
+  slice_min(Date) %>% 
+  mutate(Date_we_know = Date + 5)
