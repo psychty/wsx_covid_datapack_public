@@ -1992,20 +1992,22 @@ growth_rate_ltla <- growth_rate %>%
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>%
   mutate(Label_1 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>%
   mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ','), ' cases per 100,000).')) %>%
-  mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>%
-  filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority'))
+  mutate(Label = paste(Label_1, Label_3, sep = '<br><br>')) %>%
+  filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_ltla %>%
   filter(Date >= '2020-09-01') %>%
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy) %>%
+  mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_ltla$Name), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')))) %>% 
+  arrange(Name) %>% 
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>% 
   toJSON() %>%
   write_lines(paste0(output_directory_x,'/ltla_growth_since_september.json'))
 
-growth_rate_ltla %>%
-  filter(Date == complete_date) %>%
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>%
-  toJSON() %>%
-  write_lines(paste0(output_directory_x,'/ltla_growth_latest.json'))
+# growth_rate_ltla %>%
+#   filter(Date == complete_date) %>%
+#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>%
+#   toJSON() %>%
+#   write_lines(paste0(output_directory_x,'/ltla_growth_latest.json'))
 
 growth_rate_utla <- growth_rate %>% 
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 

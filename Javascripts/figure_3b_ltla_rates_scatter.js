@@ -8,11 +8,10 @@ request.open("GET", "./Outputs/growth_limits_dates.json", false);
 request.send(null);
 var ltla_growth_ts_dates = JSON.parse(request.responseText);
 
-var height_scatter = 500;
 var width_growth_ltla = width_hm * .8
 
 // append the svg object to the body of the page
-var growth_svg_2 = d3.select("#ltla_ts_growth_rate")
+var ltla_growth_svg_2 = d3.select("#ltla_ts_growth_rate")
 .append("svg")
 .attr("width", width_hm)
 .attr("height", height_scatter)
@@ -23,30 +22,25 @@ var ltla_area_growth_comp = ['Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham',
 
 var ltla_growth_colour_func = d3.scaleOrdinal()
   .domain(ltla_area_growth_comp)
-  .range(['#1b9e77','#d95f02','#7570b3','#e7298a','#66a61e','#e6ab02','#a6761d','#69b3a2', 'black'])
+  .range(['#0E2F6A','#490B2F','#880D2A','#B02C1A','#FD7726','#FDD147','#8CC216','#69b3a2', 'black'])
 
 // When the slider moves the figure should be redrawn.
 function new_date_growth_ltla() {
 
 d3.select('#ltla_growth_ts_rate_title')
   .html(function(d) {
-    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages) in the seven days to ' + d3.timeFormat('%A %d %B')(sliderTime.value()) + ' by week on week change in number of cases; Upper Tier Local Authorities;'});
+    return 'New confirmed COVID-19 case rate cases per 100,000 population (all ages) in the seven days to ' + d3.timeFormat('%A %d %B')(sliderTime_ltla.value()) + ' by week on week change in number of cases; Lower Tier Local Authorities;'});
 
-chosen_ltla_ts = d3.timeFormat('%Y-%m-%d')(sliderTime.value())
+chosen_ltla_ts = d3.timeFormat('%Y-%m-%d')(sliderTime_ltla.value())
 
 chosen_time_ltla_df = ltla_growth_ts_data.filter(function(d, i) {
   return d.Date === chosen_ltla_ts
 })
 
-
-console.log(chosen_ltla_ts)
-
-//
 y_growth_ltla_ts
   .domain([-1, d3.max(chosen_time_ltla_df, function(d) { return +d.Change_actual_by_week; })])
   .nice();
-//
-// Redraw axis
+
 y_growth_ltla_ts_axis
   .transition()
   .duration(1000)
@@ -67,21 +61,21 @@ ltla_growth_ts_dots
   .duration(1000)
   .attr("cx", function (d) { return x_growth_ltla_ts(d.Rolling_7_day_rate); } )
   .attr("cy", function (d) { return y_growth_ltla_ts(d.Change_actual_by_week); } )
-  .style("fill", function(d){ return ltla_growth_colour_func(d.Name)})
+  .style("fill", function(d){if(d.Name == 'Adur'){return ltla_growth_colour_func('Adur')} else if(d.Name == 'Arun'){return ltla_growth_colour_func('Arun')} else if(d.Name == 'Chichester'){return ltla_growth_colour_func('Chichester')} else if (d.Name == 'Crawley') {return ltla_growth_colour_func('Crawley')} else if (d.Name == 'Horsham') {return ltla_growth_colour_func('Horsham')} else if (d.Name == 'Mid Sussex') {return ltla_growth_colour_func('Mid Sussex')} else if (d.Name == 'Worthing') {return ltla_growth_colour_func('Worthing')} else if (d.Name == 'England') {return ltla_growth_colour_func('England')} else {return ltla_growth_colour_func('Other ltlas')}})
 
 ltla_growth_ts_line
 .selectAll("#zero_line_ltla_growth")
 .remove();
 
-growth_svg_2
+ltla_growth_svg_2
 .selectAll("#zero_line_ltla_growth_t1")
 .remove();
 
-growth_svg_2
+ltla_growth_svg_2
 .selectAll("#zero_line_ltla_growth_t2")
 .remove();
 
-growth_svg_2
+ltla_growth_svg_2
 .selectAll("#zero_line_ltla_growth_t3")
 .remove();
 
@@ -94,7 +88,7 @@ ltla_growth_ts_line
   .attr('stroke', '#000000')
   .attr("stroke-dasharray", ("3, 3"))
 
-growth_svg_2
+ltla_growth_svg_2
   .append("text")
   .attr("x", width_growth_ltla - 70)
   .attr("y", function (d) { return y_growth_ltla_ts(0) - 10;})
@@ -103,7 +97,7 @@ growth_svg_2
   .style('font-size', '10px')
   .text('Areas above this line are increasing')
 
-growth_svg_2
+ltla_growth_svg_2
   .append("text")
   .attr("x", width_growth_ltla - 70)
   .attr("y", function (d) { return y_growth_ltla_ts(0); } )
@@ -112,7 +106,7 @@ growth_svg_2
   .style('font-size', '10px')
   .text('and areas below are decreasing')
 
-growth_svg_2
+ltla_growth_svg_2
   .append("text")
   .attr("x", width_growth_ltla - 70)
   .attr("y", function(d){ return y_growth_ltla_ts(0) + 10; })
@@ -125,17 +119,17 @@ growth_svg_2
 
 ////////// slider //////////
 // This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
-var dataTime = d3.range(0, ltla_growth_ts_dates.length).map(function(d) {
+var dataTime_ltla = d3.range(0, ltla_growth_ts_dates.length).map(function(d) {
   return new Date(2020, 08, 01 + d);
   });
 
-var sliderTime = d3
+var sliderTime_ltla = d3
   .sliderBottom()
-  .min(d3.min(dataTime))
-  .max(d3.max(dataTime))
+  .min(d3.min(dataTime_ltla))
+  .max(d3.max(dataTime_ltla))
   .width(300)
   .tickFormat(d3.timeFormat(''))
-  .tickValues(dataTime)
+  .tickValues(dataTime_ltla)
   .default(new Date(2020, 08, 1 + ltla_growth_ts_dates.length))
   .on('onchange', new_date_growth_ltla);
 
@@ -147,21 +141,19 @@ var ltla_growth_slider_svg = d3
   .append('g')
   .attr('transform', 'translate(30,20)');
 
-ltla_growth_slider_svg.call(sliderTime);
+ltla_growth_slider_svg.call(sliderTime_ltla);
 
-chosen_ltla_ts = d3.timeFormat('%Y-%m-%d')(sliderTime.value())
+chosen_ltla_ts = d3.timeFormat('%Y-%m-%d')(sliderTime_ltla.value())
 chosen_time_ltla_df = ltla_growth_ts_data.filter(function(d, i) {
   return d.Date === chosen_ltla_ts
 })
-
-
 
 // Add X axis
 var x_growth_ltla_ts = d3.scaleLinear()
   .domain([0, d3.max(chosen_time_ltla_df, function(d) { return +d.Rolling_7_day_rate; })])
   .range([0, width_growth_ltla  - 80]);
 
-var x_growth_ltla_ts_axis = growth_svg_2.append("g")
+var x_growth_ltla_ts_axis = ltla_growth_svg_2.append("g")
   .attr("transform", 'translate(0,' + (height_scatter - 80 ) + ")")
   .call(d3.axisBottom(x_growth_ltla_ts));
 
@@ -170,7 +162,7 @@ var y_growth_ltla_ts = d3.scaleLinear()
    .domain([-1, d3.max(chosen_time_ltla_df, function(d) { return +d.Change_actual_by_week; })])
    .range([height_scatter - 80, 0])
 
-var y_growth_ltla_ts_axis = growth_svg_2.append("g")
+var y_growth_ltla_ts_axis = ltla_growth_svg_2.append("g")
    .call(d3.axisLeft(y_growth_ltla_ts).tickFormat(d3.format('.0%')));
 
 var tooltip_growth_ltla_ts = d3.select("#ltla_ts_growth_rate")
@@ -185,10 +177,10 @@ var tooltip_growth_ltla_ts = d3.select("#ltla_ts_growth_rate")
   .style("border-radius", "5px")
   .style("padding", "10px")
 
-var showTooltip_growth_ts = function(d) {
+var showTooltip_growth_ts_ltla = function(d) {
 
   tooltip_growth_ltla_ts
-   .html("<h5>" + d.Name + '</h5><p>' + d.Label_2 + '</p><p>' + d.Label_1 + '</p><p>' + d.Label_3 + '</p>')
+   .html("<h5>" + d.Name + '</h5><p>' + d.Label + '</p>')
     .style("opacity", 1)
     .style("top", (event.pageY - 10) + "px")
     .style("left", (event.pageX + 10) + "px")
@@ -202,7 +194,7 @@ var mouseleave_growth_ltla_ts = function(d) {
     .style("visibility", "hidden")
 }
 
-ltla_growth_ts_dots = growth_svg_2.append('g')
+ltla_growth_ts_dots = ltla_growth_svg_2.append('g')
   .selectAll("dot")
   .data(chosen_time_ltla_df)
   .enter()
@@ -210,13 +202,13 @@ ltla_growth_ts_dots = growth_svg_2.append('g')
   .attr("cx", function (d) { return x_growth_ltla_ts(d.Rolling_7_day_rate); } )
   .attr("cy", function (d) { return y_growth_ltla_ts(d.Change_actual_by_week); } )
   .attr("r", 7)
-  .style("fill", function(d){ return ltla_growth_colour_func(d.Name)})
+  .style("fill", function(d){if(d.Name == 'Adur'){return ltla_growth_colour_func('Adur')} else if(d.Name == 'Arun'){return ltla_growth_colour_func('Arun')} else if(d.Name == 'Chichester'){return ltla_growth_colour_func('Chichester')} else if (d.Name == 'Crawley') {return ltla_growth_colour_func('Crawley')} else if (d.Name == 'Horsham') {return ltla_growth_colour_func('Horsham')} else if (d.Name == 'Mid Sussex') {return ltla_growth_colour_func('Mid Sussex')} else if (d.Name == 'Worthing') {return ltla_growth_colour_func('Worthing')} else if (d.Name == 'England') {return ltla_growth_colour_func('England')} else {return ltla_growth_colour_func('Other ltlas')}})
   .style("opacity", .8)
   .style("stroke", "white")
-  .on('mousemove', showTooltip_growth_ts)
+  .on('mousemove', showTooltip_growth_ts_ltla)
   .on('mouseout', mouseleave_growth_ltla_ts)
 
-ltla_growth_ts_line = growth_svg_2.append('line')
+ltla_growth_ts_line = ltla_growth_svg_2.append('line')
   .attr('id', 'zero_line_ltla_growth')
   .attr('x1', 0)
   .attr('y1', function (d) { return y_growth_ltla_ts(0); } )
@@ -225,7 +217,7 @@ ltla_growth_ts_line = growth_svg_2.append('line')
   .attr('stroke', '#000000')
   .attr("stroke-dasharray", ("3, 3"))
 
-growth_svg_2
+ltla_growth_svg_2
   .append("text")
   .attr("x", width_growth_ltla - 70)
   .attr("y", function (d) { return y_growth_ltla_ts(0) - 10;})
@@ -234,7 +226,7 @@ growth_svg_2
   .style('font-size', '10px')
   .text('Areas above this line are increasing')
 
-growth_svg_2
+ltla_growth_svg_2
   .append("text")
   .attr("x", width_growth_ltla - 70)
   .attr("y", function (d) { return y_growth_ltla_ts(0); } )
@@ -243,7 +235,7 @@ growth_svg_2
   .style('font-size', '10px')
   .text('and areas below are decreasing')
 
-growth_svg_2
+ltla_growth_svg_2
   .append("text")
   .attr("x", width_growth_ltla - 70)
   .attr("y", function(d){ return y_growth_ltla_ts(0) + 10; })

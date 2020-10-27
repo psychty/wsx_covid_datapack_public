@@ -243,6 +243,20 @@ text-decoration: underline;
   position: relative;
 }
 
+.key_growth_ltla {
+  display: block;
+  padding: 0.5em 0.5em;
+  border-radius: 4px;
+  color: #000000;
+  background: #ffffff;
+  text-align: left;
+  font-size: .8rem;
+  font-family: inherit;
+  margin: 0 0 1px;
+  border-left: 13px solid #ccc;
+  position: relative;
+}
+
 p.key_list .side_tt {
     font-size: .8rem !important;
 }

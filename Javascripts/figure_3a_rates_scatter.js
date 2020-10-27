@@ -129,7 +129,7 @@ england_latest_growth = utla_growth_ts_data.filter(function(d) {
 
 d3.select("#wsx_growth_rate_latest")
   .html(function(d) {
-    return wsx_latest_growth[0]['Label_2'].replace('In ', 'In West Sussex, in ') + ' ' + wsx_latest_growth[0]['Label_1'] + '.'
+    return wsx_latest_growth[0]['Label_2'].replace('In ', 'Overall in West Sussex, in ') + ' ' + wsx_latest_growth[0]['Label_1'] + '.'
   });
 
 
