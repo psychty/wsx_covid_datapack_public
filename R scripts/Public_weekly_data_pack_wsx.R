@@ -2054,7 +2054,76 @@ growth_rate_utla %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/growth_limits_dates.json'))
 
-age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/cases/specimen_date-latest.csv') %>% 
-  select(areaCode, areaName, areaType, date, `0_4`,`5_9`,`10_14`,`15_19`,`20_24`,`25_29`,`30_34`,`35_39`,`40_44`,`45_49`,`50_54`,`55_59`,`60_64`,`65_69`,`70_74`,`75_79`,`80_84`,`85_89`,`90+`,unassigned)
+# age specific rates ####
 
-names(age_spec)
+
+
+mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=2092957699,2013265921...2013265932,1816133633...1816133848,1820327937...1820328318&date=latest&gender=0&c_age=1,3...18,210&measures=20100&select=geography_name,geography_code,c_age_name,obs_value,geography_type') %>% 
+  rename(Population = OBS_VALUE,
+         Code = GEOGRAPHY_CODE,
+         Name = GEOGRAPHY_NAME,
+         Type = GEOGRAPHY_TYPE,
+         Age = C_AGE_NAME) %>% 
+  group_by(Code, Name, Age) %>% 
+  mutate(Count = n()) %>% 
+  unique() %>% 
+  mutate(Type = ifelse(Count == 2, 'Unitary Authoritory', ifelse(Type == 'local authorities: county / unitary (as of April 2019)', 'Upper Tier Local Authority', ifelse(Type == 'local authorities: district / unitary (as of April 2019)', 'Lower Tier Local Authority', ifelse(Type == 'regions', 'Region', ifelse(Type == 'countries', 'Country', Type)))))) %>% 
+  group_by(Name, Code) %>% 
+  ungroup() %>% 
+  select(-Count) %>% 
+  unique() %>% 
+  mutate(Age = gsub('Aged ', '', Age)) %>% 
+  mutate(Age = gsub('Age', '', Age)) %>% 
+  mutate(Age = gsub(' 0 - ', '0-', Age)) %>% 
+  mutate(Age = paste0(Age, ' years')) %>% 
+  mutate(Age = ifelse(Age %in% c('80-84 years', '85+ years'), '80+ years', Age)) %>% 
+  group_by(Name, Code, Age, Type) %>% 
+  summarise(Population = sum(Population, na.rm = TRUE)) %>% 
+  ungroup()
+
+
+
+age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/cases/specimen_date-latest.csv') %>% 
+  select(areaCode, areaName, areaType, date, `0_4`,`5_9`,`10_14`,`15_19`,`20_24`,`25_29`,`30_34`,`35_39`,`40_44`,`45_49`,`50_54`,`55_59`,`60_64`,`65_69`,`70_74`,`75_79`,`80_84`,`85_89`,`90+`,unassigned) %>% 
+  pivot_longer(cols = c( `0_4`,`5_9`,`10_14`,`15_19`,`20_24`,`25_29`,`30_34`,`35_39`,`40_44`,`45_49`,`50_54`,`55_59`,`60_64`,`65_69`,`70_74`,`75_79`,`80_84`,`85_89`,`90+`,unassigned),
+               names_to = 'Age') %>% 
+  mutate(Age = ifelse(Age == 'unassigned', 'Unknown', paste0(Age, ' years'))) %>% 
+  mutate(Age = gsub('_', '-', Age)) %>% 
+  mutate(Age = ifelse(Age %in% c('80-84 years', '85-89 years', '90+ years'), '80+ years', Age)) %>% 
+  filter(areaType != 'overview') %>% 
+  mutate(areaType = ifelse(areaType == 'ltla', 'Lower Tier Local Authority', ifelse(areaType == 'utla', 'Upper Tier Local Authority', ifelse(areaType == 'region', 'Region', ifelse(areaType == 'nation' , 'Nation', NA))))) %>% 
+  rename(Name = areaName,
+         Code = areaCode,
+         Type = areaType,
+         Cases = value,
+         Date = date) %>% 
+  group_by(Name, Code, Age, Date) %>% 
+  summarise(Cases = sum(Cases, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  left_join(mye_ages, by = c('Code', 'Name', 'Age')) %>% 
+  group_by(Code, Name, Age) %>% 
+  arrange(Code, Name, Age, Date) %>% 
+  mutate(Rolling_7_day_new_cases = rollapply(Cases, 7, sum, align = 'right', fill = NA, partial = TRUE)) %>%
+  mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
+  ungroup() %>% 
+  mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000)
+
+age_spec %>% 
+  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
+  select(Name, Age, Cases, Rolling_7_day_new_cases, ASR)
+
+
+age_spec_60_plus <- age_spec %>% 
+  filter(Age %in% c('60-64 years', '65-69 years', '70-74 years', '75-79 years', '80+ years')) %>% 
+  mutate(Age = '60+ years') %>% 
+  group_by(Name, Code, Age, Date) %>% 
+  summarise(Cases = sum(Cases, na.rm = TRUE),
+            Population = sum(Population, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  arrange(Code, Name, Age, Date) %>% 
+  mutate(Rolling_7_day_new_cases = rollapply(Cases, 7, sum, align = 'right', fill = NA, partial = TRUE)) %>%
+  mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
+  ungroup() %>% 
+  mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000)
+
+?rollapply()
