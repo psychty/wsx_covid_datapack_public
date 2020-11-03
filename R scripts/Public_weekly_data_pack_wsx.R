@@ -2060,13 +2060,17 @@ mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   summarise(Population = sum(Population, na.rm = TRUE)) %>% 
   ungroup()
 
-age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/cases/specimen_date-latest.csv') %>% 
-  select(areaCode, areaName, areaType, date, `0_4`,`5_9`,`10_14`,`15_19`,`20_24`,`25_29`,`30_34`,`35_39`,`40_44`,`45_49`,`50_54`,`55_59`,`60_64`,`65_69`,`70_74`,`75_79`,`80_84`,`85_89`,`90+`,unassigned) %>% 
-  pivot_longer(cols = c( `0_4`,`5_9`,`10_14`,`15_19`,`20_24`,`25_29`,`30_34`,`35_39`,`40_44`,`45_49`,`50_54`,`55_59`,`60_64`,`65_69`,`70_74`,`75_79`,`80_84`,`85_89`,`90+`,unassigned),
+names(age_spec)
+
+age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-unstacked.csv') %>% 
+  filter(areaName %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
+  select(areaCode, areaName, areaType, date, `newCasesBySpecimenDate-0_4`,`newCasesBySpecimenDate-5_9`,`newCasesBySpecimenDate-10_14`,`newCasesBySpecimenDate-15_19`,`newCasesBySpecimenDate-20_24`,`newCasesBySpecimenDate-25_29`,`newCasesBySpecimenDate-30_34`,`newCasesBySpecimenDate-35_39`,`newCasesBySpecimenDate-40_44`,`newCasesBySpecimenDate-45_49`,`newCasesBySpecimenDate-50_54`,`newCasesBySpecimenDate-55_59`,`newCasesBySpecimenDate-60_64`,`newCasesBySpecimenDate-65_69`,`newCasesBySpecimenDate-70_74`,`newCasesBySpecimenDate-75_79`,`newCasesBySpecimenDate-80_84`,`newCasesBySpecimenDate-85_89`,`newCasesBySpecimenDate-90+`,`newCasesBySpecimenDate-unassigned`) %>%
+  pivot_longer(cols = c(`newCasesBySpecimenDate-0_4`,`newCasesBySpecimenDate-5_9`,`newCasesBySpecimenDate-10_14`,`newCasesBySpecimenDate-15_19`,`newCasesBySpecimenDate-20_24`,`newCasesBySpecimenDate-25_29`,`newCasesBySpecimenDate-30_34`,`newCasesBySpecimenDate-35_39`,`newCasesBySpecimenDate-40_44`,`newCasesBySpecimenDate-45_49`,`newCasesBySpecimenDate-50_54`,`newCasesBySpecimenDate-55_59`,`newCasesBySpecimenDate-60_64`,`newCasesBySpecimenDate-65_69`,`newCasesBySpecimenDate-70_74`,`newCasesBySpecimenDate-75_79`,`newCasesBySpecimenDate-80_84`,`newCasesBySpecimenDate-85_89`,`newCasesBySpecimenDate-90+`,`newCasesBySpecimenDate-unassigned`),
                names_to = 'Age') %>% 
+  mutate(Age = gsub('newCasesBySpecimenDate-', '', Age)) %>% 
   mutate(Age = ifelse(Age == 'unassigned', 'Unknown', paste0(Age, ' years'))) %>% 
   mutate(Age = gsub('_', '-', Age)) %>% 
-  mutate(Age = ifelse(Age %in% c('80-84 years', '85-89 years', '90+ years'), '80+ years', Age)) %>% 
+  mutate(Age = ifelse(Age %in% c('80-84 years', '85-89 years', '90+ years'), '80+ years', Age)) %>%
   filter(areaType != 'overview') %>% 
   mutate(areaType = ifelse(areaType == 'ltla', 'Lower Tier Local Authority', ifelse(areaType == 'utla', 'Upper Tier Local Authority', ifelse(areaType == 'region', 'Region', ifelse(areaType == 'nation' , 'Nation', NA))))) %>% 
   rename(Name = areaName,
@@ -2090,7 +2094,16 @@ age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/case
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000)
 
 age_spec %>% 
-  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
+  ungroup() %>% 
+  filter(Date %in% seq.Date(complete_date -(52*7), complete_date, by = 14)) %>% 
+  arrange(Date) %>% 
+  mutate(Date_label = format(Date, '%d %b')) %>% 
+  select(Date_label) %>% 
+  unique() %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/age_specific_rate_dates.json'))
+
+age_spec %>% 
   mutate(Age = ifelse(Age %in% c('0-4 years', '5-9 years'), '0-9 years', ifelse(Age %in% c('10-14 years', '15-19 years'), '10-19 years',ifelse(Age %in% c('20-24 years', '25-29 years'), '20-29 years',ifelse(Age %in% c('30-34 years', '35-39 years'), '30-39 years',ifelse(Age %in% c('40-44 years', '45-49 years'), '40-49 years',ifelse(Age %in% c('50-54 years', '55-59 years'), '50-59 years',ifelse(Age %in% c('60-64 years', '65-69 years'), '60-69 years',ifelse(Age %in% c('70-74 years', '75-79 years'), '70-79 years', '80 and over'))))))))) %>% 
   group_by(Name, Code, Age, Date) %>% 
   summarise(Cases = sum(Cases, na.rm = TRUE),
@@ -2105,14 +2118,16 @@ age_spec %>%
   mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 0, Perc_change_on_rolling_7_days_actual))) %>% 
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
-  select(Name, Age, Date, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
+  mutate(Date_label = format(Date, '%d %b')) %>% 
+  arrange(Date) %>% 
+  select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_10_years_by_date.json'))
 
 age_spec %>% 
-  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
   filter(Age %in% c('0-4 years', '5-9 years', '10-14 years', '15-19 years')) %>% 
-  select(Name, Age, Date, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
+  mutate(Date_label = format(Date, '%d %b')) %>% 
+  select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_u20_by_date.json'))
 
@@ -2133,7 +2148,8 @@ age_spec %>%
   mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 0, Perc_change_on_rolling_7_days_actual))) %>% 
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
-  select(Name, Age, Date, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
+  mutate(Date_label = format(Date, '%d %b')) %>% 
+  select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_60_plus_by_date.json'))
 

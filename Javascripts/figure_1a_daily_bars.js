@@ -22,7 +22,6 @@ request.open("GET", "./Outputs/case_change_dates.json", false);
 request.send(null);
 var data_dates = JSON.parse(request.responseText).map(function(d){return d.Date_label});
 
-
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/wsx_case_summary.json", false);
 request.send(null);
@@ -32,7 +31,6 @@ var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/wsx_daily_cases.json", false);
 request.send(null);
 var daily_cases = JSON.parse(request.responseText); // parse the fetched json data into a variable
-
 
 var dates = d3.map(daily_cases, function(d) {
     return (d.Date_label)
