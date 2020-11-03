@@ -63,6 +63,10 @@ width: 600px;
     -webkit-text-size-adjust: none;
   }
 
+.c3_all_lines {
+fill: none;
+stroke: #d2d2d2;
+}
 
 .summary {
   padding-top: 15px;
