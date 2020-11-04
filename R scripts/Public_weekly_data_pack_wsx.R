@@ -1917,7 +1917,7 @@ rest_of_england_restrictions <- read_csv('https://visual.parliament.uk/research/
 ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
 
 if(exists('ltla_restrictions') == FALSE) {
-  ltla_boundaries <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
+  ltla_restrictions <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
 }
 
 ltla_restrictions <- ltla_restrictions  %>% 
@@ -2060,6 +2060,7 @@ mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   summarise(Population = sum(Population, na.rm = TRUE)) %>% 
   ungroup()
 
+# We need to back fill the missing days!! #####
 
 age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-unstacked.csv') %>% 
   filter(areaName %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
@@ -2077,12 +2078,42 @@ age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/case
          Type = areaType,
          Cases = value,
          Date = date) %>% 
-  group_by(Name, Code, Age, Date) %>% 
-  summarise(Cases = sum(Cases, na.rm = TRUE)) %>% 
+  group_by(Name, Age, Date) %>% 
+  summarise(Cases = sum(Cases, na.rm = TRUE)) 
+
+Areas <- c('Adur', 'Arun', 'Chichester','Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')
+Ages <- data.frame(Age = c('0-4 years', '5-9 years', '10-14 years', '15-19 years', '20-24 years' , '25-29 years', '30-34 years', '35-39 years', '40-44 years', '45-49 years', '50-54 years' ,'55-59 years', '60-64 years' , '65-69 years', '70-74 years', '75-79 years', '80 and over'))
+Dates <- seq.Date(min(age_spec$Date), max(age_spec$Date), by = '1 day')
+
+age_df_daily_combined <- data.frame(Name = character(), Age = character(), Date = character())
+
+for(i in 1:length(Areas)){
+  
+  area_x = Areas[i]
+  
+  df_x <- data.frame(Age = rep(Ages$Age, length(Dates))) %>%
+    arrange(Age) %>%
+    group_by(Age) %>%
+    mutate(Date = seq.Date(min(age_spec$Date), max(age_spec$Date), by = '1 day')) %>%
+    mutate(Name = area_x) %>%
+    mutate(Date = as.character(Date)) %>%
+    ungroup()
+  
+  age_df_daily_combined <- age_df_daily_combined %>%
+    bind_rows(df_x)
+  
+}
+
+case_age_df_daily <- age_df_daily_combined %>%
+  mutate(Date = as.Date(Date)) %>%
+  left_join(age_spec, by = c('Name', 'Date', 'Age')) %>%
+  mutate(Cases = replace_na(Cases, 0)) %>%
+  group_by(Name, Age) %>%
+  arrange(Name, Age, Date) %>%
   ungroup() %>% 
-  left_join(mye_ages, by = c('Code', 'Name', 'Age')) %>% 
-  group_by(Code, Name, Age) %>% 
-  arrange(Code, Name, Age, Date) %>% 
+  left_join(mye_ages, by = c('Name', 'Age')) %>% 
+  group_by(Name, Age) %>% 
+  arrange(Name, Age, Date) %>% 
   mutate(Cumulative_cases = cumsum(Cases)) %>% 
   mutate(Rolling_7_day_new_cases = rollapply(Cases, 7, sum, align = 'right', fill = NA, partial = TRUE)) %>%
   mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
@@ -2092,11 +2123,11 @@ age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/case
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000)
 
-# age_spec %>% 
-#   filter(Name == 'West Sussex') %>% 
+# case_age_df_daily %>%
+#   filter(Name == 'West Sussex') %>%
 #   View()
 
-age_spec %>% 
+case_age_df_daily %>% 
   ungroup() %>% 
   filter(Date %in% seq.Date(complete_date -(52*7), complete_date, by = 14)) %>% 
   arrange(Date) %>% 
@@ -2106,7 +2137,7 @@ age_spec %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/age_specific_rate_dates.json'))
 
-age_spec_10 <- age_spec %>% 
+age_spec_10 <- case_age_df_daily %>% 
   mutate(Age = ifelse(Age %in% c('0-4 years', '5-9 years'), '0-9 years', ifelse(Age %in% c('10-14 years', '15-19 years'), '10-19 years',ifelse(Age %in% c('20-24 years', '25-29 years'), '20-29 years',ifelse(Age %in% c('30-34 years', '35-39 years'), '30-39 years',ifelse(Age %in% c('40-44 years', '45-49 years'), '40-49 years',ifelse(Age %in% c('50-54 years', '55-59 years'), '50-59 years',ifelse(Age %in% c('60-64 years', '65-69 years'), '60-69 years',ifelse(Age %in% c('70-74 years', '75-79 years'), '70-79 years', '80 and over'))))))))) %>% 
   group_by(Name, Age, Date) %>% 
   summarise(Cases = sum(Cases, na.rm = TRUE),
@@ -2127,14 +2158,14 @@ age_spec_10 <- age_spec %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_10_years_by_date.json'))
 
-age_spec %>% 
+case_age_df_daily %>% 
   filter(Age %in% c('0-4 years', '5-9 years', '10-14 years', '15-19 years')) %>% 
   mutate(Date_label = format(Date, '%d %b')) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_u20_by_date.json'))
 
-age_spec %>% 
+case_age_df_daily %>% 
   filter(Age %in% c('60-64 years', '65-69 years', '70-74 years', '75-79 years', '80+ years')) %>% 
   mutate(Age = '60+ years') %>% 
   group_by(Name, Age, Date) %>% 
@@ -2155,7 +2186,8 @@ age_spec %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_60_plus_by_date.json'))
 
-age_spec %>% 
-  mutate(Age = ifelse(Age %in% c('0-4 years', '5-9 years'), '0-9 years', ifelse(Age %in% c('10-14 years', '15-19 years'), '10-19 years',ifelse(Age %in% c('20-24 years', '25-29 years'), '20-29 years',ifelse(Age %in% c('30-34 years', '35-39 years'), '30-39 years',ifelse(Age %in% c('40-44 years', '45-49 years'), '40-49 years',ifelse(Age %in% c('50-54 years', '55-59 years'), '50-59 years',ifelse(Age %in% c('60-64 years', '65-69 years'), '60-69 years',ifelse(Age %in% c('70-74 years', '75-79 years'), '70-79 years', '80 and over'))))))))) %>%
-  select(Age) %>% 
-  unique()
+# case_age_df_daily %>% 
+#   mutate(Age = ifelse(Age %in% c('0-4 years', '5-9 years'), '0-9 years', ifelse(Age %in% c('10-14 years', '15-19 years'), '10-19 years',ifelse(Age %in% c('20-24 years', '25-29 years'), '20-29 years',ifelse(Age %in% c('30-34 years', '35-39 years'), '30-39 years',ifelse(Age %in% c('40-44 years', '45-49 years'), '40-49 years',ifelse(Age %in% c('50-54 years', '55-59 years'), '50-59 years',ifelse(Age %in% c('60-64 years', '65-69 years'), '60-69 years',ifelse(Age %in% c('70-74 years', '75-79 years'), '70-79 years', '80 and over'))))))))) %>%
+#   select(Age) %>% 
+#   unique()
+

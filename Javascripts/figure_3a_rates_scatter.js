@@ -281,7 +281,6 @@ area_growth_comp.forEach(function(item, index) {
     tt.style.borderColor = utla_growth_colour_func(index);
     var tt_h3_1 = document.createElement('h3');
     tt_h3_1.innerHTML = item;
-
     tt.appendChild(tt_h3_1);
     var div = document.getElementById("growth_key_utla");
     div.appendChild(list);

@@ -1,5 +1,5 @@
 
-var areas_age_spec = ['West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'South East', 'England']
+var areas_age_spec = ['West Sussex', 'South East', 'England', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing']
 
 var svg_age_spec_1 = d3.select("#age_spec_fig_1")
   .append("svg")
@@ -98,9 +98,14 @@ var tooltip_asr_1_dot = d3.select("#age_spec_fig_1")
   .style("border-radius", "5px")
   .style("padding", "10px")
 
-var Area_age_colours = d3.scaleOrdinal()
-  .domain(['0-9 years', '10-19 years', '20-29 years', '30-39 years', '40-49 years', '50-59 years', '60-69 years', '70-79 years', '80 and over'])
-  .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6']);
+var area_ages = ['0-9 years', '10-19 years', '20-29 years', '30-39 years', '40-49 years', '50-59 years', '60-69 years', '70-79 years', '80+ years'];
+
+var area_age_colours = d3.scaleOrdinal()
+  .domain(area_ages)
+  .range(["#F6D645", "#FC9F07", "#EF6C23", "#D14545", "#A82E5F", "#7A1D6D", "#4C0C6B", "#1C0C42", "#000004"]);
+
+// cases_age_colours <- c("#F6D645", "#FC9F07", "#EF6C23", "#D14545", "#A82E5F", "#7A1D6D", "#4C0C6B", "#1C0C42", "#000004")
+// # cases_age_colours <- c('#2A5FBC', '#00A9EE', '#006B00', '#EB7727', '#CB3298', '#750475', '#C9930B', '#8ACC43', '#000000')
 
 var showTooltip_asr_1 = function(d){
 
@@ -134,7 +139,7 @@ var lines_asr_1 = svg_age_spec_1
   (d.values)})
 .style("fill", "none")
 .style("stroke-width", 1.5)
-.attr('stroke', function(d){ return Area_age_colours(d.Key)});
+.attr('stroke', function(d){ return area_age_colours(d.Key)});
 
 var dots_asr_1 = svg_age_spec_1
   .selectAll('myCircles')
@@ -144,8 +149,8 @@ var dots_asr_1 = svg_age_spec_1
   .attr("cx", function(d) { return x_asr_1(d.Date_label)})
   .attr("cy", function(d) { return y_asr_1_ts(+d.ASR)})
   .attr("r", 1.5)
-  .style("fill", function(d) { return Area_age_colours(d.Age)})
-  .attr("stroke", function(d) { return Area_age_colours(d.Age)})
+  .style("fill", function(d) { return area_age_colours(d.Age)})
+  .attr("stroke", function(d) { return area_age_colours(d.Age)})
   .on("mousemove", showTooltip_asr_1)
   .on('mouseout', mouseleave_asr_1);
 
@@ -226,3 +231,18 @@ d3.select("#select_lines_age_1_area_button").on("change", function(d) {
   var selected_age_line_1_area_option = d3.select('#select_lines_age_1_area_button').property("value")
   update_asr_1()
 })
+
+area_ages.forEach(function(item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = 'key_age_areas';
+    list.style.borderColor = area_age_colours(index);
+      var tt = document.createElement('div');
+    tt.className = 'side_tt';
+    tt.style.borderColor = area_age_colours(index);
+    var tt_h3_1 = document.createElement('h3');
+    tt_h3_1.innerHTML = item;
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("age_band_key_figure");
+    div.appendChild(list);
+    })
