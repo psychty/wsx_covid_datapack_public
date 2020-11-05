@@ -53,12 +53,11 @@ var chosen_dates_asr_ticks = dates_asr_ticks.filter(function(el) {
   return dates_asr.includes(el);
 });
 
-// Group the data: I want to draw one line per group
+// Group the data
 var age_spec_1_chosen_ts_group = d3.nest() // nest function allows to group the calculation per level of a factor
 .key(function(d) { return d.Age;})
 .entries(age_spec_1_chosen);
 
-// This will be the x axis scale for days since case x - note this is NOT the date as in previous timeseries. We have used this to compare each area over the same time period.
 var x_asr_1 = d3.scaleBand()
   .domain(dates_asr)
   .range([0, width_hm - 60]);
@@ -104,10 +103,8 @@ var area_age_colours = d3.scaleOrdinal()
   .domain(area_ages)
   .range(["#F6D645", "#FC9F07", "#EF6C23", "#D14545", "#A82E5F", "#7A1D6D", "#4C0C6B", "#1C0C42", "#000004"]);
 
-// cases_age_colours <- c("#F6D645", "#FC9F07", "#EF6C23", "#D14545", "#A82E5F", "#7A1D6D", "#4C0C6B", "#1C0C42", "#000004")
-// # cases_age_colours <- c('#2A5FBC', '#00A9EE', '#006B00', '#EB7727', '#CB3298', '#750475', '#C9930B', '#8ACC43', '#000000')
-
-var showTooltip_asr_1 = function(d){
+// We need to create two different functions for when a user hovers over the dots and when they hover over the lines
+var dotshover_asr_1 = function(d){
 
 tooltip_asr_1_dot
   .html("<h4>" + d.Age + ' - '+ d.Name + '</h4><p class = "side">The number of cases among those aged ' + d.Age + ' in the seven days to ' + d.Date_label + ' is <b>' + d3.format(',.0f')(d.Rolling_7_day_new_cases) + '</b>. This is '  + d3.format(',.0f')(d.ASR) + ' per 100,000 population.</p><p class = "side">So far, there have been a total of ' + d3.format(',.0f')(d.Cumulative_cases) + ' cases among this age group in ' + d.Name + '.</p>')
@@ -116,14 +113,155 @@ tooltip_asr_1_dot
   .style("left", (event.pageX + 10) + "px")
   .style("visibility", "visible");
 
+var highlighted_key = d.Age
+
+lines_asr_1
+.transition()
+.duration(300)
+.style("stroke",  function(d){
+  if (d.key === highlighted_key) {
+     return  area_age_colours(highlighted_key)}
+     else {
+     return '#d2d2d2'}
+      })
+.attr("stroke-width",  function(d){
+  if (d.key === highlighted_key) {
+     return  2}
+     else {
+     return .25}
+      })
+// .transition()
+// .delay(1000)
+// .duration(500)
+// .style("visibility",function(d){
+//   if (d.key === highlighted_key) {
+//      return  'visible'}
+//      else {
+//      return 'hidden'}
+//       })
+
+dots_asr_1
+.transition()
+.duration(300)
+.style("fill",  function(d){
+  if (d.Age === highlighted_key) {
+     return  area_age_colours(highlighted_key)}
+     else {
+     return '#d2d2d2'}
+      })
+.style("stroke",  function(d){
+  if (d.Age === highlighted_key) {
+     return  area_age_colours(highlighted_key)}
+     else {
+     return '#d2d2d2'}
+      })
+.attr("r",  function(d){
+  if (d.Age === highlighted_key) {
+     return  2}
+     else {
+     return 0}
+      })
+// .transition()
+// .delay(1000)
+// .duration(500)
+// .style("visibility",function(d){
+//   if (d.Age === highlighted_key) {
+//      return  'visible'}
+//      else {
+//      return 'hidden'}
+//       })
+
 }
 
-var mouseleave_asr_1 = function(d) {
+var linehover_asr_1 = function(d){
 
 tooltip_asr_1_dot
-  .style("visibility", "hidden")
+  .html("<h4>" + d.key + '</h4><p class = "side">Hover over a dot to find out more.</p>')
+  .style("opacity", 1)
+  .style("top", (event.pageY - 10) + "px")
+  .style("left", (event.pageX + 10) + "px")
+  .style("visibility", "visible");
 
-  }
+var highlighted_key = d.key
+
+lines_asr_1
+.transition()
+.duration(300)
+.style("stroke",  function(d){
+  if (d.key === highlighted_key) {
+     return  area_age_colours(highlighted_key)}
+     else {
+     return '#d2d2d2'}
+      })
+.attr("stroke-width",  function(d){
+  if (d.key === highlighted_key) {
+     return  2}
+     else {
+     return .25}
+      })
+// .transition()
+// .delay(1000)
+// .duration(500)
+// .style("visibility",function(d){
+//   if (d.key === highlighted_key) {
+//      return  'visible'}
+//      else {
+//      return 'hidden'}
+//       })
+
+dots_asr_1
+.transition()
+.duration(300)
+.style("fill",  function(d){
+  if (d.Age === highlighted_key) {
+     return  area_age_colours(highlighted_key)}
+     else {
+     return '#d2d2d2'}
+      })
+.attr("stroke",  function(d){
+  if (d.Age === highlighted_key) {
+     return  area_age_colours(highlighted_key)}
+     else {
+     return '#d2d2d2'}
+      })
+.attr("r",  function(d){
+  if (d.Age === highlighted_key) {
+     return  2}
+     else {
+     return 0}
+      })
+// .delay(1000)
+// .duration(500)
+// .style("visibility",function(d){
+//   if (d.Age === highlighted_key) {
+//      return  'visible'}
+//      else {
+//      return 'hidden'}
+//       })
+}
+
+// No matter which function was called, on mouseleave restore everything back to the way it was.
+var mouseleave_asr_1 = function(d) {
+tooltip_asr_1_dot
+.style("visibility", "hidden")
+
+lines_asr_1
+.transition()
+.delay(1000)
+.duration(500)
+.style("stroke",  function(d){ return  area_age_colours(d.key)})
+.style('visibility', 'visible')
+.attr('stroke-width', 2)
+
+dots_asr_1
+.transition()
+.delay(1000)
+.duration(500)
+.style("fill", function(d) { return area_age_colours(d.Age)})
+.style("stroke", function(d) { return area_age_colours(d.Age)})
+.attr('r', 2)
+.style('visibility', 'visible')
+}
 
 var lines_asr_1 = svg_age_spec_1
 .selectAll(".line")
@@ -132,14 +270,15 @@ var lines_asr_1 = svg_age_spec_1
 .append("path")
 .attr('id', 'c3_lines')
 .attr('class', 'c3_all_lines')
+.attr("stroke", function(d){ return area_age_colours(d.key)})
 .attr("d", function(d){
     return d3.line()
   .x(function(d) { return x_asr_1(d.Date_label); })
   .y(function(d) { return y_asr_1_ts(+d.ASR); })
   (d.values)})
-.style("fill", "none")
-.style("stroke-width", 1.5)
-.attr('stroke', function(d){ return area_age_colours(d.Key)});
+.style("stroke-width", 2)
+.on('mouseover', linehover_asr_1)
+.on('mouseout', mouseleave_asr_1);
 
 var dots_asr_1 = svg_age_spec_1
   .selectAll('myCircles')
@@ -148,10 +287,10 @@ var dots_asr_1 = svg_age_spec_1
   .append("circle")
   .attr("cx", function(d) { return x_asr_1(d.Date_label)})
   .attr("cy", function(d) { return y_asr_1_ts(+d.ASR)})
-  .attr("r", 1.5)
+  .attr("r", 2)
   .style("fill", function(d) { return area_age_colours(d.Age)})
   .attr("stroke", function(d) { return area_age_colours(d.Age)})
-  .on("mousemove", showTooltip_asr_1)
+  .on("mousemove", dotshover_asr_1)
   .on('mouseout', mouseleave_asr_1);
 
 
@@ -217,12 +356,12 @@ dots_asr_1
 
 lines_asr_1
 .data(age_spec_1_chosen_ts_group)
-  .transition()
-  .duration(1000)
+.transition()
+.duration(1000)
 .attr("d", function(d){
-    return d3.line()
-  .x(function(d) { return x_asr_1(d.Date_label); })
-  .y(function(d) { return y_asr_1_ts(+d.ASR); })
+  return d3.line()
+.x(function(d) { return x_asr_1(d.Date_label); })
+.y(function(d) { return y_asr_1_ts(+d.ASR); })
   (d.values)});
 
 }
@@ -232,17 +371,19 @@ d3.select("#select_lines_age_1_area_button").on("change", function(d) {
   update_asr_1()
 })
 
-area_ages.forEach(function(item, index) {
+
+
+area_ages.forEach(function(d, i) {
     var list = document.createElement("li");
-    list.innerHTML = item;
+    list.innerHTML = d;
     list.className = 'key_age_areas';
-    list.style.borderColor = area_age_colours(index);
+    list.style.borderColor = area_age_colours(i);
       var tt = document.createElement('div');
     tt.className = 'side_tt';
-    tt.style.borderColor = area_age_colours(index);
-    var tt_h3_1 = document.createElement('h3');
-    tt_h3_1.innerHTML = item;
-    tt.appendChild(tt_h3_1);
+    tt.style.borderColor = area_age_colours(i);
+    var tt_h3_asr = document.createElement('h3');
+    tt_h3_asr.innerHTML = d;
+    tt.appendChild(tt_h3_asr);
     var div = document.getElementById("age_band_key_figure");
     div.appendChild(list);
     })
