@@ -2159,11 +2159,11 @@ age_spec_10 <- case_age_df_daily %>%
   write_lines(paste0(output_directory_x,'/age_specific_rates_10_years_by_date.json'))
 
 case_age_df_daily %>% 
-  filter(Age %in% c('0-4 years', '5-9 years', '10-14 years', '15-19 years')) %>% 
+  filter(Age %in% c('0-4 years', '5-9 years', '10-14 years', '15-19 years', '20-24 years', '25-29 years')) %>% 
   mutate(Date_label = format(Date, '%d %b')) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/age_specific_rates_u20_by_date.json'))
+  write_lines(paste0(output_directory_x,'/age_specific_rates_u30_by_date.json'))
 
 case_age_df_daily %>% 
   filter(Age %in% c('60-64 years', '65-69 years', '70-74 years', '75-79 years', '80+ years')) %>% 

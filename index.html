@@ -155,14 +155,28 @@
 
 <div class = 'content'>
 <p>There are similar patterns in the age-specific rates over time for West Sussex, South East region, and national data with rates among those aged 80+ far above other groups early in the pandemic. Following a dampening down of rates for all groups in the summer, younger cohorts rapidly exceeded the growth in cases of other groups from September onwards (potentially due to education settings but also likely due to hospitality venues such as bars and restaurants reopening).</p>
-<p>Those aged 20-29 have continued to be key drivers of new infections whilst rates among 10-19's appear to be levelling off. There has not been such a significant increase in infections among those aged 0-9.</p>
-<!-- <p>The next figure shows a more detailed view of younger age groups.</p> -->
+<p>It should also be considered that changes have occurred partly as test capacity and eligibility increased. Over time, more people were tested who were not displaying symptoms and these asymptomatic cases (perhaps picked up through workplace testing, or as a result of contact tracing) tended to be younger. It is possible that wider testing earlier in the pandemic may have identified many more younger aged cases of COVID-19.</p>
+<p>Notwithstanding changes in testing, those aged 20-29 have continued to be key drivers of new infections in recent weeks and months whilst rates among 10-19's appear to be levelling off.</p>
+<p>There has not been such a significant increase in infections among those aged 0-9 and the next figure shows a more detailed view of younger age groups. Again, you can change the area using the menu</p>
 </div>
 
 <div class = 'right-sidebar'>
-<p>The change in age-distribution of cases may be partly explained by different testing regimes with early testing only conducted among those who were symptomatic and often only among those who were hospitalised by the virus.</p>
-<p>Over time, as test capacity and eligibility increased, more people were tested who were not displaying symptoms and these asymptomatic cases (perhaps picked up through workplace testing, or as a result of contact tracing) tended to be younger. It is possible that wider testing earlier in the pandemic may have identified many more younger aged cases of COVID-19.</p>
+<p>The change in age-distribution of cases may be partly explained by different testing regimes with early testing only conducted among those who were symptomatic and often only among those who were hospitalised by the virus and as the testing capacity increased, more people were tested who did not have symptoms of a more severe illness.</p>
 </div>
+
+<div class = 'content'>
+<h4 id = 'selected_age_line_2_compare_title'></h4>
+<span class = 'give_me_space'>Area: </span>
+<select id='select_lines_age_2_area_button'></select>
+<div id = 'age_spec_fig_u30'></div>
+</div>
+
+<div class = 'right-sidebar'>
+<h4>Age bands</h4>
+<p class = 'side'>Age band key</p>
+<div id = 'age_band_u30_key_figure'></div>
+</div>
+
 </div>
 
 <div class = 'main' id = 'growth'>
@@ -312,6 +326,7 @@
 <script src = "Javascripts/figure_1b_daily_bars.js"></script>
 <script src = "Javascripts/figure_2_heatmap.js"></script>
 <script src = 'Javascripts/figure_age_specific_rates.js'></script>
+<script src = 'Javascripts/figure_age_specific_rates_u30.js'></script>
 <script src = "Javascripts/figure_3a_rates_scatter.js"></script>
 <script src = "Javascripts/figure_3b_ltla_rates_scatter.js"></script>
 <script src = "Javascripts/figure_3_4_rate_maps.js"></script>
