@@ -37,7 +37,7 @@ var selected_age_line_1_area_option = d3.select('#select_lines_age_1_area_button
 // Update text based on selected area
 d3.select("#selected_age_line_1_compare_title")
   .html(function(d) {
-    return 'Covid-19 pillar 1 and 2 confirmed age-specific rolling 7 day cases over time up to ' + complete_date + '; ' + selected_age_line_1_area_option + '; as at ' + data_refreshed_date
+    return 'Covid-19 pillar 1 and 2 confirmed age-specific rolling 7 day case rate (per 100,000 population) over time up to ' + complete_date + '; ' + selected_age_line_1_area_option + '; as at ' + data_refreshed_date
   });
 
 var age_spec_1_chosen = daily_asr_cases.filter(function(d) {
@@ -302,7 +302,7 @@ var selected_age_line_1_area_option = d3.select('#select_lines_age_1_area_button
 // Update text based on selected area
 d3.select("#selected_age_line_1_compare_title")
   .html(function(d) {
-    return 'Covid-19 pillar 1 and 2 confirmed age-specific rolling 7 day cases over time up to ' + complete_date + '; ' + selected_age_line_1_area_option + '; as at ' + data_refreshed_date
+    return 'Covid-19 pillar 1 and 2 confirmed age-specific rolling 7 day case rate (per 100,000 population) over time up to ' + complete_date + '; ' + selected_age_line_1_area_option + '; as at ' + data_refreshed_date
   });
 
 var age_spec_1_chosen = daily_asr_cases.filter(function(d) {
