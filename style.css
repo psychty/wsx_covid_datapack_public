@@ -6,19 +6,21 @@
 #ltla_restrictions_map {
 height: 650px;
 width: 600px;
+margin: auto;
 }
 
 @media screen and (max-width: 1400px) {
 #ltla_restrictions_map {
  height: 550px;
  width: 550px;
+ margin: auto;
  }
 }
 
 #rate_map_1 {
  height: 650px;
  width: 600px;
- /* margin: auto; */
+ margin: auto;
 
  }
 
@@ -26,21 +28,21 @@ width: 600px;
 #rate_map_1 {
  height: 550px;
  width: 550px;
- /* margin: auto; */
+ margin: auto;
  }
 }
 
 #rate_map_2 {
  height: 650px;
  width: 600px;
- /* margin: auto; */
+ margin: auto;
  }
 
 @media screen and (max-width: 1400px) {
 #rate_map_2 {
  height: 550px;
  width: 550px;
- /* margin: auto; */
+ margin: auto;
  }
 }
 

@@ -14,6 +14,7 @@ All code is open; including an R script 'Public_weekly_data_pack_wsx.R' to compi
 
 As more data becomes available, more will be added to the data visualisation.
 
-You can view the site [here](https://wsx-c19-weekly-supplement.netlify.app).
+You can view the mobile site [here](https://wsx-c19-mobile.netlify.app).
+You can view the desktop site [here](https://wsx-c19-weekly-supplement.netlify.app).
 
 This version is hosted on netlify. [[![Netlify Status](https://api.netlify.com/api/v1/badges/c8151007-9bc4-4f3f-a28a-86e95d5404ab/deploy-status)](https://app.netlify.com/sites/wsx-c19-weekly-supplement/deploys)
