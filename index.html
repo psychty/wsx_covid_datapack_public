@@ -253,6 +253,23 @@
 </div>
 </div>
 
+<div class = 'main' id = 'very_local'>
+<h4>Cases in the local area</h4>
+<div class = 'content'>
+<p>PHE publish a rolling count of new confirmed cases at a fairly local geographical area called an output area (Middle Layer Super Output Area).</p>
+
+<div class='inputHolder'>
+    <input placeholder='Postcode' type='text' id='txtPostcode'/>
+    <input type='button' value='Search' id='btnPostcode'/>
+</div>
+<div id='result_text'></div>  
+</div>
+
+<div class = 'right-sidebar'>
+<p>Note that because this geographical area is quite small, case data is supressed where an area has had fewer than 3 cases in a seven-day period. This is to protect the privacy of individuals and prevent disclosure.</p>
+</div>
+</div>
+
 <div class= 'main' id = 'pathways'>
 <h4 style = 'padding-left: 25px; padding-top: 10px;'>NHS Pathways</h4>
 <div class = 'content'>
@@ -310,6 +327,23 @@
   <p class = 'side'>The ONS weekly release of mortality at local authority level can be found <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard'>here</a>. Figures for previous weeks can be revised when new data are published to reflect more complete registrations.</p>
 </div>
 </div>
+
+<div class = 'main'>
+<div class = 'content'>
+<h4>Attributions</h4>
+<p>Data used in this analyses are primarily supplied under Open Government Licence and a number of supporting products such as geographical boundaries and postcode lookups have also been used.</p>
+
+<p>The following copyright notices are applicable:</p>
+<ul>
+<li>Contains Public Health England data © Crown copyright and database right 2020</li>
+<li>Office for National Statistics licensed under the Open Government Licence v.3.0</li>
+<li>Contains Ordnance Survey data © Crown copyright and database right 2020</li>
+<li>Contains Royal Mail data © Royal Mail copyright and database right 2020</li>
+<li>Contains MSOA names © Open Parliament copyright and database right 2020</li>
+</ul>
+</div>
+</div>
+
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -330,6 +364,7 @@
 <script src = "Javascripts/figure_3a_rates_scatter.js"></script>
 <script src = "Javascripts/figure_3b_ltla_rates_scatter.js"></script>
 <script src = "Javascripts/figure_3_4_rate_maps.js"></script>
+<script src = "Javascripts/local_cases.js"></script>
 <!-- <script src = "Javascripts/figure_4b_restriction_map.js"></script> -->
 <script src = "Javascripts/figure_5_pathways.js"></script>
 <script src = "Javascripts/figure_6_mortality.js"></script>
