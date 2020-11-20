@@ -17,12 +17,29 @@
 <body>
 <div class="wrapper">
 <div class = 'header'>
-  <h1>West Sussex Coronavirus (COVID-19) local summary</h1>
+  <nav>
+    <h2>West Sussex Coronavirus (COVID-19) local summary</h2>
+    <ul class = 'nav-links' id = 'nav-links'>
+      <li><a href = '#latest_case_section'>Daily cases</a></li>
+      <li><a href = '#heatmap'>Latest cases</a></li>
+      <li><a href = "#asr_section">Age-specific rates</a></li>
+      <li><a href = "#growth">How cases are changing</a></li>
+      <li><a href = '#pathways'>NHS Pathways</a></li>
+      <li><a href = '#restrictions'>Restrictions</a></li>
+      <li><a href = '#mortality_section'>Deaths</a></li>
+    </ul>
+    <div class = "menu_line" onclick="navSlide()">
+      <div class="line_1"></div>
+      <div class="line_2"></div>
+      <div class="line_3"></div>
+    </div>
+    </nav>
+ 
 </div>
 
 <div class= "main" id = 'data_pack_intro'>
 <h4 class = 'small_screen_show'>The size of this browser window or screen is a little too small to read the data visualisation without some of it overlapping. This will be fixed at some point in the future, but for now please use a larger screen to view.</h4>
-<h2 style = "padding-left: 25px;">West Sussex COVID-19 data summary</h2>
+<h2 class = 'content_top' style = 'padding-left: 25px' >West Sussex COVID-19 data summary</h2>
 <div class = "content" id = 'content_size'>
 <p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published as a powerpoint slide deck which can be found on the top right of this webpage. Links are provided to public data sources available.</p>
 <p class = 'warn'>Although this webpage has been made by a member of staff in the Public Health and Social Research Unit to support their work, it is not a West Sussex County Council website.</p>
@@ -40,9 +57,9 @@
 </div>
 </div>
 
-<div class = 'main' id = 'cases_come_updown'>
+<div class = 'main' id = 'latest_case_section'>
 <div class = 'content'>
-<h4>Daily case changes and initial peaks</h4>
+<h4 class = 'content_top'>Daily case changes and initial peaks</h4>
 <p>The figure below shows the daily confirmed cases of Covid-19 over time by area (showing West Sussex by default), but you can change this to any lower tier area within the county as well as the South East region and England for comparison. The black line represents the rolling average number of new cases confirmed in the previous seven days.</p>
 <p>Case results are generally published in the afternoon and represent cases reported up to 9am of the reporting day. However, cases are assigned to the date on which the specimen was taken rather than when it was reported. It would be very unlikely that a specimen would be taken on the day of reporting with results returned by 9am. It can take as many as four days for results to be reported (e.g. specimens taken on 1st August may not be reported until the 5th). As such, we consider the last four days as incomplete as more cases may be added to the totals for these days.</p>
 <p>The figure includes key dates when changes to testing capacity and eligibility were announced. These are adapted from The Health Foundation <a href = 'https://www.health.org.uk/news-and-comment/charts-and-infographics/covid-19-policy-tracker'>Covid-19 Policy Tracker</a>.</p>
@@ -98,11 +115,10 @@
 
 <div class= 'main' id = 'heatmap'>
 <div class = 'content'>
-<p>The next visualisation shows another way to explore confirmed cases over time and across areas quickly as a heatmap with a single tile for each day colour coded by the number of new cases (the darker red tiles denoting more cases). You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population.</p>
-<h4 id = 'summary_cases_title'></h4>
+<h4 class = 'content_top' id = 'summary_cases_title'></h4>
 </div>
 <div class = 'right-sidebar'>
-<p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</p>
+
 </div>
 
 <div class = 'content'>
@@ -120,6 +136,8 @@
 <div id = 'new_cases_plotted'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 <p id = 'complete_seven'></p>
+<p>The heatmap visualisation shows a quick overview of confirmed cases over time and across areas with each tile representing a day colour coded by the number of new cases (the darker red tiles denoting more cases). You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population.</p>
+<p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</p>
 </div>
 
 <div class = 'right-sidebar'>
@@ -128,8 +146,8 @@
 </div>
 </div>
 
-<div class = 'main' id = 'age-specific'>
-<h4 style = 'padding-left: 25px; padding-top: 10px;'>Age-specific rates of COVID-19 cases</h4>
+<div class = 'main' id = 'asr_section'>
+<h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>Age-specific rates of COVID-19 cases</h4>
 <div class = 'content'>
 <p>The age distribution of confirmed COVID-19 cases is important as we have a good idea that whilst all age groups are susceptible to catching the virus, being older is thought to be a risk factor in becoming severely unwell with the virus.</p>
 <p>We have seen from the national data that in the earlier waves of the pandemic, it was primarily older groups who were catching the virus, with a shift over the summer months to younger groups as more of society opened up and particularly as schools, colleges, and universities welcomed students back to classrooms.</p>
@@ -180,7 +198,7 @@
 </div>
 
 <div class = 'main' id = 'growth'>
-<h4 style = 'padding-left: 25px; padding-top: 10px;'>Rates across lower tier authority areas in England</h4>
+<h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>Rates across lower tier authority areas in England</h4>
 
 <div class = 'content'>
 <p id = 'england_cumulative_text'></p>
@@ -250,13 +268,14 @@
 <div class = 'right-sidebar'>
 <p id = 'selected_utla_key_title'></p>
 <div id = 'utla_map_key'></div>
+
 </div>
 </div>
 
-<!-- <div class = 'main' id = 'very_local'>
+<!-- <div class = 'main' id = 'very_local'> 
 <h4>Cases in the local area</h4>
 <div class = 'content'>
-<p>PHE publish a rolling count of new confirmed cases at a fairly local geographical area called an output area (Middle Layer Super Output Area).</p>
+<p>PHE publish a count of new confirmed cases at a very local geographical area called an output area (Middle Layer Super Output Area).</p>
 
 <div class='inputHolder'>
     <input placeholder='Postcode' type='text' id='txtPostcode'/>
@@ -266,12 +285,12 @@
 </div>
 
 <div class = 'right-sidebar'>
-<p>Note that because this geographical area is quite small, case data is supressed where an area has had fewer than 3 cases in a seven-day period. This is to protect the privacy of individuals and prevent disclosure.</p>
+<p>Note that because this geographical area is quite small, case data is supressed where an area has had fewer than 3 cases in the last seven days to prevent disclosure of any individuals identities.</p>
 </div>
-</div> -->
+</div>  -->
 
 <div class= 'main' id = 'pathways'>
-<h4 style = 'padding-left: 25px; padding-top: 10px;'>NHS Pathways</h4>
+<h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>NHS Pathways</h4>
 <div class = 'content'>
 <p>The NHS Pathways dataset outlining the number of triages made to NHS 111 or 999 for COVID-19 symptoms has been suggested as a potential early warning indicator of an increase in potential cases, although it is not based on any outcomes of tests for COVID-19.</p>
 <p>There are a few caveats to be aware of when using this information. The data are not counts of people but rather assessments, and people with symptoms might not use this or might use it multiple times over the course of their symptoms (and maybe not at the start of their symptoms). People were encouraged initially NOT to call NHS 111 to report COVID-19 symptoms unless they were worried but instead were asked to complete an NHS 111 online triage assessment. Moreover, the criteria for inclusion on this pathway changed over time, particularly in the early weeks of the pandemic.</p>
@@ -288,15 +307,15 @@
 </div>
 </div>
 
-<!-- <div class = 'main' id = 'restrictions'>
-<h4 style = 'padding-left: 25px; padding-top: 10px;'>Mapping restrictions across England</h4>
+<div class = 'main' id = 'restrictions'>
+<h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>Mapping restrictions across England</h4>
 <div class = 'content'>
 <p>This section shows maps of lower tier local authority areas in England to show differences in "lockdown laws" across the country. Changes in restrictions are likely to be at the lower tier local authority level although some wider areas may be covered.</p>
 <p><font color = 'red'>Note that on Saturday 31st October, the Prime Minister announced a proposed a second national lock down inititally lasting from Thursday 5th November through to Wednesday 2nd December 2020. This will bring all local areas into the same type of restrictions.</font></p>
-<p>The information contained here has been compiled by the House of Commons Library, and a briefing is available <a href = 'https://commonslibrary.parliament.uk/research-briefings/cbp-8875/'>here</a>. The map is a simplification of finer detail of rules in local areas and a link to the UK government web pages for each area (if local rules apply) can be found by clicking on an area of the map.</p>
-<p>The map covers restrictions outlined by the UK government for England. Local authorities also have statutory powers to issue "directions" which impose prohibitions or restrictions on premises, events and public spaces.</p>
-<div id = 'ltla_restrictions_map'></div>
-<p>Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: <a href = 'https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/'>https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/</a>'). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.</p>
+<!-- <p>The information contained here has been compiled by the House of Commons Library, and a briefing is available <a href = 'https://commonslibrary.parliament.uk/research-briefings/cbp-8875/'>here</a>. The map is a simplification of finer detail of rules in local areas and a link to the UK government web pages for each area (if local rules apply) can be found by clicking on an area of the map.</p> -->
+<!-- <p>The map covers restrictions outlined by the UK government for England. Local authorities also have statutory powers to issue "directions" which impose prohibitions or restrictions on premises, events and public spaces.</p> -->
+<!-- <div id = 'ltla_restrictions_map'></div> -->
+<!-- <p>Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: <a href = 'https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/'>https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/</a>'). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.</p> -->
 
 </div>
 <div class = 'right-sidebar'>
@@ -305,10 +324,10 @@
 <p>For further information on national restrictions please see: <a href = 'https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do'>https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do</a></p>
 <p>Note, this may change frequently.</p>
 </div>
-</div> -->
+</div>
 
-<div class = 'main' id = 'deaths'>
-<h4 style = 'padding-left: 25px; padding-top: 10px;'>Deaths</h4>
+<div class = 'main' id = 'mortality_section'>
+<h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>Deaths</h4>
 <div class = 'content'>
 <p>The Office for National Statistics publishes weekly data at lower tier local authority for the number of deaths occurring in each week in the 2020 calendar year. From 31 March 2020 these figures also show the number of deaths involving coronavirus (COVID-19), based on any mention of COVID-19 on the death certificate. These are aggregated to upper tier local authority for this analysis.</p>
 <p id = 'ons_dates_mortality'></p>
