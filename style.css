@@ -11,12 +11,13 @@ nav {
   min-height: 20px;
   background-color: #ffffff;
   position: fixed;
-  width: 100%;
+  width: 90%;
+  z-index: 9999;
 }
 
 .top_nav_title {
   color: #003366;
-  font-size: 16px;
+  font-size: 1.6rem;
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -24,7 +25,7 @@ nav {
 .nav-links {
   display: flex;
   justify-content: space-around;
-  width: 50%;
+  width: 100%;
   background-color: #ffffff;
 }
 
@@ -34,10 +35,11 @@ nav {
 
 .nav-links a {
   text-decoration: none;
-  color: #003366;
+  align-items: center;
+  color: #327c9c;
   font-weight: bold;
-  font-size: 14px;
-  padding-right: 5px;
+  font-size: 1rem;
+  padding: 5px;
 }
 
 .menu_line {
@@ -52,8 +54,14 @@ nav {
 }
 
 #ltla_restrictions_map {
-  height: 650px;
-  width: 600px;
+  height: 600px;
+  width: 800px;
+  margin: auto;
+}
+
+#msoa_map_place {
+  height: 600px;
+  width: 900px;
   margin: auto;
 }
 
@@ -66,8 +74,8 @@ nav {
 }
 
 #rate_map_1 {
-  height: 650px;
-  width: 600px;
+  height: 600px;
+  width: 800px;
   margin: auto;
 }
 
@@ -80,8 +88,8 @@ nav {
 }
 
 #rate_map_2 {
-  height: 650px;
-  width: 600px;
+  height: 600px;
+  width: 800px;
   margin: auto;
 }
 
@@ -104,8 +112,8 @@ nav {
 }
 
 * {
-  font-family: "Open Sans", sans-serif;
-  font-size: 0.85rem;
+  font-family: "Myriad", "Egyptian Slate", sans-serif;
+  font-size: 1rem;
 }
 
 body {
@@ -163,7 +171,7 @@ th {
   padding-right: 5px;
   padding-left: 5px;
   padding-bottom: 1px;
-  /* font-size: .9rem; */
+  /* font-size: 1.2rem; */
   border: 1px solid #ffffff;
   vertical-align: top;
 
@@ -175,10 +183,6 @@ th {
   margin: auto;
   width: calc(100% - 40px);
   text-align: center;
-  /* margin-top: 20px; */
-  /* margin-left: 20px; */
-  /* margin-right: 20px; */
-  /* margin-bottom: 30px; */
 }
 
 .main {
@@ -204,6 +208,18 @@ th {
   display: inline-block;
 }
 
+.content p {
+  font-size: 1rem;
+}
+
+.tooltip_class p {
+  font-size: 0.8rem;
+}
+
+p {
+  font-size: 0.8rem;
+}
+
 .right-sidebar {
   float: right;
   width: calc(25% - 40px);
@@ -212,10 +228,6 @@ th {
   margin-right: 20px;
   top: 0;
   display: inline-block;
-}
-
-p {
-  font-size: 0.9rem;
 }
 
 .warn {
@@ -231,28 +243,33 @@ a {
 h1 {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #256cb2;
+  color: #327c9c;
 }
 
 h2 {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #256cb2;
+  color: #4f6177;
 }
 
 h3 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   color: #000;
 }
 
-p.side_important {
+.side p {
+  font-size: 0.8rem;
+}
+
+.side_important p {
   text-align: justify;
   color: red;
   text-justify: inter-word;
+  font-size: 0.8rem;
 }
 
-p.highlight_dl {
+.highlight_dl p {
   font-size: 1.3rem;
   color: #273f8a;
 }
@@ -273,6 +290,21 @@ a.highlight_dl {
 }
 
 .key_list {
+  display: block;
+  padding: 0.5em 0.5em;
+  border-radius: 4px;
+  color: #000000;
+  background: #ffffff;
+  text-align: left;
+  font-size: 0.8rem;
+  font-family: inherit;
+  margin: 0 0 1px;
+  border-left: 13px solid #ccc;
+  /* opacity: .8; */
+  position: relative;
+}
+
+.key_list_msoa_cases {
   display: block;
   padding: 0.5em 0.5em;
   border-radius: 4px;
@@ -383,17 +415,7 @@ p.key_list .side_tt {
   max-width: 280px;
   padding-left: 5px;
   padding-right: 5px;
-  background: #ffffff;
-  color: #000000;
-  border-radius: 5px;
-  border: 1px solid #000;
-  text-align: left !important;
-}
-
-.tooltip_class_scatter {
-  max-width: 380px;
-  padding-left: 5px;
-  padding-right: 5px;
+  font-size: 0.8rem;
   background: #ffffff;
   color: #000000;
   border-radius: 5px;
@@ -451,4 +473,8 @@ p.key_list .side_tt {
 #utla_growth_slider_id {
   position: relative;
   margin-right: 15px;
+}
+
+.svg_notation {
+  font-size: 0.8rem;
 }

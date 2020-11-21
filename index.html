@@ -24,6 +24,7 @@
       <li><a href = '#heatmap'>Latest cases</a></li>
       <li><a href = "#asr_section">Age-specific rates</a></li>
       <li><a href = "#growth">How cases are changing</a></li>
+      <li><a href = "#very_local">Cases in your local area</a></li>
       <li><a href = '#pathways'>NHS Pathways</a></li>
       <li><a href = '#restrictions'>Restrictions</a></li>
       <li><a href = '#mortality_section'>Deaths</a></li>
@@ -44,8 +45,6 @@
 <p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published as a powerpoint slide deck which can be found on the top right of this webpage. Links are provided to public data sources available.</p>
 <p class = 'warn'>Although this webpage has been made by a member of staff in the Public Health and Social Research Unit to support their work, it is not a West Sussex County Council website.</p>
 <p>This data analysis is intended to supplement the published data pack by allowing users to explore more detail in the charts. For example, you can find out the number of cases in an area on a particular day by hovering over one of the bars or points on the blue chart below. <b>This website is updated more frequently than the powerpoint file </b>on the West Sussex County Council website, in order to show the very latest data available so note that the figures may be different.</p>
-<p>Local authorities currently have access to some information that is not in the public domain, which may be due to small numbers or due to data being provisional.</p>
-<p>The landscape of available data is also changing all the time, and we hope to be able to publish as much as possible.</p>
 <p class ='highlight_dl' id = 'update_date'></p>
 <p id = 'data_recency'></p>
 <p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
@@ -54,6 +53,38 @@
   <p class = 'side'>This page works best in certain browsers such as Chrome, Firefox, and Safari, and does not currently work well in Internet Explorer. If you have difficulty viewing the charts on this page please consider using a different web browser.</p>
   <p class = 'side'>This analysis has been created by Dr Rich Tyler at the West Sussex Public Health and Social Research Unit.</p>
 <p class = 'highlight_dl'>A powerpoint slide deck is available to <a class = 'highlight_dl' href = 'https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx' >download here</a></p>
+</div>
+</div>
+
+<div class= 'main' id = 'heatmap'>
+<div class = 'content'>
+<h4 class = 'content_top' id = 'summary_cases_title'></h4>
+</div>
+<div class = 'right-sidebar'>
+</div>
+
+<div class = 'content'>
+<form class="btn-group btn-group-toggle stay-right-classy" data-toggle="buttons">
+  <label class="btn btn-secondary active">
+    <input type="radio" name = 'toggle_count_rate' value = 'counts' onchange="toggle_count_rate_func();">actual cases<br>
+  </label>
+  <label class="btn btn-secondary">
+    <input type="radio" name = 'toggle_count_rate' value = 'rate'  checked = 'checked' onchange ='toggle_count_rate_func();'>cases per 100,000<br>
+  </label>
+</form>
+</div>
+<div class = 'content'>
+<div id = 'case_headings'></div>
+<div id = 'new_cases_plotted'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+<p style = 'font-size: .7rem;' id = 'complete_seven'></p>
+<p>The heatmap visualisation shows a quick overview of confirmed cases over time and across areas with each tile representing a day colour coded by the number of new cases (the darker red tiles denoting more cases). You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population.</p>
+<p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</p>
+</div>
+
+<div class = 'right-sidebar'>
+<p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
+<div id = 'new_case_key_figure'></div>
 </div>
 </div>
 
@@ -81,8 +112,8 @@
 <p class = 'side'>The red lines with circles at the top show dates on which restrictions were added and eased, starting with the national lockdown on 23rd March 2020. Hover over each point to see key changes.</p>
 
 <p class = 'side_important'>Note that the scale may change as a new area is selected.</p>
-<p>Pillar 1 testing includes NHS testing, such as tests of people being admitted to hospital or being discharged to a health/care home setting, pre-operative testing etc.</p>
-<p>Pillar 2 testing is wider community testing</p>
+<p class = 'side'>Pillar 1 testing includes NHS testing, such as tests of people being admitted to hospital or being discharged to a health/care home setting, pre-operative testing etc.</p>
+<p class = 'side'>Pillar 2 testing is wider community testing</p>
 </div>
 </div>
 
@@ -113,38 +144,7 @@
 </div>
 </div>
 
-<div class= 'main' id = 'heatmap'>
-<div class = 'content'>
-<h4 class = 'content_top' id = 'summary_cases_title'></h4>
-</div>
-<div class = 'right-sidebar'>
 
-</div>
-
-<div class = 'content'>
-<form class="btn-group btn-group-toggle stay-right-classy" data-toggle="buttons">
-  <label class="btn btn-secondary active">
-    <input type="radio" name = 'toggle_count_rate' value = 'counts' onchange="toggle_count_rate_func();">actual cases<br>
-  </label>
-  <label class="btn btn-secondary">
-    <input type="radio" name = 'toggle_count_rate' value = 'rate'  checked = 'checked' onchange ='toggle_count_rate_func();'>cases per 100,000<br>
-  </label>
-</form>
-</div>
-<div class = 'content'>
-<div id = 'case_headings'></div>
-<div id = 'new_cases_plotted'></div>
-<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-<p id = 'complete_seven'></p>
-<p>The heatmap visualisation shows a quick overview of confirmed cases over time and across areas with each tile representing a day colour coded by the number of new cases (the darker red tiles denoting more cases). You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population.</p>
-<p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</p>
-</div>
-
-<div class = 'right-sidebar'>
-<p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
-<div id = 'new_case_key_figure'></div>
-</div>
-</div>
 
 <div class = 'main' id = 'asr_section'>
 <h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>Age-specific rates of COVID-19 cases</h4>
@@ -155,7 +155,7 @@
 <p>The first figure shows the 10 year age-specific rates over time in West Sussex. You can change the area using the drop down menu on the figure. Each line is coloured by age (see the key on the right). If you hover over a line or dot, the rest of the lines will fade and information about the number of cases and the age-specific rate (a method of standardising populations for comparison) at a given date.</p>
 </div>
 <div class = 'right-sidebar'>
-<p>Note that although we have tried to smooth out daily variation by using a rolling 7-day rate, at local levels when cases are still fairly low, there can be a lot of unsteady variation from day to day among some age groups. This can make the lines jump up and down. This is more so for lower tier areas and to a lesser extent for the county level. You may notice that the lines look much smoother at regional and national levels.</p>
+<p class = 'side'>Note that although we have tried to smooth out daily variation by using a rolling 7-day rate, at local levels when cases are still fairly low, there can be a lot of unsteady variation from day to day among some age groups. This can make the lines jump up and down. This is more so for lower tier areas and to a lesser extent for the county level. You may notice that the lines look much smoother at regional and national levels.</p>
 </div>
 
 <div class = 'content'>
@@ -179,7 +179,7 @@
 </div>
 
 <div class = 'right-sidebar'>
-<p>The change in age-distribution of cases may be partly explained by different testing regimes with early testing only conducted among those who were symptomatic and often only among those who were hospitalised by the virus and as the testing capacity increased, more people were tested who did not have symptoms of a more severe illness.</p>
+<p class = 'side'>The change in age-distribution of cases may be partly explained by different testing regimes with early testing only conducted among those who were symptomatic and often only among those who were hospitalised by the virus and as the testing capacity increased, more people were tested who did not have symptoms of a more severe illness.</p>
 </div>
 
 <div class = 'content'>
@@ -214,7 +214,7 @@
 <div class = 'right-sidebar'>
 <h4>Rates and change</h4>
 <p class = 'side_important'>The rolling 7 day total excludes the very recent few days as these are considered incomplete</p>
-<p>The closer to the left of the chart an areas is, the lower the 7 day incidence rate, and the closer to the bottom of the chart, the smaller the change from the previous week. If the area is below the dashed line at 0%, the number of cases is decreasing compared to the previous week.</p>
+<p class = 'side'>The closer to the left of the chart an areas is, the lower the 7 day incidence rate, and the closer to the bottom of the chart, the smaller the change from the previous week. If the area is below the dashed line at 0%, the number of cases is decreasing compared to the previous week.</p>
 </div>
 <div class = 'content'>
 <div id = 'ltla_ts_growth_rate'></div>
@@ -236,7 +236,7 @@
 <div class = 'right-sidebar'>
 <p class = 'side_important'>Remember that the rolling 7 day total excludes the very recent few days as these are considered incomplete</p>
 <p class = 'side'><b>What is a decile?</b></p>
-<p>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided into 10 groups each representing 10% of the areas in England.</p>
+<p class = 'side'>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided into 10 groups each representing 10% of the areas in England.</p>
 <p id = 'selected_ltla_key_title'></p>
 <div id = 'ltla_map_key'></div>
 </div>
@@ -272,22 +272,32 @@
 </div>
 </div>
 
-<!-- <div class = 'main' id = 'very_local'> 
-<h4>Cases in the local area</h4>
+<div class = 'main' id = 'very_local'> 
+
 <div class = 'content'>
-<p>PHE publish a count of new confirmed cases at a very local geographical area called an output area (Middle Layer Super Output Area).</p>
+  <h4>Cases in the local area</h4>
+  <p>As cases increase over the autumn and winter, it is becoming more important to consider local areas and PHE have published a count of new confirmed cases at a very local geographical area called an output area (Middle Layer Super Output Area, or MSOAs for short).</p>
+  <p>This is useful as is means you can see what cases are like where you live or where your friends and family live. We do not get quite the same level of detail from the data published at this level compared to wider areas and when there are fewer than three cases in a seven day period in the MSOA, these are supressed.</p>
+
+  <p>You can search for a postcode in the box below and a marker will appear on the map. Note, currently the map is only showing West Sussex MSOAs and will be updated soon with more detail on the chosen postocde as well as more MSOAs in the region.</p>
 
 <div class='inputHolder'>
     <input placeholder='Postcode' type='text' id='txtPostcode'/>
     <input type='button' value='Search' id='btnPostcode'/>
 </div>
-<div id='result_text'></div>  
+<!-- <div id='result_text'></div>   -->
+<div id = 'msoa_map_place'></div>
+<p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
 
 <div class = 'right-sidebar'>
-<p>Note that because this geographical area is quite small, case data is supressed where an area has had fewer than 3 cases in the last seven days to prevent disclosure of any individuals identities.</p>
+<p class = 'side'>Note that because this geographical area is quite small, case data is supressed where an area has had fewer than 3 cases in the last seven days to prevent disclosure of any individuals identities.</p>
+<p class = 'side'>MSOAs may vary in physical area size, but are design to cover generally similar population sizes (which is why there are many more MSOAs in towns and cities than there are in rural areas).</p>
+<p class = 'side'>As some data are suppressed, it is difficult to calculate a rolling cumulative sum of the number of cases in a local area. Where possible we can say if an area is getting more or less cases than the previous week.</p>
+<h4>Cases in the latest 7 days</h4>
+<div id = 'msoa_case_key'></div>
 </div>
-</div>  -->
+</div> 
 
 <div class= 'main' id = 'pathways'>
 <h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>NHS Pathways</h4>
@@ -302,8 +312,8 @@
 <p class = 'highlight_dl' id = 'pathways_label_2'></p>
 </div>
 <div class = 'right-sidebar'>
-<p>The criteria of who would be included in this pathway, including which symptoms would be flagged, changed in the beginning of the pandemic. Key change points are highlighted on the figure with dashed lines (red showing people excluded and blue showing more people included).</p>
-<p>Hover over a dot to find out more about the number of triages in the last 24 hours and last seven days.</p>
+<p class = 'side'>The criteria of who would be included in this pathway, including which symptoms would be flagged, changed in the beginning of the pandemic. Key change points are highlighted on the figure with dashed lines (red showing people excluded and blue showing more people included).</p>
+<p class = 'side'>Hover over a dot to find out more about the number of triages in the last 24 hours and last seven days.</p>
 </div>
 </div>
 
@@ -311,7 +321,7 @@
 <h4 class = 'content_top' style = 'padding-left: 25px; padding-top: 10px;'>Mapping restrictions across England</h4>
 <div class = 'content'>
 <p>This section shows maps of lower tier local authority areas in England to show differences in "lockdown laws" across the country. Changes in restrictions are likely to be at the lower tier local authority level although some wider areas may be covered.</p>
-<p><font color = 'red'>Note that on Saturday 31st October, the Prime Minister announced a proposed a second national lock down inititally lasting from Thursday 5th November through to Wednesday 2nd December 2020. This will bring all local areas into the same type of restrictions.</font></p>
+<p><font color = 'red'>On Saturday 31st October, the Prime Minister announced a second national lock down in England inititally lasting from Thursday 5th November through to Wednesday 2nd December 2020. This will bring all local areas into the same type of restrictions.</font></p>
 <!-- <p>The information contained here has been compiled by the House of Commons Library, and a briefing is available <a href = 'https://commonslibrary.parliament.uk/research-briefings/cbp-8875/'>here</a>. The map is a simplification of finer detail of rules in local areas and a link to the UK government web pages for each area (if local rules apply) can be found by clicking on an area of the map.</p> -->
 <!-- <p>The map covers restrictions outlined by the UK government for England. Local authorities also have statutory powers to issue "directions" which impose prohibitions or restrictions on premises, events and public spaces.</p> -->
 <!-- <div id = 'ltla_restrictions_map'></div> -->
@@ -321,7 +331,7 @@
 <div class = 'right-sidebar'>
 <h4>Restrictions currently applied</h4>
 <div id = 'ltla_restrictions_key'></div>
-<p>For further information on national restrictions please see: <a href = 'https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do'>https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do</a></p>
+<p class = 'side'>For further information on national restrictions please see: <a href = 'https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do'>https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do</a></p>
 <p>Note, this may change frequently.</p>
 </div>
 </div>

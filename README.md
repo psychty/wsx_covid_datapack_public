@@ -10,11 +10,11 @@ Local authorities currently have access to some information that is not in the p
 
 For more information please contact [publichealth@westsussex.gov.uk]("mailto:publichealth@westsussex.gov.uk?subject=COVID-19")
 
-All code is open; including an R script 'Public_weekly_data_pack_wsx.R' to compile and analyse new data, with data visualisation presented for web, using D3 javascript libraries. Some of it ~well~ annotated. These scripts can be amended to produce outputs for other areas. Please get in touch with us at Public
+All code is open; including an R script 'Public_weekly_data_pack_wsx.R' to compile and analyse new data, with data visualisation presented for web, using D3 javascript libraries. Some of it ~well~ annotated. These scripts can be amended to produce outputs for other areas.
 
 As more data becomes available, more will be added to the data visualisation.
 
 You can view the mobile site [here](https://wsx-c19-mobile.netlify.app).
 You can view the desktop site [here](https://wsx-c19-weekly-supplement.netlify.app).
 
-This version is hosted on netlify. [[![Netlify Status](https://api.netlify.com/api/v1/badges/c8151007-9bc4-4f3f-a28a-86e95d5404ab/deploy-status)](https://app.netlify.com/sites/wsx-c19-weekly-supplement/deploys)
+This version is hosted on netlify. [![Netlify Status](https://api.netlify.com/api/v1/badges/c8151007-9bc4-4f3f-a28a-86e95d5404ab/deploy-status)](https://app.netlify.com/sites/wsx-c19-weekly-supplement/deploys)
