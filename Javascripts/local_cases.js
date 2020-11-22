@@ -127,7 +127,7 @@ $.when(msoa_map_data).done(function () {
 function key_msoa_cases() {
   case_key_msoa.forEach(function (item, index) {
     var list = document.createElement("li");
-    list.innerHTML = item;
+    list.innerHTML = item + " in 7 days to " + complete_date;
     list.className = "key_list_msoa_cases";
     list.style.borderColor = msoa_case_colour_func(index);
     var tt = document.createElement("div");
