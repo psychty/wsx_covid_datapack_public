@@ -18,7 +18,10 @@ var msoa_case_colour_func = d3
   .domain(case_key_msoa)
   .range(case_key_msoa_colours);
 
-// var width_msoa_map = document.getElementById("content_size").offsetWidth;
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/msoa_summary.json", false);
+request.send(null);
+var msoa_summary_data = JSON.parse(request.responseText); // parse the fetched json data into a variable
 
 // Add AJAX request for data
 var msoa_map_data = $.ajax({
@@ -55,7 +58,7 @@ function style_msoa_cases(feature) {
     opacity: 0.6,
     color: "white",
     dashArray: "3",
-    fillOpacity: 1,
+    fillOpacity: 0.7,
   };
 }
 
@@ -64,7 +67,7 @@ $.when(msoa_map_data).done(function () {
 
   var msoa_basemap = L.tileLayer(tileUrl, {
     attribution,
-    minZoom: 10,
+    minZoom: 8,
   }).addTo(msoa_map);
 
   var msoa_map_hcl = L.geoJSON(msoa_map_data.responseJSON, {
@@ -93,11 +96,55 @@ $.when(msoa_map_data).done(function () {
       var chosen_lat = postcode["result"]["latitude"];
       var chosen_long = postcode["result"]["longitude"];
 
-      console.log(chosen_msoa, chosen_lat, chosen_long);
-      // L.marker([chosen_lat, chosen_long]).addTo(msoa_map);
-      add_chosen_ps();
-
       marker_chosen.setLatLng([chosen_lat, chosen_long]);
+      msoa_map.setView([chosen_lat, chosen_long], 11);
+
+      var msoa_summary_data_chosen = msoa_summary_data.filter(function (d) {
+        return d.MSOA11NM == chosen_msoa;
+      });
+
+      console.log(msoa_summary_data_chosen);
+
+      d3.select("#local_case_summary_1")
+        .data(msoa_summary_data_chosen)
+        .html(function (d) {
+          return d.MSOA11NM + " (" + d.msoa11hclnm + ")";
+        });
+
+      if (msoa_summary_data_chosen[0]["Latest_rate"] == "No rate available") {
+        d3.select("#local_case_summary_2")
+          .data(msoa_summary_data_chosen)
+          .html(function (d) {
+            return (
+              "<b class = 'case_latest'>" +
+              d.This_week +
+              "</b> cases in the seven days to " +
+              complete_date
+            );
+          });
+      }
+
+      if (msoa_summary_data_chosen[0]["Latest_rate"] != "No rate available") {
+        d3.select("#local_case_summary_2")
+          .data(msoa_summary_data_chosen)
+          .html(function (d) {
+            return (
+              "<b class = 'case_latest'>" +
+              d.This_week +
+              "</b> cases in the seven days to " +
+              complete_date +
+              ". This is <b class = 'case_latest'>" +
+              d.Latest_rate +
+              "</b> cases per 100,000 population."
+            );
+          });
+      }
+
+      d3.select("#local_case_summary_3")
+        .data(msoa_summary_data_chosen)
+        .html(function (d) {
+          return d.Change_label;
+        });
     });
   });
 
@@ -118,7 +165,15 @@ $.when(msoa_map_data).done(function () {
       error: function (desc, err) {
         $("#result_text").html("Details: " + desc.responseText);
 
-        console.log("The postcode you entered does not seem to be valid");
+        d3.select("#local_case_summary_1").html(function (d) {
+          return "The postcode you entered does not seem to be valid, please check and try again.";
+        });
+        d3.select("#local_case_summary_2").html(function (d) {
+          return "This could be because there is a problem with the postcode look up tool we are using.";
+        });
+        d3.select("#local_case_summary_3").html(function (d) {
+          return "";
+        });
       },
     });
   }
@@ -144,6 +199,10 @@ function key_msoa_cases() {
 
 key_msoa_cases();
 
-function add_chosen_ps() {
-  console.log("working yo");
-}
+d3.select("#local_case_map_title").html(function (d) {
+  return (
+    "Number of confirmed COVID-19 cases in the seven days to " +
+    complete_date +
+    "; South East England MSOAs"
+  );
+});

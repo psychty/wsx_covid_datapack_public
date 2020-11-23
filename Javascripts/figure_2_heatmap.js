@@ -48,7 +48,7 @@ d3.select("#complete_seven").html(function (d) {
   return "* seven days leading to " + latest_date + ".";
 });
 
-start_tile_x_pos = 650;
+start_tile_x_pos = 550;
 
 var x = d3
   .scaleBand()

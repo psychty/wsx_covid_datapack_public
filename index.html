@@ -317,20 +317,25 @@
 
 <section class="local_section" id = 'local_section'>
   <div class = 'content'>
-    <h4 class = 'content_top'>Cases in the local area</h4>
+    <h4 class = 'content_top'>Cases in your local area</h4>
   </div>
   <div class="content">
 
-  <p>As cases increase over the autumn and winter, it is becoming more important to consider local areas and PHE have published a count of new confirmed cases at a very local geographical area called an output area (Middle Layer Super Output Area, or MSOAs for short).</p>
-  <p>This is useful as is means you can see what cases are like where you live or where your friends and family live. We do not get quite the same level of detail from the data published at this level compared to wider areas and when there are fewer than three cases in a seven day period in the MSOA, these are supressed.</p>
+  <p>Data on the number of new confirmed cases at a very localised area called an output area (Middle Layer Super Output Area, or MSOAs for short) is now available. This is useful as it means you can see what cases are like where you live or where your friends and family live. We do not get the same detail from the data published at this level compared to wider areas and when there are fewer than three cases in a seven day period in the MSOA, these are supressed.</p>
 
-  <p>You can search for a postcode in the box below and a marker will appear on the map. Note, currently the map is only showing West Sussex MSOAs and will be updated soon with more detail on the chosen postocde as well as more MSOAs in the region.</p>
-
+  <p>However, you can search for a postcode in the box below and a marker will appear on the map with more detail about cases in that local area. <b>Note, the map currently only shows MSOAs in the South East region of England. However, you can use the postcode search to look up any postcode in England.</b></p>
+    
 <div class='inputHolder'>
     <input placeholder='Postcode' type='text' id='txtPostcode'/>
     <input type='button' value='Search' id='btnPostcode'/>
 </div>
 
+<div class = 'local_summary_tile'>
+<h4 id = 'local_case_summary_1'></h4>
+<p id = 'local_case_summary_2'></p>
+<p id = 'local_case_summary_3'></p>
+</div>
+<h4 id = 'local_case_map_title'></h4>
 <div id = 'msoa_map_place'></div>
 <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
 </div>
@@ -338,7 +343,7 @@
 <div class = 'right-sidebar'>
 <p class = 'side'>Note that because this geographical area is quite small, case data is supressed where an area has had fewer than 3 cases in the last seven days to prevent disclosure of any individuals identities.</p>
 <p class = 'side'>MSOAs may vary in physical area size, but are design to cover generally similar population sizes (which is why there are many more MSOAs in towns and cities than there are in rural areas).</p>
-<p class = 'side'>As some data are suppressed, it is difficult to calculate a rolling cumulative sum of the number of cases in a local area. Where possible we can say if an area is getting more or less cases than the previous week.</p>
+<p class = 'side'>As some data are suppressed, it is difficult to calculate a rolling cumulative sum of the number of cases in a local area. When there have been at least three cases in both weeks, we can say if cases are rising or falling.</p>
 <h4>Cases in the latest 7 days</h4>
 <div id = 'msoa_case_key'></div>
 </div>

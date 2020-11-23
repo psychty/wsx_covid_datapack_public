@@ -35,8 +35,8 @@ ph_theme = function(){
   ) 
 }
 
-# github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
-github_repo_dir <- "~/Documents/Repositories/wsx_covid_datapack_public"
+github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
+#github_repo_dir <- "~/Documents/Repositories/wsx_covid_datapack_public"
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
@@ -2179,10 +2179,35 @@ case_age_df_daily %>%
 
 
 # MSOA map ####
+oa_region <- read_csv('https://opendata.arcgis.com/datasets/180c271e84fc400d92ca6dcc7f6ff780_0.csv')[c('OA11CD', 'RGN11MM')]
+
+msoa_names <- read_csv('https://visual.parliament.uk/msoanames/static/MSOA-Names-1.7.csv') %>% 
+  select(msoa11cd, msoa11hclnm) %>% 
+  rename(MSOA11CD = msoa11cd)
+
+
+if(exists('msoa_names') == FALSE) {
+  msoa_names <- read_csv(paste0(github_repo_dir,'/Source files/msoa_names_backup.csv')) 
+}
+
+msoa_names %>% 
+  write.csv(., paste0(github_repo_dir, '/Source files/msoa_names_backup.csv'), row.names = FALSE)
 
 msoa_lookup <- read_csv('https://opendata.arcgis.com/datasets/6ecda95a83304543bc8feedbd1a58303_0.csv') %>%
-  select(MSOA11CD, MSOA11NM, LAD11NM) %>% 
-  unique()
+  left_join(read_csv('https://opendata.arcgis.com/datasets/180c271e84fc400d92ca6dcc7f6ff780_0.csv')[c('OA11CD', 'RGN11NM')], by = 'OA11CD') %>% 
+  select(MSOA11CD, MSOA11NM, LAD11NM, RGN11NM) %>% 
+  unique() %>% 
+  left_join(msoa_names, by = 'MSOA11CD')
+
+if(exists('msoa_lookup') == FALSE) {
+  msoa_lookup <- read_csv(paste0(github_repo_dir,'/Source files/msoa_lookup_backup.csv')) 
+}
+
+msoa_lookup %>% 
+  write.csv(., paste0(github_repo_dir, '/Source files/msoa_lookup_backup.csv'), row.names = FALSE)
+
+se_msoas <- msoa_lookup %>% 
+  filter(RGN11NM == 'South East')
 
 wsx_msoas <- msoa_lookup %>% 
   filter(LAD11NM %in% c('Adur', 'Arun', 'Chichester','Crawley', 'Horsham', 'Mid Sussex', 'Worthing'))
@@ -2198,7 +2223,7 @@ msoa_cases_1 <- read_csv('https://coronavirus.data.gov.uk/downloads/msoa_data/MS
   rename(Latest_rate = newCasesBySpecimenDateRollingRate) %>% 
   mutate(Latest_rate_key = factor(ifelse(is.na(Latest_rate), 'Less than 3 cases', ifelse(Latest_rate <= 50, 'Up to 50 per 100,000', ifelse(Latest_rate <= 100, '51-100 cases per 100,000', ifelse(Latest_rate <= 150, '101-150 cases per 100,000', ifelse(Latest_rate <= 200, '151-200 cases per 100,000', 'More than 200 cases per 100,000'))))), levels = c('Less than 3 cases', 'Up to 50 cases per 100,000', '51-100 cases per 100,000', '101-150 cases per 100,000', '151-200 cases per 100,000', 'More than 200 cases per 100,000')))
 
-msoa_cases <- as.data.frame(read_csv('https://coronavirus.data.gov.uk/downloads/msoa_data/MSOAs_latest.csv') %>% 
+msoa_cases_raw <- as.data.frame(read_csv('https://coronavirus.data.gov.uk/downloads/msoa_data/MSOAs_latest.csv') %>% 
   # filter(areaCode %in% msoa_lookup$MSOA11CD) %>% 
   group_by(areaCode, areaName) %>% 
   arrange(areaCode, areaName, date) %>% 
@@ -2211,14 +2236,16 @@ msoa_cases <- as.data.frame(read_csv('https://coronavirus.data.gov.uk/downloads/
   mutate(Case_key = ifelse(is.na(This_week), '0-2 cases', ifelse(This_week <= 5, '3-5 cases', ifelse(This_week <= 10, '6-10 cases', ifelse(This_week <= 15, '11-15 cases', 'More than 15 cases'))))) %>% 
   left_join(msoa_cases_1, by = 'areaCode') %>% 
   left_join(msoa_lookup, by = c('areaCode' = 'MSOA11CD')) %>% 
-  mutate(Label = paste0('<b>', MSOA11NM,'</b><br><br>In the seven days to ', format(date, '%A %d %B'), ' there were ', ifelse(is.na(This_week), ' less than three new cases.', paste0(format(This_week, big.mark = ','), ' new cases, this is a rate of ', round(Latest_rate, 1), ' cases per 100,000 population.')), '<br>', ifelse(is.na(Last_week) & is.na(This_week), 'Cases have been below 3 in the last two 7 day periods.', ifelse(is.na(Last_week), paste0('Cases were below 3 in the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,') but have risen this week.'), ifelse(is.na(This_week), paste0('Cases are now below 3 in the latest 7 days but have fallen since the previous 7 day period (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual == 0, 'There is no change in case numbers over the last two weeks', ifelse(Change_actual < 0, paste0('Cases have fallen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual >0, paste0('Cases have risen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), NA)))))))) %>%
-  ungroup() %>% 
+  mutate(Label = paste0('<b>', MSOA11NM,' (', msoa11hclnm,')</b><br><br>In the seven days to ', format(date, '%A %d %B'), ' there were ', ifelse(is.na(This_week), ' less than three new cases.', paste0(format(This_week, big.mark = ','), ' new cases, this is a rate of ', round(Latest_rate, 1), ' cases per 100,000 population.')), '<br><br>', ifelse(is.na(Last_week) & is.na(This_week), 'Cases have been below 3 in the last two 7 day periods.', ifelse(is.na(Last_week), paste0('Cases were below 3 in the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,') but have risen this week.'), ifelse(is.na(This_week), paste0('Cases are now below 3 in the latest 7 days but have fallen since the previous 7 day period (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual == 0, 'There is no change in case numbers over the last two weeks', ifelse(Change_actual < 0, paste0('Cases have fallen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual >0, paste0('Cases have risen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), NA)))))))) %>%
+  ungroup()) 
+  
+msoa_cases <- msoa_cases_raw %>% 
   select(MSOA11NM, Case_key, Latest_rate_key, Change_label, Label) %>% 
-  filter(MSOA11NM %in% wsx_msoas$MSOA11NM) %>% 
-  arrange(MSOA11NM)) 
+  filter(MSOA11NM %in% se_msoas$MSOA11NM) %>% 
+  arrange(MSOA11NM)
 
 msoa_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/23cdb60ee47e4fef8d72e4ee202accb0_0.geojson",  what = "sp") %>% 
-  filter(MSOA11NM %in% wsx_msoas$MSOA11NM) %>%
+  filter(MSOA11NM %in% se_msoas$MSOA11NM) %>%
   arrange(MSOA11NM)
 
 df <- data.frame(ID = character())
@@ -2237,5 +2264,11 @@ msoa_boundaries_json <- SpatialPolygonsDataFrame(msoa_boundaries_json, msoa_case
 
 geojson_write(geojson_json(msoa_boundaries_json), file = paste0(output_directory_x, '/msoa_covid_rate_latest.geojson'))
 
-
-
+msoa_cases_raw %>% 
+  select(MSOA11NM, msoa11hclnm, Latest_rate,  This_week, Last_week, Change_label, date, Change_actual) %>% 
+  mutate(Change_label = paste0(ifelse(is.na(Last_week) & is.na(This_week), 'Cases have been below 3 in the last two 7 day periods.', ifelse(is.na(Last_week), paste0('Cases were below 3 in the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,') but have risen this week.'), ifelse(is.na(This_week), paste0('Cases are now below 3 in the latest 7 days but have fallen since the previous 7 day period (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual == 0, 'There is no change in case numbers over the last two weeks', ifelse(Change_actual < 0, paste0('<b>', Change_actual, '</b> cases compared to the previous 7 days (', Last_week,  ' cases in the 7 days to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual >0, paste0('<b>+', Change_actual, '</b> cases compared to the previous 7 days (', Last_week, ' cases in the 7 days to ', format(max(date)-7, '%A %d %B') ,').'), NA)))))))) %>% 
+  mutate(This_week = ifelse(is.na(This_week), '0-2', format(This_week, big.mark = ',', trim = TRUE)),
+         Last_week = ifelse(is.na(Last_week), '0-2', format(Last_week, big.mark = ',', trim = TRUE))) %>%
+  select(!c('date', 'Change_actual')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/msoa_summary.json'))

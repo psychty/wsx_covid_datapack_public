@@ -165,10 +165,6 @@ table {
   margin: auto;
 }
 
-/* tr:nth-of-type(odd) {
-background: #c0c0c0;
-} */
-
 th {
   background-color: #ffffff;
   color: #003366;
@@ -320,6 +316,26 @@ a.highlight_dl {
   position: relative;
 }
 
+.local_summary_tile {
+  /* background-color: #f0e5dc; */
+  padding: 10px;
+}
+
+.case_latest {
+  font-size: 2rem;
+  color: #327c9c;
+}
+
+.cases_go_down {
+  font-size: 2rem;
+  color: green;
+}
+
+.cases_go_up {
+  font-size: 2rem;
+  color: #cc0052;
+}
+
 .key_list_msoa_cases {
   display: block;
   padding: 0.5em 0.5em;
@@ -331,7 +347,7 @@ a.highlight_dl {
   font-family: inherit;
   margin: 0 0 1px;
   border-left: 13px solid #ccc;
-  /* opacity: .8; */
+  opacity: 0.7;
   position: relative;
 }
 
