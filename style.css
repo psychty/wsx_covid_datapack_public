@@ -3,14 +3,22 @@
   display: none;
 }
 
+header {
+  position: sticky;
+  top: 0px;
+  /* width: 100%; */
+  background: #fff;
+}
+
 /* navigation */
 nav {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  min-height: 20px;
-  background-color: #ffffff;
-  position: fixed;
+  /* min-height: 20px; */
+  background-color: #fff;
+
+  margin: auto;
   width: 90%;
   z-index: 9999;
 }
@@ -53,6 +61,13 @@ nav {
   margin: 5px;
 }
 
+.bubble {
+  position: absolute;
+  z-index: -2;
+  background: #0066b2;
+  transform: scale(1.1);
+}
+
 #ltla_restrictions_map {
   height: 600px;
   width: 800px;
@@ -63,6 +78,7 @@ nav {
   height: 600px;
   width: 900px;
   margin: auto;
+  /* z-index: -1; */
 }
 
 @media screen and (max-width: 1400px) {
@@ -193,7 +209,7 @@ th {
 
 .content_top {
   margin-top: 100px;
-  /* padding-left: 25px; */
+  /* padding-top: 50px; */
 }
 
 .drop {
@@ -477,4 +493,11 @@ p.key_list .side_tt {
 
 .svg_notation {
   font-size: 0.8rem;
+}
+
+section {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
