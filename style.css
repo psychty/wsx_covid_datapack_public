@@ -27,6 +27,7 @@ header {
   top: 0px;
   /* width: 100%; */
   background: #fff;
+  z-index: 100;
 }
 
 /* navigation */
@@ -38,7 +39,7 @@ nav {
   box-shadow: 0px 1px 5px #dbdbdb;
   margin: auto;
   width: 100%;
-  z-index: 9999;
+  z-index: 100;
   padding-bottom: 3px;
 }
 
@@ -112,6 +113,7 @@ nav {
   height: 600px;
   width: 800px;
   margin: auto;
+  z-index: 1;
 }
 
 @media screen and (max-width: 1400px) {
@@ -309,7 +311,7 @@ a.highlight_dl {
 
 .key_list {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -318,7 +320,7 @@ a.highlight_dl {
   font-family: inherit;
   margin: 0 0 1px;
   border-left: 13px solid #ccc;
-  /* opacity: .8; */
+  opacity: 0.8;
   position: relative;
   z-index: 1;
 }
@@ -345,7 +347,7 @@ a.highlight_dl {
 
 .key_list_msoa_cases {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -361,7 +363,7 @@ a.highlight_dl {
 
 .key_growth_utla {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -377,7 +379,7 @@ a.highlight_dl {
 
 .key_growth_ltla {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -392,7 +394,7 @@ a.highlight_dl {
 
 .key_age_areas {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -411,7 +413,7 @@ p.key_list .side_tt {
 
 .key_list_rate_utla {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -427,7 +429,7 @@ p.key_list .side_tt {
 
 .key_list_rate_ltla {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -443,7 +445,7 @@ p.key_list .side_tt {
 
 .key_list_restrictions {
   display: block;
-  padding: 0.5em 0.5em;
+  padding: 5px;
   border-radius: 4px;
   color: #000000;
   background: #ffffff;
@@ -526,7 +528,7 @@ p.key_list .side_tt {
 }
 
 section {
-  min-height: 100vh;
+  min-height: 50vh;
   display: flex;
   justify-content: center;
   align-items: center;
