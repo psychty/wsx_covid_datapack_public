@@ -168,7 +168,7 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Perc_change_on_rolling_7_days_tidy = factor(ifelse(Rolling_7_day_new_cases == 0 & lag(Rolling_7_day_new_cases, 7) == 0, 'No change (zero cases)', ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous 7 days', ifelse(Perc_change_on_rolling_7_days_actual == -1, '100% fewer cases (now zero cases in recent period)', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50%+ fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual < 0, 'Up to 50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'No change', ifelse(Perc_change_on_rolling_7_days_actual > 0  & Perc_change_on_rolling_7_days_actual <= .5, 'Up to 50% more cases', ifelse(Perc_change_on_rolling_7_days_actual > .5 & Perc_change_on_rolling_7_days_actual <= 1, 'Up to 100% more cases (double the cases from the previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 1 & Perc_change_on_rolling_7_days_actual <= 2, 'Up to 200% more cases (3x the cases in previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 2 & Perc_change_on_rolling_7_days_actual <= 5, 'Up to 5x the cases in previous 7 days', 'More than 5x the cases in the previous 7 days'))))))))))), levels = c("No change (zero cases)", "100% fewer cases (now zero cases in recent period)",   "50%+ fewer cases" ,  "Up to 50% fewer cases" ,  "No change" ,   "Up to 50% more cases" ,      "Up to 100% more cases (double the cases from the previous 7 days)", "Up to 200% more cases (3x the cases in previous 7 days)","Up to 5x the cases in previous 7 days", "More than 5x the cases in the previous 7 days", "0 cases in previous 7 days"))) %>% 
   mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B')),
          Rolling_compare_period = paste0('seven days to ', format(Date, '%d %B'), ' compared to seven days to ', format(lag(Date,7), '%d %B'))) %>% 
-   mutate(Label_3 = paste0('In the ', Rolling_period, ', there ', ifelse(Rolling_7_day_new_cases == 1, paste0('was 1 new confirmed case (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). '),  paste0('were ', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' new confirmed cases (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). ')), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases == 0, paste0('This is the same as the ', lag(Rolling_period, 7), '.'), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases > 0, paste0('There were no cases in the ', lag(Rolling_period, 7), '.'), ifelse(Perc_change_on_rolling_7_days_actual == 0, paste0('There is <b>no change in cases</b> compared to those confirmed in the previous week (', lag(Rolling_period, 7), ').'), ifelse(Perc_change_on_rolling_7_days_actual < 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) ==1, 'was 1 new cases', paste0('were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),', and so the new cases have<b> decreased by ', abs(round(Perc_change_on_rolling_7_days_actual*100, 1)), '% (', format(lag(Rolling_7_day_new_cases, 7) - Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' fewer cases)</b>.'), ifelse(Perc_change_on_rolling_7_days_actual > 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) == 1, 'was 1 new case ', paste0(' were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),' and so the new cases have<b> risen by ', round(Perc_change_on_rolling_7_days_actual* 100, 1), '% (', ifelse(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7) == 1, '1 extra case).</b>', paste0(format(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7), big.mark = ','),' extra cases).</b>'))), NA))))))) %>% 
+   mutate(Label_3 = paste0('In the ', Rolling_period, ', there ', ifelse(Rolling_7_day_new_cases == 1, paste0('was 1 new confirmed case (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). '),  paste0('were ', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' new confirmed cases (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). ')), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases == 0, paste0('This is the same as the ', lag(Rolling_period, 7), '.'), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases > 0, paste0('There were no cases in the ', lag(Rolling_period, 7), '.'), ifelse(Perc_change_on_rolling_7_days_actual == 0, paste0('There is <b>no change in cases</b> compared to those confirmed in the previous week (', lag(Rolling_period, 7), ').'), ifelse(Perc_change_on_rolling_7_days_actual < 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) ==1, 'was 1 new cases', paste0('were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),', and so the new cases have<b> decreased by ', abs(round(Perc_change_on_rolling_7_days_actual*100, 1)), '% (', format(lag(Rolling_7_day_new_cases, 7) - Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' fewer cases)</b>.'), ifelse(Perc_change_on_rolling_7_days_actual > 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) == 1, 'was 1 new case ', paste0(' were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),' and so the new cases have<b> risen by ', round(Perc_change_on_rolling_7_days_actual* 100, 1), '% (', ifelse(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7) == 1, '1 extra case).</b>', paste0(format(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7), big.mark = ',', trim = TRUE),' extra cases).</b>'))), NA))))))) %>% 
   ungroup()
 
 rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_cases_reworked)
@@ -535,7 +535,7 @@ england_rolling <- p12_test_df %>%
   filter(Name == 'England') %>% 
   select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Label_3)
 
-paste0('The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ','), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000 population</b>). ', england_rolling$Label_3) %>% 
+paste0('The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ',', trim = TRUE), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ',', trim = TRUE), ' cases per 100,000 population</b>). ', england_rolling$Label_3) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/england_cumulative.json'))
 
@@ -551,7 +551,7 @@ wsx_rolling <- p12_test_df %>%
   filter(Name == 'West Sussex') %>% 
   select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Label_3)
 
-paste0('The number of confirmed COVID-19 cases in West Sussex so far as at ', format(last_date, '%d %B'), ' is ', format(wsx_cumulative$Cumulative_cases, big.mark = ','), ' (<b>', format(round(wsx_cumulative$Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000 population</b>). ', wsx_rolling$Label_3) %>% 
+paste0('The number of confirmed COVID-19 cases in West Sussex so far as at ', format(last_date, '%d %B'), ' is ', format(wsx_cumulative$Cumulative_cases, big.mark = ',', trim = TRUE), ' (<b>', format(round(wsx_cumulative$Cumulative_per_100000, 1), big.mark = ',', trim = TRUE), ' cases per 100,000 population</b>). ', wsx_rolling$Label_3) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/wsx_cumulative_rolling_label.json'))
 
@@ -572,14 +572,14 @@ rm(utla_rate_1, utla_rate_2)
 
 utla_cumulative_rate_bins <- utla_rate %>% 
   group_by(Cumulative_Rate_decile) %>% 
-  summarise(cumulative_bins = paste0(Cumulative_Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-', format(round(max(Cumulative_per_100000)),big.mark = ','), ')')) %>% 
+  summarise(cumulative_bins = paste0(Cumulative_Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ',', trim = TRUE), '-', format(round(max(Cumulative_per_100000)),big.mark = ',', trim = TRUE), ')')) %>% 
   unique() %>% 
   ungroup() %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
 
 utla_rolling_rate_bins <- utla_rate %>% 
   group_by(Rolling_Rate_decile) %>% 
-  summarise(rolling_bins = paste0(Rolling_Rate_decile, ' (', format(round(min(Rolling_7_day_new_cases_per_100000),1), big.mark = ','), '-', format(round(max(Rolling_7_day_new_cases_per_100000)),big.mark = ','), ')')) %>% 
+  summarise(rolling_bins = paste0(Rolling_Rate_decile, ' (', format(round(min(Rolling_7_day_new_cases_per_100000),1), big.mark = ',', trim = TRUE), '-', format(round(max(Rolling_7_day_new_cases_per_100000)),big.mark = ',', trim = TRUE), ')')) %>% 
   unique() %>% 
   ungroup() %>% 
   mutate(rolling_bins = gsub('\n', ' ', rolling_bins)) %>% 
@@ -806,8 +806,8 @@ utla_cumulative_rate_bins <- utla_cumulative_rate_bins %>%
   mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
 
 utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
-  mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
-  mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
+  mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = levels(utla_cumulative_rate_bins$cumulative_bins))) %>% 
@@ -860,14 +860,14 @@ rm(ltla_rate_1, ltla_rate_2)
 
 ltla_cumulative_rate_bins <- ltla_rate %>% 
   group_by(Cumulative_Rate_decile) %>% 
-  summarise(cumulative_bins = paste0(Cumulative_Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ','), '-', format(round(max(Cumulative_per_100000)),big.mark = ','), ')')) %>% 
+  summarise(cumulative_bins = paste0(Cumulative_Rate_decile, ' (', format(round(min(Cumulative_per_100000),1), big.mark = ',', trim = TRUE), '-', format(round(max(Cumulative_per_100000)),big.mark = ',', trim = TRUE), ')')) %>% 
   unique() %>% 
   ungroup() %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
 
 ltla_rolling_rate_bins <- ltla_rate %>% 
   group_by(Rolling_Rate_decile) %>% 
-  summarise(rolling_bins = paste0(Rolling_Rate_decile, ' (', format(round(min(Rolling_7_day_new_cases_per_100000),1), big.mark = ','), '-', format(round(max(Rolling_7_day_new_cases_per_100000)),big.mark = ','), ')')) %>% 
+  summarise(rolling_bins = paste0(Rolling_Rate_decile, ' (', format(round(min(Rolling_7_day_new_cases_per_100000),1), big.mark = ',', trim = TRUE), '-', format(round(max(Rolling_7_day_new_cases_per_100000)),big.mark = ',', trim = TRUE), ')')) %>% 
   unique() %>% 
   ungroup() %>% 
   mutate(rolling_bins = gsub('\n', ' ', rolling_bins)) %>% 
@@ -988,8 +988,8 @@ ltla_boundaries_geo <- ltla_boundaries %>%
 
 ltla_boundaries_geo_df <- as.data.frame(ltla_rate %>% 
     arrange(Code) %>% 
-    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ','), ' (', format(round(Cumulative_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
-    mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ','), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ','), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
+    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
+    mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
     select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
     mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
     mutate(cumulative_bins = factor(cumulative_bins, levels = levels(geo_rate_cumulative_ltla_bins$cumulative_bins))) %>% 
@@ -1324,9 +1324,9 @@ latest_report_date <- Report_df_x %>%
 latest_report_date_minus1 <- Report_df_x %>% 
   filter(Date == max(Date) -1)
 
-nhs_pways_text_1 <- paste0('In the last 24 hours there were ', format(latest_report_date$Triage_count, big.mark = ','), ' triages made. This is an ', ifelse(latest_report_date$Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(latest_report_date$Number_change), big.mark = ','), ' triages compared to the previous day (', format(latest_report_date_minus1$Triage_count, big.mark = ',') ,' triages).') 
+nhs_pways_text_1 <- paste0('In the last 24 hours there were ', format(latest_report_date$Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(latest_report_date$Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(latest_report_date$Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(latest_report_date_minus1$Triage_count, big.mark = ',', trim = TRUE) ,' triages).') 
 
-nhs_pways_text_2 <- paste0('In the seven days leading to ', format(latest_report_date$Date, '%d %B'), ' there were ', format(latest_report_date$seven_day_total_triages, big.mark = ','), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(latest_report_date$seven_day_average_triages, 0), big.mark = ','), ' each day.')
+nhs_pways_text_2 <- paste0('In the seven days leading to ', format(latest_report_date$Date, '%d %B'), ' there were ', format(latest_report_date$seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(latest_report_date$seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')
 
 # Exporting for web
 
@@ -1957,7 +1957,7 @@ growth_rate_england <- growth_rate %>%
 growth_rate_ltla <- growth_rate %>%
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>%
   mutate(Label_1 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>%
-  mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ','), ' cases per 100,000).')) %>%
+  mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' cases per 100,000).')) %>%
   mutate(Label = paste(Label_1, Label_3, sep = '<br><br>')) %>%
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
@@ -1977,8 +1977,8 @@ growth_rate_ltla %>%
 
 growth_rate_utla <- growth_rate %>% 
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
-  mutate(Label_1 = ifelse(Name == 'England', paste0('The 7 day incidence rate (', round(Rolling_7_day_rate, 1), ' per 100,000 population) and there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ','), ' cases per 100,000).'), paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')'))) %>% 
-  mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ','), ' cases (', format(round(Cumulative_per_100000, 1), big.mark = ','), ' cases per 100,000).')) %>% 
+  mutate(Label_1 = ifelse(Name == 'England', paste0('The 7 day incidence rate (', round(Rolling_7_day_rate, 1), ' per 100,000 population) and there have been a total of ', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' cases per 100,000).'), paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')'))) %>% 
+  mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' cases (', format(round(Cumulative_per_100000, 1), big.mark = ',', trim = TRUE), ' cases per 100,000).')) %>% 
   mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>% 
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
@@ -2236,7 +2236,7 @@ msoa_cases_raw <- as.data.frame(read_csv('https://coronavirus.data.gov.uk/downlo
   mutate(Case_key = ifelse(is.na(This_week), '0-2 cases', ifelse(This_week <= 5, '3-5 cases', ifelse(This_week <= 10, '6-10 cases', ifelse(This_week <= 15, '11-15 cases', 'More than 15 cases'))))) %>% 
   left_join(msoa_cases_1, by = 'areaCode') %>% 
   left_join(msoa_lookup, by = c('areaCode' = 'MSOA11CD')) %>% 
-  mutate(Label = paste0('<b>', MSOA11NM,' (', msoa11hclnm,')</b><br><br>In the seven days to ', format(date, '%A %d %B'), ' there were ', ifelse(is.na(This_week), ' less than three new cases.', paste0(format(This_week, big.mark = ','), ' new cases, this is a rate of ', round(Latest_rate, 1), ' cases per 100,000 population.')), '<br><br>', ifelse(is.na(Last_week) & is.na(This_week), 'Cases have been below 3 in the last two 7 day periods.', ifelse(is.na(Last_week), paste0('Cases were below 3 in the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,') but have risen this week.'), ifelse(is.na(This_week), paste0('Cases are now below 3 in the latest 7 days but have fallen since the previous 7 day period (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual == 0, 'There is no change in case numbers over the last two weeks', ifelse(Change_actual < 0, paste0('Cases have fallen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual >0, paste0('Cases have risen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), NA)))))))) %>%
+  mutate(Label = paste0('<b>', MSOA11NM,' (', msoa11hclnm,')</b><br><br>In the seven days to ', format(date, '%A %d %B'), ' there were ', ifelse(is.na(This_week), ' less than three new cases.', paste0(format(This_week, big.mark = ',', trim = TRUE), ' new cases, this is a rate of ', round(Latest_rate, 1), ' cases per 100,000 population.')), '<br><br>', ifelse(is.na(Last_week) & is.na(This_week), 'Cases have been below 3 in the last two 7 day periods.', ifelse(is.na(Last_week), paste0('Cases were below 3 in the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,') but have risen this week.'), ifelse(is.na(This_week), paste0('Cases are now below 3 in the latest 7 days but have fallen since the previous 7 day period (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual == 0, 'There is no change in case numbers over the last two weeks', ifelse(Change_actual < 0, paste0('Cases have fallen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual >0, paste0('Cases have risen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), NA)))))))) %>%
   ungroup()) 
   
 msoa_cases <- msoa_cases_raw %>% 
