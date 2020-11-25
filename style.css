@@ -3,13 +3,24 @@
   display: none;
 }
 
-@media screen and (max-width: 64px) {
+@media screen and (max-width: 740px) {
   .small_screen_adapt {
     display: none !important;
   }
 
   .small_screen_show {
     display: block !important;
+    font-size: 1rem;
+    text-align: justify;
+    margin: 25px;
+  }
+
+  .small_screen_show_title {
+    display: block !important;
+    font-size: 1.6rem;
+    color: #003366;
+    font-weight: bold;
+    margin: 25px;
   }
 }
 

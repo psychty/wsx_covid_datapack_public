@@ -16,7 +16,7 @@
 
 <body>
 <!-- <div class="wrapper"> -->
-  <header>
+  <header class = 'small_screen_adapt'>
     <nav>
       <h2 class = 'top-nav-title'>West Sussex Coronavirus (COVID-19) local summary</h2>
       <ul class="nav-links" id="nav-links">
@@ -30,11 +30,6 @@
             >Latest cases</a
           >
         </li>
-        <!-- <li>
-          <a data-page="latest_case_section" href="#latest_case_section"
-            >Daily cases</a
-          >
-        </li> -->
         <li>
           <a data-page="asr_section" href="#asr_section"
             >Age-specific rates</a
@@ -80,9 +75,13 @@
     </nav>
   </header>
 
-<!-- <div class= "main" id = 'data_pack_intro'> -->
-<h4 class = 'small_screen_show'>The size of this browser window or screen is too small to read the data visualisation without some of it overlapping. This will be fixed at some point in the future, but for now please use a larger screen to view.</h4>
+<h4 class = 'small_screen_show_title'>West Sussex COVID-19 data summary</h4>
+<p class = 'small_screen_show'>This version of the COVID-19 analyses has been built for desktop and large screens. The size of your browser window or screen may be too small to read the data visualisation without some of it overlapping.</p>
+<p class = 'small_screen_show'>We recommend that you go to the <a href = 'https://wsx-c19-mobile.netlify.app/'>mobile friendly</a> version of this site (https://wsx-c19-mobile.netlify.app/).</p>
+<p class = 'small_screen_show'>Alternatively, please increase the window size until you can no longer see this message for the best view of the data.</p>
+<p class = 'small_screen_show'>If you have any comments or questions, please email us at <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
 
+<div class = 'small_screen_adapt'>
 <section class = 'home' id = 'home'>
   <div class = 'content'>
     <h4 class = 'content_top'>West Sussex COVID-19 data summary</h4>
@@ -90,7 +89,6 @@
     <div class = "content" id = 'content_size'>
 <p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published as a powerpoint slide deck which can be found on the top right of this webpage. Links are provided to public data sources available.</p>
 <p class = 'warn'>Although this webpage has been made by a member of staff in the Public Health and Social Research Unit to support their work, it is not a West Sussex County Council website.</p>
-<!-- <p>In order to show the very latest data available, this website is updated more frequently than the powerpoint file on the West Sussex County Council website. As such, figures may be different to those published elsewhere.</p> -->
 <p class ='highlight_dl' id = 'update_date'></p>
 <p id = 'data_recency'></p>
 <p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
@@ -353,8 +351,8 @@
   </div>
 
   <div class="right-sidebar">
-    <p class = 'side'>MSOAs may vary in physical area size, but are design to cover generally similar population sizes (which is why there are many more MSOAs in towns and cities than there are in rural areas). Note that because this geographical area is quite small, case data is supressed where an area has had fewer than 3 cases in the last seven days to prevent disclosure of any individuals identities.</p>
-    <p class = 'side'>As some data are suppressed, it is difficult to calculate a rolling cumulative sum of the number of cases in a local area. When there have been at least three cases in both weeks, we can say if cases are rising or falling. See <a href = 'https://www.gov.uk/government/publications/office-for-national-statistics-recommendation-for-publishing-data-at-small-geographies-for-nhs-test-and-trace/disclosure-risk-assessment-for-nhs-test-and-trace-counts-at-small-geographies'>guidance</a> from the Department of Health & Social care on supressing small counts.</p>
+    <p class = 'side'>MSOAs may vary in physical area size, but are design to cover roughly the same number of people (which is why there are many more MSOAs in towns and cities than there are in rural areas). Case data is supressed where an area has had fewer than 3 cases in the last seven days to prevent disclosure of any individuals identities.</p>
+    <p class = 'side'>As some data are suppressed, it is difficult to calculate the sum of all cases in a local area. See <a href = 'https://www.gov.uk/government/publications/office-for-national-statistics-recommendation-for-publishing-data-at-small-geographies-for-nhs-test-and-trace/disclosure-risk-assessment-for-nhs-test-and-trace-counts-at-small-geographies'>Department of Health & Social care guidance</a> on supressing small counts.</p>
   </div>
 
    <div class="content">
@@ -453,7 +451,7 @@
 </div>
 </section>
 
-<!-- </div> -->
+</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
