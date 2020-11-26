@@ -3,6 +3,10 @@
   display: none;
 }
 
+.small_screen_adapt {
+  display: contents;
+}
+
 @media screen and (max-width: 740px) {
   .small_screen_adapt {
     display: none !important;
