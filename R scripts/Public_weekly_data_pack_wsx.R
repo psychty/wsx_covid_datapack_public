@@ -2181,7 +2181,7 @@ case_age_df_daily %>%
 # MSOA map ####
 oa_region <- read_csv('https://opendata.arcgis.com/datasets/180c271e84fc400d92ca6dcc7f6ff780_0.csv')[c('OA11CD', 'RGN11MM')]
 
-msoa_names <- read_csv('https://visual.parliament.uk/msoanames/static/MSOA-Names-1.7.csv') %>% 
+msoa_names <- read_csv('https://visual.parliament.uk/msoanames/static/MSOA-Names-1.8.csv') %>% 
   select(msoa11cd, msoa11hclnm) %>% 
   rename(MSOA11CD = msoa11cd)
 
