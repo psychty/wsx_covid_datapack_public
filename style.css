@@ -3,6 +3,10 @@
   display: none;
 }
 
+.small_screen_show_title {
+  display: none;
+}
+
 .small_screen_adapt {
   display: contents;
 }
