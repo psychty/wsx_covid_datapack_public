@@ -512,7 +512,7 @@ png(paste0(output_directory_x, '/Figure_2_confirmed_heatmap_rate.png'),
 print(new_case_rate_plot)
 dev.off()
 
-# Cumulative rate map utla ####
+# UTLA Cumulative rate map ####
 utla_rate_1 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>%
