@@ -19,7 +19,8 @@
 <div class="small_screen_adapt">
   <header>
     <nav>
-      <h2 class = 'top-nav-title'>West Sussex Coronavirus (COVID-19) local summary</h2>
+      <div class="top_nav_title">
+      <p class = 'head_title'>COVID-19 desktop data summary</p>
       <ul class="nav-links" id="nav-links">
         <li>
           <a data-page="home" href="#home"
@@ -31,11 +32,11 @@
             >Latest cases</a
           >
         </li>
-        <li>
+        <!-- <li>
           <a data-page="asr_section" href="#asr_section"
             >Age-specific rates</a
           >
-        </li>
+        </li> -->
         <li>
           <a data-page="growth_section" href="#growth_section"
             >How cases are changing</a
@@ -61,11 +62,11 @@
             >Deaths</a
           >
         </li>
-        <li>
+        <!-- <li>
           <a data-page="attribution_section" href="#attribution_section"
             >Data sources</a
           >
-        </li>
+        </li> -->
         <div class="bubble"></div>
       </ul>
       <div class="menu_line" onclick="navSlide()">
@@ -84,8 +85,8 @@
 
 <div class = 'small_screen_adapt'>
 <section class = 'home' id = 'home'>
+  <h4 class = 'content_top'>West Sussex COVID-19 data summary</h4>
   <div class = 'content'>
-    <h4 class = 'content_top'>West Sussex COVID-19 data summary</h4>
   </div>
     <div class = "content" id = 'content_size'>
 <p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published as a powerpoint slide deck which can be found on the top right of this webpage. Links are provided to public data sources available.</p>
@@ -102,8 +103,8 @@
   </section>
 
 <section class="heatmap_section" id = 'heatmap_section'>
+  <h4 class = 'content_top' id = 'summary_cases_title'></h4>
   <div class = 'content'>
-    <h4 class = 'content_top' id = 'summary_cases_title'></h4>
   </div>
   
   <div class = 'right-sidebar'>
@@ -136,8 +137,8 @@
 </section>
 
 <section class="latest_case_section" id = 'latest_case_section'>
+  <h4 class = 'content_top'>Daily case changes</h4>
   <div class = 'content'>
-    <h4 class = 'content_top'>Daily case changes and initial peaks</h4>
   </div>
 
   <div class="content">
@@ -194,8 +195,8 @@
 </section>
 
 <section class="asr_section"  id = 'asr_section'>
+  <h4 class = 'content_top'>Age-specific rates of COVID-19 cases</h4>
   <div class = 'content'>
-    <h4 class = 'content_top'>Age-specific rates of COVID-19 cases</h4>
   </div>
 
   <div class="content">
@@ -250,8 +251,8 @@
 </section>
 
 <section class="growth_section" id = 'growth_section'>
+  <h4 class = 'content_top'>Rates across lower tier authority areas in England</h4>
   <div class = 'content'>
-    <h4 class = 'content_top'>Rates across lower tier authority areas in England</h4>
   </div>
 
   <div class="content">
@@ -331,13 +332,13 @@
 </section>
 
 <section class="local_section" id = 'local_section'>
+  <h4 class = 'content_top'>Cases in your local area</h4>
   <div class = 'content'>
-    <h4 class = 'content_top'>Cases in your local area</h4>
   </div>
 
   <div class="content">
     <p>Data on the number of new confirmed cases at a very localised area called an output area (Middle Layer Super Output Area, or MSOAs for short) is now available. This is useful as it means you can see what cases are like where you live or where your friends and family live. We do not get the same detail from the data published at this level compared to wider areas and when there are fewer than three cases in a seven day period in the MSOA, these are supressed.</p>
-    <p>However, you can search for a postcode in the box below and a marker will appear on the map with more detail about cases in that local area. <b>Note, the map currently only shows MSOAs in the South East region of England. However, you can use the postcode search to look up any postcode in England.</b></p>
+    <p>However, you can search for a postcode in the box below for any postcode in England and a marker will appear on the map with more detail about cases in that local area.</p>
     
     <div class='inputHolder'>
       <input placeholder='Postcode' type='text' id='txtPostcode'/>
@@ -369,8 +370,8 @@
 </section>
 
 <section class = 'pathway_section' id = 'pathway_section'>
+  <h4 class = 'content_top'>NHS Pathways</h4>
   <div class = 'content'>
-    <h4 class = 'content_top'>NHS Pathways</h4>
   </div>
   <div class="content">
     <p>The NHS Pathways dataset outlining the number of triages made to NHS 111 or 999 for COVID-19 symptoms has been suggested as a potential early warning indicator of an increase in potential cases, although it is not based on any outcomes of tests for COVID-19.</p>
@@ -390,32 +391,20 @@
 
 </section>
 
-<section class = 'restriction_section' id = 'restriction_section'>
-  <div class = 'content'>
-    <h4 class = 'content_top'>Mapping restrictions across England</h4>
-  </div>
-
+<section class="restriction_section" id = 'restriction_section'>
+   <h4 class = 'content_top'>COVID-19 restrictions</h4>
   <div class="content">
-    <p>This section shows maps of lower tier local authority areas in England to show differences in "lockdown laws" across the country. Changes in restrictions are likely to be at the lower tier local authority level although some wider areas may be covered.</p>
-    <p><font color = 'red'>On Saturday 31st October, the Prime Minister announced a second national lock down in England inititally lasting from Thursday 5th November through to Wednesday 2nd December 2020. This will bring all local areas into the same type of restrictions.</font></p>
-    
-    <!-- <p>The information contained here has been compiled by the House of Commons Library, and a briefing is available <a href = 'https://commonslibrary.parliament.uk/research-briefings/cbp-8875/'>here</a>. The map is a simplification of finer detail of rules in local areas and a link to the UK government web pages for each area (if local rules apply) can be found by clicking on an area of the map.</p> -->
-    <!-- <p>The map covers restrictions outlined by the UK government for England. Local authorities also have statutory powers to issue "directions" which impose prohibitions or restrictions on premises, events and public spaces.</p> -->
-    <!-- <div id = 'ltla_restrictions_map'></div> -->
-    <!-- <p>Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: <a href = 'https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/'>https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/</a>'). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.</p> -->
-  </div>
-    
-  <div class = 'right-sidebar'>
-    <h4>Restrictions currently applied</h4>
-    <div id = 'ltla_restrictions_key'></div>
-    <p class = 'side'>For further information on national restrictions please see: <a href = 'https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do'>https://www.gov.uk/government/publications/coronavirus-outbreak-faqs-what-you-can-and-cant-do/coronavirus-outbreak-faqs-what-you-can-and-cant-do</a></p>
-    <p>Note, this may change frequently.</p>
+    <p>The UK Government announced a national lockdown for the whole of England between 5th November 2020 to 2nd December 2020 followed by a return to a tiered system allocating each upper tier local authority across the country to one of three tiers with a review of each areas placement every 14 days.</p>
+    <p>West Sussex has been placed in the <b>High Alert tier</b> (Tier 2). A full breakdown of the Tier 2 restrictions can be found on the <a href = 'https://www.gov.uk/guidance/local-restriction-tiers-what-you-need-to-know#high-alert'>GOV.UK website</a>.</p>
+    <p>The map below shows how restrictions vary across England. Tier 1 areas are shaded yellow, whilst Tier 2 areas are purple and the highest tier (Tier 3) is dark blue.</p>
+    <div id = 'utla_restrictions_map'></div>
+    <p>The map covers restrictions outlined by the UK government for England. Local authorities also have statutory powers to issue "directions" which impose prohibitions or restrictions on premises, events and public spaces.</p> 
   </div>
 </section>
 
 <section class = 'mortality_section' id = 'mortality_section'>
-    <div class = 'content'>
-      <h4 class = 'content_top'>Deaths</h4>
+  <h4 class = 'content_top'>Deaths</h4>
+  <div class = 'content'>
       <p>The Office for National Statistics publishes weekly data at lower tier local authority for the number of deaths occurring in each week in the 2020 calendar year. From 31 March 2020 these figures also show the number of deaths involving coronavirus (COVID-19), based on any mention of COVID-19 on the death certificate. These are aggregated to upper tier local authority for this analysis.</p>
       <p id = 'ons_dates_mortality'></p>
       <h4 id = 'selected_m1_title'></h4>
@@ -436,8 +425,9 @@
 </section>
 
 <section id = 'attribution_section'>
+  <h4 class = 'content_top'>Attributions</h4>
   <div class = 'content'>
-    <h4 class = 'content_top'>Attributions</h4>
+    
     <p>The data sources are given under each figure on this webpage but primarily come from <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >UK Government</a> for new case data, <a class = 'highlight_dl_link' href = 'https://digital.nhs.uk/dashboards/nhs-pathways#dashboard' >NHS Digital</a> for NHS pathway contacts, and <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard'>Office for National Statistics</a> for data on mortality.</p>
     <p>Data used in this analyses are primarily supplied under Open Government Licence and a number of supporting products such as geographical boundaries and postcode lookups have also been used.</p>
     <p>The following copyright notices are applicable:</p>
@@ -475,7 +465,7 @@
 <script src = "Javascripts/figure_3b_ltla_rates_scatter.js"></script>
 <script src = "Javascripts/figure_3_4_rate_maps.js"></script>
 <script src = "Javascripts/local_cases.js"></script>
-<!-- <script src = "Javascripts/figure_4b_restriction_map.js"></script> -->
+<script src = "Javascripts/figure_4b_restriction_map.js"></script>
 <script src = "Javascripts/figure_5_pathways.js"></script>
 <script src = "Javascripts/figure_6_mortality.js"></script>
 

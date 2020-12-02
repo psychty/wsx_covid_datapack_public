@@ -67,7 +67,7 @@ $.when(msoa_map_data).done(function () {
 
   var msoa_basemap = L.tileLayer(tileUrl, {
     attribution,
-    minZoom: 8,
+    minZoom: 6,
   }).addTo(msoa_map);
 
   var msoa_map_hcl = L.geoJSON(msoa_map_data.responseJSON, {
@@ -203,6 +203,6 @@ d3.select("#local_case_map_title").html(function (d) {
   return (
     "Number of confirmed COVID-19 cases in the seven days to " +
     complete_date +
-    "; South East England MSOAs"
+    "; MSOAs in England"
   );
 });
