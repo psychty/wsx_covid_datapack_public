@@ -1887,44 +1887,44 @@ wkly_template %>%
 # download.file('https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/919133/Contain_framework_lower_tier_local_authority_watchlist_-_maps_by_Lower_Super_Output_Area_data_-_18_September_2020.xlsx', paste0(github_repo_dir, '/ltla_watchlist.xlsx'), mode = 'wb')
 # 
 # 
-#               
-
-lookup <- read_csv('https://opendata.arcgis.com/datasets/3e4f4af826d343349c13fb7f0aa2a307_0.csv')
-
-# read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
-  # View()
-
-rest_of_england_restrictions <- read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
-  filter(Category == 'Rest of England') %>% 
-  mutate(l_national_ruleofsix = 1,
-         l_national_raves = 1,
-         l_national_openinghours = 1)
-
-ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
-
-if(exists('ltla_restrictions') == FALSE) {
-  ltla_restrictions <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
-}
-
-ltla_restrictions <- ltla_restrictions  %>% 
-  left_join(lookup, by = c('lad19nm' = 'LTLA19NM')) %>% 
-  filter(substr(lad19cd, 1, 1) == 'E') %>% 
-  left_join(read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv'), by = c('lad19cd' = 'lacode')) %>% 
-  select(!c(Country, lad19nmw)) %>% 
-  rename(Restriction_type = restrictions) %>% 
-  rename(l_tier = tier) %>% 
-  mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>This area is currently in the <Strong>', l_tier, ' </Strong>level of restrictions.<br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. ', ifelse(Restriction_type == 'Local', 'This area is currently subject to <b>local</b> restrictions in addition to the national legislation.', NA)), ' Restrictions for this area include:', '<ul>', ifelse(local_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(local_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(local_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(local_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(local_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(local_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(local_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), '<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>For further information see: ', url_local)) %>%
-  select(objectid, lad19nm, l_tier, label)
-
-# leaflet(ltla_restrictions) %>% 
-#   addTiles() %>%
-#   addPolygons(stroke = FALSE, 
-#               smoothFactor = 0.3, 
-#               fillOpacity = .6,
-#               fillColor = ~ifelse(Restriction_type == 'National', '#ffb400', '#9762a2'),
-#               label = ~label)
-
-geojson_write(geojson_json(ltla_restrictions), file = paste0(output_directory_x, '/ltla_covid_restrictions_hcl_latest.geojson'))
+# #               
+# 
+# lookup <- read_csv('https://opendata.arcgis.com/datasets/3e4f4af826d343349c13fb7f0aa2a307_0.csv')
+# 
+# # read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
+#   # View()
+# 
+# rest_of_england_restrictions <- read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
+#   filter(Category == 'Rest of England') %>% 
+#   mutate(l_national_ruleofsix = 1,
+#          l_national_raves = 1,
+#          l_national_openinghours = 1)
+# 
+# ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
+# 
+# if(exists('ltla_restrictions') == FALSE) {
+#   ltla_restrictions <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
+# }
+# 
+# ltla_restrictions <- ltla_restrictions  %>% 
+#   left_join(lookup, by = c('lad19nm' = 'LTLA19NM')) %>% 
+#   filter(substr(lad19cd, 1, 1) == 'E') %>% 
+#   left_join(read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv'), by = c('lad19cd' = 'lacode')) %>% 
+#   select(!c(Country, lad19nmw)) %>% 
+#   rename(Restriction_type = restrictions) %>% 
+#   rename(l_tier = tier) %>% 
+#   mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>This area is currently in the <Strong>', l_tier, ' </Strong>level of restrictions.<br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. ', ifelse(Restriction_type == 'Local', 'This area is currently subject to <b>local</b> restrictions in addition to the national legislation.', NA)), ' Restrictions for this area include:', '<ul>', ifelse(local_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(local_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(local_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(local_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(local_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(local_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(local_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), '<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>For further information see: ', url_local)) %>%
+#   select(objectid, lad19nm, l_tier, label)
+# 
+# # leaflet(ltla_restrictions) %>% 
+# #   addTiles() %>%
+# #   addPolygons(stroke = FALSE, 
+# #               smoothFactor = 0.3, 
+# #               fillOpacity = .6,
+# #               fillColor = ~ifelse(Restriction_type == 'National', '#ffb400', '#9762a2'),
+# #               label = ~label)
+# 
+# geojson_write(geojson_json(ltla_restrictions), file = paste0(output_directory_x, '/ltla_covid_restrictions_hcl_latest.geojson'))
 
 #paste0('Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.')
 
