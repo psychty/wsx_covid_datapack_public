@@ -24,7 +24,7 @@ var growth_svg_2 = d3
 function new_date_growth_utla() {
   d3.select("#utla_growth_ts_rate_title").html(function (d) {
     return (
-      "New confirmed COVID-19 case rate cases per 100,000 population (all ages) in the seven days to " +
+      "New confirmed COVID-19 cases per 100,000 population (all ages) in the seven days to " +
       d3.timeFormat("%A %d %B")(sliderTime.value()) +
       " by week on week change in number of cases; Upper Tier Local Authorities;"
     );
