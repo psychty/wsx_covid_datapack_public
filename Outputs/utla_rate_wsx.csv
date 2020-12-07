@@ -1,14 +1,6 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-<<<<<<< HEAD
 "West Sussex","9,583","1,109.2","140th","10% of authorities
 with lowest rate","484","56.0","144th","10% of authorities
 with lowest rate","seven days to 01 December"
 "England","1,479,097","2,627.8","-","-","84,152","149.5","-","-","seven days to 01 December"
 "South East region","147,747","1,609.4","-","-","13,330","145.2","-","-","seven days to 01 December"
-=======
-"West Sussex","9,491","1,098.5","140th","10% of authorities
-with lowest rate","487","56.4","144th","10% of authorities
-with lowest rate","seven days to 30 November"
-"England","1,464,803","2,602.4","-","-","85,022","151.1","-","-","seven days to 30 November"
-"South East region","145,150","1,581.1","-","-","13,044","142.1","-","-","seven days to 30 November"
->>>>>>> ee0587701acffbd87bb2f9300c31ee2601d9a693
