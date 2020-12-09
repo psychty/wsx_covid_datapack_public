@@ -1,19 +1,19 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","592","920.7","300th","10% of authorities
-with lowest rate","23","35.8","312th","10% of authorities
-with lowest rate","seven days to 02 December"
-"Arun","1,459","907.6","302nd","10% of authorities
-with lowest rate","103","64.1","277th","Decile 9","seven days to 02 December"
-"Chichester","1,305","1,077.4","288th","10% of authorities
-with lowest rate","55","45.4","301st","10% of authorities
-with lowest rate","seven days to 02 December"
-"Crawley","1,542","1,371.8","248th","Decile 8","47","41.8","305th","10% of authorities
-with lowest rate","seven days to 02 December"
-"Horsham","1,668","1,160.0","279th","Decile 9","88","61.2","281st","Decile 9","seven days to 02 December"
-"Mid Sussex","1,987","1,315.7","257th","Decile 9","151","100.0","217th","Decile 7","seven days to 02 December"
-"Worthing","1,107","1,001.2","293rd","10% of authorities
-with lowest rate","28","25.3","314th","10% of authorities
-with lowest rate","seven days to 02 December"
-"West Sussex","9,660","1,118.1","-","-",NA,NA,NA,NA,NA
-"South East region","149,916","1,633.0","-","-",NA,NA,NA,NA,NA
-"England","1,490,720","2,648.4","-","-",NA,NA,NA,NA,NA
+"Adur","598","930.0","300th","10% of authorities
+with lowest rate","22","34.2","312th","10% of authorities
+with lowest rate","seven days to 03 December"
+"Arun","1,475","917.5","302nd","10% of authorities
+with lowest rate","104","64.7","278th","Decile 9","seven days to 03 December"
+"Chichester","1,316","1,086.4","288th","10% of authorities
+with lowest rate","54","44.6","304th","10% of authorities
+with lowest rate","seven days to 03 December"
+"Crawley","1,547","1,376.2","249th","Decile 8","60","53.4","292nd","10% of authorities
+with lowest rate","seven days to 03 December"
+"Horsham","1,687","1,173.2","280th","Decile 9","102","70.9","264th","Decile 9","seven days to 03 December"
+"Mid Sussex","2,002","1,325.6","258th","Decile 9","141","93.4","229th","Decile 8","seven days to 03 December"
+"Worthing","1,118","1,011.1","293rd","10% of authorities
+with lowest rate","30","27.1","313th","10% of authorities
+with lowest rate","seven days to 03 December"
+"West Sussex","9,743","1,127.7","-","-",NA,NA,NA,NA,NA
+"South East region","151,860","1,654.2","-","-",NA,NA,NA,NA,NA
+"England","1,501,179","2,667.0","-","-",NA,NA,NA,NA,NA
