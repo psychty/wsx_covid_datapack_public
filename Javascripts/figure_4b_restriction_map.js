@@ -86,9 +86,10 @@ var restriction_type = [
   "Tier 1 (medium)",
   "Tier 2 (high)",
   "Tier 3 (very high)",
+  "Tier 4 (stay at home)",
 ];
 // var restriction_colours = ["#ffb400", "#9762a2", "#374776"];
-var restriction_colours = ["#ffb400", "#6A9BC3", "#2A5783"];
+var restriction_colours = ["#ffb400", "#6A9BC3", "#2A5783", "#5c3776"];
 
 var restriction_colour_func = d3
   .scaleOrdinal()
@@ -116,6 +117,8 @@ function restriction_ltla_colour(d) {
     ? restriction_colours[1]
     : d === restriction_type[2]
     ? restriction_colours[2]
+    : d === restriction_type[3]
+    ? restriction_colours[3]
     : "#feebe2";
 }
 
