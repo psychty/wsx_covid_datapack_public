@@ -3,14 +3,18 @@ var case_key_msoa = [
   "3-5 cases",
   "6-10 cases",
   "11-15 cases",
-  "More than 15 cases",
+  "16-20 cases",
+  "21-25 cases",
+  "More than 25 cases",
 ];
 var case_key_msoa_colours = [
-  "#f1eef6",
-  "#d7b5d8",
-  "#df65b0",
-  "#dd1c77",
-  "#980043",
+  "#feebe2",
+  "#fcc5c0",
+  "#fa9fb5",
+  "#f768a1",
+  "#dd3497",
+  "#ae017e",
+  "#7a0177",
 ];
 
 var msoa_case_colour_func = d3
@@ -48,6 +52,10 @@ function msoa_case_colour(d) {
     ? case_key_msoa_colours[3]
     : d === case_key_msoa[4]
     ? case_key_msoa_colours[4]
+    : d === case_key_msoa[5]
+    ? case_key_msoa_colours[5]
+    : d === case_key_msoa[6]
+    ? case_key_msoa_colours[6]
     : "#feebe2";
 }
 
