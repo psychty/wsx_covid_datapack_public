@@ -123,6 +123,13 @@ nav {
   /* background: red; */
 }
 
+#ltla_primary_schools_map {
+  height: 50vh;
+  width: 600px;
+  margin: auto;
+  z-index: 1;
+}
+
 #msoa_map_place {
   height: 600px;
   width: 900px;
@@ -146,6 +153,13 @@ nav {
 
 @media screen and (max-width: 1400px) {
   #ltla_restrictions_map {
+    height: 550px;
+    width: 550px;
+  }
+}
+
+@media screen and (max-width: 1400px) {
+  #ltla_primary_schools_map {
     height: 550px;
     width: 550px;
   }
