@@ -122,9 +122,9 @@ var sm_svg_1 = d3
   .enter()
   .append("svg")
   .attr("width", width_sm)
-  .attr("height", height_sm + 70)
+  .attr("height", height_sm + 100)
   .append("g")
-  .attr("transform", "translate(" + 50 + "," + 20 + ")");
+  .attr("transform", "translate(" + 50 + "," + 10 + ")");
 
 // Add axes
 sm_svg_1_y_axis = sm_svg_1.append("g").call(d3.axisLeft(y_sm_1).ticks(6));
@@ -296,9 +296,9 @@ function update_ltla_sm(chosen_utla_area) {
     .enter()
     .append("svg")
     .attr("width", width_sm)
-    .attr("height", height_sm + 70)
+    .attr("height", height_sm + 100)
     .append("g")
-    .attr("transform", "translate(" + 50 + "," + 20 + ")");
+    .attr("transform", "translate(" + 50 + "," + 10 + ")");
 
   var type_sm_scale = document.getElementsByName("toggle_sm_rate");
 

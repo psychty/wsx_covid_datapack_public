@@ -2,9 +2,9 @@ var width_hm = document.getElementById("content_size").offsetWidth,
   height_hm = 25,
   height_hm_title = 45,
   height_hm_explainer = 15,
-  height_sm = 210,
+  height_sm = 220,
   incomplete_colour = "#999999",
-  height_line = 400;
+  height_line = 410;
 
 var width_sm = width_hm / 2 - 10;
 
@@ -166,7 +166,7 @@ var svg_daily_new_case_bars = d3
   .attr("width", width_hm)
   .attr("height", height_line)
   .append("g")
-  .attr("transform", "translate(" + 60 + "," + 20 + ")");
+  .attr("transform", "translate(" + 60 + "," + 10 + ")");
 
 // We need to create a dropdown button for the user to choose which area to be displayed on the figure.
 d3.select("#select_bars_daily_cases_1_area_button")
@@ -345,7 +345,7 @@ svg_daily_new_case_bars
   .attr("id", "test_milestones")
   .attr("class", "test_notes")
   .attr("x", function (d) {
-    return x_daily_cases("26 Mar") + x_daily_cases.bandwidth() / 2;
+    return x_daily_cases("26 Mar 20") + x_daily_cases.bandwidth() / 2;
   })
   .attr("y", 2)
   .style("font-size", ".8rem")
@@ -428,7 +428,7 @@ svg_daily_new_case_bars
   .attr("id", "test_milestones")
   .attr("class", "restriction_notes")
   .attr("x", function (d) {
-    return x_daily_cases("22 Mar") + x_daily_cases.bandwidth() / 2;
+    return x_daily_cases("22 Mar 20") + x_daily_cases.bandwidth() / 2;
   })
   .attr("y", 42)
   .text("Lockdown begins -")
@@ -549,7 +549,7 @@ svg_daily_new_case_bars
   .append("text")
   .attr("id", "test_milestones")
   .attr("x", function (d) {
-    return x_daily_cases("31 Jan") + x_daily_cases.bandwidth() / 2;
+    return x_daily_cases("31 Jan 20") + x_daily_cases.bandwidth() / 2;
   })
   .attr("y", function (d) {
     return height_line - 165;
@@ -562,7 +562,7 @@ svg_daily_new_case_bars
   .append("text")
   .attr("id", "test_milestones")
   .attr("x", function (d) {
-    return x_daily_cases("31 Jan") + x_daily_cases.bandwidth() / 2;
+    return x_daily_cases("31 Jan 20") + x_daily_cases.bandwidth() / 2;
   })
   .attr("y", function (d) {
     return height_line - 150;

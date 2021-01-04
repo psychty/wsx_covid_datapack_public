@@ -251,7 +251,7 @@ total_cases_reported_plot <- ggplot(area_x_df_1,
        y = 'Number of daily confirmed cases',
        title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; ', area_x),
        subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')),
-       caption = 'The black line represents the average number of new cases confirmed in the previous seven days.') +
+       caption = 'The black line represents the average number of new cases confirmed in the previous seven days.\nCases after the red dashed line are for days in which we do not believe we have all the results in yet.') +
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
   theme(legend.position = 'none')
@@ -334,11 +334,12 @@ dev.off()
 
 # exporting for web ####
 
-test_timeline <- data.frame(Date_label_2 = c('27 Mar', '15 Apr','17 Apr','23 Apr','28 Apr', '18 May', '27 May', '06 Jul'), Change = c('front-line NHS Staff', 'those in social care settings','additional front-line workers', 'all symptomatic essential worker and members of their households','anyone aged 65+ who must leave their home for work plus asymptomatic NHS and Social Care staff and care home residents', 'anyone aged 5+ who is showing signs of Covid-19', 'anyone with Covid-19 symptoms regardless of age', 'care homes receive more frequent routine testing and even without symptoms')) %>% 
+test_timeline <- data.frame(Date_label_2 = c('27 Mar 20', '15 Apr 20','17 Apr 20','23 Apr 20','28 Apr 20', '18 May 20', '27 May 20', '06 Jul 20'), Change = c('front-line NHS Staff', 'those in social care settings','additional front-line workers', 'all symptomatic essential worker and members of their households','anyone aged 65+ who must leave their home for work plus asymptomatic NHS and Social Care staff and care home residents', 'anyone aged 5+ who is showing signs of Covid-19', 'anyone with Covid-19 symptoms regardless of age', 'care homes receive more frequent routine testing and even without symptoms')) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/uk_testing_key_dates.json'))
 
-easing_timeline <- data.frame(Date_label_2 = c('23 Mar', '13 May', '01 Jun', '15 Jun', '04 Jul', '13 Jul', '24 Jul', '25 Jul', '30 Jul', '01 Aug', '03 Aug', '15 Aug', '26 Aug', '14 Sep', '21 Sep', '24 Sep', '14 Oct', '05 Nov'), Change = c('Lockdown starts, schools were closed to all but a few children and people are asked to stay at home.', 'Some people began returning to work if they were unable to work from home.', 'Schools reopened for more pupils in early years, reception, and years 1 and 6.<br>People were allowed to meet outdoors and those who were shielding advised that they could now go outdoors with people in their household.', 'Non-essential shops were allowed to reopen if safe, more year groups back to school, and face coverings became mandatory on public transport.', 'Change to social distancing advice from 2m to 1m+, some hospitality and leisure businesses allow to reopen, and two households allowed to meet inside whilst up to six people from different households allowed to meet outside.', 'Beauty salons, nail bars, tattoo studios allowed to reopen but cannot offer treatments or services which involve work directly in front of the face.', 'Face coverings became mandatory in many enclosed public spaces such as shops and banks.', 'Indoor gyms, swimming pools, and leisure centres reopen.', 'Self-isolation period for those with COVID-19 symptoms or a positive test increases from 7 to 10 days.', 'Shielding for clinically extremely vulnerable paused.<br>The government no longer recommends working from home if it is safe to go to work.', 'People encouraged to go to restaurants through the Eat Out to Help Out scheme offering discounted food from Monday-Wednesdays in August.', 'Casinos, indoor play and soft play centres, skating rinks, and bowling alleys reopen.<br>Beauty salons, spas, tattoo studios, and barbers now able to offer close contact services.', 'Schools and colleges have discretion to require face coverings in indoor communal areas where social distancing cannot be safely managed.', 'People can no longer meet with other households socially in groups of more than six people (including children). This includes private homes and gardens.', 'Childcare and unpaid care exempted from any interhousehold mixing restrictions in local areas.', 'Restaurants and bars must close at 10pm.<br>Those who can work from home now encouraged to do so by the government.', 'A three tiered set of restrictions for local areas in England began, mostly in northern England','A new national lockdown was announced, with education remaining open and no official shielding return')) %>% 
+easing_timeline <- data.frame(Date_label_2 = c('23 Mar 20', '13 May 20', '01 Jun 20', '15 Jun 20', '04 Jul 20', '13 Jul 20', '24 Jul 20', '25 Jul 20', '30 Jul 20', '01 Aug 20', '03 Aug 20', '15 Aug 20', '26 Aug 20', '14 Sep 20', '21 Sep 20', '24 Sep 20', '14 Oct 20', '05 Nov 20', '02 Dec 20', '04 Jan 21'), Change = c('Lockdown starts, schools were closed to all but a few children and people are asked to stay at home.', 'Some people began returning to work if they were unable to work from home.', 'Schools reopened for more pupils in early years, reception, and years 1 and 6.<br>People were allowed to meet outdoors and those who were shielding advised that they could now go outdoors with people in their household.', 'Non-essential shops were allowed to reopen if safe, more year groups back to school, and face coverings became mandatory on public transport.', 'Change to social distancing advice from 2m to 1m+, some hospitality and leisure businesses allow to reopen, and two households allowed to meet inside whilst up to six people from different households allowed to meet outside.', 'Beauty salons, nail bars, tattoo studios allowed to reopen but cannot offer treatments or services which involve work directly in front of the face.', 'Face coverings became mandatory in many enclosed public spaces such as shops and banks.', 'Indoor gyms, swimming pools, and leisure centres reopen.', 'Self-isolation period for those with COVID-19 symptoms or a positive test increases from 7 to 10 days.', 'Shielding for clinically extremely vulnerable paused.<br>The government no longer recommends working from home if it is safe to go to work.', 'People encouraged to go to restaurants through the Eat Out to Help Out scheme offering discounted food from Monday-Wednesdays in August.', 'Casinos, indoor play and soft play centres, skating rinks, and bowling alleys reopen.<br>Beauty salons, spas, tattoo studios, and barbers now able to offer close contact services.', 'Schools and colleges have discretion to require face coverings in indoor communal areas where social distancing cannot be safely managed.', 'People can no longer meet with other households socially in groups of more than six people (including children). This includes private homes and gardens.', 'Childcare and unpaid care exempted from any interhousehold mixing restrictions in local areas.', 'Restaurants and bars must close at 10pm.<br>Those who can work from home now encouraged to do so by the government.', 'A three tiered set of restrictions for local areas in England began, mostly in northern England','A new national lockdown was announced, with education remaining open and no official shielding return', 'A return to a tier system for local authority areas', 'A third national lockdown was announced, with on-site education restricted to vulnerable children and children of key workers. Clinically vulnerable asked to shield')) %>% 
+  filter(Date_label_2 != '04 Jan 21') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/uk_restrictions_key_dates.json'))
 
@@ -374,7 +375,7 @@ wsx_daily_cases %>%
   filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'South East region', 'England')) %>% 
   mutate(Period = format(Date, '%d %B')) %>% 
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
-  mutate(Date_label_2 = format(Date, '%d %b')) %>% 
+  mutate(Date_label_2 = format(Date, '%d %b %y')) %>% 
   mutate(Colour_key = gsub('\n',' ', Colour_key)) %>% 
   # select(Name, Date, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label) %>% 
   select(Name, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label) %>%
@@ -416,21 +417,21 @@ wsx_daily_cases %>%
 p12_test_df %>% 
   ungroup() %>% 
   filter(Date %in% seq.Date((last_date-1) -(52*7), last_date -1, by = 14)) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Date_label) %>% 
   unique() %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/case_change_dates.json'))
 
-data.frame(time = c('Latest', 'Previous'), range = c(paste0(format(last_date - 7, '%d %b') , ' and ', format(last_date -1, '%d %b')),  paste0(format(last_date - 14, '%d %b') , '-', format(last_date - 8, '%d %b')))) %>% 
+data.frame(time = c('Latest', 'Previous'), range = c(paste0(format(last_date - 7, '%d %b %y') , ' and ', format(last_date -1, '%d %b %y')),  paste0(format(last_date - 14, '%d %b %y') , '-', format(last_date - 8, '%d %b %y')))) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/case_change_date_range.json'))
 
-format(complete_date+1, '%d %b') %>% 
+format(complete_date+1, '%d %b %y') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/first_incomplete_daily_case.json'))
 
-format(last_date - 1, '%d %b') %>% 
+format(last_date - 1, '%d %b %y') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/latest_daily_case.json'))
 
@@ -1240,9 +1241,9 @@ utla_pathways <- read_csv('https://files.digital.nhs.uk/46/536793/NHS%20Pathways
   mutate(Date = as.character.Date(CallDate))
 
 whole_timeseries_plot <- ggplot(pathways_x,
-       aes(x = Date,
-           y = Triage_count,
-           group = 1)) +
+                                aes(x = Date,
+                                    y = Triage_count,
+                                    group = 1)) +
   # geom_segment(x = as.Date('2020-04-09'), y = 0, xend = as.Date('2020-04-09'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)), color = "red", linetype = "dashed") +
   # geom_segment(x = as.Date('2020-04-23'), y = 0, xend = as.Date('2020-04-23'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)), color = "blue", linetype = "dashed") +
   geom_segment(x = as.Date('2020-05-18'), y = 0, xend = as.Date('2020-05-18'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)), color = "red", linetype = "dashed") +
@@ -1272,33 +1273,33 @@ whole_timeseries_plot <- ggplot(pathways_x,
   # annotate(geom = 'text',
   #          x = as.Date('2020-04-08'), 
   #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
-  #          label = '111 online removed\nfor 0-18 year olds',
-  #          size = 2.5,
-  #          hjust = 1,
-  #          vjust = 1.75) +
-  # annotate(geom = 'text',
-  #          x = as.Date('2020-04-23'), 
-  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
-  #          label = '23rd April',
-  #          fontface = 'bold',
-  #          size = 2.5,
-  #          hjust = 0,
-  #          vjust = -8) +
-  # annotate(geom = 'text',
-  #          x = as.Date('2020-04-23'),
-  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
-  #          label = '111 online reinstated\nfor 5-18 year olds',
-  #          size = 2.5,
-  #          hjust = 0,
-  #          vjust = -1.25) +
-  annotate(geom = 'text',
-           x = as.Date('2020-05-18'), 
-           y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
-           label = '18th May',
-           size = 2.5,
-           fontface = 'bold',
-           hjust = 0,
-           vjust = -6) +
+#          label = '111 online removed\nfor 0-18 year olds',
+#          size = 2.5,
+#          hjust = 1,
+#          vjust = 1.75) +
+# annotate(geom = 'text',
+#          x = as.Date('2020-04-23'), 
+#          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
+#          label = '23rd April',
+#          fontface = 'bold',
+#          size = 2.5,
+#          hjust = 0,
+#          vjust = -8) +
+# annotate(geom = 'text',
+#          x = as.Date('2020-04-23'),
+#          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
+#          label = '111 online reinstated\nfor 5-18 year olds',
+#          size = 2.5,
+#          hjust = 0,
+#          vjust = -1.25) +
+annotate(geom = 'text',
+         x = as.Date('2020-05-18'), 
+         y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
+         label = '18th May',
+         size = 2.5,
+         fontface = 'bold',
+         hjust = 0,
+         vjust = -6) +
   annotate(geom = 'text',
            x = as.Date('2020-05-18'), 
            y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
@@ -1345,7 +1346,7 @@ pathways_dates <- Report_df_x %>%
   filter(Date %in% seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7)) %>% 
   select(Date) %>% 
   mutate(Date = format(Date, '%d %b'))
-  
+
 pathways_dates$Date %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/NHS_pathways_dates.json'))
@@ -1371,11 +1372,13 @@ week_ending <- data.frame(Week_ending = get_date(week = 1:52, year = 2020)) %>%
 
 # download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek43.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '1.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek51.xlsx'), paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # # if the downlaod does fail, it wipes out the old one, which we can use to our advantage
 if(!file.exists(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'))){
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-12)), 7,8), '1.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-12)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 }
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
@@ -1835,23 +1838,23 @@ add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
   ph_with(value = paste0('Note that the very recent days are excluded in the 7-day total as these are thought to be incomplete. As such, this data represents cases in the ', rolling_period_x), 
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_ltla_rolling_rate_wsx,
-          location = ph_location_label(ph_label = 'Table Placeholder 7')) %>%
-  add_slide(layout = "pathways_layout", master = "Office Theme") %>%
-  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')), 
-          location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>% 
-  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
-          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
-  ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.', 
-          location = ph_location_label(ph_label = 'Text Placeholder 20')) %>% 
-  ph_with(value = 'Source: NHS Digital', 
-          # href = 'https://coronavirus.data.gov.uk',
-          location = ph_location_label(ph_label = 'Text Placeholder 22')) %>% 
-  ph_with(value = paste0('Slide ', length(.) -1), 
-          location = ph_location_label(ph_label = 'Text Placeholder 19')) %>% 
-  ph_with(value = nhs_pways_text_1, 
-          location = ph_location_label(ph_label = 'Text Placeholder 13')) %>% 
-  ph_with(value = nhs_pways_text_2, 
-          location = ph_location_label(ph_label = 'Text Placeholder 17'))
+          location = ph_location_label(ph_label = 'Table Placeholder 7')) #%>%
+  # add_slide(layout = "pathways_layout", master = "Office Theme") %>%
+  # ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')), 
+  #         location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>% 
+  # ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
+  #         location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+  # ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.', 
+  #         location = ph_location_label(ph_label = 'Text Placeholder 20')) %>% 
+  # ph_with(value = 'Source: NHS Digital', 
+  #         # href = 'https://coronavirus.data.gov.uk',
+  #         location = ph_location_label(ph_label = 'Text Placeholder 22')) %>% 
+  # ph_with(value = paste0('Slide ', length(.) -1), 
+  #         location = ph_location_label(ph_label = 'Text Placeholder 19')) %>% 
+  # ph_with(value = nhs_pways_text_1, 
+  #         location = ph_location_label(ph_label = 'Text Placeholder 13')) %>% 
+  # ph_with(value = nhs_pways_text_2, 
+  #         location = ph_location_label(ph_label = 'Text Placeholder 17'))
 
 # Death plots
 for(i in 1:length(areas_to_loop)){
