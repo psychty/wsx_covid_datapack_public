@@ -30,7 +30,8 @@ var new_case_rate_colours = [
   "#fd8d3c",
   "#fc4e2a",
   "#e31a1c",
-  "#b10026",
+  "#bd0026",
+  "#800026",
 ];
 var color_new_per_100000_cases = d3
   .scaleOrdinal()
