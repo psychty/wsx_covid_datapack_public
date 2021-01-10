@@ -122,7 +122,7 @@ var sm_svg_1 = d3
   .enter()
   .append("svg")
   .attr("width", width_sm)
-  .attr("height", height_sm + 100)
+  .attr("height", height_sm + 50)
   .append("g")
   .attr("transform", "translate(" + 50 + "," + 10 + ")");
 
@@ -134,13 +134,26 @@ sm_svg_1_y_axis.selectAll("text").style("font-size", ".8rem");
 sm_svg_1_x_axis = sm_svg_1
   .append("g")
   .attr("transform", "translate(0," + height_sm + ")")
-  .call(d3.axisBottom(x_sm_1).tickValues(data_dates));
+  .call(
+    d3.axisBottom(x_sm_1).tickValues([first_case_period, last_case_period])
+  );
 
 sm_svg_1_x_axis
   .selectAll("text")
-  .attr("transform", "translate(-10,10)rotate(-90)")
-  .style("text-anchor", "end")
+  .style("text-anchor", function (d, i) {
+    return i % 2 ? "end" : "start";
+  })
   .style("font-size", ".8rem");
+
+// ! fix for axis labels
+// var xAxis_daily_cases_sm = sm_svg_1_x_axis
+// .append("g")
+// .attr("transform", "translate(0," + (height - 40) + ")")
+// .call(
+//   d3
+//     .axisBottom(x_daily_cases)
+//     .tickValues()
+// );
 
 // .each(function(d,i) {
 // if (i%2 != 0) d3.select(this).remove();
@@ -296,7 +309,7 @@ function update_ltla_sm(chosen_utla_area) {
     .enter()
     .append("svg")
     .attr("width", width_sm)
-    .attr("height", height_sm + 100)
+    .attr("height", height_sm + 50)
     .append("g")
     .attr("transform", "translate(" + 50 + "," + 10 + ")");
 
@@ -336,12 +349,15 @@ function update_ltla_sm(chosen_utla_area) {
     sm_svg_1_x_axis = sm_svg_1
       .append("g")
       .attr("transform", "translate(0," + height_sm + ")")
-      .call(d3.axisBottom(x_sm_1).tickValues(data_dates));
+      .call(
+        d3.axisBottom(x_sm_1).tickValues([first_case_period, last_case_period])
+      );
 
     sm_svg_1_x_axis
       .selectAll("text")
-      .attr("transform", "translate(-10,10)rotate(-90)")
-      .style("text-anchor", "end")
+      .style("text-anchor", function (d, i) {
+        return i % 2 ? "end" : "start";
+      })
       .style("font-size", ".8rem");
 
     sm_svg_1_bars = sm_svg_1
@@ -483,12 +499,15 @@ function update_ltla_sm(chosen_utla_area) {
     sm_svg_1_x_axis = sm_svg_1
       .append("g")
       .attr("transform", "translate(0," + height_sm + ")")
-      .call(d3.axisBottom(x_sm_1).tickValues(data_dates));
+      .call(
+        d3.axisBottom(x_sm_1).tickValues([first_case_period, last_case_period])
+      );
 
     sm_svg_1_x_axis
       .selectAll("text")
-      .attr("transform", "translate(-10,10)rotate(-90)")
-      .style("text-anchor", "end")
+      .style("text-anchor", function (d, i) {
+        return i % 2 ? "end" : "start";
+      })
       .style("font-size", ".8rem");
 
     sm_svg_1_bars = sm_svg_1

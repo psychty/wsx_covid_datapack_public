@@ -133,6 +133,23 @@ request.open("GET", "./Outputs/daily_case_update_date.json", false);
 request.send(null);
 var data_refreshed_date = JSON.parse(request.responseText)[0];
 
+// ! Labels for small multiples
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/case_date_labels.json", false);
+request.send(null);
+var case_dates_df = JSON.parse(request.responseText);
+
+var first_case_period = case_dates_df.filter(function (d) {
+  return d.Item === "first_case_period";
+})[0]["Label"];
+
+var last_case_period = case_dates_df.filter(function (d) {
+  return d.Item === "last_case_period";
+})[0]["Label"];
+
+console.log(first_case_period, last_case_period);
+
 // Update text based on selected area
 d3.select("#update_date").html(function (d) {
   return (
