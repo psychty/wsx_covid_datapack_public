@@ -93,6 +93,11 @@ daily_cases <- read_csv('https://coronavirus.data.gov.uk/downloads/csv/coronavir
 first_date <- min(daily_cases$Date)
 last_case_date <- max(daily_cases$Date)
 
+data.frame(Item = 'first_case_period', Label =  format(first_date, '%d %b %y')) %>% 
+  add_row(Item = 'last_case_period', Label =  format(last_case_date, '%d %b %y')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/case_date_labels.json'))
+
 # remotes::install_github("publichealthengland/coronavirus-dashboard-api-R-sdk")
 # install.packages("ukcovid19")
 library(ukcovid19)
@@ -2438,3 +2443,126 @@ row.names(ltla_summary) <- df$ID
 ltla_restrictions_geojson <- SpatialPolygonsDataFrame(ltla_restrictions_geojson, ltla_summary)  
 
 geojson_write(geojson_json(ltla_restrictions_geojson), file = paste0(output_directory_x, '/ltla_covid_latest.geojson'))
+
+# Positivity and tests ####
+
+positivity_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newVirus&format=csv') %>% 
+  filter(substr(areaCode, 1,1) == 'E') %>%
+  select(-areaType) %>% 
+  rename(Name = areaName,
+         Code = areaCode,
+         Date = date) 
+
+positivity_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+  filter(substr(areaCode, 1,1) == 'E') %>%
+  select(-areaType) %>% 
+  rename(Name = areaName,
+         Code = areaCode,
+         Date = date) 
+
+positivity_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+  filter(substr(areaCode, 1,1) == 'E') %>%
+  select(-areaType) %>% 
+  rename(Name = areaName,
+         Code = areaCode,
+         Date = date) 
+
+positivity_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+  filter(substr(areaCode, 1,1) == 'E') %>%
+  select(-areaType) %>% 
+  rename(Name = areaName,
+         Code = areaCode,
+         Date = date) 
+
+positivity_df <- positivity_ltla %>% 
+  bind_rows(positivity_utla) %>% 
+  bind_rows(positivity_region) %>% 
+  bind_rows(positivity_nation) %>% 
+  unique() %>% 
+  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
+  mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) 
+
+positivity_at_a_glance <- positivity_df %>% 
+  filter(Date == complete_date) %>% 
+  mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
+  mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
+  select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum) %>% 
+  rename(`Number of people receiving a PCR (Polymerase chain reaction) test` = uniquePeopleTestedBySpecimenDateRollingSum,
+         `PCR Positivity rate (weekly percentage of individuals tested who test positive for COVID-19)` = uniqueCasePositivityBySpecimenDateRollingSum) %>% 
+  select(Name,  `Number of people receiving a PCR (Polymerase chain reaction) test`, `PCR Positivity rate (weekly percentage of individuals tested who test positive for COVID-19)`) 
+
+positivity_at_a_glance %>% 
+  mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
+  arrange(Name) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/msoa_summary.json'))
+
+
+# The number of people who received a PCR test in the previous 7 days, and the percentage of people who received a PCR test in the previous 7 days, who had at least one positive COVID-19 PCR test result.
+
+# Polymerase chain reaction (PCR) tests are lab-based and test for the presence of SARS-CoV-2 virus. This data shows the number of people who received a PCR test in the previous 7 days, and the percentage of people who received a PCR test in the previous 7 days who had at least one positive PCR test result.
+
+# If a person has had more than one test result in the 7-day period, they are only counted once. If any of their tests in that period were positive, they count as one person with a positive test result. The positivity percentage is the number of people with a positive test result, divided by the number of people tested and multiplied by 100.
+
+# Individuals tested more than once in the period are only counted once in the denominator, and those with more than one positive test result in the period are only included once in the numerator.
+
+positivity_worked <- positivity_df %>% 
+  rename(Seven_day_PCR_positivity = uniqueCasePositivityBySpecimenDateRollingSum,
+         Seven_day_PCR_tested_individuals = uniquePeopleTestedBySpecimenDateRollingSum) %>% 
+  group_by(Name) %>% 
+  arrange(Name, Date) %>% 
+  mutate(Perc_change_on_individuals_tested = round((Seven_day_PCR_tested_individuals - lag(Seven_day_PCR_tested_individuals, 7))/ lag(Seven_day_PCR_tested_individuals, 7), 2))  %>% 
+  mutate(Perc_change_on_individuals_tested = ifelse(Perc_change_on_individuals_tested == Inf, 1, Perc_change_on_individuals_tested)) %>% 
+  mutate(Perc_change_on_individuals_tested = replace_na(Perc_change_on_individuals_tested, 0)) %>% 
+  mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
+  arrange(Name, Date) %>% 
+  filter(Date >= max(Date) - 90)
+
+positivity_worked %>% 
+  filter(Date == complete_date)
+
+positivity_worked %>%
+  select(!Code) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/positivity_df.json'))
+
+library(lemon)
+
+data_dummy_positivity_worked <- positivity_worked %>% 
+  rename(dummy_name = Name)
+
+positivity_worked_plotted <- ggplot(positivity_worked,
+                                    aes(x = Date,
+                                        y = Seven_day_PCR_positivity,
+                                        colour = Name)) +
+  geom_line(data = data_dummy_positivity_worked,
+            aes(x = Date,
+                y = Seven_day_PCR_positivity,
+                group = dummy_name),
+            colour = '#dbdbdb',
+            size = .6) +
+  geom_line(size = .9) +
+  geom_point(size = .5) +
+  ph_theme() +
+  theme(axis.text.x = element_text(angle = 90, size = 6),
+        legend.position = 'none') +
+  scale_y_continuous(labels = label_comma(accuracy = 1, suffix = '%'),
+                     limits = c(0,30),
+                     breaks = seq(0, 30, 5)) +
+  scale_x_date(date_labels = "%b %d",
+               breaks = seq.Date(max(positivity_worked$Date) -(52*7), max(positivity_worked$Date), by = 7),
+               limits = c(min(positivity_worked$Date), max(positivity_worked$Date) + 7),
+               expand = c(0.01,1)) +
+  labs(x = '',
+       y = '7-day rolling PCR case positivity rate',
+       title = paste0('7-day PCR Case positivity rate for Covid-19 in the last 90 days; West Sussex, South East region, and England'),
+       subtitle = paste0('Pillar 1 and 2 combined; data as at ', format(last_date, '%d %B %Y')))  +
+  theme(axis.text.x = element_text(size = 8)) +
+  facet_rep_wrap(. ~ Name, ncol = 4, repeat.tick.labels = TRUE)
+
+png(paste0(output_directory_x, '/Figure_7_day_rolling_positivity_rates_latest_faceted.png'),
+    width = 1480,
+    height = 880,
+    res = 130)
+print(positivity_worked_plotted)
+dev.off()  
