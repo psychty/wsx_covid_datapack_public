@@ -2482,23 +2482,15 @@ positivity_df <- positivity_ltla %>%
   filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
   mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) 
 
-positivity_at_a_glance <- positivity_df %>% 
+positivity_df %>% 
   filter(Date == complete_date) %>% 
   mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
   mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
   select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum) %>% 
-  rename(`Number of people receiving a PCR (Polymerase chain reaction) test` = uniquePeopleTestedBySpecimenDateRollingSum,
-         `PCR Positivity rate (weekly percentage of individuals tested who test positive for COVID-19)` = uniqueCasePositivityBySpecimenDateRollingSum) %>% 
-  select(Name,  `Number of people receiving a PCR (Polymerase chain reaction) test`, `PCR Positivity rate (weekly percentage of individuals tested who test positive for COVID-19)`) 
-
-positivity_at_a_glance %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
   arrange(Name) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/msoa_summary.json'))
-
-
-# The number of people who received a PCR test in the previous 7 days, and the percentage of people who received a PCR test in the previous 7 days, who had at least one positive COVID-19 PCR test result.
+  write_lines(paste0(output_directory_x,'/positivity_at_a_glance.json'))
 
 # Polymerase chain reaction (PCR) tests are lab-based and test for the presence of SARS-CoV-2 virus. This data shows the number of people who received a PCR test in the previous 7 days, and the percentage of people who received a PCR test in the previous 7 days who had at least one positive PCR test result.
 

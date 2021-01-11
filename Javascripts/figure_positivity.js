@@ -12,9 +12,9 @@ d3.select("#select_line_positivity_button")
   });
 
 // Retrieve the selected area name
-var chosen_positivity_area = d3
-  .select("#select_line_positivity_button")
-  .property("value");
+// var chosen_positivity_area = d3
+//   .select("#select_line_positivity_button")
+//   .property("value");
 
 // ! Figure positivity
 
@@ -27,10 +27,9 @@ var p_at_a_glance_all_ages = JSON.parse(request.responseText);
 
 console.log(p_at_a_glance_all_ages);
 
-// window.onload = () => {
-//   loadTable_all(at_a_glance_all_ages);
-//   loadTable_60(at_a_glance_60_plus);
-// };
+window.onload = () => {
+  loadTable_positivity(p_at_a_glance_all_ages);
+};
 
 d3.select("#positivity_text_1").html(function (d) {
   return (
@@ -65,5 +64,3 @@ function loadTable_positivity(p_at_a_glance_all_ages) {
 
   tableBody.innerHTML = dataHTML;
 }
-
-loadTable_positivity();
