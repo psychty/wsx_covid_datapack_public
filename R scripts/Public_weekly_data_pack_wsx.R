@@ -1369,7 +1369,7 @@ data.frame(Date = c('23 Apr', '18 May'), lab_1 = c('111 online reinstated', 'Pat
 # For this data, the week ends on a friday (so friday is the cut off date for each week of data). It might be helpful for us to say as at this date this is the number of deaths. To do this we need to convert each week number into a 'friday date'.
 set_week_start('Friday')
 
-week_ending <- data.frame(Week_ending = get_date(week = 1:52, year = 2020)) %>% 
+week_ending <- data.frame(Week_ending = get_date(week = 1:53, year = 2020)) %>% 
   mutate(Week_number = row_number())
 
 # Boo! but we can get around it with some date hackery. This will probably not work on Tuesday morning next week
@@ -1378,6 +1378,8 @@ week_ending <- data.frame(Week_ending = get_date(week = 1:52, year = 2020)) %>%
 # download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek43.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek53.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # # if the downlaod does fail, it wipes out the old one, which we can use to our advantage
 if(!file.exists(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'))){
