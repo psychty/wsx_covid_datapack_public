@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 [{"Date":"2020-01-30","Period":"30 January","Date_label":"Thu 30 January","Order":"First"},{"Date":"2021-01-02","Period":"02 January","Date_label":"Sat 02 January","Order":"Seven_days_ago"},{"Date":"2021-01-09","Period":"09 January","Date_label":"Sat 09 January","Order":"Complete"},{"Date":"2021-01-10","Period":"10 January","Date_label":"Sun 10 January","Order":"First_incomplete"},{"Date":"2021-01-13","Period":"13 January","Date_label":"Wed 13 January","Order":"Last"}]
+=======
+[{"Date":"2020-01-30","Period":"30 January","Date_label":"Thu 30 January","Order":"First"},{"Date":"2021-01-01","Period":"01 January","Date_label":"Fri 01 January","Order":"Seven_days_ago"},{"Date":"2021-01-08","Period":"08 January","Date_label":"Fri 08 January","Order":"Complete"},{"Date":"2021-01-09","Period":"09 January","Date_label":"Sat 09 January","Order":"First_incomplete"},{"Date":"2021-01-12","Period":"12 January","Date_label":"Tue 12 January","Order":"Last"}]
+>>>>>>> 3051538dff410d58f5d22dc65fdbf8253e8be3e9
