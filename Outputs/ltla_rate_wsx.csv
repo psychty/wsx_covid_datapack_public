@@ -1,5 +1,4 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-<<<<<<< HEAD
 "Adur","2,027","3,152.4","260th","Decile 9","440","684.3","96th","Decile 4","seven days to 09 January"
 "Arun","5,225","3,250.2","252nd","Decile 9","1,007","626.4","118th","Decile 4","seven days to 09 January"
 "Chichester","3,249","2,682.3","285th","10% of authorities
@@ -12,17 +11,3 @@ with highest rate","seven days to 09 January"
 "West Sussex","28,579","3,307.8","-","-",NA,NA,NA,NA,NA
 "South East region","400,612","4,363.9","-","-",NA,NA,NA,NA,NA
 "England","2,834,341","5,035.5","-","-",NA,NA,NA,NA,NA
-=======
-"Adur","1,960","3,048.2","264th","Decile 9","466","724.7","98th","Decile 4","seven days to 08 January"
-"Arun","5,070","3,153.8","256th","Decile 9","1,049","652.5","119th","Decile 4","seven days to 08 January"
-"Chichester","3,176","2,622.0","285th","10% of authorities
-with lowest rate","587","484.6","197th","Decile 7","seven days to 08 January"
-"Crawley","5,129","4,562.8","150th","Decile 5","1,301","1,157.4","20th","10% of authorities
-with highest rate","seven days to 08 January"
-"Horsham","4,034","2,805.5","275th","Decile 9","775","539.0","171st","Decile 6","seven days to 08 January"
-"Mid Sussex","5,063","3,352.5","241st","Decile 8","822","544.3","163rd","Decile 6","seven days to 08 January"
-"Worthing","3,398","3,073.2","260th","Decile 9","844","763.3","88th","Decile 3","seven days to 08 January"
-"West Sussex","27,830","3,221.1","-","-",NA,NA,NA,NA,NA
-"South East region","393,375","4,285.1","-","-",NA,NA,NA,NA,NA
-"England","2,789,983","4,956.7","-","-",NA,NA,NA,NA,NA
->>>>>>> 3051538dff410d58f5d22dc65fdbf8253e8be3e9
