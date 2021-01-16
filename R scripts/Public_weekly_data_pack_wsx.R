@@ -35,8 +35,8 @@ ph_theme = function(){
   ) 
 }
 
+#github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
 github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
-# github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
