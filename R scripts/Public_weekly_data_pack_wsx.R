@@ -1139,7 +1139,7 @@ calls_webpage <- read_html('https://digital.nhs.uk/data-and-information/publicat
   html_nodes("a") %>%
   html_attr("href")
 
-nhs_111_pathways_raw <- read_csv(grep('NHS%20Pathways%20Covid-19%20data%202020', calls_webpage, value = T))  %>% 
+nhs_111_pathways_raw <- read_csv(grep('NHS%20Pathways%20Covid-19%20data%202021', calls_webpage, value = T))  %>% 
   rename(CCG_Name = CCGName) %>% 
   mutate(Date = as.Date(`Call Date`, format = '%d/%m/%Y')) %>% 
   select(-`Call Date`) %>% 
@@ -1169,7 +1169,7 @@ nhs_111_pathways <- nhs_111_pathways_pre_april %>%
 
 rm(nhs_111_pathways_pre_april, nhs_111_pathways_post_april)
 
-nhs_111_online_raw <- read_csv(grep('111%20Online%20Covid-19%20data_2020', calls_webpage, value = T)) %>% 
+nhs_111_online_raw <- read_csv(grep('111%20Online%20Covid-19%20data_2021', calls_webpage, value = T)) %>% 
   rename(CCG_Name = ccgname,
          CCG_Code = ccgcode,
          Sex = sex,
@@ -1843,23 +1843,23 @@ add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
   ph_with(value = paste0('Note that the very recent days are excluded in the 7-day total as these are thought to be incomplete. As such, this data represents cases in the ', rolling_period_x), 
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_ltla_rolling_rate_wsx,
-          location = ph_location_label(ph_label = 'Table Placeholder 7')) #%>%
-  # add_slide(layout = "pathways_layout", master = "Office Theme") %>%
-  # ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')), 
-  #         location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>% 
-  # ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
-  #         location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
-  # ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.', 
-  #         location = ph_location_label(ph_label = 'Text Placeholder 20')) %>% 
-  # ph_with(value = 'Source: NHS Digital', 
-  #         # href = 'https://coronavirus.data.gov.uk',
-  #         location = ph_location_label(ph_label = 'Text Placeholder 22')) %>% 
-  # ph_with(value = paste0('Slide ', length(.) -1), 
-  #         location = ph_location_label(ph_label = 'Text Placeholder 19')) %>% 
-  # ph_with(value = nhs_pways_text_1, 
-  #         location = ph_location_label(ph_label = 'Text Placeholder 13')) %>% 
-  # ph_with(value = nhs_pways_text_2, 
-  #         location = ph_location_label(ph_label = 'Text Placeholder 17'))
+          location = ph_location_label(ph_label = 'Table Placeholder 7')) %>%
+  add_slide(layout = "pathways_layout", master = "Office Theme") %>%
+  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')),
+          location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>%
+  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')),
+          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>%
+  ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.',
+          location = ph_location_label(ph_label = 'Text Placeholder 20')) %>%
+  ph_with(value = 'Source: NHS Digital',
+          # href = 'https://coronavirus.data.gov.uk',
+          location = ph_location_label(ph_label = 'Text Placeholder 22')) %>%
+  ph_with(value = paste0('Slide ', length(.) -1),
+          location = ph_location_label(ph_label = 'Text Placeholder 19')) %>%
+  ph_with(value = nhs_pways_text_1,
+          location = ph_location_label(ph_label = 'Text Placeholder 13')) %>%
+  ph_with(value = nhs_pways_text_2,
+          location = ph_location_label(ph_label = 'Text Placeholder 17'))
 
 # Death plots
 for(i in 1:length(areas_to_loop)){
