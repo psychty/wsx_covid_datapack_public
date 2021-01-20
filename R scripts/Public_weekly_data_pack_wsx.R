@@ -35,8 +35,8 @@ ph_theme = function(){
   ) 
 }
 
-#github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
-github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
+github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
+# github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
@@ -1369,28 +1369,46 @@ data.frame(Date = c('23 Apr', '18 May'), lab_1 = c('111 online reinstated', 'Pat
 # For this data, the week ends on a friday (so friday is the cut off date for each week of data). It might be helpful for us to say as at this date this is the number of deaths. To do this we need to convert each week number into a 'friday date'.
 set_week_start('Friday')
 
-week_ending <- data.frame(Week_ending = get_date(week = 1:53, year = 2020)) %>% 
-  mutate(Week_number = row_number())
+# Create a dataframe consisting of 52 rows (one for each week) with the field 'Week_start' as the date of the start of each week. Add a number corresponding to the week number, create a string called match_key (which we will use to match the filepath to the week) and then a formatted label for the dates included in the week.
+week_ending_a <- data.frame(Week_ending= get_date(week = 1:53, year = 2020)) %>%
+  mutate(Week_number = paste0(row_number(), ' - 2020'))
+
+week_ending_b <- data.frame(Week_ending = get_date(week = 2:53, year = 2021)) %>%
+  mutate(Week_number = paste0(row_number(), ' - 2021'))
+
+week_ending <- week_ending_a %>%
+  bind_rows(week_ending_b) %>%
+  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021"))) %>%
+  mutate(week_id = row_number())
+
+rm(week_ending_a, week_ending_b)
 
 # Boo! but we can get around it with some date hackery. This will probably not work on Tuesday morning next week
 # download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), 'finalcodes.xlsx'), paste0(github_repo_dir, '/ons_mortality.xlsx'), mode = 'wb')
 
 # download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek43.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+# 
+# download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek53.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week1.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
-# # if the downlaod does fail, it wipes out the old one, which we can use to our advantage
-if(!file.exists(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'))){
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-12)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
-}
+# # # if the download does fail, it wipes out the old one, which we can use to our advantage
+# if(!file.exists(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'))){
+# download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-12)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+# }
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
 # Occurrences data is produced at ltla level and we would probably find it useful to aggregate to utla and region for our analysis
 
-Occurrences_ltla <- read_excel(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), sheet = 'Occurrences - All data', skip = 2) %>% 
+Occurrences_ltla_2021 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), sheet = 'Occurrences - All data', skip = 2)) %>% 
+  mutate(`Week number` = paste0(`Week number`, ' - 2021'))
+
+Occurrences_ltla <- read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), sheet = 'Occurrences - All data', skip = 2) %>% 
+  mutate(`Week number` = paste0(`Week number`, ' - 2020')) %>% 
+  bind_rows(Occurrences_ltla_2021) %>% 
   rename(Name = `Area name`,
          Cause = `Cause of death`,
          Week_number = `Week number`,
@@ -1410,16 +1428,18 @@ Occurrences_wsx <- Occurrences_ltla %>%
   left_join(week_ending, by = 'Week_number') %>% 
   ungroup()
 
-Occurrences<- Occurrences_ltla %>% 
-  bind_rows(Occurrences_wsx)
+Occurrences <- Occurrences_ltla %>% 
+  bind_rows(Occurrences_wsx) %>% 
+  arrange(week_id) %>% 
+  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021"))) 
 
-rm(Occurrences_ltla, Occurrences_wsx)
+rm(Occurrences_ltla, Occurrences_wsx, Occurrences_ltla_2021)
 
 deaths_labels <- Occurrences %>% 
   arrange(Week_number) %>% 
   select(Week_ending) %>% 
   unique() %>% 
-  mutate(deaths_label = paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')))
+  mutate(deaths_label = paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')))
 
 weekly_all_place_all_deaths <- Occurrences %>% 
   filter(Cause == 'All causes') %>% 
@@ -1427,7 +1447,7 @@ weekly_all_place_all_deaths <- Occurrences %>%
   group_by(Name, Week_ending) %>% 
   summarise(Deaths = sum(Deaths, na.rm = TRUE)) %>% 
   select(Name, Week_ending, Deaths) %>% 
-  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
+  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
   rename(All_deaths = Deaths)
 
 All_settings_occurrences <- Occurrences %>% 
@@ -1442,7 +1462,7 @@ weekly_all_place_deaths <- All_settings_occurrences %>%
   filter(Name %in% areas_to_loop) %>%
   arrange(Week_number) %>% 
   select(Name, Cause, Week_ending, Deaths) %>% 
-  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
+  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
   pivot_wider(id_cols = c(Name, Week_ending),
               names_from = Cause,
               values_from = Deaths) %>% 
@@ -1505,16 +1525,16 @@ dev.off()
 care_home_ons_all_deaths <- Occurrences %>%
   filter(Place_of_death %in% 'Care home') %>% 
   filter(Cause == 'All causes') %>% 
-  arrange(Week_number) %>% 
+  arrange(week_id) %>% 
   select(Name, Week_ending, Deaths) %>% 
-  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
+  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
   rename(All_deaths = Deaths)
 
 carehome_weekly_deaths <- Occurrences %>%
   filter(Place_of_death %in% 'Care home') %>% 
-  arrange(Week_number) %>% 
+  arrange(week_id) %>% 
   select(Name, Cause, Week_ending, Week_number, Deaths) %>% 
-  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
+  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
   pivot_wider(id_cols = c(Name, Week_ending, Week_number),
               names_from = Cause,
               values_from = Deaths) %>% 
@@ -1662,8 +1682,8 @@ dev.off()
   mutate(Cumulative_deaths_all_cause = cumsum(`All causes`)) %>%
   mutate(Cumulative_covid_deaths = cumsum(`Covid-19`)) %>%
   mutate(Cumulative_deaths_label = paste0('As at ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' the total cumulative number of deaths for 2020 was<b> ', format(Cumulative_deaths_all_cause, big.mark = ',', trim = TRUE), '</b>. The cumulative number of deaths where Covid-19 is recorded as a cause by this date was ', format(Cumulative_covid_deaths, big.mark = ',', trim = TRUE), '. This is ', round((Cumulative_covid_deaths/Cumulative_deaths_all_cause) * 100, 1), '% of deaths occuring by this week.')) %>% 
-   mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label))
-     
+   mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label))
+ 
 all_deaths_json_export %>% 
   select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause) %>% 
   toJSON() %>%
@@ -1680,9 +1700,9 @@ all_deaths_json_export %>%
 
 carehome_deaths_json_export <- Occurrences %>% 
   filter(Place_of_death %in% 'Care home') %>% 
-  arrange(Week_number) %>% 
+  arrange(week_id) %>% 
   select(Name, Cause, Week_ending, Week_number, Deaths) %>% 
-  mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b')), levels = deaths_labels$deaths_label)) %>% 
+  mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
   pivot_wider(id_cols = c(Name, Week_ending, Week_number, Date_label),
               names_from = Cause,
               values_from = Deaths) %>% 
@@ -1704,7 +1724,7 @@ carehome_deaths_json_export %>%
   write_lines(paste0(output_directory_x, '/deaths_carehomes.json'))
  
 Occurrences %>% 
-  select(Week_ending) %>% 
+  select(Week_ending, Week_number) %>% 
   unique() %>% 
   filter(Week_ending == max(Week_ending)) %>% 
   rename(Occurring_week_ending = Week_ending) %>% 

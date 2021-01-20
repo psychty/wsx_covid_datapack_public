@@ -90,12 +90,18 @@ var chosen_m1_df = deaths_by_week_all.filter(function (d) {
 
 var chosen_latest = chosen_m1_df.filter(function (d) {
   return (
-    d.Week_number ===
-    d3.max(chosen_m1_df, function (d) {
-      return +d.Week_number;
-    })
+    d.Week_number === ons_mortality_figures_dates[0]['Week_number']
   );
 });
+
+// var chosen_latest = chosen_m1_df.filter(function (d) {
+//   return (
+//     d.Week_number ===
+//     d3.max(chosen_m1_df, function (d) {
+//       return d.Week_number;
+//     })
+//   );
+// });
 
 var chosen_limits = deaths_limits_by_area.filter(function (d) {
   return d.Name === chosen_m1_area;
@@ -155,6 +161,7 @@ var stackedData_m1 = d3.stack().keys(covid_causes)(chosen_m1_df);
 weeks = chosen_m1_df.map(function (d) {
   return d.Date_label;
 });
+
 
 // append the svg object to the body of the page
 var svg_fg_mortality_1 = d3
@@ -283,7 +290,7 @@ svg_fg_mortality_1
   .attr("text-anchor", "start")
   .style("font-size", ".8rem")
   .text(
-    "so far in 2020 up to " +
+    "so far up to " +
       ons_mortality_figures_dates[0].Occurring_week_ending
   );
 
@@ -381,10 +388,7 @@ var chosen_m2_df = deaths_by_week_ch.filter(function (d) {
 
 var chosen_latest_ch = chosen_m2_df.filter(function (d) {
   return (
-    d.Week_number ===
-    d3.max(chosen_m1_df, function (d) {
-      return +d.Week_number;
-    })
+    d.Week_number === ons_mortality_figures_dates[0]['Week_number']
   );
 });
 
@@ -572,7 +576,7 @@ svg_fg_mortality_2
   .attr("text-anchor", "start")
   .style("font-size", ".8rem")
   .text(
-    "so far in 2020 up to " +
+    "so far up to " +
       ons_mortality_figures_dates[0].Occurring_week_ending
   );
 
@@ -673,10 +677,7 @@ function update_m12() {
 
   var chosen_latest = chosen_m1_df.filter(function (d) {
     return (
-      d.Week_number ===
-      d3.max(chosen_m1_df, function (d) {
-        return +d.Week_number;
-      })
+      d.Week_number === ons_mortality_figures_dates[0]['Week_number']
     );
   });
 
@@ -686,10 +687,7 @@ function update_m12() {
 
   var chosen_latest_ch = chosen_m2_df.filter(function (d) {
     return (
-      d.Week_number ===
-      d3.max(chosen_m1_df, function (d) {
-        return +d.Week_number;
-      })
+      d.Week_number === ons_mortality_figures_dates[0]['Week_number']
     );
   });
 
@@ -855,7 +853,7 @@ function update_m12() {
     .attr("text-anchor", "start")
     .style("font-size", ".8rem")
     .text(
-      "so far in 2020 up to " +
+      "so far up to " +
         ons_mortality_figures_dates[0].Occurring_week_ending
     );
 
@@ -1100,7 +1098,7 @@ function update_m12() {
     .attr("text-anchor", "start")
     .style("font-size", ".8rem")
     .text(
-      "so far in 2020 up to " +
+      "so far up to " +
         ons_mortality_figures_dates[0].Occurring_week_ending
     );
 
