@@ -57,11 +57,11 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   unique()
 
 mye_total %>% 
- write.csv(., paste0(github_repo_dir,'/Source files/mye2019_ltla.csv'), row.names = FALSE)
+  write.csv(., paste0(github_repo_dir,'/Source files/mye2019_ltla.csv'), row.names = FALSE)
 
 if(exists('mye_total') == FALSE) {
-mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2019_ltla.csv')) %>%
-rename(Type = Geography1)
+  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2019_ltla.csv')) %>%
+    rename(Type = Geography1)
 }
 
 area_code_names <- mye_total %>% 
@@ -174,7 +174,7 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Perc_change_on_rolling_7_days_tidy = factor(ifelse(Rolling_7_day_new_cases == 0 & lag(Rolling_7_day_new_cases, 7) == 0, 'No change (zero cases)', ifelse(Perc_change_on_rolling_7_days_actual == Inf, '0 cases in previous 7 days', ifelse(Perc_change_on_rolling_7_days_actual == -1, '100% fewer cases (now zero cases in recent period)', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50%+ fewer cases', ifelse(Perc_change_on_rolling_7_days_actual <= -.5, '50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual < 0, 'Up to 50% fewer cases', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'No change', ifelse(Perc_change_on_rolling_7_days_actual > 0  & Perc_change_on_rolling_7_days_actual <= .5, 'Up to 50% more cases', ifelse(Perc_change_on_rolling_7_days_actual > .5 & Perc_change_on_rolling_7_days_actual <= 1, 'Up to 100% more cases (double the cases from the previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 1 & Perc_change_on_rolling_7_days_actual <= 2, 'Up to 200% more cases (3x the cases in previous 7 days)', ifelse(Perc_change_on_rolling_7_days_actual > 2 & Perc_change_on_rolling_7_days_actual <= 5, 'Up to 5x the cases in previous 7 days', 'More than 5x the cases in the previous 7 days'))))))))))), levels = c("No change (zero cases)", "100% fewer cases (now zero cases in recent period)",   "50%+ fewer cases" ,  "Up to 50% fewer cases" ,  "No change" ,   "Up to 50% more cases" ,      "Up to 100% more cases (double the cases from the previous 7 days)", "Up to 200% more cases (3x the cases in previous 7 days)","Up to 5x the cases in previous 7 days", "More than 5x the cases in the previous 7 days", "0 cases in previous 7 days"))) %>% 
   mutate(Rolling_period = paste0('seven days to ', format(Date, '%d %B')),
          Rolling_compare_period = paste0('seven days to ', format(Date, '%d %B'), ' compared to seven days to ', format(lag(Date,7), '%d %B'))) %>% 
-   mutate(Label_3 = paste0('In the ', Rolling_period, ', there ', ifelse(Rolling_7_day_new_cases == 1, paste0('was 1 new confirmed case (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). '),  paste0('were ', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' new confirmed cases (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). ')), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases == 0, paste0('This is the same as the ', lag(Rolling_period, 7), '.'), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases > 0, paste0('There were no cases in the ', lag(Rolling_period, 7), '.'), ifelse(Perc_change_on_rolling_7_days_actual == 0, paste0('There is <b>no change in cases</b> compared to those confirmed in the previous week (', lag(Rolling_period, 7), ').'), ifelse(Perc_change_on_rolling_7_days_actual < 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) ==1, 'was 1 new cases', paste0('were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),', and so the new cases have<b> decreased by ', abs(round(Perc_change_on_rolling_7_days_actual*100, 1)), '% (', format(lag(Rolling_7_day_new_cases, 7) - Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' fewer cases)</b>.'), ifelse(Perc_change_on_rolling_7_days_actual > 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) == 1, 'was 1 new case ', paste0(' were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),' and so the new cases have<b> risen by ', round(Perc_change_on_rolling_7_days_actual* 100, 1), '% (', ifelse(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7) == 1, '1 extra case).</b>', paste0(format(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7), big.mark = ',', trim = TRUE),' extra cases).</b>'))), NA))))))) %>% 
+  mutate(Label_3 = paste0('In the ', Rolling_period, ', there ', ifelse(Rolling_7_day_new_cases == 1, paste0('was 1 new confirmed case (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). '),  paste0('were ', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' new confirmed cases (', format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE), ' new cases per 100,000). ')), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases == 0, paste0('This is the same as the ', lag(Rolling_period, 7), '.'), ifelse(lag(Rolling_7_day_new_cases, 7) == 0 & Rolling_7_day_new_cases > 0, paste0('There were no cases in the ', lag(Rolling_period, 7), '.'), ifelse(Perc_change_on_rolling_7_days_actual == 0, paste0('There is <b>no change in cases</b> compared to those confirmed in the previous week (', lag(Rolling_period, 7), ').'), ifelse(Perc_change_on_rolling_7_days_actual < 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) ==1, 'was 1 new cases', paste0('were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),', and so the new cases have<b> decreased by ', abs(round(Perc_change_on_rolling_7_days_actual*100, 1)), '% (', format(lag(Rolling_7_day_new_cases, 7) - Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' fewer cases)</b>.'), ifelse(Perc_change_on_rolling_7_days_actual > 0, paste0('In the ', lag(Rolling_period, 7), ', there ', ifelse(lag(Rolling_7_day_new_cases,7) == 1, 'was 1 new case ', paste0(' were ', format(lag(Rolling_7_day_new_cases,7), big.mark = ',', trim = TRUE), ' new cases')),' and so the new cases have<b> risen by ', round(Perc_change_on_rolling_7_days_actual* 100, 1), '% (', ifelse(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7) == 1, '1 extra case).</b>', paste0(format(Rolling_7_day_new_cases - lag(Rolling_7_day_new_cases, 7), big.mark = ',', trim = TRUE),' extra cases).</b>'))), NA))))))) %>% 
   mutate(Previous_7_days_sum = lag(Rolling_7_day_new_cases, 7)) %>% 
   ungroup()
 
@@ -198,77 +198,77 @@ rm(p12_test_df_2, p12_test_df_raw)
 
 for(i in 1:length(areas_to_loop)){
   
-area_x <- areas_to_loop[i]
-
-area_x_df_1 <- p12_test_df %>%
-  filter(Name == area_x)
-
-peak_case_label <- area_x_df_1 %>%
-  filter(New_cases == max(New_cases, na.rm = TRUE)) %>%
-  filter(Date == min(Date, na.rm = TRUE))
-
-max_daily_case_limit <- ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 50, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 5, ceiling), ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 100, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 10, ceiling), ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 250, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 25, ceiling), ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 500, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 50, ceiling), round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 100, ceiling)))))
-
-max_daily_case_break <- ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 20, 2, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 50, 5, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 100, 10, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 250, 25, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 500, 50, 100)))))
-
-
-total_cases_reported_plot <- ggplot(area_x_df_1,
+  area_x <- areas_to_loop[i]
+  
+  area_x_df_1 <- p12_test_df %>%
+    filter(Name == area_x)
+  
+  peak_case_label <- area_x_df_1 %>%
+    filter(New_cases == max(New_cases, na.rm = TRUE)) %>%
+    filter(Date == min(Date, na.rm = TRUE))
+  
+  max_daily_case_limit <- ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 50, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 5, ceiling), ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 100, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 10, ceiling), ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 250, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 25, ceiling), ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 500, round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 50, ceiling), round_any(max(area_x_df_1$New_cases, na.rm = TRUE), 100, ceiling)))))
+  
+  max_daily_case_break <- ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 20, 2, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 50, 5, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 100, 10, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 250, 25, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 500, 50, 100)))))
+  
+  
+  total_cases_reported_plot <- ggplot(area_x_df_1,
                                       aes(x = Date,
                                           y = New_cases,
                                           group = Test_pillar)) +
-  geom_bar(stat = 'identity',
-           position = 'stack',
-           colour = '#ffffff',
-           aes(fill = Test_pillar)) +
-  geom_line(data = area_x_df_1,
-            aes(x = Date,
-                y = Seven_day_average_new_cases),
-            group = 1,
-            colour = '#000000') +
-  scale_fill_manual(values = c('#071b7c'),
-                    name = 'Pillar') +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date((last_date - 1) -(52*7), last_date -1, by = 7),
-               limits = c(min(area_x_df_1$Date), last_date),
-               expand = c(0.01,0.01)) +
-  scale_y_continuous(labels = label_comma(accuracy = 1),
-                     breaks = seq(0,max_daily_case_limit, max_daily_case_break),
-                     limits = c(0,max_daily_case_limit)) +
-  geom_segment(x = complete_date+1,
-               y = 0,
-               xend = complete_date+1,
-               yend = Inf,
-               color = "red",
-               linetype = "dashed") +
-  annotate('rect',
-           xmin = complete_date + 1,
-           xmax = max(area_x_df_1$Date),
-           ymin = 0,
-           ymax = Inf,
-           fill = '#cccccc',
-           alpha = .25) +
-  # annotate('text',
-  #          x = complete_date,
-  #          y = max_daily_case_limit * .8,
-  #          label = 'Totals for\nthese days\nnot considered\ncomplete:',
-  #          size = 2.5,
-  #          hjust = 1) +
-  labs(x = 'Date',
-       y = 'Number of daily confirmed cases',
-       title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; ', area_x),
-       subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')),
-       caption = 'The black line represents the average number of new cases confirmed in the previous seven days.\nCases after the red dashed line are for days in which we do not believe we have all the results in yet.') +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
-  theme(legend.position = 'none')
-
-png(paste0(output_directory_x, '/Figure_1_', gsub(' ', '_', area_x), '_confirmed_daily_cases.png'),
-    width = 1580,
-    height = 750,
-    res = 200)
-print(total_cases_reported_plot)
-dev.off()
-
+    geom_bar(stat = 'identity',
+             position = 'stack',
+             colour = '#ffffff',
+             aes(fill = Test_pillar)) +
+    geom_line(data = area_x_df_1,
+              aes(x = Date,
+                  y = Seven_day_average_new_cases),
+              group = 1,
+              colour = '#000000') +
+    scale_fill_manual(values = c('#071b7c'),
+                      name = 'Pillar') +
+    scale_x_date(date_labels = "%b %d",
+                 breaks = seq.Date((last_date - 1) -(52*7), last_date -1, by = 7),
+                 limits = c(min(area_x_df_1$Date), last_date),
+                 expand = c(0.01,0.01)) +
+    scale_y_continuous(labels = label_comma(accuracy = 1),
+                       breaks = seq(0,max_daily_case_limit, max_daily_case_break),
+                       limits = c(0,max_daily_case_limit)) +
+    geom_segment(x = complete_date+1,
+                 y = 0,
+                 xend = complete_date+1,
+                 yend = Inf,
+                 color = "red",
+                 linetype = "dashed") +
+    annotate('rect',
+             xmin = complete_date + 1,
+             xmax = max(area_x_df_1$Date),
+             ymin = 0,
+             ymax = Inf,
+             fill = '#cccccc',
+             alpha = .25) +
+    # annotate('text',
+    #          x = complete_date,
+    #          y = max_daily_case_limit * .8,
+    #          label = 'Totals for\nthese days\nnot considered\ncomplete:',
+    #          size = 2.5,
+    #          hjust = 1) +
+    labs(x = 'Date',
+         y = 'Number of daily confirmed cases',
+         title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; ', area_x),
+         subtitle = paste0('Confirmed cases by specimen date; as at ', format(last_date, '%d %B %Y')),
+         caption = 'The black line represents the average number of new cases confirmed in the previous seven days.\nCases after the red dashed line are for days in which we do not believe we have all the results in yet.') +
+    ph_theme() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
+    theme(legend.position = 'none')
+  
+  png(paste0(output_directory_x, '/Figure_1_', gsub(' ', '_', area_x), '_confirmed_daily_cases.png'),
+      width = 1580,
+      height = 750,
+      res = 200)
+  print(total_cases_reported_plot)
+  dev.off()
+  
 }
 
 ltla_p12_test_df <- p12_test_df %>% 
@@ -280,9 +280,9 @@ max_daily_case_limit <- ifelse(max(ltla_p12_test_df$New_cases, na.rm = TRUE) < 5
 max_daily_case_break <- ifelse(max(ltla_p12_test_df$New_cases, na.rm = TRUE) < 20, 2, ifelse(max(ltla_p12_test_df$New_cases, na.rm = TRUE) < 50, 5, ifelse(max(ltla_p12_test_df$New_cases, na.rm = TRUE) < 100, 10, ifelse(max(ltla_p12_test_df$New_cases, na.rm = TRUE) < 250, 25, ifelse(max(ltla_p12_test_df$New_cases, na.rm = TRUE) < 500, 50, 100)))))
 
 total_cases_reported_plot_2 <- ggplot(ltla_p12_test_df,
-       aes(x = Date,
-           y = New_cases,
-           group = Test_pillar)) +
+                                      aes(x = Date,
+                                          y = New_cases,
+                                          group = Test_pillar)) +
   geom_bar(stat = 'identity',
            position = 'stack',
            colour = '#ffffff',
@@ -373,8 +373,8 @@ wsx_summary %>%
   write_lines(paste0(output_directory_x, '/wsx_case_summary.json'))
 
 wsx_daily_cases <- p12_test_df %>% 
-mutate(Date_label = format(Date, '%a %d %B')) %>% 
-select(Name, Date, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label, Colour_key, Cumulative_cases)
+  mutate(Date_label = format(Date, '%a %d %B')) %>% 
+  select(Name, Date, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label, Colour_key, Cumulative_cases)
 
 wsx_daily_cases %>% 
   filter(Name %in% c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'South East region', 'England')) %>% 
@@ -626,13 +626,13 @@ utla_rate_wsx <- utla_rate %>%
          Rolling_7_day_new_cases = format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE),
          Rolling_7_day_new_cases_per_100000 = format(round(Rolling_7_day_new_cases_per_100000, 1), big.mark = ',', trim = TRUE)) %>% 
   rename(`Cumulative cases` = Cumulative_cases,
-        `Cumulative rate per 100,000 residents` =  Cumulative_per_100000,
-        `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000` = Cumulative_rate_rank,
-        `Decile of cumulative rate per 100,000` =  Cumulative_Rate_decile,
-        `Rolling 7-day new cases` = Rolling_7_day_new_cases,
-        `Rolling 7-day case rate per 100,000` = Rolling_7_day_new_cases_per_100000,
-        `Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000` = Rolling_rate_rank,
-        `Decile of rolling rate per 100,000` =  Rolling_Rate_decile)
+         `Cumulative rate per 100,000 residents` =  Cumulative_per_100000,
+         `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000` = Cumulative_rate_rank,
+         `Decile of cumulative rate per 100,000` =  Cumulative_Rate_decile,
+         `Rolling 7-day new cases` = Rolling_7_day_new_cases,
+         `Rolling 7-day case rate per 100,000` = Rolling_7_day_new_cases_per_100000,
+         `Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000` = Rolling_rate_rank,
+         `Decile of rolling rate per 100,000` =  Rolling_Rate_decile)
 
 utla_rate_wsx %>% 
   write.csv(., paste0(output_directory_x, '/utla_rate_wsx.csv'), row.names = FALSE)
@@ -684,7 +684,7 @@ ft_utla_rolling_rate_wsx <- flextable(rolling_utla_rate_wsx) %>%
 utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
   filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
   mutate(ctyua19nm = ifelse(ctyua19nm %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
-    mutate(ctyua19cd = ifelse(ctyua19cd %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(ctyua19cd %in% c('E09000001', 'E09000012'), 'E09000012', ctyua19cd))) %>% 
+  mutate(ctyua19cd = ifelse(ctyua19cd %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(ctyua19cd %in% c('E09000001', 'E09000012'), 'E09000012', ctyua19cd))) %>% 
   group_by(ctyua19cd, ctyua19nm) %>% 
   summarise() %>% 
   arrange(ctyua19cd) %>% 
@@ -739,19 +739,19 @@ map_1 <- ggplot() +
   theme(legend.position = c(.1,.55))
 
 inset_1 <- ggplot() +
-coord_fixed(1.5) +
-               map_theme() +
-               geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
-                            aes(x=long,
-                                y=lat,
-                                group = group,
-                                fill = cumulative_bins),
-                            color="#ffffff",
-                            size = .1,
-                            alpha = 1,
-                            show.legend = FALSE) +
-               scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
-                                 name = 'Decile of cumulative\nrate per 100k') +
+  coord_fixed(1.5) +
+  map_theme() +
+  geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
+               aes(x=long,
+                   y=lat,
+                   group = group,
+                   fill = cumulative_bins),
+               color="#ffffff",
+               size = .1,
+               alpha = 1,
+               show.legend = FALSE) +
+  scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
+                    name = 'Decile of cumulative\nrate per 100k') +
   labs(title = 'London') +
   theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
         plot.title = element_text(size = 8))
@@ -994,19 +994,19 @@ ltla_boundaries_geo <- ltla_boundaries %>%
   arrange(lad19cd)
 
 ltla_boundaries_geo_df <- as.data.frame(ltla_rate %>% 
-    arrange(Code) %>% 
-    mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
-    mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
-    select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
-    mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
-    mutate(cumulative_bins = factor(cumulative_bins, levels = levels(geo_rate_cumulative_ltla_bins$cumulative_bins))) %>% 
-    mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
-    mutate(rolling_bins = factor(rolling_bins, levels = levels(geo_rate_rolling_ltla_bins$rolling_bins))))
+                                          arrange(Code) %>% 
+                                          mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
+                                          mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Lower Tier Local Authorities in England.')) %>% 
+                                          select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
+                                          mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
+                                          mutate(cumulative_bins = factor(cumulative_bins, levels = levels(geo_rate_cumulative_ltla_bins$cumulative_bins))) %>% 
+                                          mutate(rolling_bins = gsub('\n',' ', rolling_bins)) %>% 
+                                          mutate(rolling_bins = factor(rolling_bins, levels = levels(geo_rate_rolling_ltla_bins$rolling_bins))))
 
 df <- data.frame(ID = character())
 
 # Get the IDs of spatial polygon
-  for (i in ltla_boundaries_geo@polygons ) { df <- rbind(df, data.frame(ID = i@ID, stringsAsFactors = FALSE))  }
+for (i in ltla_boundaries_geo@polygons ) { df <- rbind(df, data.frame(ID = i@ID, stringsAsFactors = FALSE))  }
 
 # and set rowname = ID
 row.names(ltla_boundaries_geo_df) <- df$ID
@@ -1020,10 +1020,10 @@ geojson_write(geojson_json(ltla_boundaries_json), file = paste0(output_directory
 
 # For ggplot
 ltla_ua_boundaries <- ltla_boundaries %>% 
-    filter(lad19cd %in% ltla_rate$Code) %>% 
-    fortify(region = "lad19cd") %>% 
-    rename(lad19cd = id) %>% 
-    left_join(ltla_rate, by = c('lad19cd' = 'Code'))
+  filter(lad19cd %in% ltla_rate$Code) %>% 
+  fortify(region = "lad19cd") %>% 
+  rename(lad19cd = id) %>% 
+  left_join(ltla_rate, by = c('lad19cd' = 'Code'))
 
 map_1_ltla <- ggplot() +
   coord_fixed(1.5) +
@@ -1436,7 +1436,7 @@ Occurrences <- Occurrences_ltla %>%
 rm(Occurrences_ltla, Occurrences_wsx, Occurrences_ltla_2021)
 
 deaths_labels <- Occurrences %>% 
-  arrange(Week_number) %>% 
+  arrange(week_id) %>% 
   select(Week_ending) %>% 
   unique() %>% 
   mutate(deaths_label = paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')))
@@ -1474,118 +1474,118 @@ weekly_all_place_deaths <- All_settings_occurrences %>%
   left_join(weekly_all_place_all_deaths, by = c('Name', 'Week_ending'))
 
 for(i in 1:length(areas_to_loop)){
-
-area_x <- areas_to_loop[i]
-
-area_x_cov_non_cov_raw <- weekly_all_place_deaths %>% 
-  filter(Name == area_x)
-
-deaths_area_x_cov_non_cov <- area_x_cov_non_cov_raw %>% 
-  group_by(Cause) %>% 
-  summarise(Deaths_to_date = sum(Deaths, na.rm = TRUE))
-
-area_x_cov_non_cov <- area_x_cov_non_cov_raw %>%
-  left_join(deaths_area_x_cov_non_cov, by = 'Cause') %>% 
-  mutate(Cause_1 = paste0(ifelse(Cause == 'Non-Covid', 'COVID not mentioned', gsub(' ', '-', Cause)), ' (', format(Deaths_to_date, big.mark = ',', trim = TRUE), ' deaths)')) %>% 
-  mutate(Cause_1 = factor(Cause_1, levels = unique(Cause_1)))
-
-max_deaths_limit <- ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 50, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 5, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 100, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 10, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 250, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 25, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 500, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 50, ceiling), round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 100, ceiling)))))
-
-max_deaths_break <- ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 20, 2, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 50, 5, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 100, 10, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 250, 25, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 500, 50, 100)))))
-
-area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
-                                      aes(x = Week_ending, 
-                                          y = Deaths,
-                                          fill = Cause_1,
-                                          colour = Cause_1,
-                                          label = Deaths)) +
-  geom_bar(stat = 'identity',
-           width = .8) +
-  labs(title = paste0('Weekly deaths; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
-       subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
-       x = 'Week',
-       y = 'Number of deaths') +
-  scale_fill_manual(values = c('#2F5597','#BDD7EE'),
-                    name = 'Number of deaths since\nweek ending 3rd Jan 2020') +
-  scale_colour_manual(values = c('#2F5597','#BDD7EE')) +
-  scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
-                     limits = c(0,max_deaths_limit)) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-        legend.position = 'right')  +
-  guides(colour = FALSE)
-
-png(paste0(output_directory_x, '/Figure_6_wkly_deaths_', gsub(' ', '_', area_x), '.png'),
-    width = 1280,
-    height = 400,
-    res = 110)
-print(area_x_wk_cause_deaths_plot)
-dev.off()
-
-care_home_ons_all_deaths <- Occurrences %>%
-  filter(Place_of_death %in% 'Care home') %>% 
-  filter(Cause == 'All causes') %>% 
-  arrange(week_id) %>% 
-  select(Name, Week_ending, Deaths) %>% 
-  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
-  rename(All_deaths = Deaths)
-
-carehome_weekly_deaths <- Occurrences %>%
-  filter(Place_of_death %in% 'Care home') %>% 
-  arrange(week_id) %>% 
-  select(Name, Cause, Week_ending, Week_number, Deaths) %>% 
-  mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
-  pivot_wider(id_cols = c(Name, Week_ending, Week_number),
-              names_from = Cause,
-              values_from = Deaths) %>% 
-  mutate(`Non-Covid` = `All causes` - `COVID 19`) %>%
-  select(-`All causes`) %>% 
-  gather(key = 'Cause', value = 'Deaths', `COVID 19`:`Non-Covid`) %>% 
-  mutate(Cause = factor(Cause, levels = rev(c('Non-Covid', 'COVID 19')))) %>% 
-  mutate(lab_posit = ifelse(Cause == 'Non-Covid', 1.5, -1)) %>% 
-  left_join(care_home_ons_all_deaths, by = c('Name', 'Week_ending'))
-
-area_x_cov_non_cov_carehome_raw <- carehome_weekly_deaths %>% 
-  filter(Name == area_x)
-
-deaths_area_x_cov_non_cov_carehome <- area_x_cov_non_cov_carehome_raw %>% 
-  group_by(Cause) %>% 
-  summarise(Deaths_to_date = sum(Deaths, na.rm = TRUE))
-
-area_x_cov_non_cov_carehome <- area_x_cov_non_cov_carehome_raw %>%
-  left_join(deaths_area_x_cov_non_cov_carehome, by = 'Cause') %>% 
-  mutate(Cause_1 = paste0(ifelse(Cause == 'Non-Covid', 'COVID not mentioned', gsub(' ', '-', Cause)), ' (', format(Deaths_to_date, big.mark = ',', trim = TRUE), ' deaths)')) %>% 
-  mutate(Cause_1 = factor(Cause_1, levels = unique(Cause_1)))
-
-area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
-       aes(x = Week_ending, 
-           y = Deaths,
-           fill = Cause_1,
-           colour = Cause_1,
-           label = Deaths)) +
-  geom_bar(stat = 'identity',
-           width = .8) +
-  labs(title = paste0('Weekly deaths in care homes; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
-       subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
-       x = 'Week',
-       y = 'Number of deaths') +
-  scale_fill_manual(values = c('#ED7D31','#FFD966'),
-                    name = 'Number of deaths since\nweek ending 3rd Jan 2020)') +
-  scale_colour_manual(values = c('#ED7D31','#FFD966')) +
-  scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
-                     limits = c(0,max_deaths_limit)) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-        legend.position = 'right')  +
-  guides(colour = FALSE)
-
-png(paste0(output_directory_x, '/Figure_7_wkly_deaths_carehomes_', gsub(' ', '_', area_x), '.png'),
-    width = 1280,
-    height = 400,
-    res = 110)
-print(area_x_wk_cause_deaths_plot_2)
-dev.off()
-
+  
+  area_x <- areas_to_loop[i]
+  
+  area_x_cov_non_cov_raw <- weekly_all_place_deaths %>% 
+    filter(Name == area_x)
+  
+  deaths_area_x_cov_non_cov <- area_x_cov_non_cov_raw %>% 
+    group_by(Cause) %>% 
+    summarise(Deaths_to_date = sum(Deaths, na.rm = TRUE))
+  
+  area_x_cov_non_cov <- area_x_cov_non_cov_raw %>%
+    left_join(deaths_area_x_cov_non_cov, by = 'Cause') %>% 
+    mutate(Cause_1 = paste0(ifelse(Cause == 'Non-Covid', 'COVID not mentioned', gsub(' ', '-', Cause)), ' (', format(Deaths_to_date, big.mark = ',', trim = TRUE), ' deaths)')) %>% 
+    mutate(Cause_1 = factor(Cause_1, levels = unique(Cause_1)))
+  
+  max_deaths_limit <- ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 50, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 5, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 100, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 10, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 250, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 25, ceiling), ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 500, round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 50, ceiling), round_any(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE), 100, ceiling)))))
+  
+  max_deaths_break <- ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 20, 2, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 50, 5, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 100, 10, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 250, 25, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 500, 50, 100)))))
+  
+  area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
+                                         aes(x = Week_ending, 
+                                             y = Deaths,
+                                             fill = Cause_1,
+                                             colour = Cause_1,
+                                             label = Deaths)) +
+    geom_bar(stat = 'identity',
+             width = .8) +
+    labs(title = paste0('Weekly deaths; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
+         subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
+         x = 'Week',
+         y = 'Number of deaths') +
+    scale_fill_manual(values = c('#2F5597','#BDD7EE'),
+                      name = 'Number of deaths since\nweek ending 3rd Jan 2020') +
+    scale_colour_manual(values = c('#2F5597','#BDD7EE')) +
+    scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
+                       limits = c(0,max_deaths_limit)) +
+    ph_theme() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
+          legend.position = 'right')  +
+    guides(colour = FALSE)
+  
+  png(paste0(output_directory_x, '/Figure_6_wkly_deaths_', gsub(' ', '_', area_x), '.png'),
+      width = 1280,
+      height = 400,
+      res = 110)
+  print(area_x_wk_cause_deaths_plot)
+  dev.off()
+  
+  care_home_ons_all_deaths <- Occurrences %>%
+    filter(Place_of_death %in% 'Care home') %>% 
+    filter(Cause == 'All causes') %>% 
+    arrange(week_id) %>% 
+    select(Name, Week_ending, Deaths) %>% 
+    mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
+    rename(All_deaths = Deaths)
+  
+  carehome_weekly_deaths <- Occurrences %>%
+    filter(Place_of_death %in% 'Care home') %>% 
+    arrange(week_id) %>% 
+    select(Name, Cause, Week_ending, Week_number, Deaths) %>% 
+    mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
+    pivot_wider(id_cols = c(Name, Week_ending, Week_number),
+                names_from = Cause,
+                values_from = Deaths) %>% 
+    mutate(`Non-Covid` = `All causes` - `COVID 19`) %>%
+    select(-`All causes`) %>% 
+    gather(key = 'Cause', value = 'Deaths', `COVID 19`:`Non-Covid`) %>% 
+    mutate(Cause = factor(Cause, levels = rev(c('Non-Covid', 'COVID 19')))) %>% 
+    mutate(lab_posit = ifelse(Cause == 'Non-Covid', 1.5, -1)) %>% 
+    left_join(care_home_ons_all_deaths, by = c('Name', 'Week_ending'))
+  
+  area_x_cov_non_cov_carehome_raw <- carehome_weekly_deaths %>% 
+    filter(Name == area_x)
+  
+  deaths_area_x_cov_non_cov_carehome <- area_x_cov_non_cov_carehome_raw %>% 
+    group_by(Cause) %>% 
+    summarise(Deaths_to_date = sum(Deaths, na.rm = TRUE))
+  
+  area_x_cov_non_cov_carehome <- area_x_cov_non_cov_carehome_raw %>%
+    left_join(deaths_area_x_cov_non_cov_carehome, by = 'Cause') %>% 
+    mutate(Cause_1 = paste0(ifelse(Cause == 'Non-Covid', 'COVID not mentioned', gsub(' ', '-', Cause)), ' (', format(Deaths_to_date, big.mark = ',', trim = TRUE), ' deaths)')) %>% 
+    mutate(Cause_1 = factor(Cause_1, levels = unique(Cause_1)))
+  
+  area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
+                                          aes(x = Week_ending, 
+                                              y = Deaths,
+                                              fill = Cause_1,
+                                              colour = Cause_1,
+                                              label = Deaths)) +
+    geom_bar(stat = 'identity',
+             width = .8) +
+    labs(title = paste0('Weekly deaths in care homes; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
+         subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
+         x = 'Week',
+         y = 'Number of deaths') +
+    scale_fill_manual(values = c('#ED7D31','#FFD966'),
+                      name = 'Number of deaths since\nweek ending 3rd Jan 2020)') +
+    scale_colour_manual(values = c('#ED7D31','#FFD966')) +
+    scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
+                       limits = c(0,max_deaths_limit)) +
+    ph_theme() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
+          legend.position = 'right')  +
+    guides(colour = FALSE)
+  
+  png(paste0(output_directory_x, '/Figure_7_wkly_deaths_carehomes_', gsub(' ', '_', area_x), '.png'),
+      width = 1280,
+      height = 400,
+      res = 110)
+  print(area_x_wk_cause_deaths_plot_2)
+  dev.off()
+  
 }
 
 ltla_deaths_df <- weekly_all_place_deaths %>% 
@@ -1596,11 +1596,11 @@ max_deaths_limit <- ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 50, ro
 max_deaths_break <- ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 20, 2, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 50, 5, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 100, 10, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 250, 25, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 500, 50, 100)))))
 
 ltla_deaths_plot_1 <- ggplot(ltla_deaths_df,
-                          aes(x = Week_ending, 
-                              y = Deaths,
-                              fill = Cause,
-                              colour = Cause,
-                              label = Deaths)) +
+                             aes(x = Week_ending, 
+                                 y = Deaths,
+                                 fill = Cause,
+                                 colour = Cause,
+                                 label = Deaths)) +
   geom_bar(stat = 'identity',
            colour = '#ffffff') +
   # geom_text(data = subset(area_x_cov_non_cov, Deaths > 0),
@@ -1612,8 +1612,8 @@ ltla_deaths_plot_1 <- ggplot(ltla_deaths_df,
        subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
        x = 'Week',
        y = 'Number of deaths') +
-    scale_fill_manual(values = c('#2F5597','#BDD7EE'),
-                      labels = c('COVID-19', 'COVID not mentioned')) +
+  scale_fill_manual(values = c('#2F5597','#BDD7EE'),
+                    labels = c('COVID-19', 'COVID not mentioned')) +
   scale_colour_manual(values = c('#000000', '#ffffff')) +
   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
                      limits = c(0,max_deaths_limit)) +
@@ -1670,7 +1670,7 @@ dev.off()
 
 # Exporting for figures #
 
- all_deaths_json_export <- All_settings_occurrences %>%
+all_deaths_json_export <- All_settings_occurrences %>%
   ungroup() %>%
   select(Name, Week_number, Week_ending, Cause, Deaths) %>%
   group_by(Name, Week_number, Week_ending) %>%
@@ -1682,8 +1682,8 @@ dev.off()
   mutate(Cumulative_deaths_all_cause = cumsum(`All causes`)) %>%
   mutate(Cumulative_covid_deaths = cumsum(`Covid-19`)) %>%
   mutate(Cumulative_deaths_label = paste0('As at ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' the total cumulative number of deaths for 2020 was<b> ', format(Cumulative_deaths_all_cause, big.mark = ',', trim = TRUE), '</b>. The cumulative number of deaths where Covid-19 is recorded as a cause by this date was ', format(Cumulative_covid_deaths, big.mark = ',', trim = TRUE), '. This is ', round((Cumulative_covid_deaths/Cumulative_deaths_all_cause) * 100, 1), '% of deaths occuring by this week.')) %>% 
-   mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label))
- 
+  mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label))
+
 all_deaths_json_export %>% 
   select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause) %>% 
   toJSON() %>%
@@ -1722,7 +1722,7 @@ carehome_deaths_json_export %>%
   select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause) %>% 
   toJSON() %>%
   write_lines(paste0(output_directory_x, '/deaths_carehomes.json'))
- 
+
 Occurrences %>% 
   select(Week_ending, Week_number) %>% 
   unique() %>% 
@@ -1755,22 +1755,22 @@ wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly data
           location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
   ph_with(value = paste0('Slide ', length(.)-1), 
           location = ph_location_label(ph_label = 'Text Placeholder 12'))
-  
+
 for(i in 1:length(areas_to_loop)){
   
-area_x <- areas_to_loop[i]
-
-wkly_template <- wkly_template %>% 
-  add_slide(layout = "Daily_case_layout", master = "Office Theme") %>% 
-  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
-          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
-  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_1_', gsub(' ' , '_', area_x), '_confirmed_daily_cases.png')), 
-          location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
-  ph_with(value = 'Source: https://coronavirus.data.gov.uk/', 
-          href = 'https://coronavirus.data.gov.uk',
-          location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
-  ph_with(value = paste0('Slide ', length(.) -1), 
-          location = ph_location_label(ph_label = 'Text Placeholder 12'))
+  area_x <- areas_to_loop[i]
+  
+  wkly_template <- wkly_template %>% 
+    add_slide(layout = "Daily_case_layout", master = "Office Theme") %>% 
+    ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
+            location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
+    ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_1_', gsub(' ' , '_', area_x), '_confirmed_daily_cases.png')), 
+            location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
+    ph_with(value = 'Source: https://coronavirus.data.gov.uk/', 
+            href = 'https://coronavirus.data.gov.uk',
+            location = ph_location_label(ph_label = 'Text Placeholder 15')) %>% 
+    ph_with(value = paste0('Slide ', length(.) -1), 
+            location = ph_location_label(ph_label = 'Text Placeholder 12'))
 }
 
 # Middle plots
@@ -1826,7 +1826,7 @@ wkly_template <- wkly_template %>%
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_utla_rolling_rate_wsx,
           location = ph_location_label(ph_label = 'Table Placeholder 7')) %>%
-add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
+  add_slide(layout = "rate_map_layout", master = "Office Theme") %>%  # LTLA map
   ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_4_cumulative_rate_ltla_latest.png')), 
           location = ph_location_label(ph_label = 'Picture Placeholder 8')) %>% 
   ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')), 
@@ -2025,14 +2025,14 @@ growth_rate_utla %>%
 #   toJSON() %>% 
 #   write_lines(paste0(output_directory_x,'/utla_growth_latest.json'))
 
-  # growth_rate_utla %>% 
-  # filter(Date >= '2020-09-01') %>%
-  # summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
-  #           Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
-  # mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
-  #   toJSON() %>% 
-  #   write_lines(paste0(output_directory_x,'/utla_growth_limits.json'))
-  
+# growth_rate_utla %>% 
+# filter(Date >= '2020-09-01') %>%
+# summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
+#           Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
+# mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/utla_growth_limits.json'))
+
 # growth_rate_utla %>% 
 #   filter(Date == complete_date) %>%
 #   summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
@@ -2040,7 +2040,7 @@ growth_rate_utla %>%
 #     mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
 #     toJSON() %>% 
 #     write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
-  
+
 growth_rate_utla %>% 
   filter(Date >= '2020-09-01') %>%
   select(Date) %>% 
