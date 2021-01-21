@@ -776,7 +776,7 @@ counts_new_cases_tile_plot();
 function toggle_count_rate_func() {
   var type = document.getElementsByName("toggle_count_rate");
   if (type[0].checked) {
-    console.log("We'll put the count version on for you");
+    // console.log("We'll put the count version on for you");
 
     $(".key_list").remove();
 
@@ -803,7 +803,7 @@ function toggle_count_rate_func() {
       .style("font-weight", "bold")
       .style("font-size", ".8rem");
   } else if (type[1].checked) {
-    console.log("We'll put the rate version on for you");
+    // console.log("We'll put the rate version on for you");
 
     $(".key_list").remove();
 

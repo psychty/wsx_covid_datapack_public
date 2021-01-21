@@ -148,7 +148,7 @@ var last_case_period = case_dates_df.filter(function (d) {
   return d.Item === "last_case_period";
 })[0]["Label"];
 
-console.log(first_case_period, last_case_period);
+// console.log(first_case_period, last_case_period);
 
 // Update text based on selected area
 d3.select("#update_date").html(function (d) {

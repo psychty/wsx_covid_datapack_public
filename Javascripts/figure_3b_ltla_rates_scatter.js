@@ -1,5 +1,5 @@
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/ltla_growth_since_september.json", false);
+request.open("GET", "./Outputs/ltla_growth_since_november.json", false);
 request.send(null);
 var ltla_growth_ts_data = JSON.parse(request.responseText);
 
@@ -182,9 +182,9 @@ function new_date_growth_ltla() {
 }
 
 ////////// slider //////////
-// This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
+// This is not great, but it takes the number of unique dates and recreates an array of dates from November 01
 var dataTime_ltla = d3.range(0, ltla_growth_ts_dates.length).map(function (d) {
-  return new Date(2020, 08, 01 + d);
+  return new Date(2020, 10, 01 + d);
 });
 
 var sliderTime_ltla = d3
@@ -194,7 +194,7 @@ var sliderTime_ltla = d3
   .width(300)
   .tickFormat(d3.timeFormat(""))
   .tickValues(dataTime_ltla)
-  .default(new Date(2020, 08, 1 + ltla_growth_ts_dates.length))
+  .default(new Date(2020, 10, 1 + ltla_growth_ts_dates.length))
   .on("onchange", new_date_growth_ltla);
 
 var ltla_growth_slider_svg = d3

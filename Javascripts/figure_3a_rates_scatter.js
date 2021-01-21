@@ -1,5 +1,5 @@
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/utla_growth_since_september.json", false);
+request.open("GET", "./Outputs/utla_growth_since_november.json", false);
 request.send(null);
 var utla_growth_ts_data = JSON.parse(request.responseText);
 
@@ -174,7 +174,7 @@ d3.select("#wsx_growth_rate_latest").html(function (d) {
 ////////// slider //////////
 // This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
 var dataTime = d3.range(0, utla_growth_ts_dates.length).map(function (d) {
-  return new Date(2020, 08, 01 + d);
+  return new Date(2020, 10, 01 + d);
 });
 
 var sliderTime = d3
@@ -184,7 +184,7 @@ var sliderTime = d3
   .width(300)
   .tickFormat(d3.timeFormat(""))
   .tickValues(dataTime)
-  .default(new Date(2020, 08, 1 + utla_growth_ts_dates.length))
+  .default(new Date(2020, 10, 1 + utla_growth_ts_dates.length))
   .on("onchange", new_date_growth_utla);
 
 var utla_growth_slider_svg = d3

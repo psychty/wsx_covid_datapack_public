@@ -35,8 +35,8 @@ ph_theme = function(){
   ) 
 }
 
-github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
-# github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
+#github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
+github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
@@ -1991,12 +1991,12 @@ growth_rate_ltla <- growth_rate %>%
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_ltla %>%
-  filter(Date >= '2020-09-01') %>%
+  filter(Date >= '2020-11-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_ltla$Name), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')))) %>% 
   arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>% 
   toJSON() %>%
-  write_lines(paste0(output_directory_x,'/ltla_growth_since_september.json'))
+  write_lines(paste0(output_directory_x,'/ltla_growth_since_november.json'))
 
 # growth_rate_ltla %>%
 #   filter(Date == complete_date) %>%
@@ -2012,12 +2012,12 @@ growth_rate_utla <- growth_rate %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_utla %>% 
-  filter(Date >= '2020-09-01') %>%
+  filter(Date >= '2020-11-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_utla$Name), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')))) %>% 
   arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/utla_growth_since_september.json'))
+  write_lines(paste0(output_directory_x,'/utla_growth_since_november.json'))
 
 # growth_rate_utla %>% 
 #   filter(Date == complete_date) %>% 
@@ -2042,7 +2042,7 @@ growth_rate_utla %>%
 #     write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
 
 growth_rate_utla %>% 
-  filter(Date >= '2020-09-01') %>%
+  filter(Date >= '2020-11-01') %>%
   select(Date) %>% 
   unique() %>% 
   arrange(Date) %>% 
@@ -2074,7 +2074,7 @@ mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   summarise(Population = sum(Population, na.rm = TRUE)) %>% 
   ungroup()
 
-# We need to back fill the missing days!! #####
+# We need to back fill the missing days!! 
 
 age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-unstacked.csv') %>% 
   filter(areaName %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
