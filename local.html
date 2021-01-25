@@ -78,42 +78,55 @@
   </header>
 </div>
 
-<h4 class = 'small_screen_show_title'>West Sussex COVID-19 data summary</h4>
-<!-- <p style = 'margin-left: 25px'><b>Note: there will be limited updating of this website between 24th December 2020 and 4th January 2021, although we will try to update it as frequently as possible. In the meantime, please the see <a href = 'https://coronavirus.data.gov.uk/'>UK Government Coronavirus data site</a> for all COVID-19 data updates.</b></p> -->
-<p class = 'small_screen_show'>This version of the COVID-19 analyses has been built for desktop and large screens. The size of your browser window or screen may be too small to read the data visualisation without some of it overlapping.</p>
-<p class = 'small_screen_show'>We recommend that you go to the <a href = 'https://wsx-c19-mobile.netlify.app/'>mobile friendly</a> version of this site (https://wsx-c19-mobile.netlify.app/).</p>
-<p class = 'small_screen_show'>Alternatively, please increase the window size until you can no longer see this message for the best view of the data.</p>
-<p class = 'small_screen_show'>If you have any comments or questions, please email us at <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
-
-<div class = 'small_screen_adapt'>
-<section class = 'home' id = 'home'>
-  <h4 class = 'content_top'>West Sussex COVID-19 data summary</h4>
-  <div class = 'content'>
-  </div>
-    <div class = "content" id = 'content_size'>
-<p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published as a powerpoint slide deck which can be found on the top right of this webpage. Links are provided to public data sources available.</p>
-<p><a href = 'https://wsx-c19-mobile.netlify.app/'>A mobile friendly</a>, quick glance, version of this site is also available (https://wsx-c19-mobile.netlify.app/).</p>
-<p class = 'warn'>Although this webpage has been made by a member of staff in the Public Health and Social Research Unit to support their work, it is not a West Sussex County Council website.</p>
-<p class ='highlight_dl' id = 'update_date'></p>
-<p id = 'data_recency'></p>
-<p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
-</div>
-<div class = 'right-sidebar'>
-  <p class = 'side'>This page works best in certain browsers such as Chrome, Firefox, and Safari, and does not currently work well in Internet Explorer. If you have difficulty viewing the charts on this page please consider using a different web browser.</p>
-  <p class = 'side'>This analysis has been created by Dr Rich Tyler at the West Sussex Public Health and Social Research Unit.</p>
-<p class = 'highlight_dl'>A powerpoint slide deck is available to <a class = 'highlight_dl' href = 'https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx' >download here</a></p>
-  </div>
+<section class="local_section" id = 'local_section'>
+    <h4 class = 'content_top'>Cases in your local area</h4>
+    <div class = 'content'>
+    </div>
+  
+    <div class="content">
+      <p>Data on the number of new confirmed cases at a very localised area called an output area (Middle Layer Super Output Area, or MSOAs for short) is now available. This is useful as it means you can see what cases are like where you live or where your friends and family live. We do not get the same detail from the data published at this level compared to wider areas and when there are fewer than three cases in a seven day period in the MSOA, these are supressed.</p>
+      <p>However, you can search for a postcode in the box below for any postcode in England and a marker will appear on the map with more detail about cases in that local area.</p>
+      
+      <div class='inputHolder'>
+        <input placeholder='Postcode' type='text' id='txtPostcode'/>
+        <input type='button' value='Search' id='btnPostcode'/>
+      </div>
+  
+      <div class = 'local_summary_tile'>
+        <h4 id = 'local_case_summary_1'></h4>
+        <p id = 'local_case_summary_2'></p>
+        <p id = 'local_case_summary_3'></p>
+        </div>
+    </div>
+  
+    <div class="right-sidebar">
+      <p class = 'side'>MSOAs may vary in physical area size, but are design to cover roughly the same number of people (which is why there are many more MSOAs in towns and cities than there are in rural areas). Case data is supressed where an area has had fewer than 3 cases in the last seven days to prevent disclosure of any individuals identities.</p>
+    </div>
+  
+     <div class="content">
+       <h4 id = 'local_case_map_title'></h4>
+       <div id = 'msoa_map_place'></div>
+       <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+       <p>It should be noted that at a small area level (particularly at a local neighbourhood level such as MSOA) <b>figures can fluctuate considerably from day to day </b>and a small change in the number of cases (for example if a few large family groups test positive) this can have a big impact on the rates, so it is always worth considering not only your immediate area but the wider area when looking at the current situation and trends.</p>
+      </div>
+  
+      <div class = 'right-sidebar'>
+        <h4>Cases in the latest 7 days</h4>
+        <div id = 'msoa_case_key'></div>
+      </div>
   </section>
 
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
 <script src="https://d3js.org/d3-format.v1.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 <script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/d3-simple-slider"></script>
-<script src = 'https://unpkg.com/d3-simple-slider@1.10.1/dist/d3-simple-slider.min.js'></script>
+
+<!-- <script src="https://unpkg.com/d3-simple-slider"></script> -->
+
+<!-- <script src = 'https://unpkg.com/d3-simple-slider@1.10.1/dist/d3-simple-slider.min.js'></script>
 <script src = "Javascripts/figure_1a_daily_bars.js"></script>
 <script src = "Javascripts/figure_1b_daily_bars.js"></script>
 <script src = 'Javascripts/figure_positivity.js'></script>
@@ -121,11 +134,11 @@
 <script src = 'Javascripts/figure_age_specific_rates.js'></script>
 <script src = 'Javascripts/figure_age_specific_rates_u30.js'></script>
 <script src = "Javascripts/figure_3a_rates_scatter.js"></script>
-<script src = "Javascripts/figure_3b_ltla_rates_scatter.js"></script>
+<script src = "Javascripts/figure_3b_ltla_rates_scatter.js"></script> -->
 <script src = "Javascripts/figure_3_4_rate_maps.js"></script>
 <script src = "Javascripts/local_cases.js"></script>
-<script src = "Javascripts/figure_4b_restriction_map.js"></script>
-<script src = "Javascripts/figure_5_pathways.js"></script>
+<!-- <script src = "Javascripts/figure_4b_restriction_map.js"></script> -->
+<!-- <script src = "Javascripts/figure_5_pathways.js"></script>
 <script src = "Javascripts/figure_6_mortality.js"></script> -->
 
 </body>
