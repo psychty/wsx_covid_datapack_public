@@ -1390,9 +1390,9 @@ rm(week_ending_a, week_ending_b)
 # 
 # download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
-download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
+download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week1.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week2.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # # # if the download does fail, it wipes out the old one, which we can use to our advantage
 # if(!file.exists(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'))){
@@ -2278,7 +2278,11 @@ msoa_cases <- msoa_cases_raw %>%
   #  filter(MSOA11NM %in% se_msoas$MSOA11NM) %>%
   arrange(MSOA11NM)
 
-msoa_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/23cdb60ee47e4fef8d72e4ee202accb0_0.geojson",  what = "sp") %>% 
+# msoa_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/1382f390c22f4bed89ce11f2a9207ff0_0.geojson",  what = "sp") %>% 
+#   filter(MSOA11NM %in% msoa_cases$MSOA11NM) %>%
+#   arrange(MSOA11NM)
+
+msoa_boundaries_json <- geojson_read(paste0(github_repo_dir, '/Source files/failsafe_msoa_boundary.geojson'),  what = "sp") %>% 
   filter(MSOA11NM %in% msoa_cases$MSOA11NM) %>%
   arrange(MSOA11NM)
 
