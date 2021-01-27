@@ -124,25 +124,25 @@ var lines_triages = svg_pathways_fig
   .style("fill", "none");
 
 // We can treat this as a set of thin bars. With tooltips (maybe adding a dot or symbol at the top of each line as a easier thing to mouseover)
-svg_pathways_fig
-  .selectAll("changes_timeline")
-  .data(pathway_changes)
-  .enter()
-  .append("line")
-  .attr("x1", function (d) {
-    return x_pathways(d.Date) + x_pathways.bandwidth() / 2;
-  })
-  .attr("y1", function (d) {
-    return y_pathways(+d.Triage_count);
-  })
-  .attr("x2", function (d) {
-    return x_pathways(d.Date) + x_pathways.bandwidth() / 2;
-  })
-  .attr("y2", height_line - 80)
-  .attr("stroke", function (d) {
-    return d.direction;
-  })
-  .attr("stroke-dasharray", "3, 3");
+// svg_pathways_fig
+//   .selectAll("changes_timeline")
+//   .data(pathway_changes)
+//   .enter()
+//   .append("line")
+//   .attr("x1", function (d) {
+//     return x_pathways(d.Date) + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y1", function (d) {
+//     return y_pathways(+d.Triage_count);
+//   })
+//   .attr("x2", function (d) {
+//     return x_pathways(d.Date) + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y2", height_line - 80)
+//   .attr("stroke", function (d) {
+//     return d.direction;
+//   })
+//   .attr("stroke-dasharray", "3, 3");
 //
 // svg_pathways_fig
 //   .append("text")
@@ -172,85 +172,85 @@ svg_pathways_fig
 // .style('font-size', '10px')
 //   .attr("text-anchor", "end")
 //
-svg_pathways_fig
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_pathways("23 Apr") + x_pathways.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return y_pathways(+292) - 45;
-  })
-  .text("23rd April")
-  .style("font-weight", "bold")
-  .style("font-size", ".7rem")
-  .attr("text-anchor", "start");
+// svg_pathways_fig
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_pathways("23 Apr") + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return y_pathways(+292) - 45;
+//   })
+//   .text("23rd April")
+//   .style("font-weight", "bold")
+//   .style("font-size", ".7rem")
+//   .attr("text-anchor", "start");
 
-svg_pathways_fig
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_pathways("23 Apr") + x_pathways.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return y_pathways(+292) - 35;
-  })
-  .text("111 online reinstated")
-  .style("font-size", ".7rem")
-  .attr("text-anchor", "start");
+// svg_pathways_fig
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_pathways("23 Apr") + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return y_pathways(+292) - 35;
+//   })
+//   .text("111 online reinstated")
+//   .style("font-size", ".7rem")
+//   .attr("text-anchor", "start");
 
-svg_pathways_fig
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_pathways("23 Apr") + x_pathways.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return y_pathways(+292) - 25;
-  })
-  .text("for 5-18 year olds")
-  .style("font-size", ".7rem")
-  .attr("text-anchor", "start");
+// svg_pathways_fig
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_pathways("23 Apr") + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return y_pathways(+292) - 25;
+//   })
+//   .text("for 5-18 year olds")
+//   .style("font-size", ".7rem")
+//   .attr("text-anchor", "start");
 
-svg_pathways_fig
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_pathways("18 May") + x_pathways.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return y_pathways(+334) - 35;
-  })
-  .text("18 May")
-  .style("font-weight", "bold")
-  .style("font-size", ".7rem")
-  .attr("text-anchor", "start");
+// svg_pathways_fig
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_pathways("18 May") + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return y_pathways(+334) - 35;
+//   })
+//   .text("18 May")
+//   .style("font-weight", "bold")
+//   .style("font-size", ".7rem")
+//   .attr("text-anchor", "start");
 
-svg_pathways_fig
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_pathways("18 May") + x_pathways.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return y_pathways(+334) - 25;
-  })
-  .text("Pathway case")
-  .style("font-size", ".7rem")
-  .attr("text-anchor", "start");
+// svg_pathways_fig
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_pathways("18 May") + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return y_pathways(+334) - 25;
+//   })
+//   .text("Pathway case")
+//   .style("font-size", ".7rem")
+//   .attr("text-anchor", "start");
 
-svg_pathways_fig
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_pathways("18 May") + x_pathways.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return y_pathways(+334) - 15;
-  })
-  .text("definition change")
-  .style("font-size", ".7rem")
-  .attr("text-anchor", "start");
+// svg_pathways_fig
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_pathways("18 May") + x_pathways.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return y_pathways(+334) - 15;
+//   })
+//   .text("definition change")
+//   .style("font-size", ".7rem")
+//   .attr("text-anchor", "start");
 
 svg_pathways_fig
   .append("text")
