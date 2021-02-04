@@ -17,7 +17,7 @@ var svg_age_spec_1 = d3
   .attr("width", width_hm)
   .attr("height", height_line)
   .append("g")
-  .attr("transform", "translate(" + 50 + "," + 20 + ")");
+  .attr("transform", "translate(" + 50 + "," + 10 + ")");
 
 // We need to create a dropdown button for the user to choose which area to be displayed on the figure.
 d3.select("#select_lines_age_1_area_button")

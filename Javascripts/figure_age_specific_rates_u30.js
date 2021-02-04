@@ -17,7 +17,7 @@ var svg_age_spec_u30 = d3
   .attr("width", width_hm)
   .attr("height", height_line)
   .append("g")
-  .attr("transform", "translate(" + 50 + "," + 20 + ")");
+  .attr("transform", "translate(" + 50 + "," + 10 + ")");
 
 // We need to create a dropdown button for the user to choose which area to be displayed on the figure.
 d3.select("#select_lines_age_2_area_button")
@@ -116,7 +116,7 @@ var y_asr_u30_ts_axis = svg_age_spec_u30
   .attr("transform", "translate(0,0)")
   .call(d3.axisLeft(y_asr_u30_ts).tickFormat(d3.format(",.0f")));
 
-y_asr_u30_ts_axis.selectAll("text").style("font-size", ".8rem");
+// y_asr_u30_ts_axis.selectAll("text").style("font-size", ".8rem");
 
 var tooltip_asr_u30_dot = d3
   .select("#age_spec_fig_u30")
@@ -419,8 +419,8 @@ function update_asr_u30() {
       "transform",
       "translate(-" + (x_asr_u30.bandwidth() + 10) + ",10)rotate(-90)"
     )
-    .style("text-anchor", "end")
-    .style("font-size", "10px");
+    .style("text-anchor", "end");
+  // .style("font-size", "10px");
 
   y_asr_u30_ts
     .domain([
