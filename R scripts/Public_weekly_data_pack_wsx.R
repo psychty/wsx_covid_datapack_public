@@ -2146,7 +2146,7 @@ case_age_df_daily %>%
   ungroup() %>% 
   filter(Date %in% seq.Date(complete_date -(52*7), complete_date, by = 14)) %>% 
   arrange(Date) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Date_label) %>% 
   unique() %>% 
   toJSON() %>% 
@@ -2167,7 +2167,7 @@ age_spec_10 <- case_age_df_daily %>%
   mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 1, Perc_change_on_rolling_7_days_actual))) %>% 
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   arrange(Date) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
@@ -2175,7 +2175,7 @@ age_spec_10 <- case_age_df_daily %>%
 
 case_age_df_daily %>% 
   filter(Age %in% c('0-4 years', '5-9 years', '10-14 years', '15-19 years', '20-24 years', '25-29 years')) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_u30_by_date.json'))
@@ -2196,7 +2196,7 @@ case_age_df_daily %>%
   mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 1, Perc_change_on_rolling_7_days_actual))) %>% 
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_60_plus_by_date.json'))
