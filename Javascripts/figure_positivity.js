@@ -35,7 +35,7 @@ d3.select("#positivity_text_1").html(function (d) {
   return (
     "The table below shows the number of PCR tests and the positivity for West Sussex districts and the regional and national comparision for the seven days to " +
     complete_date +
-    "."
+    ". It also shows the number of LFD tests conducted in the same time period. However, it should be noted that the LFD tests are not included in the measure of individuals tested or seven day positivity."
   );
 });
 
@@ -46,12 +46,19 @@ d3.select("#positivity_date_heading_1").html(function (d) {
   );
 });
 
+d3.select("#positivity_date_heading_2").html(function (d) {
+  return (
+    "Number of LFD (Lateral flow device) tests in the seven days to " +
+    complete_date
+  );
+});
+
 function loadTable_positivity(p_at_a_glance_all_ages) {
   const tableBody = document.getElementById("positivity_table_1");
   var dataHTML = "";
 
   for (let item of p_at_a_glance_all_ages) {
-    dataHTML += `<tr><td>${item.Name}</td><td>${item.uniquePeopleTestedBySpecimenDateRollingSum}</td><td>${item.uniqueCasePositivityBySpecimenDateRollingSum}</td></tr>`;
+    dataHTML += `<tr><td>${item.Name}</td><td>${item.uniquePeopleTestedBySpecimenDateRollingSum}</td><td>${item.uniqueCasePositivityBySpecimenDateRollingSum}</td><td>${item.LFD_7_day_tests}</td></tr>`;
   }
 
   // for (let item of at_a_glance_all_ages) {

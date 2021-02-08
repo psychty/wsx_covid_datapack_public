@@ -2473,28 +2473,28 @@ geojson_write(geojson_json(ltla_restrictions_geojson), file = paste0(output_dire
 
 # Positivity and tests ####
 
-positivity_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newVirus&format=csv') %>% 
+positivity_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
          Code = areaCode,
          Date = date) 
 
-positivity_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+positivity_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
          Code = areaCode,
          Date = date) 
 
-positivity_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+positivity_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
          Code = areaCode,
          Date = date) 
 
-positivity_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+positivity_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
@@ -2513,7 +2513,8 @@ positivity_df %>%
   filter(Date == complete_date) %>% 
   mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
   mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
-  select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum) %>% 
+  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) %>% 
+  select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum, LFD_7_day_tests) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
   arrange(Name) %>% 
   toJSON() %>% 
@@ -2526,13 +2527,17 @@ positivity_df %>%
 # Individuals tested more than once in the period are only counted once in the denominator, and those with more than one positive test result in the period are only included once in the numerator.
 
 positivity_worked <- positivity_df %>% 
-  rename(Seven_day_PCR_positivity = uniqueCasePositivityBySpecimenDateRollingSum,
-         Seven_day_PCR_tested_individuals = uniquePeopleTestedBySpecimenDateRollingSum) %>% 
   group_by(Name) %>% 
   arrange(Name, Date) %>% 
+  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum, align = 'right', partial = TRUE)) %>% 
+  rename(Seven_day_PCR_positivity = uniqueCasePositivityBySpecimenDateRollingSum,
+         Seven_day_PCR_tested_individuals = uniquePeopleTestedBySpecimenDateRollingSum) %>% 
   mutate(Perc_change_on_individuals_tested = round((Seven_day_PCR_tested_individuals - lag(Seven_day_PCR_tested_individuals, 7))/ lag(Seven_day_PCR_tested_individuals, 7), 2))  %>% 
   mutate(Perc_change_on_individuals_tested = ifelse(Perc_change_on_individuals_tested == Inf, 1, Perc_change_on_individuals_tested)) %>% 
+  mutate(Perc_change_on_lfd_tests = round((LFD_7_day_tests - lag(LFD_7_day_tests, 7))/ lag(LFD_7_day_tests, 7), 2))  %>% 
+  mutate(Perc_change_on_lfd_tests = ifelse(Perc_change_on_lfd_tests == Inf, 1, Perc_change_on_lfd_tests)) %>%
   mutate(Perc_change_on_individuals_tested = replace_na(Perc_change_on_individuals_tested, 0)) %>% 
+  mutate(Perc_change_on_lfd_tests = replace_na(Perc_change_on_lfd_tests, 0)) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
   arrange(Name, Date) %>% 
   filter(Date >= max(Date) - 90)
@@ -2569,8 +2574,8 @@ positivity_worked_plotted <- ggplot(positivity_worked,
                      limits = c(0,30),
                      breaks = seq(0, 30, 5)) +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(positivity_worked$Date) -(52*7), max(positivity_worked$Date), by = 7),
-               limits = c(min(positivity_worked$Date), max(positivity_worked$Date) + 7),
+               breaks = seq.Date(complete_date -(52*7), complete_date, by = 7),
+               limits = c(min(positivity_worked$Date), complete_date),
                expand = c(0.01,1)) +
   labs(x = '',
        y = '7-day rolling PCR case positivity rate',
@@ -2584,4 +2589,6 @@ png(paste0(output_directory_x, '/Figure_7_day_rolling_positivity_rates_latest_fa
     height = 880,
     res = 130)
 print(positivity_worked_plotted)
-dev.off()  
+dev.off() 
+
+# LFTs ####
