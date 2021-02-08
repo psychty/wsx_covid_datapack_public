@@ -2507,13 +2507,16 @@ positivity_df <- positivity_ltla %>%
   bind_rows(positivity_nation) %>% 
   unique() %>% 
   filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
-  mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) 
+  mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) %>% 
+  group_by(Name) %>% 
+  arrange(Name, Date) %>% 
+  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) 
 
 positivity_df %>% 
   filter(Date == complete_date) %>% 
   mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
   mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
-  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) %>% 
+  mutate(LFD_7_day_tests = format(LFD_7_day_tests, big.mark = ',')) %>% 
   select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum, LFD_7_day_tests) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
   arrange(Name) %>% 
@@ -2527,9 +2530,6 @@ positivity_df %>%
 # Individuals tested more than once in the period are only counted once in the denominator, and those with more than one positive test result in the period are only included once in the numerator.
 
 positivity_worked <- positivity_df %>% 
-  group_by(Name) %>% 
-  arrange(Name, Date) %>% 
-  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum, align = 'right', partial = TRUE)) %>% 
   rename(Seven_day_PCR_positivity = uniqueCasePositivityBySpecimenDateRollingSum,
          Seven_day_PCR_tested_individuals = uniquePeopleTestedBySpecimenDateRollingSum) %>% 
   mutate(Perc_change_on_individuals_tested = round((Seven_day_PCR_tested_individuals - lag(Seven_day_PCR_tested_individuals, 7))/ lag(Seven_day_PCR_tested_individuals, 7), 2))  %>% 
