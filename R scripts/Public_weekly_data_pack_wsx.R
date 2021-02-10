@@ -1119,246 +1119,214 @@ dev.off()
 
 # NHS Pathways ####
 
-ccg_region_2019 <- read_csv('https://opendata.arcgis.com/datasets/40f816a75fb14dfaaa6db375e6c3d5e6_0.csv') %>% 
-  select(CCG19CD, CCG19NM) %>% 
-  rename(Old_CCG_Name = CCG19NM,
-         Old_CCG_Code = CCG19CD) %>% 
-  mutate(New_CCG_Name = ifelse(Old_CCG_Name %in% c('NHS Bath and North East Somerset CCG', 'NHS Swindon CCG', 'NHS Wiltshire CCG'), 'NHS Bath and North East Somerset, Swindon and Wiltshire CCG', ifelse(Old_CCG_Name %in% c('NHS Airedale, Wharfedale and Craven CCG', 'NHS Bradford City CCG', 'NHS Bradford Districts CCG'), 'NHS Bradford District and Craven CCG', ifelse(Old_CCG_Name %in% c('NHS Eastern Cheshire CCG', 'NHS South Cheshire CCG', 'NHS Vale Royal CCG','NHS West Cheshire CCG'), 'NHS Cheshire CCG', ifelse(Old_CCG_Name %in% c('NHS Durham Dales, Easington and Sedgefield CCG', 'NHS North Durham CCG'), 'NHS County Durham CCG',  ifelse(Old_CCG_Name %in% c('NHS Eastbourne, Hailsham and Seaford CCG', 'NHS Hastings and Rother CCG', 'NHS High Weald Lewes Havens CCG'), 'NHS East Sussex CCG', ifelse(Old_CCG_Name %in% c('NHS Herefordshire CCG', 'NHS Redditch and Bromsgrove CCG', 'NHS South Worcestershire CCG','NHS Wyre Forest CCG'), 'NHS Herefordshire and Worcestershire CCG', ifelse(Old_CCG_Name %in% c('NHS Ashford CCG', 'NHS Canterbury and Coastal CCG', 'NHS Dartford, Gravesham and Swanley CCG', 'NHS Medway CCG', 'NHS South Kent Coast CCG', 'NHS Swale CCG', 'NHS Thanet CCG','NHS West Kent CCG'), 'NHS Kent and Medway CCG', ifelse(Old_CCG_Name %in% c('NHS Lincolnshire East CCG', 'NHS Lincolnshire West CCG', 'NHS South Lincolnshire CCG', 'NHS South West Lincolnshire CCG'), 'NHS Lincolnshire CCG', ifelse(Old_CCG_Name %in% c('NHS Great Yarmouth and Waveney CCG', 'NHS North Norfolk CCG', 'NHS Norwich CCG', 'NHS South Norfolk CCG', 'NHS West Norfolk CCG'), 'NHS Norfolk and Waveney CCG', ifelse(Old_CCG_Name %in% c('NHS Barnet CCG', 'NHS Camden CCG', 'NHS Enfield CCG', 'NHS Haringey CCG', 'NHS Islington CCG'), 'NHS North Central London CCG', ifelse(Old_CCG_Name %in% c('NHS Hambleton, Richmondshire and Whitby CCG', 'NHS Scarborough and Ryedale CCG', 'NHS Harrogate and Rural District CCG'),'NHS North Yorkshire CCG', ifelse(Old_CCG_Name %in% c('NHS Corby CCG', 'NHS Nene CCG'), 'NHS Northamptonshire CCG', ifelse(Old_CCG_Name %in% c('NHS Mansfield and Ashfield CCG', 'NHS Newark and Sherwood CCG', 'NHS Nottingham City CCG', 'NHS Nottingham North and East CCG', 'NHS Nottingham West CCG', 'NHS Rushcliffe CCG'), 'NHS Nottingham and Nottinghamshire CCG', ifelse(Old_CCG_Name %in% c('NHS Bexley CCG', 'NHS Bromley CCG', 'NHS Greenwich CCG', 'NHS Lambeth CCG', 'NHS Lewisham CCG','NHS Southwark CCG'), 'NHS South East London CCG',ifelse(Old_CCG_Name %in% c('NHS Croydon CCG', 'NHS Kingston CCG', 'NHS Merton CCG', 'NHS Richmond CCG', 'NHS Sutton CCG', 'NHS Wandsworth CCG'), 'NHS South West London CCG',ifelse(Old_CCG_Name %in% c('NHS East Surrey CCG', 'NHS Guildford and Waverley CCG', 'NHS North West Surrey CCG', 'NHS Surrey Downs CCG'), 'NHS Surrey Heartlands CCG', ifelse(Old_CCG_Name %in% c('NHS Darlington CCG', 'NHS Hartlepool and Stockton-on-Tees CCG', 'NHS South Tees CCG'), 'NHS Tees Valley CCG', ifelse(Old_CCG_Name %in% c('NHS Coastal West Sussex CCG', 'NHS Crawley CCG', 'NHS Horsham and Mid Sussex CCG'), 'NHS West Sussex CCG', Old_CCG_Name)))))))))))))))))))
-
-ccg_region_2020 <- read_csv('https://opendata.arcgis.com/datasets/888dc5cc66ba4ad9b4d935871dcce251_0.csv') %>% 
-  select(CCG20CD, CCG20NM, NHSER20NM) %>% 
-  rename(New_CCG_Code = CCG20CD,
-         CCG_Name = CCG20NM,
-         NHS_region = NHSER20NM)
-
-ccg_region_2019 <- ccg_region_2019 %>% 
-  left_join(ccg_region_2020[c('New_CCG_Code', 'CCG_Name')], by = c('New_CCG_Name'='CCG_Name'))
-
-# NHS Pathway Data
-calls_webpage <- read_html('https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest') %>%
-  html_nodes("a") %>%
-  html_attr("href")
-
-nhs_111_pathways_raw <- read_csv(grep('NHS%20Pathways%20Covid-19%20data%202021', calls_webpage, value = T))  %>% 
-  rename(CCG_Name = CCGName) %>% 
-  mutate(Date = as.Date(`Call Date`, format = '%d/%m/%Y')) %>% 
-  select(-`Call Date`) %>% 
-  mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
-
-nhs_111_pathways_pre_april <- nhs_111_pathways_raw %>% 
-  filter(Date < '2020-04-01') %>% 
-  left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCGCode' = 'Old_CCG_Code')) %>% 
-  group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex, SiteType) %>% 
-  summarise(TriageCount = sum(TriageCount, na.rm = TRUE)) %>% 
-  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
-  ungroup() %>% 
-  filter(!is.na(NHS_region))
-
-nhs_111_pathways_post_april <- nhs_111_pathways_raw %>% 
-  filter(Date >= '2020-04-01') %>% 
-  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCGCode' ='New_CCG_Code')) %>% 
-  filter(!is.na(NHS_region)) %>% 
-  rename(New_CCG_Code = CCGCode,
-         New_CCG_Name = CCG_Name)
-
-nhs_111_pathways <- nhs_111_pathways_pre_april %>% 
-  bind_rows(nhs_111_pathways_post_april) %>% 
-  mutate(Pathway = paste0(SiteType, ' triage')) %>% 
-  select(-SiteType) %>% 
-  rename(Triage_count = TriageCount)
-
-rm(nhs_111_pathways_pre_april, nhs_111_pathways_post_april)
-
-nhs_111_online_raw <- read_csv(grep('111%20Online%20Covid-19%20data_2021', calls_webpage, value = T)) %>% 
-  rename(CCG_Name = ccgname,
-         CCG_Code = ccgcode,
-         Sex = sex,
-         AgeBand = ageband) %>% 
-  mutate(Date = as.Date(journeydate, format = '%d/%m/%Y')) %>% 
-  select(-journeydate) %>% 
-  mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
-
-nhs_111_online_post_april <- nhs_111_online_raw %>% 
-  filter(Date >= '2020-04-01') %>% 
-  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCG_Code' ='New_CCG_Code')) %>% 
-  filter(!is.na(NHS_region)) %>% 
-  rename(New_CCG_Code = CCG_Code,
-         New_CCG_Name = CCG_Name)
-
-nhs_111_online_pre_april <- nhs_111_online_raw %>% 
-  filter(Date < '2020-04-01') %>% 
-  left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCG_Code' = 'Old_CCG_Code')) %>% 
-  group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex) %>% 
-  summarise(Total = sum(Total, na.rm = TRUE)) %>% 
-  left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
-  ungroup() %>% 
-  filter(!is.na(NHS_region))
-
-nhs_111_online <- nhs_111_online_pre_april %>% 
-  bind_rows(nhs_111_online_post_april) %>% 
-  mutate(Pathway = '111 online Journey') %>% 
-  rename(Triage_count = Total)
-
-nhs_pathways_p1 <- nhs_111_pathways %>% 
-  bind_rows(nhs_111_online) %>% 
-  rename(Area_Code = New_CCG_Code,
-         Area_Name = New_CCG_Name)
-
-sussex_pathways <- nhs_pathways_p1 %>% 
-  filter(Area_Name %in% c('NHS West Sussex CCG', 'NHS East Sussex CCG', 'NHS Brighton and Hove CCG')) %>% 
-  group_by(Date, Pathway, Sex, AgeBand) %>% 
-  summarise(Triage_count = sum(Triage_count)) %>% 
-  mutate(Area_Name = 'Sussex areas combined',
-         Area_Code = '-',
-         NHS_region = '-')
-
-nhs_pathways <- nhs_pathways_p1 %>% 
-  bind_rows(sussex_pathways)
-
-nhs_pathways_all_ages_persons <- nhs_pathways %>% 
-  group_by(Area_Code, Area_Name, Date, Pathway) %>% 
-  summarise(Triage_count = sum(Triage_count)) %>% 
-  group_by(Area_Code, Area_Name, Pathway) %>% 
-  arrange(Area_Code, Pathway, Date) %>% 
-  mutate(Number_change = Triage_count - lag(Triage_count),
-         Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
-
-rm(ccg_region_2019, ccg_region_2020, nhs_111_online, nhs_111_online_pre_april, nhs_111_online_post_april, nhs_111_online_raw, nhs_111_pathways, nhs_111_pathways_raw, calls_webpage, nhs_pathways_p1, sussex_pathways)
-
-nhs_pathways_all_ages_persons_all_pathways <- nhs_pathways %>% 
-  group_by(Area_Code, Area_Name, Date) %>% 
-  summarise(Triage_count = sum(Triage_count)) %>% 
-  group_by(Area_Code, Area_Name) %>% 
-  arrange(Area_Code, Date) %>% 
-  mutate(Number_change = Triage_count - lag(Triage_count),
-         Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
-
-latest_triage_date = nhs_pathways %>% 
-  filter(Date == max(Date)) %>% 
-  select(Date) %>% 
-  unique() %>% 
-  mutate(Date = format(Date, '%d %B'))
-
-pathways_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
-  filter(Area_Name == 'NHS West Sussex CCG')
-
-utla_pathways <- read_csv('https://files.digital.nhs.uk/46/536793/NHS%20Pathways%20Covid-19%20data_UTLA_2020-07-27.csv') %>% 
-  mutate(Date = as.character.Date(CallDate))
-
-whole_timeseries_plot <- ggplot(pathways_x,
-                                aes(x = Date,
-                                    y = Triage_count,
-                                    group = 1)) +
-  # geom_segment(x = as.Date('2020-04-09'), y = 0, xend = as.Date('2020-04-09'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)), color = "red", linetype = "dashed") +
-  # geom_segment(x = as.Date('2020-04-23'), y = 0, xend = as.Date('2020-04-23'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)), color = "blue", linetype = "dashed") +
-  geom_segment(x = as.Date('2020-05-18'), y = 0, xend = as.Date('2020-05-18'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)), color = "red", linetype = "dashed") +
-  geom_line() +
-  geom_point(size = .8) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7),
-               limits = c(min(nhs_pathways$Date), max(nhs_pathways$Date)),
-               expand = c(0.01,0.01)) +
-  scale_y_continuous(labels = comma,
-                     breaks = seq(0,round_any(max(pathways_x$Triage_count, na.rm = TRUE), 500, ceiling),250)) +
-  labs(x = 'Date',
-       y = 'Number of complete triages',
-       title = paste0('Total number of complete triages to NHS Pathways for Covid-19; ', unique(pathways_x$Area_Name)),
-       subtitle = paste0('Triages via 111 online, 111 phone calls and 999 calls; 18 March - ', latest_triage_date$Date),
-       caption = 'Note: red dashed line = some patients excluded,\nblue dashed line = additional patients added') +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
+# ccg_region_2019 <- read_csv('https://opendata.arcgis.com/datasets/40f816a75fb14dfaaa6db375e6c3d5e6_0.csv') %>% 
+#   select(CCG19CD, CCG19NM) %>% 
+#   rename(Old_CCG_Name = CCG19NM,
+#          Old_CCG_Code = CCG19CD) %>% 
+#   mutate(New_CCG_Name = ifelse(Old_CCG_Name %in% c('NHS Bath and North East Somerset CCG', 'NHS Swindon CCG', 'NHS Wiltshire CCG'), 'NHS Bath and North East Somerset, Swindon and Wiltshire CCG', ifelse(Old_CCG_Name %in% c('NHS Airedale, Wharfedale and Craven CCG', 'NHS Bradford City CCG', 'NHS Bradford Districts CCG'), 'NHS Bradford District and Craven CCG', ifelse(Old_CCG_Name %in% c('NHS Eastern Cheshire CCG', 'NHS South Cheshire CCG', 'NHS Vale Royal CCG','NHS West Cheshire CCG'), 'NHS Cheshire CCG', ifelse(Old_CCG_Name %in% c('NHS Durham Dales, Easington and Sedgefield CCG', 'NHS North Durham CCG'), 'NHS County Durham CCG',  ifelse(Old_CCG_Name %in% c('NHS Eastbourne, Hailsham and Seaford CCG', 'NHS Hastings and Rother CCG', 'NHS High Weald Lewes Havens CCG'), 'NHS East Sussex CCG', ifelse(Old_CCG_Name %in% c('NHS Herefordshire CCG', 'NHS Redditch and Bromsgrove CCG', 'NHS South Worcestershire CCG','NHS Wyre Forest CCG'), 'NHS Herefordshire and Worcestershire CCG', ifelse(Old_CCG_Name %in% c('NHS Ashford CCG', 'NHS Canterbury and Coastal CCG', 'NHS Dartford, Gravesham and Swanley CCG', 'NHS Medway CCG', 'NHS South Kent Coast CCG', 'NHS Swale CCG', 'NHS Thanet CCG','NHS West Kent CCG'), 'NHS Kent and Medway CCG', ifelse(Old_CCG_Name %in% c('NHS Lincolnshire East CCG', 'NHS Lincolnshire West CCG', 'NHS South Lincolnshire CCG', 'NHS South West Lincolnshire CCG'), 'NHS Lincolnshire CCG', ifelse(Old_CCG_Name %in% c('NHS Great Yarmouth and Waveney CCG', 'NHS North Norfolk CCG', 'NHS Norwich CCG', 'NHS South Norfolk CCG', 'NHS West Norfolk CCG'), 'NHS Norfolk and Waveney CCG', ifelse(Old_CCG_Name %in% c('NHS Barnet CCG', 'NHS Camden CCG', 'NHS Enfield CCG', 'NHS Haringey CCG', 'NHS Islington CCG'), 'NHS North Central London CCG', ifelse(Old_CCG_Name %in% c('NHS Hambleton, Richmondshire and Whitby CCG', 'NHS Scarborough and Ryedale CCG', 'NHS Harrogate and Rural District CCG'),'NHS North Yorkshire CCG', ifelse(Old_CCG_Name %in% c('NHS Corby CCG', 'NHS Nene CCG'), 'NHS Northamptonshire CCG', ifelse(Old_CCG_Name %in% c('NHS Mansfield and Ashfield CCG', 'NHS Newark and Sherwood CCG', 'NHS Nottingham City CCG', 'NHS Nottingham North and East CCG', 'NHS Nottingham West CCG', 'NHS Rushcliffe CCG'), 'NHS Nottingham and Nottinghamshire CCG', ifelse(Old_CCG_Name %in% c('NHS Bexley CCG', 'NHS Bromley CCG', 'NHS Greenwich CCG', 'NHS Lambeth CCG', 'NHS Lewisham CCG','NHS Southwark CCG'), 'NHS South East London CCG',ifelse(Old_CCG_Name %in% c('NHS Croydon CCG', 'NHS Kingston CCG', 'NHS Merton CCG', 'NHS Richmond CCG', 'NHS Sutton CCG', 'NHS Wandsworth CCG'), 'NHS South West London CCG',ifelse(Old_CCG_Name %in% c('NHS East Surrey CCG', 'NHS Guildford and Waverley CCG', 'NHS North West Surrey CCG', 'NHS Surrey Downs CCG'), 'NHS Surrey Heartlands CCG', ifelse(Old_CCG_Name %in% c('NHS Darlington CCG', 'NHS Hartlepool and Stockton-on-Tees CCG', 'NHS South Tees CCG'), 'NHS Tees Valley CCG', ifelse(Old_CCG_Name %in% c('NHS Coastal West Sussex CCG', 'NHS Crawley CCG', 'NHS Horsham and Mid Sussex CCG'), 'NHS West Sussex CCG', Old_CCG_Name)))))))))))))))))))
+# 
+# ccg_region_2020 <- read_csv('https://opendata.arcgis.com/datasets/888dc5cc66ba4ad9b4d935871dcce251_0.csv') %>% 
+#   select(CCG20CD, CCG20NM, NHSER20NM) %>% 
+#   rename(New_CCG_Code = CCG20CD,
+#          CCG_Name = CCG20NM,
+#          NHS_region = NHSER20NM)
+# 
+# ccg_region_2019 <- ccg_region_2019 %>% 
+#   left_join(ccg_region_2020[c('New_CCG_Code', 'CCG_Name')], by = c('New_CCG_Name'='CCG_Name'))
+# 
+# # NHS Pathway Data
+# calls_webpage <- read_html('https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest') %>%
+#   html_nodes("a") %>%
+#   html_attr("href")
+# 
+# nhs_111_pathways_raw <- read_csv(grep('NHS%20Pathways%20Covid-19%20data%202021', calls_webpage, value = T))  %>% 
+#   rename(CCG_Name = CCGName) %>% 
+#   mutate(Date = as.Date(`Call Date`, format = '%d/%m/%Y')) %>% 
+#   select(-`Call Date`) %>% 
+#   mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
+# 
+# nhs_111_pathways_pre_april <- nhs_111_pathways_raw %>% 
+#   filter(Date < '2020-04-01') %>% 
+#   left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCGCode' = 'Old_CCG_Code')) %>% 
+#   group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex, SiteType) %>% 
+#   summarise(TriageCount = sum(TriageCount, na.rm = TRUE)) %>% 
+#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
+#   ungroup() %>% 
+#   filter(!is.na(NHS_region))
+# 
+# nhs_111_pathways_post_april <- nhs_111_pathways_raw %>% 
+#   filter(Date >= '2020-04-01') %>% 
+#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCGCode' ='New_CCG_Code')) %>% 
+#   filter(!is.na(NHS_region)) %>% 
+#   rename(New_CCG_Code = CCGCode,
+#          New_CCG_Name = CCG_Name)
+# 
+# nhs_111_pathways <- nhs_111_pathways_pre_april %>% 
+#   bind_rows(nhs_111_pathways_post_april) %>% 
+#   mutate(Pathway = paste0(SiteType, ' triage')) %>% 
+#   select(-SiteType) %>% 
+#   rename(Triage_count = TriageCount)
+# 
+# rm(nhs_111_pathways_pre_april, nhs_111_pathways_post_april)
+# 
+# nhs_111_online_raw <- read_csv(grep('111%20Online%20Covid-19%20data_2021', calls_webpage, value = T)) %>% 
+#   rename(CCG_Name = ccgname,
+#          CCG_Code = ccgcode,
+#          Sex = sex,
+#          AgeBand = ageband) %>% 
+#   mutate(Date = as.Date(journeydate, format = '%d/%m/%Y')) %>% 
+#   select(-journeydate) %>% 
+#   mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
+# 
+# nhs_111_online_post_april <- nhs_111_online_raw %>% 
+#   filter(Date >= '2020-04-01') %>% 
+#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCG_Code' ='New_CCG_Code')) %>% 
+#   filter(!is.na(NHS_region)) %>% 
+#   rename(New_CCG_Code = CCG_Code,
+#          New_CCG_Name = CCG_Name)
+# 
+# nhs_111_online_pre_april <- nhs_111_online_raw %>% 
+#   filter(Date < '2020-04-01') %>% 
+#   left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCG_Code' = 'Old_CCG_Code')) %>% 
+#   group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex) %>% 
+#   summarise(Total = sum(Total, na.rm = TRUE)) %>% 
+#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
+#   ungroup() %>% 
+#   filter(!is.na(NHS_region))
+# 
+# nhs_111_online <- nhs_111_online_pre_april %>% 
+#   bind_rows(nhs_111_online_post_april) %>% 
+#   mutate(Pathway = '111 online Journey') %>% 
+#   rename(Triage_count = Total)
+# 
+# nhs_pathways_p1 <- nhs_111_pathways %>% 
+#   bind_rows(nhs_111_online) %>% 
+#   rename(Area_Code = New_CCG_Code,
+#          Area_Name = New_CCG_Name)
+# 
+# sussex_pathways <- nhs_pathways_p1 %>% 
+#   filter(Area_Name %in% c('NHS West Sussex CCG', 'NHS East Sussex CCG', 'NHS Brighton and Hove CCG')) %>% 
+#   group_by(Date, Pathway, Sex, AgeBand) %>% 
+#   summarise(Triage_count = sum(Triage_count)) %>% 
+#   mutate(Area_Name = 'Sussex areas combined',
+#          Area_Code = '-',
+#          NHS_region = '-')
+# 
+# nhs_pathways <- nhs_pathways_p1 %>% 
+#   bind_rows(sussex_pathways)
+# 
+# nhs_pathways_all_ages_persons <- nhs_pathways %>% 
+#   group_by(Area_Code, Area_Name, Date, Pathway) %>% 
+#   summarise(Triage_count = sum(Triage_count)) %>% 
+#   group_by(Area_Code, Area_Name, Pathway) %>% 
+#   arrange(Area_Code, Pathway, Date) %>% 
+#   mutate(Number_change = Triage_count - lag(Triage_count),
+#          Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
+# 
+# rm(ccg_region_2019, ccg_region_2020, nhs_111_online, nhs_111_online_pre_april, nhs_111_online_post_april, nhs_111_online_raw, nhs_111_pathways, nhs_111_pathways_raw, calls_webpage, nhs_pathways_p1, sussex_pathways)
+# 
+# nhs_pathways_all_ages_persons_all_pathways <- nhs_pathways %>% 
+#   group_by(Area_Code, Area_Name, Date) %>% 
+#   summarise(Triage_count = sum(Triage_count)) %>% 
+#   group_by(Area_Code, Area_Name) %>% 
+#   arrange(Area_Code, Date) %>% 
+#   mutate(Number_change = Triage_count - lag(Triage_count),
+#          Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
+# 
+# latest_triage_date = nhs_pathways %>% 
+#   filter(Date == max(Date)) %>% 
+#   select(Date) %>% 
+#   unique() %>% 
+#   mutate(Date = format(Date, '%d %B'))
+# 
+# pathways_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
+#   filter(Area_Name == 'NHS West Sussex CCG')
+# 
+# utla_pathways <- read_csv('https://files.digital.nhs.uk/46/536793/NHS%20Pathways%20Covid-19%20data_UTLA_2020-07-27.csv') %>% 
+#   mutate(Date = as.character.Date(CallDate))
+# 
+# whole_timeseries_plot <- ggplot(pathways_x,
+#                                 aes(x = Date,
+#                                     y = Triage_count,
+#                                     group = 1)) +
+  # geom_segment(x = as.Date('2020-05-18'), y = 0, xend = as.Date('2020-05-18'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)), color = "red", linetype = "dashed") +
+  # geom_line() +
+  # geom_point(size = .8) +
+  # scale_x_date(date_labels = "%b %d",
+  #              breaks = seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7),
+  #              limits = c(min(nhs_pathways$Date), max(nhs_pathways$Date)),
+  #              expand = c(0.01,0.01)) +
+  # scale_y_continuous(labels = comma,
+  #                    breaks = seq(0,round_any(max(pathways_x$Triage_count, na.rm = TRUE), 500, ceiling),250)) +
+  # labs(x = 'Date',
+  #      y = 'Number of complete triages',
+  #      title = paste0('Total number of complete triages to NHS Pathways for Covid-19; ', unique(pathways_x$Area_Name)),
+  #      subtitle = paste0('Triages via 111 online, 111 phone calls and 999 calls; 18 March - ', latest_triage_date$Date),
+  #      caption = 'Note: red dashed line = some patients excluded,\nblue dashed line = additional patients added') +
+  # ph_theme() +
+  # theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
   # annotate(geom = 'text',
-  #          x = as.Date('2020-04-08'), 
-  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
-  #          label = '9th April',
-  #          fontface = 'bold',
-  #          size = 2.5,
-  #          hjust = 1,
-  #          vjust = 1) +
-  # annotate(geom = 'text',
-  #          x = as.Date('2020-04-08'), 
-  #          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-09'), select = Triage_count)),
-#          label = '111 online removed\nfor 0-18 year olds',
+#          x = as.Date('2020-05-18'), 
+#          y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
+#          label = '18th May',
 #          size = 2.5,
-#          hjust = 1,
-#          vjust = 1.75) +
-# annotate(geom = 'text',
-#          x = as.Date('2020-04-23'), 
-#          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
-#          label = '23rd April',
 #          fontface = 'bold',
-#          size = 2.5,
 #          hjust = 0,
-#          vjust = -8) +
-# annotate(geom = 'text',
-#          x = as.Date('2020-04-23'),
-#          y = as.numeric(subset(pathways_x, Date == as.Date('2020-04-23'), select = Triage_count)),
-#          label = '111 online reinstated\nfor 5-18 year olds',
-#          size = 2.5,
-#          hjust = 0,
-#          vjust = -1.25) +
-annotate(geom = 'text',
-         x = as.Date('2020-05-18'), 
-         y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
-         label = '18th May',
-         size = 2.5,
-         fontface = 'bold',
-         hjust = 0,
-         vjust = -6) +
-  annotate(geom = 'text',
-           x = as.Date('2020-05-18'), 
-           y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
-           label = 'Covid-19 pathway case\ndefinition change',
-           size = 2.5,
-           hjust = 0,
-           vjust = -.5)
-
-png(paste0(output_directory_x, '/Figure_5_complete_triages_nhs_pathways.png'),
-    width = 1580, 
-    height = 1300, 
-    res = 200)
-print(whole_timeseries_plot)
-dev.off()
-
-Report_df_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
-  filter(Area_Name == 'NHS West Sussex CCG') %>% 
-  mutate(seven_day_total_triages = rollapplyr(Triage_count, 7, sum, align = 'right', partial = TRUE)) %>% 
-  mutate(seven_day_average_triages = round(rollapplyr(Triage_count, 7, mean, align = 'right', partial = TRUE),0))
-
-latest_report_date <- Report_df_x %>% 
-  filter(Date == max(Date))
-
-latest_report_date_minus1 <- Report_df_x %>% 
-  filter(Date == max(Date) -1)
-
-nhs_pways_text_1 <- paste0('In the last 24 hours there were ', format(latest_report_date$Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(latest_report_date$Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(latest_report_date$Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(latest_report_date_minus1$Triage_count, big.mark = ',', trim = TRUE) ,' triages).') 
-
-nhs_pways_text_2 <- paste0('In the seven days leading to ', format(latest_report_date$Date, '%d %B'), ' there were ', format(latest_report_date$seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(latest_report_date$seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')
+#          vjust = -6) +
+#   annotate(geom = 'text',
+#            x = as.Date('2020-05-18'), 
+#            y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
+#            label = 'Covid-19 pathway case\ndefinition change',
+#            size = 2.5,
+#            hjust = 0,
+#            vjust = -.5)
+# 
+# png(paste0(output_directory_x, '/Figure_5_complete_triages_nhs_pathways.png'),
+#     width = 1580, 
+#     height = 1300, 
+#     res = 200)
+# print(whole_timeseries_plot)
+# dev.off()
+# 
+# Report_df_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
+#   filter(Area_Name == 'NHS West Sussex CCG') %>% 
+#   mutate(seven_day_total_triages = rollapplyr(Triage_count, 7, sum, align = 'right', partial = TRUE)) %>% 
+#   mutate(seven_day_average_triages = round(rollapplyr(Triage_count, 7, mean, align = 'right', partial = TRUE),0))
+# 
+# latest_report_date <- Report_df_x %>% 
+#   filter(Date == max(Date))
+# 
+# latest_report_date_minus1 <- Report_df_x %>% 
+#   filter(Date == max(Date) -1)
+# 
+# nhs_pways_text_1 <- paste0('In the last 24 hours there were ', format(latest_report_date$Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(latest_report_date$Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(latest_report_date$Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(latest_report_date_minus1$Triage_count, big.mark = ',', trim = TRUE) ,' triages).') 
+# 
+# nhs_pways_text_2 <- paste0('In the seven days leading to ', format(latest_report_date$Date, '%d %B'), ' there were ', format(latest_report_date$seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(latest_report_date$seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')
 
 # Exporting for web
 
-Report_df_x %>% 
-  ungroup() %>% 
-  mutate(label_1 = paste0('In the seven days leading to ', format(Date, '%d %B'), ' there were ', format(seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')) %>% 
-  mutate(label_2 = paste0('In the last 24 hours there were ', format(Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(lag(Triage_count,1), big.mark = ',', trim = TRUE) ,' triages).')) %>% 
-  mutate(Date = format(Date, '%d %b')) %>% 
-  select(Date, Triage_count, label_1, label_2) %>%
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/NHS_pathways_df.json'))
+# Report_df_x %>% 
+#   ungroup() %>% 
+#   mutate(label_1 = paste0('In the seven days leading to ', format(Date, '%d %B'), ' there were ', format(seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')) %>% 
+#   mutate(label_2 = paste0('In the last 24 hours there were ', format(Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(lag(Triage_count,1), big.mark = ',', trim = TRUE) ,' triages).')) %>% 
+#   mutate(Date = format(Date, '%d %b')) %>% 
+#   select(Date, Triage_count, label_1, label_2) %>%
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/NHS_pathways_df.json'))
+# 
+# pathways_dates <- Report_df_x %>% 
+#   ungroup() %>% 
+#   filter(Date %in% seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7)) %>% 
+#   select(Date) %>% 
+#   mutate(Date = format(Date, '%d %b'))
 
-pathways_dates <- Report_df_x %>% 
-  ungroup() %>% 
-  filter(Date %in% seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7)) %>% 
-  select(Date) %>% 
-  mutate(Date = format(Date, '%d %b'))
-
-pathways_dates$Date %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/NHS_pathways_dates.json'))
-
-data.frame(Date = c('23 Apr', '18 May'), lab_1 = c('111 online reinstated', 'Pathway case'), lab_2 = c( 'for 5-18 year olds', 'definition change'), direction = c('blue', 'red'), Triage_count = c(292,334)) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/pathways_changes.json'))
+# pathways_dates$Date %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/NHS_pathways_dates.json'))
+# 
+# data.frame(Date = c('23 Apr', '18 May'), lab_1 = c('111 online reinstated', 'Pathway case'), lab_2 = c( 'for 5-18 year olds', 'definition change'), direction = c('blue', 'red'), Triage_count = c(292,334)) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/pathways_changes.json'))
 
 # Mortality ####
 
