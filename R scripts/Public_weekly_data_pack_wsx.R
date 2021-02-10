@@ -1390,9 +1390,10 @@ rm(week_ending_a, week_ending_b)
 # 
 # download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek',substr(as.character(as.aweek(Sys.Date()-11)), 7,8), '.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
-download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
+download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week1.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week4.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+
 
 # # # if the download does fail, it wipes out the old one, which we can use to our advantage
 # if(!file.exists(paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'))){
@@ -1863,23 +1864,23 @@ wkly_template <- wkly_template %>%
   ph_with(value = paste0('Note that the very recent days are excluded in the 7-day total as these are thought to be incomplete. As such, this data represents cases in the ', rolling_period_x), 
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_ltla_rolling_rate_wsx,
-          location = ph_location_label(ph_label = 'Table Placeholder 7')) %>%
-  add_slide(layout = "pathways_layout", master = "Office Theme") %>%
-  ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')),
-          location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>%
-  ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')),
-          location = ph_location_label(ph_label = 'Date Placeholder 2')) %>%
-  ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.',
-          location = ph_location_label(ph_label = 'Text Placeholder 20')) %>%
-  ph_with(value = 'Source: NHS Digital',
-          # href = 'https://coronavirus.data.gov.uk',
-          location = ph_location_label(ph_label = 'Text Placeholder 22')) %>%
-  ph_with(value = paste0('Slide ', length(.) -1),
-          location = ph_location_label(ph_label = 'Text Placeholder 19')) %>%
-  ph_with(value = nhs_pways_text_1,
-          location = ph_location_label(ph_label = 'Text Placeholder 13')) %>%
-  ph_with(value = nhs_pways_text_2,
-          location = ph_location_label(ph_label = 'Text Placeholder 17'))
+          location = ph_location_label(ph_label = 'Table Placeholder 7'))#%>%
+  # add_slide(layout = "pathways_layout", master = "Office Theme") %>%
+  # ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')),
+  #         location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>%
+  # ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')),
+  #         location = ph_location_label(ph_label = 'Date Placeholder 2')) %>%
+  # ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.',
+  #         location = ph_location_label(ph_label = 'Text Placeholder 20')) %>%
+  # ph_with(value = 'Source: NHS Digital',
+  #         # href = 'https://coronavirus.data.gov.uk',
+  #         location = ph_location_label(ph_label = 'Text Placeholder 22')) %>%
+  # ph_with(value = paste0('Slide ', length(.) -1),
+  #         location = ph_location_label(ph_label = 'Text Placeholder 19')) %>%
+  # ph_with(value = nhs_pways_text_1,
+  #         location = ph_location_label(ph_label = 'Text Placeholder 13')) %>%
+  # ph_with(value = nhs_pways_text_2,
+  #         location = ph_location_label(ph_label = 'Text Placeholder 17'))
 
 # Death plots
 for(i in 1:length(areas_to_loop)){
@@ -2145,7 +2146,7 @@ case_age_df_daily %>%
   ungroup() %>% 
   filter(Date %in% seq.Date(complete_date -(52*7), complete_date, by = 14)) %>% 
   arrange(Date) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Date_label) %>% 
   unique() %>% 
   toJSON() %>% 
@@ -2166,7 +2167,7 @@ age_spec_10 <- case_age_df_daily %>%
   mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 1, Perc_change_on_rolling_7_days_actual))) %>% 
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   arrange(Date) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
@@ -2174,7 +2175,7 @@ age_spec_10 <- case_age_df_daily %>%
 
 case_age_df_daily %>% 
   filter(Age %in% c('0-4 years', '5-9 years', '10-14 years', '15-19 years', '20-24 years', '25-29 years')) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_u30_by_date.json'))
@@ -2195,7 +2196,7 @@ case_age_df_daily %>%
   mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 1, Perc_change_on_rolling_7_days_actual))) %>% 
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
-  mutate(Date_label = format(Date, '%d %b')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_60_plus_by_date.json'))
@@ -2278,7 +2279,11 @@ msoa_cases <- msoa_cases_raw %>%
   #  filter(MSOA11NM %in% se_msoas$MSOA11NM) %>%
   arrange(MSOA11NM)
 
-msoa_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/23cdb60ee47e4fef8d72e4ee202accb0_0.geojson",  what = "sp") %>% 
+# msoa_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/1382f390c22f4bed89ce11f2a9207ff0_0.geojson",  what = "sp") %>% 
+#   filter(MSOA11NM %in% msoa_cases$MSOA11NM) %>%
+#   arrange(MSOA11NM)
+
+msoa_boundaries_json <- geojson_read(paste0(github_repo_dir, '/Source files/failsafe_msoa_boundary.geojson'),  what = "sp") %>% 
   filter(MSOA11NM %in% msoa_cases$MSOA11NM) %>%
   arrange(MSOA11NM)
 
@@ -2468,28 +2473,28 @@ geojson_write(geojson_json(ltla_restrictions_geojson), file = paste0(output_dire
 
 # Positivity and tests ####
 
-positivity_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newVirus&format=csv') %>% 
+positivity_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
          Code = areaCode,
          Date = date) 
 
-positivity_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+positivity_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
          Code = areaCode,
          Date = date) 
 
-positivity_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+positivity_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
          Code = areaCode,
          Date = date) 
 
-positivity_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&format=csv') %>% 
+positivity_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=uniquePeopleTestedBySpecimenDateRollingSum&metric=uniqueCasePositivityBySpecimenDateRollingSum&metric=newLFDTests&&format=csv') %>% 
   filter(substr(areaCode, 1,1) == 'E') %>%
   select(-areaType) %>% 
   rename(Name = areaName,
@@ -2502,13 +2507,17 @@ positivity_df <- positivity_ltla %>%
   bind_rows(positivity_nation) %>% 
   unique() %>% 
   filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
-  mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) 
+  mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) %>% 
+  group_by(Name) %>% 
+  arrange(Name, Date) %>% 
+  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) 
 
 positivity_df %>% 
   filter(Date == complete_date) %>% 
   mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
   mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
-  select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum) %>% 
+  mutate(LFD_7_day_tests = format(LFD_7_day_tests, big.mark = ',')) %>% 
+  select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum, LFD_7_day_tests) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
   arrange(Name) %>% 
   toJSON() %>% 
@@ -2523,11 +2532,12 @@ positivity_df %>%
 positivity_worked <- positivity_df %>% 
   rename(Seven_day_PCR_positivity = uniqueCasePositivityBySpecimenDateRollingSum,
          Seven_day_PCR_tested_individuals = uniquePeopleTestedBySpecimenDateRollingSum) %>% 
-  group_by(Name) %>% 
-  arrange(Name, Date) %>% 
   mutate(Perc_change_on_individuals_tested = round((Seven_day_PCR_tested_individuals - lag(Seven_day_PCR_tested_individuals, 7))/ lag(Seven_day_PCR_tested_individuals, 7), 2))  %>% 
   mutate(Perc_change_on_individuals_tested = ifelse(Perc_change_on_individuals_tested == Inf, 1, Perc_change_on_individuals_tested)) %>% 
+  mutate(Perc_change_on_lfd_tests = round((LFD_7_day_tests - lag(LFD_7_day_tests, 7))/ lag(LFD_7_day_tests, 7), 2))  %>% 
+  mutate(Perc_change_on_lfd_tests = ifelse(Perc_change_on_lfd_tests == Inf, 1, Perc_change_on_lfd_tests)) %>%
   mutate(Perc_change_on_individuals_tested = replace_na(Perc_change_on_individuals_tested, 0)) %>% 
+  mutate(Perc_change_on_lfd_tests = replace_na(Perc_change_on_lfd_tests, 0)) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
   arrange(Name, Date) %>% 
   filter(Date >= max(Date) - 90)
@@ -2564,8 +2574,8 @@ positivity_worked_plotted <- ggplot(positivity_worked,
                      limits = c(0,30),
                      breaks = seq(0, 30, 5)) +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(positivity_worked$Date) -(52*7), max(positivity_worked$Date), by = 7),
-               limits = c(min(positivity_worked$Date), max(positivity_worked$Date) + 7),
+               breaks = seq.Date(complete_date -(52*7), complete_date, by = 7),
+               limits = c(min(positivity_worked$Date), complete_date),
                expand = c(0.01,1)) +
   labs(x = '',
        y = '7-day rolling PCR case positivity rate',
@@ -2579,4 +2589,6 @@ png(paste0(output_directory_x, '/Figure_7_day_rolling_positivity_rates_latest_fa
     height = 880,
     res = 130)
 print(positivity_worked_plotted)
-dev.off()  
+dev.off() 
+
+# LFTs ####
