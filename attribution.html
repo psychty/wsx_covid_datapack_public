@@ -1,0 +1,107 @@
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>West Sussex C19 summary</title>
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+<link rel="stylesheet" type="text/css" href="style.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+<!-- <div class="wrapper"> -->
+<div class="small_screen_adapt">
+  <header>
+    <nav>
+      <div class="top_nav_title" id = 'content_size'>
+      <p class = 'head_title'>COVID-19 desktop data summary</p>
+      <ul class="nav-links" id="nav-links">
+        <li>
+          <a data-page="home" href="./index.html"
+            >Home</a
+          >
+        </li>
+        <li>
+          <a data-page="heatmap_section" href="./latest.html"
+            >Latest cases</a
+          >
+        </li>
+        <li>
+          <a data-page="tests_section" href="./tests.html"
+            >Number of tests</a
+          >
+        </li>
+        <li>
+          <a data-page="growth_section" href="./growth.html"
+            >Cases across England</a
+          >
+        </li>
+        <li>
+          <a data-page="local_section" href="./local.html"
+            >Cases in your area</a
+          >
+        </li>
+        <li>
+          <a data-page="restriction_section" href="./restrictions.html"
+            >Restrictions</a
+          >
+        </li>
+        <li>
+          <a data-page="mortality_section" href="./mortality.html"
+            >Deaths</a
+          >
+        </li>
+        <li>
+            <a data-page="attribution_section" href="./attribution.html"
+              >Data sources</a
+            >
+          </li>
+        <div class="bubble"></div>
+      </ul>
+      <div class="menu_line" onclick="navSlide()">
+        <div class="line_1"></div>
+        <div class="line_2"></div>
+        <div class="line_3"></div>
+      </div>
+    </nav>
+  </header>
+</div>
+
+
+<section id = 'attribution_section'>
+    <h4 class = 'content_top'>Attributions</h4>
+    <div class = 'content'>
+      
+      <p>The data sources are given under each figure on this webpage but primarily come from <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >UK Government</a> for new case data, <a class = 'highlight_dl_link' href = 'https://digital.nhs.uk/dashboards/nhs-pathways#dashboard' >NHS Digital</a> for NHS pathway contacts, and <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard'>Office for National Statistics</a> for data on mortality.</p>
+      <p>Data used in this analyses are primarily supplied under Open Government Licence and a number of supporting products such as geographical boundaries and postcode lookups have also been used.</p>
+      <p>The following copyright notices are applicable:</p>
+      <ul>
+        <li>Contains Public Health England data © Crown copyright and database right 2020</li>
+        <li>Office for National Statistics licensed under the Open Government Licence v.3.0</li>
+        <li>Contains Ordnance Survey data © Crown copyright and database right 2020</li>
+        <li>Contains Royal Mail data © Royal Mail copyright and database right 2020</li>
+        <li>Contains MSOA names © Open Parliament copyright and database right 2020</li>
+      </ul>
+    </div>
+  </div>
+  </section>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+<script src="https://d3js.org/d3-format.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<!-- <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script> -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

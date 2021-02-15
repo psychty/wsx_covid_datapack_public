@@ -19,7 +19,7 @@
 <div class="small_screen_adapt">
   <header>
     <nav>
-      <div class="top_nav_title">
+      <div class="top_nav_title" id = 'content_size'>
       <p class = 'head_title'>COVID-19 desktop data summary</p>
       <ul class="nav-links" id="nav-links">
         <li>
@@ -28,7 +28,7 @@
           >
         </li>
         <li>
-          <a data-page="heatmap_section" href="./heatmaps.html"
+          <a data-page="heatmap_section" href="./latest.html"
             >Latest cases</a
           >
         </li>
@@ -48,11 +48,6 @@
           >
         </li>
         <li>
-          <a data-page="pathway_section" href="./pathway.html"
-            >NHS Pathways</a
-          >
-        </li>
-        <li>
           <a data-page="restriction_section" href="./restrictions.html"
             >Restrictions</a
           >
@@ -62,11 +57,11 @@
             >Deaths</a
           >
         </li>
-        <!-- <li>
-          <a data-page="attribution_section" href="#attribution_section"
+        <li>
+          <a data-page="attribution_section" href="./attribution.html"
             >Data sources</a
           >
-        </li> -->
+        </li>
         <div class="bubble"></div>
       </ul>
       <div class="menu_line" onclick="navSlide()">
@@ -124,6 +119,7 @@
 <script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
+<script src = 'Javascripts/params.js'></script>
 <!-- <script src="https://unpkg.com/d3-simple-slider"></script> -->
 
 <!-- <script src = 'https://unpkg.com/d3-simple-slider@1.10.1/dist/d3-simple-slider.min.js'></script>
@@ -135,7 +131,7 @@
 <script src = 'Javascripts/figure_age_specific_rates_u30.js'></script>
 <script src = "Javascripts/figure_3a_rates_scatter.js"></script>
 <script src = "Javascripts/figure_3b_ltla_rates_scatter.js"></script> -->
-<script src = "Javascripts/figure_3_4_rate_maps.js"></script>
+
 <script src = "Javascripts/local_cases.js"></script>
 <!-- <script src = "Javascripts/figure_4b_restriction_map.js"></script> -->
 <!-- <script src = "Javascripts/figure_5_pathways.js"></script>
