@@ -1,5 +1,5 @@
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/utla_growth_since_november.json", false);
+request.open("GET", "./Outputs/utla_recent_growth.json", false);
 request.send(null);
 var utla_growth_ts_data = JSON.parse(request.responseText);
 
@@ -174,7 +174,7 @@ d3.select("#wsx_growth_rate_latest").html(function (d) {
 ////////// slider //////////
 // This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
 var dataTime = d3.range(0, utla_growth_ts_dates.length).map(function (d) {
-  return new Date(2020, 10, 01 + d);
+  return new Date(2021, 0, 01 + d);
 });
 
 var sliderTime = d3
@@ -184,7 +184,7 @@ var sliderTime = d3
   .width(300)
   .tickFormat(d3.timeFormat(""))
   .tickValues(dataTime)
-  .default(new Date(2020, 10, 1 + utla_growth_ts_dates.length))
+  .default(new Date(2021, 0, 1 + utla_growth_ts_dates.length))
   .on("onchange", new_date_growth_utla);
 
 var utla_growth_slider_svg = d3
@@ -253,15 +253,7 @@ var tooltip_growth_utla_ts = d3
 var showTooltip_growth_ts = function (d) {
   tooltip_growth_utla_ts
     .html(
-      "<h5>" +
-        d.Name +
-        "</h5><p>" +
-        d.Label_2 +
-        "</p><p>" +
-        d.Label_1 +
-        "</p><p>" +
-        d.Label_3 +
-        "</p>"
+      "<h5>" + d.Name + "</h5><p>" + d.Label_2 + "</p><p>" + d.Label_1 + "</p>"
     )
     .style("opacity", 1)
     .style("top", event.pageY - 10 + "px")

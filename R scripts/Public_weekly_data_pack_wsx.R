@@ -9,6 +9,8 @@ capwords = function(s, strict = FALSE) {
                           {s = substring(s, 2); if(strict) tolower(s) else s},sep = "", collapse = " " )
   sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))}
 
+bord_style <- fp_border(color = "black", style = "solid", width = .5)
+
 options(scipen = 999)
 
 ph_theme = function(){
@@ -137,7 +139,6 @@ daily_cases_reworked <- data.frame(Name = rep(Areas$Name, length(Dates)), Code =
 
 # PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
 complete_date <- last_date - 5
-# Case results are generally published in the afternoon and represent cases reported up to 9am of the reporting day. However, cases are assigned to the date of which the specimen was taken rather than when it was reported. This means it will be very unlikely that a specimen would be taken and results returned by 9am of the day of publication. As such, we consider the last five days (four days plus the day of reporting) as incomplete.
 
 p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(Areas$Code, length(Dates)), Type = rep(Areas$Type, length(Dates)), check.names = FALSE) %>% 
   arrange(Name) %>% 
@@ -179,8 +180,6 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   ungroup()
 
 rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_cases_reworked)
-
-# Small multiples plot with daily cases bars and rolling average.
 
 p12_test_df_2 <- p12_test_df_raw %>% 
   group_by(Name) %>% 
@@ -268,7 +267,6 @@ for(i in 1:length(areas_to_loop)){
       res = 200)
   print(total_cases_reported_plot)
   dev.off()
-  
 }
 
 ltla_p12_test_df <- p12_test_df %>% 
@@ -315,12 +313,6 @@ total_cases_reported_plot_2 <- ggplot(ltla_p12_test_df,
            ymax = Inf,
            fill = '#cccccc',
            alpha = .25) +
-  # annotate('text',
-  #          x = complete_date,
-  #          y = max_daily_case_limit * .8,
-  #          label = 'Totals for\nthese days\nnot considered\ncomplete:',
-  #          size = 2.5,
-  #          hjust = 1) +
   labs(x = 'Date',
        y = 'Number of daily confirmed cases',
        title = paste0('Daily number of confirmed Covid-19 cases; Pillar 1 and 2 combined; West Sussex lower tier Local Authorities'),
@@ -339,7 +331,6 @@ print(total_cases_reported_plot_2)
 dev.off()
 
 # exporting for web ####
-
 test_timeline <- data.frame(Date_label_2 = c('27 Mar 20', '15 Apr 20','17 Apr 20','23 Apr 20','28 Apr 20', '18 May 20', '27 May 20', '06 Jul 20'), Change = c('front-line NHS Staff', 'those in social care settings','additional front-line workers', 'all symptomatic essential worker and members of their households','anyone aged 65+ who must leave their home for work plus asymptomatic NHS and Social Care staff and care home residents', 'anyone aged 5+ who is showing signs of Covid-19', 'anyone with Covid-19 symptoms regardless of age', 'care homes receive more frequent routine testing and even without symptoms')) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/uk_testing_key_dates.json'))
@@ -382,7 +373,6 @@ wsx_daily_cases %>%
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
   mutate(Date_label_2 = format(Date, '%d %b %y')) %>% 
   mutate(Colour_key = gsub('\n',' ', Colour_key)) %>% 
-  # select(Name, Date, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label) %>% 
   select(Name, Date_label, Date_label_2, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label) %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/wsx_daily_cases.json'))
@@ -445,7 +435,6 @@ format(last_date, '%d %B %Y') %>%
   write_lines(paste0(output_directory_x,'/daily_case_update_date.json'))
 
 # Export df for KG - 7 day rolling trend ####
-
 per_day_trend <- p12_test_df %>% 
   select(Code, Name, Type, Date, New_cases, Cumulative_cases, Rolling_7_day_new_cases, Seven_day_average_new_cases, Population) %>% 
   rename(MYE2019 = Population)
@@ -497,7 +486,6 @@ new_case_rate_plot <- ggplot(hm_df, aes(x = Date,
                breaks = seq.Date((last_date -1) -(52*7), last_date -1, by = 7),
                limits = c(min(hm_df$Date), max(hm_df$Date)),
                expand = c(0,0.0)) +
-  # scale_y_discrete(position = 'right') +
   hm_theme() +
   theme(axis.text.y = element_text(colour = "#323232", 
                                    #face = case_summary$highlight, 
@@ -519,7 +507,7 @@ png(paste0(output_directory_x, '/Figure_2_confirmed_heatmap_rate.png'),
 print(new_case_rate_plot)
 dev.off()
 
-# UTLA Cumulative rate map ####
+# UTLA rate ####
 utla_rate_1 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>%
@@ -540,9 +528,9 @@ england_rolling <- p12_test_df %>%
   ungroup() %>% 
   filter(Date == complete_date) %>% 
   filter(Name == 'England') %>% 
-  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Label_3)
+  mutate(Label_3 = sub('In ', 'In England, in ', Label_3))
 
-paste0('The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ',', trim = TRUE), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ',', trim = TRUE), ' cases per 100,000 population</b>). ', england_rolling$Label_3) %>% 
+paste0(england_rolling$Label_3, ' The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ',', trim = TRUE), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ',', trim = TRUE), ' cases per 100,000 population</b>).') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/england_cumulative.json'))
 
@@ -637,8 +625,6 @@ utla_rate_wsx <- utla_rate %>%
 utla_rate_wsx %>% 
   write.csv(., paste0(output_directory_x, '/utla_rate_wsx.csv'), row.names = FALSE)
 
-bord_style <- fp_border(color = "black", style = "solid", width = .5)
-
 cum_utla_rate_wsx <- utla_rate_wsx %>% 
   select(Name, `Cumulative cases`, `Cumulative rate per 100,000 residents`, `Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000`, `Decile of cumulative rate per 100,000`)
 
@@ -681,7 +667,7 @@ ft_utla_rolling_rate_wsx <- flextable(rolling_utla_rate_wsx) %>%
   hline_bottom(border = bord_style ) %>% 
   hline_top(border = bord_style, part = "all" )
 
-utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
+utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>%
   filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
   mutate(ctyua19nm = ifelse(ctyua19nm %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
   mutate(ctyua19cd = ifelse(ctyua19cd %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(ctyua19cd %in% c('E09000001', 'E09000012'), 'E09000012', ctyua19cd))) %>% 
@@ -1117,217 +1103,6 @@ print(map_1b_ltla)
 print(inset_1b_ltla, vp = viewport(0.2, 0.8, width = 0.22, height = 0.22))
 dev.off()
 
-# NHS Pathways ####
-
-# ccg_region_2019 <- read_csv('https://opendata.arcgis.com/datasets/40f816a75fb14dfaaa6db375e6c3d5e6_0.csv') %>% 
-#   select(CCG19CD, CCG19NM) %>% 
-#   rename(Old_CCG_Name = CCG19NM,
-#          Old_CCG_Code = CCG19CD) %>% 
-#   mutate(New_CCG_Name = ifelse(Old_CCG_Name %in% c('NHS Bath and North East Somerset CCG', 'NHS Swindon CCG', 'NHS Wiltshire CCG'), 'NHS Bath and North East Somerset, Swindon and Wiltshire CCG', ifelse(Old_CCG_Name %in% c('NHS Airedale, Wharfedale and Craven CCG', 'NHS Bradford City CCG', 'NHS Bradford Districts CCG'), 'NHS Bradford District and Craven CCG', ifelse(Old_CCG_Name %in% c('NHS Eastern Cheshire CCG', 'NHS South Cheshire CCG', 'NHS Vale Royal CCG','NHS West Cheshire CCG'), 'NHS Cheshire CCG', ifelse(Old_CCG_Name %in% c('NHS Durham Dales, Easington and Sedgefield CCG', 'NHS North Durham CCG'), 'NHS County Durham CCG',  ifelse(Old_CCG_Name %in% c('NHS Eastbourne, Hailsham and Seaford CCG', 'NHS Hastings and Rother CCG', 'NHS High Weald Lewes Havens CCG'), 'NHS East Sussex CCG', ifelse(Old_CCG_Name %in% c('NHS Herefordshire CCG', 'NHS Redditch and Bromsgrove CCG', 'NHS South Worcestershire CCG','NHS Wyre Forest CCG'), 'NHS Herefordshire and Worcestershire CCG', ifelse(Old_CCG_Name %in% c('NHS Ashford CCG', 'NHS Canterbury and Coastal CCG', 'NHS Dartford, Gravesham and Swanley CCG', 'NHS Medway CCG', 'NHS South Kent Coast CCG', 'NHS Swale CCG', 'NHS Thanet CCG','NHS West Kent CCG'), 'NHS Kent and Medway CCG', ifelse(Old_CCG_Name %in% c('NHS Lincolnshire East CCG', 'NHS Lincolnshire West CCG', 'NHS South Lincolnshire CCG', 'NHS South West Lincolnshire CCG'), 'NHS Lincolnshire CCG', ifelse(Old_CCG_Name %in% c('NHS Great Yarmouth and Waveney CCG', 'NHS North Norfolk CCG', 'NHS Norwich CCG', 'NHS South Norfolk CCG', 'NHS West Norfolk CCG'), 'NHS Norfolk and Waveney CCG', ifelse(Old_CCG_Name %in% c('NHS Barnet CCG', 'NHS Camden CCG', 'NHS Enfield CCG', 'NHS Haringey CCG', 'NHS Islington CCG'), 'NHS North Central London CCG', ifelse(Old_CCG_Name %in% c('NHS Hambleton, Richmondshire and Whitby CCG', 'NHS Scarborough and Ryedale CCG', 'NHS Harrogate and Rural District CCG'),'NHS North Yorkshire CCG', ifelse(Old_CCG_Name %in% c('NHS Corby CCG', 'NHS Nene CCG'), 'NHS Northamptonshire CCG', ifelse(Old_CCG_Name %in% c('NHS Mansfield and Ashfield CCG', 'NHS Newark and Sherwood CCG', 'NHS Nottingham City CCG', 'NHS Nottingham North and East CCG', 'NHS Nottingham West CCG', 'NHS Rushcliffe CCG'), 'NHS Nottingham and Nottinghamshire CCG', ifelse(Old_CCG_Name %in% c('NHS Bexley CCG', 'NHS Bromley CCG', 'NHS Greenwich CCG', 'NHS Lambeth CCG', 'NHS Lewisham CCG','NHS Southwark CCG'), 'NHS South East London CCG',ifelse(Old_CCG_Name %in% c('NHS Croydon CCG', 'NHS Kingston CCG', 'NHS Merton CCG', 'NHS Richmond CCG', 'NHS Sutton CCG', 'NHS Wandsworth CCG'), 'NHS South West London CCG',ifelse(Old_CCG_Name %in% c('NHS East Surrey CCG', 'NHS Guildford and Waverley CCG', 'NHS North West Surrey CCG', 'NHS Surrey Downs CCG'), 'NHS Surrey Heartlands CCG', ifelse(Old_CCG_Name %in% c('NHS Darlington CCG', 'NHS Hartlepool and Stockton-on-Tees CCG', 'NHS South Tees CCG'), 'NHS Tees Valley CCG', ifelse(Old_CCG_Name %in% c('NHS Coastal West Sussex CCG', 'NHS Crawley CCG', 'NHS Horsham and Mid Sussex CCG'), 'NHS West Sussex CCG', Old_CCG_Name)))))))))))))))))))
-# 
-# ccg_region_2020 <- read_csv('https://opendata.arcgis.com/datasets/888dc5cc66ba4ad9b4d935871dcce251_0.csv') %>% 
-#   select(CCG20CD, CCG20NM, NHSER20NM) %>% 
-#   rename(New_CCG_Code = CCG20CD,
-#          CCG_Name = CCG20NM,
-#          NHS_region = NHSER20NM)
-# 
-# ccg_region_2019 <- ccg_region_2019 %>% 
-#   left_join(ccg_region_2020[c('New_CCG_Code', 'CCG_Name')], by = c('New_CCG_Name'='CCG_Name'))
-# 
-# # NHS Pathway Data
-# calls_webpage <- read_html('https://digital.nhs.uk/data-and-information/publications/statistical/mi-potential-covid-19-symptoms-reported-through-nhs-pathways-and-111-online/latest') %>%
-#   html_nodes("a") %>%
-#   html_attr("href")
-# 
-# nhs_111_pathways_raw <- read_csv(grep('NHS%20Pathways%20Covid-19%20data%202021', calls_webpage, value = T))  %>% 
-#   rename(CCG_Name = CCGName) %>% 
-#   mutate(Date = as.Date(`Call Date`, format = '%d/%m/%Y')) %>% 
-#   select(-`Call Date`) %>% 
-#   mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
-# 
-# nhs_111_pathways_pre_april <- nhs_111_pathways_raw %>% 
-#   filter(Date < '2020-04-01') %>% 
-#   left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCGCode' = 'Old_CCG_Code')) %>% 
-#   group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex, SiteType) %>% 
-#   summarise(TriageCount = sum(TriageCount, na.rm = TRUE)) %>% 
-#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
-#   ungroup() %>% 
-#   filter(!is.na(NHS_region))
-# 
-# nhs_111_pathways_post_april <- nhs_111_pathways_raw %>% 
-#   filter(Date >= '2020-04-01') %>% 
-#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCGCode' ='New_CCG_Code')) %>% 
-#   filter(!is.na(NHS_region)) %>% 
-#   rename(New_CCG_Code = CCGCode,
-#          New_CCG_Name = CCG_Name)
-# 
-# nhs_111_pathways <- nhs_111_pathways_pre_april %>% 
-#   bind_rows(nhs_111_pathways_post_april) %>% 
-#   mutate(Pathway = paste0(SiteType, ' triage')) %>% 
-#   select(-SiteType) %>% 
-#   rename(Triage_count = TriageCount)
-# 
-# rm(nhs_111_pathways_pre_april, nhs_111_pathways_post_april)
-# 
-# nhs_111_online_raw <- read_csv(grep('111%20Online%20Covid-19%20data_2021', calls_webpage, value = T)) %>% 
-#   rename(CCG_Name = ccgname,
-#          CCG_Code = ccgcode,
-#          Sex = sex,
-#          AgeBand = ageband) %>% 
-#   mutate(Date = as.Date(journeydate, format = '%d/%m/%Y')) %>% 
-#   select(-journeydate) %>% 
-#   mutate(AgeBand = ifelse(is.na(AgeBand), 'Unknown', AgeBand))
-# 
-# nhs_111_online_post_april <- nhs_111_online_raw %>% 
-#   filter(Date >= '2020-04-01') %>% 
-#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = c('CCG_Code' ='New_CCG_Code')) %>% 
-#   filter(!is.na(NHS_region)) %>% 
-#   rename(New_CCG_Code = CCG_Code,
-#          New_CCG_Name = CCG_Name)
-# 
-# nhs_111_online_pre_april <- nhs_111_online_raw %>% 
-#   filter(Date < '2020-04-01') %>% 
-#   left_join(ccg_region_2019[c('Old_CCG_Code','New_CCG_Code', 'New_CCG_Name')], by = c('CCG_Code' = 'Old_CCG_Code')) %>% 
-#   group_by(New_CCG_Code, New_CCG_Name, Date, AgeBand, Sex) %>% 
-#   summarise(Total = sum(Total, na.rm = TRUE)) %>% 
-#   left_join(ccg_region_2020[c('New_CCG_Code', 'NHS_region')], by = 'New_CCG_Code') %>% 
-#   ungroup() %>% 
-#   filter(!is.na(NHS_region))
-# 
-# nhs_111_online <- nhs_111_online_pre_april %>% 
-#   bind_rows(nhs_111_online_post_april) %>% 
-#   mutate(Pathway = '111 online Journey') %>% 
-#   rename(Triage_count = Total)
-# 
-# nhs_pathways_p1 <- nhs_111_pathways %>% 
-#   bind_rows(nhs_111_online) %>% 
-#   rename(Area_Code = New_CCG_Code,
-#          Area_Name = New_CCG_Name)
-# 
-# sussex_pathways <- nhs_pathways_p1 %>% 
-#   filter(Area_Name %in% c('NHS West Sussex CCG', 'NHS East Sussex CCG', 'NHS Brighton and Hove CCG')) %>% 
-#   group_by(Date, Pathway, Sex, AgeBand) %>% 
-#   summarise(Triage_count = sum(Triage_count)) %>% 
-#   mutate(Area_Name = 'Sussex areas combined',
-#          Area_Code = '-',
-#          NHS_region = '-')
-# 
-# nhs_pathways <- nhs_pathways_p1 %>% 
-#   bind_rows(sussex_pathways)
-# 
-# nhs_pathways_all_ages_persons <- nhs_pathways %>% 
-#   group_by(Area_Code, Area_Name, Date, Pathway) %>% 
-#   summarise(Triage_count = sum(Triage_count)) %>% 
-#   group_by(Area_Code, Area_Name, Pathway) %>% 
-#   arrange(Area_Code, Pathway, Date) %>% 
-#   mutate(Number_change = Triage_count - lag(Triage_count),
-#          Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
-# 
-# rm(ccg_region_2019, ccg_region_2020, nhs_111_online, nhs_111_online_pre_april, nhs_111_online_post_april, nhs_111_online_raw, nhs_111_pathways, nhs_111_pathways_raw, calls_webpage, nhs_pathways_p1, sussex_pathways)
-# 
-# nhs_pathways_all_ages_persons_all_pathways <- nhs_pathways %>% 
-#   group_by(Area_Code, Area_Name, Date) %>% 
-#   summarise(Triage_count = sum(Triage_count)) %>% 
-#   group_by(Area_Code, Area_Name) %>% 
-#   arrange(Area_Code, Date) %>% 
-#   mutate(Number_change = Triage_count - lag(Triage_count),
-#          Percentage_change = (Triage_count - lag(Triage_count))/ lag(Triage_count))
-# 
-# latest_triage_date = nhs_pathways %>% 
-#   filter(Date == max(Date)) %>% 
-#   select(Date) %>% 
-#   unique() %>% 
-#   mutate(Date = format(Date, '%d %B'))
-# 
-# pathways_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
-#   filter(Area_Name == 'NHS West Sussex CCG')
-# 
-# utla_pathways <- read_csv('https://files.digital.nhs.uk/46/536793/NHS%20Pathways%20Covid-19%20data_UTLA_2020-07-27.csv') %>% 
-#   mutate(Date = as.character.Date(CallDate))
-# 
-# whole_timeseries_plot <- ggplot(pathways_x,
-#                                 aes(x = Date,
-#                                     y = Triage_count,
-#                                     group = 1)) +
-  # geom_segment(x = as.Date('2020-05-18'), y = 0, xend = as.Date('2020-05-18'), yend = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)), color = "red", linetype = "dashed") +
-  # geom_line() +
-  # geom_point(size = .8) +
-  # scale_x_date(date_labels = "%b %d",
-  #              breaks = seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7),
-  #              limits = c(min(nhs_pathways$Date), max(nhs_pathways$Date)),
-  #              expand = c(0.01,0.01)) +
-  # scale_y_continuous(labels = comma,
-  #                    breaks = seq(0,round_any(max(pathways_x$Triage_count, na.rm = TRUE), 500, ceiling),250)) +
-  # labs(x = 'Date',
-  #      y = 'Number of complete triages',
-  #      title = paste0('Total number of complete triages to NHS Pathways for Covid-19; ', unique(pathways_x$Area_Name)),
-  #      subtitle = paste0('Triages via 111 online, 111 phone calls and 999 calls; 18 March - ', latest_triage_date$Date),
-  #      caption = 'Note: red dashed line = some patients excluded,\nblue dashed line = additional patients added') +
-  # ph_theme() +
-  # theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
-  # annotate(geom = 'text',
-#          x = as.Date('2020-05-18'), 
-#          y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
-#          label = '18th May',
-#          size = 2.5,
-#          fontface = 'bold',
-#          hjust = 0,
-#          vjust = -6) +
-#   annotate(geom = 'text',
-#            x = as.Date('2020-05-18'), 
-#            y = as.numeric(subset(pathways_x, Date == as.Date('2020-05-18'), select = Triage_count)),
-#            label = 'Covid-19 pathway case\ndefinition change',
-#            size = 2.5,
-#            hjust = 0,
-#            vjust = -.5)
-# 
-# png(paste0(output_directory_x, '/Figure_5_complete_triages_nhs_pathways.png'),
-#     width = 1580, 
-#     height = 1300, 
-#     res = 200)
-# print(whole_timeseries_plot)
-# dev.off()
-# 
-# Report_df_x <- nhs_pathways_all_ages_persons_all_pathways %>% 
-#   filter(Area_Name == 'NHS West Sussex CCG') %>% 
-#   mutate(seven_day_total_triages = rollapplyr(Triage_count, 7, sum, align = 'right', partial = TRUE)) %>% 
-#   mutate(seven_day_average_triages = round(rollapplyr(Triage_count, 7, mean, align = 'right', partial = TRUE),0))
-# 
-# latest_report_date <- Report_df_x %>% 
-#   filter(Date == max(Date))
-# 
-# latest_report_date_minus1 <- Report_df_x %>% 
-#   filter(Date == max(Date) -1)
-# 
-# nhs_pways_text_1 <- paste0('In the last 24 hours there were ', format(latest_report_date$Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(latest_report_date$Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(latest_report_date$Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(latest_report_date_minus1$Triage_count, big.mark = ',', trim = TRUE) ,' triages).') 
-# 
-# nhs_pways_text_2 <- paste0('In the seven days leading to ', format(latest_report_date$Date, '%d %B'), ' there were ', format(latest_report_date$seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(latest_report_date$seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')
-
-# Exporting for web
-
-# Report_df_x %>% 
-#   ungroup() %>% 
-#   mutate(label_1 = paste0('In the seven days leading to ', format(Date, '%d %B'), ' there were ', format(seven_day_total_triages, big.mark = ',', trim = TRUE), ' triages to NHS Pathways for COVID-19, this is an average of ', format(round(seven_day_average_triages, 0), big.mark = ',', trim = TRUE), ' each day.')) %>% 
-#   mutate(label_2 = paste0('In the last 24 hours there were ', format(Triage_count, big.mark = ',', trim = TRUE), ' triages made. This is an ', ifelse(Number_change >= 0, 'increase', ifelse(latest_report_date$Number_change <0, 'decrease', NA)), ' of ', format(abs(Number_change), big.mark = ',', trim = TRUE), ' triages compared to the previous day (', format(lag(Triage_count,1), big.mark = ',', trim = TRUE) ,' triages).')) %>% 
-#   mutate(Date = format(Date, '%d %b')) %>% 
-#   select(Date, Triage_count, label_1, label_2) %>%
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/NHS_pathways_df.json'))
-# 
-# pathways_dates <- Report_df_x %>% 
-#   ungroup() %>% 
-#   filter(Date %in% seq.Date(max(nhs_pathways$Date) -(52*7), max(nhs_pathways$Date), by = 7)) %>% 
-#   select(Date) %>% 
-#   mutate(Date = format(Date, '%d %b'))
-
-# pathways_dates$Date %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/NHS_pathways_dates.json'))
-# 
-# data.frame(Date = c('23 Apr', '18 May'), lab_1 = c('111 online reinstated', 'Pathway case'), lab_2 = c( 'for 5-18 year olds', 'definition change'), direction = c('blue', 'red'), Triage_count = c(292,334)) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/pathways_changes.json'))
-
 # Mortality ####
 
 # Weekly death figures provide provisional counts of the number of deaths registered in England and Wales for which data are available.	From 31 March 2020 these figures also show the number of deaths involving coronavirus (COVID-19), based on any mention of COVID-19 on the death certificate.											
@@ -1704,12 +1479,6 @@ Occurrences %>%
 
 # Export to powerpoint ####
 
-# wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx'))
-# # 
-# layout_summary(wkly_template)
-# layout_properties(wkly_template, 'mortality')
-
-# Start powerpoint
 wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx')) %>%  
   add_slide(layout = "Intro_page", master = "Office Theme") %>% 
   ph_with(value = paste0('Pack date: ',format(Sys.Date(), '%d %B %Y')), 
@@ -1832,24 +1601,8 @@ wkly_template <- wkly_template %>%
   ph_with(value = paste0('Note that the very recent days are excluded in the 7-day total as these are thought to be incomplete. As such, this data represents cases in the ', rolling_period_x), 
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_ltla_rolling_rate_wsx,
-          location = ph_location_label(ph_label = 'Table Placeholder 7'))#%>%
-  # add_slide(layout = "pathways_layout", master = "Office Theme") %>%
-  # ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')),
-  #         location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>%
-  # ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')),
-  #         location = ph_location_label(ph_label = 'Date Placeholder 2')) %>%
-  # ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.',
-  #         location = ph_location_label(ph_label = 'Text Placeholder 20')) %>%
-  # ph_with(value = 'Source: NHS Digital',
-  #         # href = 'https://coronavirus.data.gov.uk',
-  #         location = ph_location_label(ph_label = 'Text Placeholder 22')) %>%
-  # ph_with(value = paste0('Slide ', length(.) -1),
-  #         location = ph_location_label(ph_label = 'Text Placeholder 19')) %>%
-  # ph_with(value = nhs_pways_text_1,
-  #         location = ph_location_label(ph_label = 'Text Placeholder 13')) %>%
-  # ph_with(value = nhs_pways_text_2,
-  #         location = ph_location_label(ph_label = 'Text Placeholder 17'))
-
+          location = ph_location_label(ph_label = 'Table Placeholder 7'))
+  
 # Death plots
 for(i in 1:length(areas_to_loop)){
   
@@ -1870,7 +1623,7 @@ for(i in 1:length(areas_to_loop)){
             location = ph_location_label(ph_label = 'Text Placeholder 19'))
 }
 
-# Last one - move the data source slide
+# Last part - move the data source slide
 wkly_template <- wkly_template %>% 
   move_slide(index = 1, to = length(.))
 
@@ -1925,14 +1678,13 @@ wkly_template %>%
 
 #paste0('Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.')
 
-# incidence and growth rate ####
+# Seven day incidence and growth rate ####
 
 # Exact Poisin confidence intervals are calculated using the pois.exact function from the epitools package (see https://www.rdocumentation.org/packages/epitools/versions/0.09/topics/pois.exact for details)
 
-library(epitools)
-
 growth_rate <- p12_test_df %>% 
   filter(Data_completeness == 'Complete') %>% 
+  filter(Date >= '2020-11-01') %>% 
   select(Name, Code, Type, Date, Rolling_7_day_new_cases, Perc_change_on_rolling_7_days_actual, Perc_change_on_rolling_7_days_tidy, Cumulative_cases, Cumulative_per_100000, Population, Label_3) %>%
   mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
   mutate(Rolling_7_day_rate = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
@@ -1954,24 +1706,18 @@ growth_rate_england <- growth_rate %>%
 
 growth_rate_ltla <- growth_rate %>%
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>%
-  mutate(Label_1 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>%
+  mutate(Label_1 = paste0('The 7 day incidence rate (', round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>%
   mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' cases per 100,000).')) %>%
-  mutate(Label = paste(Label_1, Label_3, sep = '<br><br>')) %>%
+  mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>%
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_ltla %>%
-  filter(Date >= '2020-11-01') %>%
+  filter(Date >= '2021-01-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_ltla$Name), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')))) %>% 
   arrange(Name) %>% 
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>% 
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
   toJSON() %>%
-  write_lines(paste0(output_directory_x,'/ltla_growth_since_november.json'))
-
-# growth_rate_ltla %>%
-#   filter(Date == complete_date) %>%
-#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>%
-#   toJSON() %>%
-#   write_lines(paste0(output_directory_x,'/ltla_growth_latest.json'))
+  write_lines(paste0(output_directory_x,'/ltla_recent_growth.json'))
 
 growth_rate_utla <- growth_rate %>% 
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
@@ -1981,37 +1727,15 @@ growth_rate_utla <- growth_rate %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_utla %>% 
-  filter(Date >= '2020-11-01') %>%
+  filter(Date >= '2021-01-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_utla$Name), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')))) %>% 
   arrange(Name) %>% 
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/utla_growth_since_november.json'))
-
-# growth_rate_utla %>% 
-#   filter(Date == complete_date) %>% 
-#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/utla_growth_latest.json'))
-
-# growth_rate_utla %>% 
-# filter(Date >= '2020-09-01') %>%
-# summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
-#           Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
-# mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/utla_growth_limits.json'))
-
-# growth_rate_utla %>% 
-#   filter(Date == complete_date) %>%
-#   summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
-#             Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
-#     mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
-#     toJSON() %>% 
-#     write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
+  write_lines(paste0(output_directory_x,'/utla_recent_growth.json'))
 
 growth_rate_utla %>% 
-  filter(Date >= '2020-11-01') %>%
+  filter(Date >= '2021-01-01') %>%
   select(Date) %>% 
   unique() %>% 
   arrange(Date) %>% 
@@ -2280,102 +2004,7 @@ msoa_cases_raw %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/msoa_summary.json'))
 
-# 
-# # MSOA map ####
-# oa_region <- read_csv('https://opendata.arcgis.com/datasets/180c271e84fc400d92ca6dcc7f6ff780_0.csv')[c('OA11CD', 'RGN11MM')]
-# 
-# msoa_names <- read_csv('https://visual.parliament.uk/msoanames/static/MSOA-Names-1.8.csv') %>% 
-#   select(msoa11cd, msoa11hclnm) %>% 
-#   rename(MSOA11CD = msoa11cd)
-# 
-# 
-# if(exists('msoa_names') == FALSE) {
-#   msoa_names <- read_csv(paste0(github_repo_dir,'/Source files/msoa_names_backup.csv')) 
-# }
-# 
-# msoa_names %>% 
-#   write.csv(., paste0(github_repo_dir, '/Source files/msoa_names_backup.csv'), row.names = FALSE)
-# 
-# msoa_lookup <- read_csv('https://opendata.arcgis.com/datasets/6ecda95a83304543bc8feedbd1a58303_0.csv') %>%
-#   left_join(read_csv('https://opendata.arcgis.com/datasets/180c271e84fc400d92ca6dcc7f6ff780_0.csv')[c('OA11CD', 'RGN11NM')], by = 'OA11CD') %>% 
-#   select(MSOA11CD, MSOA11NM, LAD11NM, RGN11NM) %>% 
-#   unique() %>% 
-#   left_join(msoa_names, by = 'MSOA11CD')
-# 
-# if(exists('msoa_lookup') == FALSE) {
-#   msoa_lookup <- read_csv(paste0(github_repo_dir,'/Source files/msoa_lookup_backup.csv')) 
-# }
-# 
-# msoa_lookup %>% 
-#   write.csv(., paste0(github_repo_dir, '/Source files/msoa_lookup_backup.csv'), row.names = FALSE)
-# 
-# se_msoas <- msoa_lookup %>% 
-#   filter(RGN11NM == 'South East')
-# 
-# wsx_msoas <- msoa_lookup %>% 
-#   filter(LAD11NM %in% c('Adur', 'Arun', 'Chichester','Crawley', 'Horsham', 'Mid Sussex', 'Worthing'))
-#   
-# 
-# # Weekly rolling sums and population-based rates of new cases by specimen date time series data are available to download for English MSOAs via the following links. The data are updated each day, and show the latest 7 days for which near-complete data release date minus 5 days are available, and historic non-overlapping 7-day blocks. Dates are the final day in the relevant 7-day block, and counts between 0 and 2 are blank in the CSV or NULL in the other formats.
-# 
-# 
-# msoa_cases_1 <- read_csv('https://coronavirus.data.gov.uk/downloads/msoa_data/MSOAs_latest.csv') %>% 
-#   # filter(areaCode %in% msoa_lookup$MSOA11CD) %>% 
-#   filter(date %in% c(max(date))) %>% 
-#   select(areaCode, date, newCasesBySpecimenDateRollingRate) %>% 
-#   rename(Latest_rate = newCasesBySpecimenDateRollingRate) %>% 
-#   mutate(Latest_rate_key = factor(ifelse(is.na(Latest_rate), 'Less than 3 cases', ifelse(Latest_rate <= 50, 'Up to 50 per 100,000', ifelse(Latest_rate <= 100, '51-100 cases per 100,000', ifelse(Latest_rate <= 150, '101-150 cases per 100,000', ifelse(Latest_rate <= 200, '151-200 cases per 100,000', 'More than 200 cases per 100,000'))))), levels = c('Less than 3 cases', 'Up to 50 cases per 100,000', '51-100 cases per 100,000', '101-150 cases per 100,000', '151-200 cases per 100,000', 'More than 200 cases per 100,000')))
-# 
-# msoa_cases_raw <- as.data.frame(read_csv('https://coronavirus.data.gov.uk/downloads/msoa_data/MSOAs_latest.csv') %>% 
-#   # filter(areaCode %in% msoa_lookup$MSOA11CD) %>% 
-#   group_by(areaCode, areaName) %>% 
-#   arrange(areaCode, areaName, date) %>% 
-#   filter(date %in% c(max(date), max(date) - 7)) %>% 
-#   select(areaCode, areaName, date, newCasesBySpecimenDateRollingSum) %>% 
-#   mutate(date = ifelse(date == max(date), 'This_week', ifelse(date == max(date)-7, 'Last_week', NA))) %>% 
-#   pivot_wider(names_from = 'date', values_from = 'newCasesBySpecimenDateRollingSum') %>% 
-#   mutate(Change_actual = This_week - Last_week) %>% 
-#   mutate(Change_label = ifelse(is.na(Last_week) & is.na(This_week), 'Cases below 3 in both weeks', ifelse(is.na(Last_week), 'Cases below 3 in previous week but have risen', ifelse(is.na(This_week), 'Cases below 3 in the latest 7 days but have fallen', ifelse(Change_actual == 0, 'No change in case numbers', ifelse(Change_actual < 0, 'Cases have fallen', ifelse(Change_actual>0, 'Cases have risen', NA))))))) %>% 
-#   mutate(Case_key = ifelse(is.na(This_week), '0-2 cases', ifelse(This_week <= 5, '3-5 cases', ifelse(This_week <= 10, '6-10 cases', ifelse(This_week <= 15, '11-15 cases', 'More than 15 cases'))))) %>% 
-#   left_join(msoa_cases_1, by = 'areaCode') %>% 
-#   left_join(msoa_lookup, by = c('areaCode' = 'MSOA11CD')) %>% 
-#   mutate(Label = paste0('<b>', MSOA11NM,' (', msoa11hclnm,')</b><br><br>In the seven days to ', format(date, '%A %d %B'), ' there were ', ifelse(is.na(This_week), ' less than three new cases.', paste0(format(This_week, big.mark = ',', trim = TRUE), ' new cases, this is a rate of ', round(Latest_rate, 1), ' cases per 100,000 population.')), '<br><br>', ifelse(is.na(Last_week) & is.na(This_week), 'Cases have been below 3 in the last two 7 day periods.', ifelse(is.na(Last_week), paste0('Cases were below 3 in the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,') but have risen this week.'), ifelse(is.na(This_week), paste0('Cases are now below 3 in the latest 7 days but have fallen since the previous 7 day period (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual == 0, 'There is no change in case numbers over the last two weeks', ifelse(Change_actual < 0, paste0('Cases have fallen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual >0, paste0('Cases have risen in the last 7 days compared to the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,').'), NA)))))))) %>%
-#   ungroup()) 
-#   
-# msoa_cases <- msoa_cases_raw %>% 
-#   select(MSOA11NM, Case_key, Latest_rate_key, Change_label, Label) %>% 
-#   filter(MSOA11NM %in% se_msoas$MSOA11NM) %>% 
-#   arrange(MSOA11NM)
-# 
-# msoa_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/23cdb60ee47e4fef8d72e4ee202accb0_0.geojson",  what = "sp") %>% 
-#   filter(MSOA11NM %in% se_msoas$MSOA11NM) %>%
-#   arrange(MSOA11NM)
-# 
-# df <- data.frame(ID = character())
-# 
-# # Get the IDs of spatial polygon
-# for (i in msoa_boundaries_json@polygons ) { df <- rbind(df, data.frame(ID = i@ID, stringsAsFactors = FALSE))  }
-# 
-# # and set rowname = ID
-# row.names(msoa_cases) <- df$ID
-# 
-# # Then use df as the second argument to the spatial dataframe conversion function:
-# msoa_boundaries_json <- SpatialPolygonsDataFrame(msoa_boundaries_json, msoa_cases)  
-# 
-# 
-# # geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
-# 
-# geojson_write(geojson_json(msoa_boundaries_json), file = paste0(output_directory_x, '/msoa_covid_rate_latest.geojson'))
-# 
-# msoa_cases_raw %>% 
-#   select(MSOA11NM, msoa11hclnm, Latest_rate,  This_week, Last_week, Change_label, date, Change_actual) %>% 
-#   mutate(Change_label = paste0(ifelse(is.na(Last_week) & is.na(This_week), 'Cases have been below 3 in the last two 7 day periods.', ifelse(is.na(Last_week), paste0('Cases were below 3 in the previous 7 days (up to ', format(max(date)-7, '%A %d %B') ,') but have risen this week.'), ifelse(is.na(This_week), paste0('Cases are now below 3 in the latest 7 days but have fallen since the previous 7 day period (up to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual == 0, 'There is no change in case numbers over the last two weeks', ifelse(Change_actual < 0, paste0('<b class = "cases_go_down">', Change_actual, '</b> cases compared to the previous 7 days (', Last_week,  ' cases in the 7 days to ', format(max(date)-7, '%A %d %B') ,').'), ifelse(Change_actual >0, paste0('<b class = "cases_go_up">+', Change_actual, '</b> cases compared to the previous 7 days (', Last_week, ' cases in the 7 days to ', format(max(date)-7, '%A %d %B') ,').'), NA)))))))) %>% 
-#   mutate(This_week = ifelse(is.na(This_week), '0-2', format(This_week, big.mark = ',', trim = TRUE)),
-#          Last_week = ifelse(is.na(Last_week), '0-2', format(Last_week, big.mark = ',', trim = TRUE)),
-#          Latest_rate = ifelse(is.na(Latest_rate), 'No rate available', Latest_rate)) %>%
-#   select(!c('date', 'Change_actual')) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/msoa_summary.json'))
+# LTLA summary #
 
 ltla_summary_1 <- p12_test_df %>% 
   filter(Type %in% c('Unitary Authority', 'Lower Tier Local Authority')) %>% 
@@ -2559,4 +2188,438 @@ png(paste0(output_directory_x, '/Figure_7_day_rolling_positivity_rates_latest_fa
 print(positivity_worked_plotted)
 dev.off() 
 
-# LFTs ####
+# Hospital activity ####
+
+
+# Hospital admissions ####
+
+library(easypackages)
+
+libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools')
+
+capwords = function(s, strict = FALSE) {
+  cap = function(s) paste(toupper(substring(s, 1, 1)),
+                          {s = substring(s, 2); if(strict) tolower(s) else s},sep = "", collapse = " " )
+  sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))}
+
+options(scipen = 999)
+
+ph_theme = function(){
+  theme( 
+    plot.title = element_text(colour = "#000000", face = "bold", size = 10),    
+    plot.subtitle = element_text(colour = "#000000", size = 10),
+    panel.grid.major.x = element_blank(), 
+    panel.grid.minor.x = element_blank(),
+    panel.background = element_rect(fill = "#FFFFFF"), 
+    panel.grid.major.y = element_line(colour = "#E7E7E7", size = .3),
+    panel.grid.minor.y = element_blank(), 
+    strip.text = element_text(colour = "#000000", size = 10, face = "bold"), 
+    strip.background = element_blank(), 
+    axis.ticks = element_line(colour = "#dbdbdb"), 
+    legend.position = "bottom", 
+    legend.title = element_text(colour = "#000000", size = 9, face = "bold"), 
+    legend.background = element_rect(fill = "#ffffff"), 
+    legend.key = element_rect(fill = "#ffffff", colour = "#ffffff"), 
+    legend.text = element_text(colour = "#000000", size = 9), 
+    axis.text.y = element_text(colour = "#000000", size = 8), 
+    axis.text.x = element_text(colour = "#000000", angle = 0, hjust = 1, vjust = .5, size = 8), 
+    axis.title =  element_text(colour = "#000000", size = 9, face = "bold"),   
+    axis.line = element_line(colour = "#dbdbdb")
+  ) 
+}
+
+#github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
+github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
+output_directory_x <- paste0(github_repo_dir, '/Outputs')
+
+if(!file.exists(paste0(github_repo_dir, '/Source_files/etr.csv'))){
+  download.file('https://files.digital.nhs.uk/assets/ods/current/etr.zip', paste0(github_repo_dir, '/etr.zip'), mode = 'wb')
+  unzip(paste0(github_repo_dir, '/etr.zip'), exdir = github_repo_dir)
+  file.remove(paste0(github_repo_dir, '/etr.zip'), paste0(github_repo_dir, '/etr.pdf'))
+}
+
+calls_hosp_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/') %>%
+  html_nodes("a") %>%
+  html_attr("href")
+
+download.file(grep('Weekly-covid', calls_hosp_webpage, value = T), paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'), mode = 'wb')
+
+trust_admission_date <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+                                    sheet = 'All beds COVID',
+                                    skip = 2, 
+                                    col_names = FALSE, 
+                                    n_max = 5) %>% 
+  rename(Item = ...1,
+         Description = ...2) %>%
+  filter(Item == 'Published:') %>% 
+  mutate(Description  = as.Date(as.numeric(Description), origin = "1899-12-30"))
+
+admissions_df_trust <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsTrust&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
+
+admissions_df_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsRegion&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
+
+admissions_df_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
+
+# We need to use data.gov to get cumulative admissions because the NHS digital data only starts on August 1st
+admissions_df <- admissions_df_trust %>%
+  bind_rows(admissions_df_region) %>% 
+  bind_rows(admissions_df_nation) %>% 
+  rename(Name = areaName,
+         Admissions_or_new_cases_in_last_24hrs = newAdmissions,
+         Patients_occupying_beds = hospitalCases,
+         Patients_occupying_mv_beds = covidOccupiedMVBeds,
+         Date = date) %>% 
+  mutate(Admissions_or_new_cases_in_last_24hrs = replace_na(Admissions_or_new_cases_in_last_24hrs, 0),
+         Patients_occupying_beds = replace_na(Patients_occupying_beds, 0),
+         Patients_occupying_mv_beds = replace_na(Patients_occupying_mv_beds, 0)) %>% 
+  mutate(Patients_occupying_non_mv_beds = Patients_occupying_beds - Patients_occupying_mv_beds) %>% 
+  select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
+  group_by(Name) %>%
+  arrange(Name, Date) %>%
+  mutate(Rolling_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, sum, align = 'right', fill = NA),
+         Rolling_average_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, mean, align = 'right', fill = NA),
+         Total_admissions = cumsum(Admissions_or_new_cases_in_last_24hrs)) %>%
+  filter(Name %in%  c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England')) %>% 
+  mutate(Name = factor(Name, levels = c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust','Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England'))) %>%
+  arrange(Name) %>%
+  ungroup() %>% 
+  add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-19'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) %>% 
+  add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-20'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) 
+
+# patients occupying beds as at 8am
+admissions_date <- admissions_df_trust %>% 
+  filter(!is.na(newAdmissions)) %>% 
+  filter(date == max(date)) %>% 
+  select(date) %>% 
+  unique() %>% 
+  mutate(item = 'Admissions')
+
+occupied_date <- admissions_df_trust %>% 
+  filter(!is.na(hospitalCases)) %>% 
+  filter(date == max(date)) %>% 
+  select(date) %>% 
+  unique() %>% 
+  mutate(item = 'Patients in hospital')
+
+publish_date <- data.frame(date = trust_admission_date$Description,
+                           item = 'Publish date')
+
+admissions_date %>% 
+  bind_rows(occupied_date) %>% 
+  bind_rows(publish_date) %>% 
+  mutate(Date_label = format(date, '%A %d %B %Y')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/hospital_meta.json'))
+
+data.frame(Date = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7)) %>% 
+  filter(Date >= min(admissions_df$Date)) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/admission_date_labels.json'))
+
+hospital_table_a <- admissions_df %>% 
+  filter(Date == admissions_date$date) %>%
+  select(Name, Admissions_or_new_cases_in_last_24hrs, Rolling_7_day_admissions, Total_admissions)
+
+hospital_table_b <- admissions_df %>% 
+  filter(Date == occupied_date$date) %>%
+  select(Name, Patients_occupying_beds, Patients_occupying_mv_beds)
+
+hospital_table <- hospital_table_a %>% 
+  left_join(hospital_table_b, by = 'Name')
+
+hospital_table %>% 
+  select(!Admissions_or_new_cases_in_last_24hrs) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/latest_hospital_summary.json'))
+
+admissions_export_df <- admissions_df %>% 
+  filter(Date <= admissions_date$date) %>% 
+  select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Rolling_average_7_day_admissions, Rolling_7_day_admissions, Total_admissions) %>% 
+  group_by(Name) %>% 
+  arrange(Name, Date) %>% 
+  mutate(Previous_Rolling_7_day_admissions = lag(Rolling_7_day_admissions, 7)) %>% 
+  mutate(Perc_change_rolling_7_day_admissions = (Rolling_7_day_admissions - lag(Rolling_7_day_admissions, 7))/ lag(Admissions_or_new_cases_in_last_24hrs, 7)) %>% 
+  mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions == Inf, 1,Perc_change_rolling_7_day_admissions)) %>% 
+  mutate(Perc_change_rolling_7_day_admissions = replace_na(Perc_change_rolling_7_day_admissions, 0)) %>% 
+  mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions <0, 'Down', ifelse(Perc_change_rolling_7_day_admissions == 0, 'Same', ifelse(Perc_change_rolling_7_day_admissions > 0, 'Up', NA)))) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  select(!Date)
+
+admissions_export_df %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/admissions_export_df.json'))
+
+admissions_export_df %>% view()
+
+beds_occupied_export_df <- admissions_df %>% 
+  select(Name, Date, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
+  group_by(Name) %>% 
+  arrange(Name, Date) %>% 
+  mutate(Previous_occupying_beds = lag(Patients_occupying_beds, 7)) %>% 
+  mutate(Perc_change_on_beds_occupied = (Patients_occupying_beds - lag(Patients_occupying_beds, 7))/ lag(Patients_occupying_beds, 7)) %>% 
+  mutate(Perc_change_on_beds_occupied = ifelse(Perc_change_on_beds_occupied == Inf, 1, Perc_change_on_beds_occupied)) %>% 
+  mutate(Perc_change_on_beds_occupied = replace_na(Perc_change_on_beds_occupied, 0)) %>% 
+  mutate(Change_direction = ifelse(Perc_change_on_beds_occupied <0, 'decreased', ifelse(Perc_change_on_beds_occupied == 0, 'stayed the same', ifelse(Perc_change_on_beds_occupied > 0, 'increased', NA)))) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  filter(Date <= occupied_date$date) %>% 
+  select(!c(Date))
+
+data.frame(Date = seq.Date(occupied_date$date -(52*7), occupied_date$date, by = 7)) %>% 
+  filter(Date >= min(admissions_df$Date)) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/occupied_date_labels.json'))
+
+beds_occupied_export_df %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/beds_occupied_export_df.json'))
+
+# trust_admissions_1 <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+#                                   sheet = 'Hosp ads & diag',
+#                                   skip = 13) %>% 
+#   filter(!is.na(Name)) %>% 
+#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
+#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+#   pivot_longer(names_to = 'Date', values_to = 'Admissions_or_new_cases_in_last_24hrs', cols = 5:ncol(.)) %>% 
+#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30"))  %>% 
+#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
+#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code')) %>% 
+#   mutate(Source_of_admission = 'All')
+#
+# trust_admissions_1_ch <- read_excel(paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+#                                      sheet = 'Care home ads and diags',
+#                                      skip = 13) %>% 
+#   filter(!is.na(Name)) %>% 
+#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
+#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+#   pivot_longer(names_to = 'Date', values_to = 'Admissions_or_new_cases_in_last_24hrs', cols = 5:ncol(.)) %>% 
+#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30"))  %>% 
+#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
+#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code')) %>% 
+#   mutate(Source_of_admission = 'Care home')
+#
+# admissions_source_df <- trust_admissions_1 %>% 
+#   bind_rows(trust_admissions_1_ch) %>% 
+#   pivot_wider(names_from = Source_of_admission, values_from = Admissions_or_new_cases_in_last_24hrs) %>% 
+#   mutate(All = replace_na(All, 0),
+#          `Care home` = replace_na(`Care home`, 0)) %>% 
+#   mutate(`Not care home` = All - `Care home`) %>% 
+#   select(!All) %>% 
+#   pivot_longer(cols = c(`Not care home`, `Care home`), names_to = 'Source_of_admission',  values_to = 'Admissions_or_new_cases_in_last_24hrs') %>% 
+#   mutate(Source_of_admission = factor(Source_of_admission, levels = c('Care home', 'Not care home'))) %>% 
+#   group_by(Name, Source_of_admission) %>% 
+#   arrange(Name, Source_of_admission, Date) %>% 
+#   mutate(Rolling_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, sum, align = 'right', fill = NA),
+#          Total_admissions = cumsum(Admissions_or_new_cases_in_last_24hrs)) 
+
+trust_x <- 'England'
+
+admissions_x_df <- admissions_df %>% 
+  filter(Name == trust_x)
+
+ggplot(admissions_x_df,
+       aes(x = Date,
+           y = Admissions_or_new_cases_in_last_24hrs)) +
+  geom_bar(stat = 'identity',
+           width = .9,
+           fill = '#901020') +
+  geom_line(aes(x = Date,
+                group = 1,
+                y = Rolling_average_7_day_admissions),
+            colour = '#000000',
+            lwd = 1.2) +
+  scale_x_date(date_labels = "%d %b %y",
+               breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
+               expand = c(0,0.01)) +
+  scale_y_continuous(expand = c(0,0.01)) +
+  labs(x = 'Date',
+       y = 'Number of admissions',
+       title = paste0('Number of new admissions with a positive COVID-19 test result; ',trust_x),
+       subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
+  ph_theme() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+
+ggplot(admissions_x_df,
+       aes(x = Date,
+           y = Rolling_7_day_admissions)) +
+  geom_line(group = 1,
+            colour = '#901020') +
+  scale_x_date(date_labels = "%b %d",
+               breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
+               expand = c(0.01,0.01)) +
+  labs(x = 'Date',
+       y = 'Rolling 7 day admissions',
+       title = paste0('Rolling 7 day number of new admissions with a positive COVID-19 test result; ',trust_x),
+       subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
+  ph_theme() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+
+patients_in_beds_df <- admissions_df %>% 
+  select(Name, Date, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
+  filter(Date <= occupied_date$date) %>% 
+  pivot_longer(cols = c(Patients_occupying_non_mv_beds, Patients_occupying_mv_beds), names_to = 'Bed_type', values_to = 'Patients_occupying_beds') %>% 
+  mutate(Bed_type = ifelse(Bed_type == 'Patients_occupying_mv_beds', 'Mechanical ventilation', ifelse(Bed_type == 'Patients_occupying_non_mv_beds', 'Not capable of mechanical ventilation', NA)))
+
+patients_in_beds_df_x <- patients_in_beds_df %>% 
+  filter(Name == trust_x)
+
+ggplot(patients_in_beds_df_x,
+       aes(x = Date,
+           y = Patients_occupying_beds)) +
+  geom_bar(stat = 'identity',
+           colour = '#ffffff',
+           aes(fill = Bed_type)) +
+  scale_x_date(date_labels = "%b %d",
+               breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
+               expand = c(0.01,0.01)) +
+  scale_fill_manual(values = c('#006900', '#669900'),
+                    name = 'Bed type') +
+  labs(x = 'Date',
+       y = 'Number of inpatients',
+       title = paste0('Number of patients in hospital with positive COVID-19 test result; ',trust_x),
+       subtitle = paste0('Data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
+  ph_theme() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+
+# Share of inpatient beds occupied ####
+
+trust_c19_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+                                                    sheet = 'Adult G&A Beds Occupied COVID',
+                                                    skip = 13) %>% 
+  filter(!is.na(Name)) %>% 
+  mutate(Name = capwords(Name, strict = TRUE)) %>% 
+  mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+  mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+  mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+  mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+  pivot_longer(names_to = 'Date', values_to = 'c19_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
+  mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
+  filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
+  select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
+
+trust_other_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+                                                      sheet = 'Adult G&A Bed Occupied NonCOVID',
+                                                      skip = 13) %>% 
+  filter(!is.na(Name)) %>% 
+  mutate(Name = capwords(Name, strict = TRUE)) %>% 
+  mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+  mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+  mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+  mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+  pivot_longer(names_to = 'Date', values_to = 'other_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
+  mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
+  filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust',  'Sussex Partnership NHS Foundation Trust','Brighton and Sussex University Hospitals NHS Trust')) %>% 
+  select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
+
+trust_vacant_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+                                    sheet = 'Adult G&A Beds Unoccupied',
+                                    skip = 13) %>% 
+  filter(!is.na(Name)) %>% 
+  mutate(Name = capwords(Name, strict = TRUE)) %>% 
+  mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+  mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+  mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+  mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+  pivot_longer(names_to = 'Date', values_to = 'vacant_ga_beds', cols = 5:ncol(.)) %>% 
+  mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
+  filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
+  select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
+
+bed_used_df <- trust_c19_patients_occupying_ga_beds %>% 
+  left_join(trust_other_patients_occupying_ga_beds, by = c('Name', 'Date')) %>% 
+  left_join(trust_vacant_ga_beds, by = c('Name', 'Date')) %>%
+  pivot_longer(cols = c(c19_patients_occupying_ga_beds, other_patients_occupying_ga_beds, vacant_ga_beds), names_to = 'Bed_status', values_to = 'Beds') %>% 
+  group_by(Name, Date) %>% 
+  mutate(Total_open_beds = sum(Beds),
+         Proportion = Beds/sum(Beds)) %>% 
+  mutate(Bed_status = factor(ifelse(Bed_status == 'c19_patients_occupying_ga_beds', 'COVID-19 + patients', ifelse(Bed_status == 'other_patients_occupying_ga_beds', 'Other patients', ifelse(Bed_status == 'vacant_ga_beds', 'Vacant (open) beds', NA))), levels = c('COVID-19 + patients', 'Other patients', 'Vacant (open) beds')))
+
+# trust_admissions_metadata <- read_excel( paste0(github_repo_dir,'/Source_files/trust_admissions.xlsx'),
+#                                          sheet = 'All beds COVID',
+#                                          skip = 2, 
+#                                          col_names = FALSE, 
+#                                          n_max = 5) %>% 
+#   rename(Item = ...1,
+#          Description = ...2) %>%
+#   mutate(Description = ifelse(Item == 'Published:', as.character(format(as.Date(as.numeric(Description), origin = "1899-12-30"), '%d-%b-%Y')), Description))
+
+beds_used_df_x <- bed_used_df %>% 
+  filter(Name == trust_x)
+
+ggplot(beds_used_df_x,
+       aes(x = Date,
+           y = Proportion)) +
+  geom_bar(stat = 'identity',
+           position = position_fill(reverse = TRUE),
+           colour = '#ffffff',
+           aes(fill = Bed_status)) +
+  scale_x_date(date_labels = "%b %d",
+               breaks = seq.Date(max(bed_used_df$Date) -(52*7), max(bed_used_df$Date), by = 7),
+               expand = c(0.01,0.01)) +
+  scale_fill_manual(values = c('#12263a', '#c96480', '#abcdef')) +
+  scale_y_continuous(limits = c(0,1),
+                     breaks = seq(0,1, .1),
+                     labels = percent_format(accuracy = 1)) +
+  labs(x = 'Date',
+       y = 'Proportion',
+       title = paste0('Proportion of patients occupying adult beds; ', trust_x),
+       subtitle = paste0('Share of all adult general and acute beds (%); data available from ',  format(min(bed_used_df$Date), '%d %B %Y'), ' up to ', format(max(bed_used_df$Date), '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y')),
+       caption = 'This measure only includes adult inpatient beds. It is estimated that adult beds comprised more than 99% of inpatient beds in NHS hospital trusts.') +
+  ph_theme() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+
+bed_used_df_export_1 <- bed_used_df %>%
+  mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
+  select(!c(Proportion, Total_open_beds)) %>% 
+  pivot_wider(names_from = 'Bed_status', values_from = 'Beds') %>% 
+  mutate(Total_open_beds = covid_19_patients + other + vacant) %>% 
+  mutate(Label = paste0('As at 8:00am on ', ordinal(as.numeric(format(Date, '%d'))), format(Date, ' %B %Y'), ' there were ', format(covid_19_patients, big.mark = ','), ' patients in adult General and Acute inpatient beds, this is ', round((covid_19_patients / Total_open_beds)*100, 1), '% of the total number of open beds on this day.')) 
+
+bed_used_df_export <- bed_used_df %>%
+  mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
+  select(!c(Beds, Total_open_beds)) %>% 
+  pivot_wider(names_from = 'Bed_status', values_from = 'Proportion') %>% 
+  left_join(bed_used_df_export_1[c('Name', 'Date', 'Label')], by = c('Name', 'Date')) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  ungroup()
+
+bed_used_df_export %>%
+  select(!Date) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/patient_share_occupied_beds.json'))
+
+data.frame(Date = seq.Date(max(bed_used_df_export$Date) -(52*7), max(bed_used_df_export$Date), by = 7)) %>% 
+  filter(Date >= min(bed_used_df_export$Date)) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/bed_share_ga_date_labels.json'))
+
+# ggplot(beds_used_df_x,
+#        aes(x = Date,
+#            y = Beds)) +
+#   geom_bar(stat = 'identity',
+#            colour = '#ffffff',
+#            aes(fill = Bed_status)) +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(max(bed_used_df$Date) -(52*7), max(bed_used_df$Date), by = 7),
+#                expand = c(0.01,0.01)) +
+#   scale_fill_manual(values = c('#12263a', '#c96480', '#abcdef')) +
+#   labs(x = 'Date',
+#        y = 'Number of beds',
+#        title = paste0('Number of patients occupying adult beds in NHS hospital trusts'),
+#        subtitle = paste0('Share of all adult general and acute beds (%); data up to ', format(max(bed_used_df$Date), '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y')),
+#        caption = 'This measure only includes adult inpatient beds. It is estimated that adult beds comprised more than 99% of inpatient beds in NHS hospital trusts.') +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+
+
+# STP/ICS vaccine counts ####
+
+# https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/
