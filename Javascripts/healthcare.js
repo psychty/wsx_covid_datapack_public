@@ -51,6 +51,19 @@ d3.select("#select_trust_2_button")
     return d;
   });
 
+// This will be to highlight a particular line on the figure (and show some key figures)
+d3.select("#select_trust_3_button")
+  .selectAll("myOptions")
+  .data(trusts)
+  .enter()
+  .append("option")
+  .text(function (d) {
+    return d;
+  })
+  .attr("value", function (d) {
+    return d;
+  });
+
 d3.select("#hospital_data_dates").html(function (d) {
   return (
     "The data available at NHS Trust level includes admissions or new diagnoses that occurred up to " +
@@ -696,278 +709,269 @@ d3.select("#select_trust_2_button").on("change", function (d) {
 
 // ! bed share
 
+var formatPercent = d3.format(".0%");
+
 // Daily beds occupied bar chart
-// var svg_daily_patients_share_ga_bars = d3
-//   .select("#daily_occupied_beds_as_share_ga_bars")
-//   .append("svg")
-//   .attr("width", width_hm)
-//   .attr("height", height_line)
-//   .append("g")
-//   .attr("transform", "translate(" + 60 + "," + 10 + ")");
+var svg_daily_patients_share_ga_bars = d3
+  .select("#daily_occupied_beds_as_share_ga_bars")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_line)
+  .append("g")
+  .attr("transform", "translate(" + 60 + "," + 10 + ")");
 
-// var request = new XMLHttpRequest();
-// request.open("GET", "./Outputs/patient_share_occupied_beds.json", false);
-// request.send(null);
-// var daily_beds_ga_occupied = JSON.parse(request.responseText); // parse the fetched json data into a variable
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/patient_share_occupied_beds.json", false);
+request.send(null);
+var daily_beds_ga_occupied = JSON.parse(request.responseText); // parse the fetched json data into a variable
 
-// var request = new XMLHttpRequest();
-// request.open("GET", "./Outputs/bed_share_ga_date_labels.json", false);
-// request.send(null);
-// var occupied_bed_ga_dates = JSON.parse(request.responseText).map(function (d) {
-//   return d.Date_label;
-// });
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/bed_share_ga_date_labels.json", false);
+request.send(null);
+var occupied_bed_ga_dates = JSON.parse(request.responseText).map(function (d) {
+  return d.Date_label;
+});
 
-// var beds_ouccupied_dates = d3
-//   .map(daily_beds_occupied, function (d) {
-//     return d.Date_label;
-//   })
-//   .keys();
+var beds_share_ouccupied_dates = d3
+  .map(daily_beds_ga_occupied, function (d) {
+    return d.Date_label;
+  })
+  .keys();
 
-// var x_daily_beds_occupied = d3
-//   .scaleBand()
-//   .domain(beds_ouccupied_dates)
-//   .range([0, width_hm - 60]);
+var x_daily_beds_share_occupied = d3
+  .scaleBand()
+  .domain(beds_share_ouccupied_dates)
+  .range([0, width_hm - 60]);
 
-// var xAxis_beds_occupied = svg_daily_patients_bars
-//   .append("g")
-//   .attr("transform", "translate(0," + (height_line - 80) + ")")
-//   .call(d3.axisBottom(x_daily_beds_occupied).tickValues(occupied_data_dates));
+var xAxis_beds_share_occupied = svg_daily_patients_share_ga_bars
+  .append("g")
+  .attr("transform", "translate(0," + (height_line - 80) + ")")
+  .call(
+    d3.axisBottom(x_daily_beds_share_occupied).tickValues(occupied_bed_ga_dates)
+  );
 
-// xAxis_beds_occupied
-//   .selectAll("text")
-//   .attr(
-//     "transform",
-//     "translate(-" + (x_daily_beds_occupied.bandwidth() + 15) + ",10)rotate(-90)"
-//   )
-//   .style("text-anchor", "end")
-//   .style("font-size", ".8rem");
+xAxis_beds_share_occupied
+  .selectAll("text")
+  .attr(
+    "transform",
+    "translate(-" +
+      (x_daily_beds_share_occupied.bandwidth() + 5) +
+      ",10)rotate(-90)"
+  )
+  .style("text-anchor", "end")
+  .style("font-size", ".8rem");
 
-// var bed_type = ["Patients_occupying_non_mv_beds", "Patients_occupying_mv_beds"];
+var bed_share_type = ["covid_19_patients", "other", "vacant"];
 
-// var bed_type_label = d3
-//   .scaleOrdinal()
-//   .domain(bed_type)
-//   .range([
-//     "Patients occupying other beds",
-//     "Patients occupying beds capable of mechanical ventilation",
-//   ]);
+var bed_share_type_label = d3
+  .scaleOrdinal()
+  .domain(bed_share_type)
+  .range(["COVID-19 positive patients", "Other inpatients", "Vacant beds"]);
 
-// var colour_covid_bed_type = d3
-//   .scaleOrdinal()
-//   .domain(bed_type_label)
-//   .range(["#006900", "#669900"]);
+var colour_covid_bed_share_type = d3
+  .scaleOrdinal()
+  .domain(bed_share_type)
+  .range(["#12263a", "#c96480", "#abcdef"]);
 
-// bed_type.forEach(function (item, index) {
-//   var list = document.createElement("li");
-//   list.innerHTML = bed_type_label(item);
-//   list.className = "key_list";
-//   list.style.borderColor = colour_covid_bed_type(index);
-//   var tt = document.createElement("div");
-//   tt.className = "side_tt";
-//   tt.style.borderColor = colour_covid_bed_type(index);
-//   var tt_h3_1 = document.createElement("h3");
-//   tt_h3_1.innerHTML = item;
-//   tt.appendChild(tt_h3_1);
-//   var div = document.getElementById("covid_bed_type_key");
-//   div.appendChild(list);
-// });
+bed_share_type.forEach(function (item, index) {
+  var list = document.createElement("li");
+  list.innerHTML = bed_share_type_label(item);
+  list.className = "key_list";
+  list.style.borderColor = colour_covid_bed_share_type(index);
+  var tt = document.createElement("div");
+  tt.className = "side_tt";
+  tt.style.borderColor = colour_covid_bed_share_type(index);
+  var tt_h3_1 = document.createElement("h3");
+  tt_h3_1.innerHTML = item;
+  tt.appendChild(tt_h3_1);
+  var div = document.getElementById("covid_bed_share_type_key");
+  div.appendChild(list);
+});
 
-// var selected_trust_2_area_option = d3
-//   .select("#select_trust_2_button")
-//   .property("value");
+var selected_trust_3_area_option = d3
+  .select("#select_trust_3_button")
+  .property("value");
 
-// d3.select("#admissions_title_2").html(function (d) {
-//   return (
-//     "Number of COVID-19 positive inpatients in hospitals;  " +
-//     selected_trust_2_area_option +
-//     "; data correct as at " +
-//     healthcare_publish_date_label
-//   );
-// });
+d3.select("#admissions_title_3").html(function (d) {
+  return (
+    "Proportion of inpatients occupying adult beds in hospitals;  " +
+    selected_trust_3_area_option +
+    "; data correct as at " +
+    healthcare_publish_date_label
+  );
+});
 
-// var beds_occupied_1_chosen = daily_beds_occupied.filter(function (d) {
-//   return d.Name === selected_trust_2_area_option;
-// });
+var bed_share_occupied_2_chosen = daily_beds_ga_occupied.filter(function (d) {
+  return d.Name === selected_trust_3_area_option;
+});
 
-// var stackedData_beds_1 = d3.stack().keys(bed_type)(beds_occupied_1_chosen);
+var stackedData_bed_share_2 = d3.stack().keys(bed_share_type)(
+  bed_share_occupied_2_chosen
+);
 
-// var y_daily_beds_occupied = d3
-//   .scaleLinear()
-//   .domain([
-//     0,
-//     d3.max(beds_occupied_1_chosen, function (d) {
-//       return +d.Patients_occupying_beds;
-//     }),
-//   ])
-//   .range([height_line - 80, 0])
-//   .nice();
+var y_daily_bed_share_occupied = d3
+  .scaleLinear()
+  .domain([0, 1])
+  .range([height_line - 80, 0])
+  .nice();
 
-// var yAxis_daily_beds_occupied = svg_daily_patients_bars
-//   .append("g")
-//   .call(d3.axisLeft(y_daily_beds_occupied));
+var yAxis_daily_bed_share_occupied = svg_daily_patients_share_ga_bars
+  .append("g")
+  .call(d3.axisLeft(y_daily_bed_share_occupied).tickFormat(formatPercent));
 
-// yAxis_daily_beds_occupied.selectAll("text").style("font-size", ".8rem");
+yAxis_daily_bed_share_occupied.selectAll("text").style("font-size", ".8rem");
 
-// var change_beds_occupied = d3
-//   .scaleOrdinal()
-//   .domain(["Up", "Down", "Same"])
-//   .range(["were going up", "were coming down", "were the same"]);
+var bed_share_occupied_label = d3
+  .scaleOrdinal()
+  .domain(["covid_19_patients", "other", "vacant"])
+  .range([
+    "of available beds were occupied by patients with a positive COVID-19 test result",
+    "of available beds were occupied by other inpatients (those with no positive COVID-19 test result)",
+    "of available adult G&A beds were vacant",
+  ]);
 
-// // Create a tooltip for the lines and functions for displaying the tooltips as well as highlighting certain lines.
-// var tooltip_beds_stacked_1 = d3
-//   .select("#daily_occupied_beds_bars")
-//   .append("div")
-//   .style("opacity", 0)
-//   .attr("class", "tooltip_class")
-//   .style("position", "absolute")
-//   .style("z-index", "10")
-//   .style("background-color", "white")
-//   .style("border", "solid")
-//   .style("border-width", "1px")
-//   .style("border-radius", "5px")
-//   .style("padding", "10px");
+var tooltip_bed_share_stacked_2 = d3
+  .select("#daily_occupied_beds_as_share_ga_bars")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px");
 
-// var showTooltip_beds_occupied_1 = function (d, i) {
-//   var bed_type_Name = d3.select(this.parentNode).datum().key;
-//   var bed_type_Value = d.data[bed_type_Name];
+var showTooltip_bed_share_occupied_2 = function (d, i) {
+  var bed_share_type_Name = d3.select(this.parentNode).datum().key;
+  var bed_share_type_Value = d.data[bed_share_type_Name];
 
-//   tooltip_beds_stacked_1
-//     .html(
-//       "<h5>" +
-//         d.data.Name +
-//         '</h5><b class = "side">' +
-//         d3.format(",.0f")(bed_type_Value) +
-//         " " +
-//         bed_type_label(bed_type_Name).replace("Patients", "patients") +
-//         " as at " +
-//         d.data.Date_label +
-//         '.</b ><p class = "side">There were a total of <b>' +
-//         d3.format(",.0f")(d.data.Patients_occupying_beds) +
-//         " patients</b> occupying beds as at 8:00am on " +
-//         d.data.Date_label +
-//         '.</p><p class="side">Compared to the previous week, the number of patients in beds ' +
-//         change_beds_occupied(d.data.Change_direction) +
-//         "</p>"
-//     )
-//     .style("opacity", 1)
-//     .attr("visibility", "visible")
-//     .style("top", event.pageY - 10 + "px")
-//     .style("left", event.pageX + 10 + "px")
-//     .style("visibility", "visible");
-// };
+  tooltip_bed_share_stacked_2
+    .html(
+      "<h5>" +
+        d.data.Name +
+        '</h5><b class = "side">' +
+        d3.format(",.0%")(bed_share_type_Value) +
+        "</b> " +
+        bed_share_occupied_label(bed_share_type_Name) +
+        " as at " +
+        d.data.Date_label +
+        ".</p><p>" +
+        d.data.Label +
+        "</p>"
+    )
+    .style("opacity", 1)
+    .attr("visibility", "visible")
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("visibility", "visible");
+};
 
-// var mouseleave_beds_occupied_1 = function (d) {
-//   tooltip_beds_stacked_1.style("visibility", "hidden");
-// };
+var mouseleave_bed_share_occupied_2 = function (d) {
+  tooltip_bed_share_stacked_2.style("visibility", "hidden");
+};
 
-// // daily patients bars
-
-// var bars_beds_occupied_1 = svg_daily_patients_bars
-//   .append("g")
-//   .selectAll("g")
-//   .data(stackedData_beds_1)
-//   .enter()
-//   .append("g")
-//   .attr("fill", function (d) {
-//     return colour_covid_bed_type(d.key);
-//   })
-//   .selectAll("rect")
-//   .data(function (d) {
-//     return d;
-//   })
-//   .enter()
-//   .append("rect")
-//   .attr("id", "bars1")
-//   .attr("x", function (d) {
-//     return x_daily_beds_occupied(d.data.Date_label);
-//   })
-//   .attr("y", function (d) {
-//     return y_daily_beds_occupied(d[1]);
-//   })
-//   .attr("height", function (d) {
-//     return y_daily_beds_occupied(d[0]) - y_daily_beds_occupied(d[1]);
-//   })
-//   .attr("width", x_daily_beds_occupied.bandwidth())
-//   .on("mousemove", showTooltip_beds_occupied_1)
-//   .on("mouseout", mouseleave_beds_occupied_1);
+var bars_bed_share_occupied_2 = svg_daily_patients_share_ga_bars
+  .append("g")
+  .selectAll("g")
+  .data(stackedData_bed_share_2)
+  .enter()
+  .append("g")
+  .attr("fill", function (d) {
+    return colour_covid_bed_share_type(d.key);
+  })
+  .selectAll("rect")
+  .data(function (d) {
+    return d;
+  })
+  .enter()
+  .append("rect")
+  .attr("id", "bars2")
+  .attr("x", function (d) {
+    return x_daily_beds_share_occupied(d.data.Date_label);
+  })
+  .attr("y", function (d) {
+    return y_daily_bed_share_occupied(d[1]);
+  })
+  .attr("height", function (d) {
+    return y_daily_bed_share_occupied(d[0]) - y_daily_bed_share_occupied(d[1]);
+  })
+  .attr("width", x_daily_beds_share_occupied.bandwidth())
+  .on("mousemove", showTooltip_bed_share_occupied_2)
+  .on("mouseout", mouseleave_bed_share_occupied_2);
 
 // // ! Update beds
-// function update_beds_occupied_1() {
-//   var selected_trust_2_area_option = d3
-//     .select("#select_trust_2_button")
-//     .property("value");
+function update_bed_share_occupied_2() {
+  var selected_trust_3_area_option = d3
+    .select("#select_trust_3_button")
+    .property("value");
 
-//   d3.select("#admissions_title_2").html(function (d) {
-//     return (
-//       "Number of COVID-19 positive inpatients in hospitals;  " +
-//       selected_trust_2_area_option +
-//       "; data correct as at " +
-//       healthcare_publish_date_label
-//     );
-//   });
+  d3.select("#admissions_title_3").html(function (d) {
+    return (
+      "Proportion of inpatients occupying adult beds in hospitals;  " +
+      selected_trust_3_area_option +
+      "; data correct as at " +
+      healthcare_publish_date_label
+    );
+  });
 
-//   var beds_occupied_1_chosen = daily_beds_occupied.filter(function (d) {
-//     return d.Name === selected_trust_2_area_option;
-//   });
+  var bed_share_occupied_2_chosen = daily_beds_ga_occupied.filter(function (d) {
+    return d.Name === selected_trust_3_area_option;
+  });
 
-//   var stackedData_beds_1 = d3.stack().keys(bed_type)(beds_occupied_1_chosen);
+  var stackedData_bed_share_2 = d3.stack().keys(bed_share_type)(
+    bed_share_occupied_2_chosen
+  );
 
-//   y_daily_beds_occupied
-//     .domain([
-//       0,
-//       d3.max(beds_occupied_1_chosen, function (d) {
-//         return +d.Patients_occupying_beds;
-//       }),
-//     ])
-//     .range([height_line - 80, 0])
-//     .nice();
+  // yAxis_daily_bed_share_occupied
+  //   .transition()
+  //   .duration(1000)
+  //   .call(d3.axisLeft(y_daily_bed_share_occupied));
 
-//   yAxis_daily_beds_occupied
-//     .transition()
-//     .duration(1000)
-//     .call(d3.axisLeft(y_daily_beds_occupied));
+  // yAxis_daily_bed_share_occupied.selectAll("text").style("font-size", ".8rem");
 
-//   yAxis_daily_beds_occupied.selectAll("text").style("font-size", ".8rem");
+  svg_daily_patients_share_ga_bars.selectAll("#bars2").remove();
 
-//   svg_daily_patients_bars.selectAll("#bars1").remove();
+  var bars_bed_share_occupied_2 = svg_daily_patients_share_ga_bars
+    .append("g")
+    .selectAll("g")
+    .data(stackedData_bed_share_2)
+    .enter()
+    .append("g")
+    .attr("fill", function (d) {
+      return colour_covid_bed_share_type(d.key);
+    })
+    .selectAll("rect")
+    .data(function (d) {
+      return d;
+    })
+    .enter()
+    .append("rect")
+    .attr("id", "bars2")
+    .attr("x", function (d) {
+      return x_daily_beds_share_occupied(d.data.Date_label);
+    })
+    .attr("y", function (d) {
+      return y_daily_bed_share_occupied(d[1]);
+    })
+    .attr("height", function (d) {
+      return (
+        y_daily_bed_share_occupied(d[0]) - y_daily_bed_share_occupied(d[1])
+      );
+    })
+    .attr("width", x_daily_beds_share_occupied.bandwidth());
 
-//   var bars_beds_occupied_1 = svg_daily_patients_bars
-//     .append("g")
-//     .selectAll("g")
-//     .data(stackedData_beds_1)
-//     .enter()
-//     .append("g")
-//     .attr("fill", function (d) {
-//       return colour_covid_bed_type(d.key);
-//     })
-//     .selectAll("rect")
-//     .data(function (d) {
-//       return d;
-//     })
-//     .enter()
-//     .append("rect")
-//     .attr("id", "bars1")
-//     .attr("x", function (d) {
-//       return x_daily_beds_occupied(d.data.Date_label);
-//     })
-//     .attr("y", function (d) {
-//       return y_daily_beds_occupied(d[1]);
-//     })
-//     .attr("height", function (d) {
-//       return y_daily_beds_occupied(d[0]) - y_daily_beds_occupied(d[1]);
-//     })
-//     .attr("width", x_daily_beds_occupied.bandwidth());
+  bars_bed_share_occupied_2
+    .on("mousemove", showTooltip_bed_share_occupied_2)
+    .on("mouseout", mouseleave_bed_share_occupied_2);
+}
 
-//   bars_beds_occupied_1
-//     .on("mousemove", showTooltip_beds_occupied_1)
-//     .on("mouseout", mouseleave_beds_occupied_1);
-// }
+update_bed_share_occupied_2();
 
-// update_beds_occupied_1();
-
-// d3.select("#select_trust_2_button").on("change", function (d) {
-//   var selected_trust_2_area_option = d3
-//     .select("#select_trust_2_button")
-//     .property("value");
-//   update_beds_occupied_1();
-// });
+d3.select("#select_trust_3_button").on("change", function (d) {
+  var selected_trust_3_area_option = d3
+    .select("#select_trust_3_button")
+    .property("value");
+  update_bed_share_occupied_2();
+});
