@@ -77,86 +77,102 @@
   </header>
 </div>
 
-
 <section class="growth_section" id = 'growth_section'>
+
+  <h4 class = 'content_top'>West Sussex compared to the rest of England</h4>
+  <div class = 'content'>
+    <p id = 'wsx_growth_rate_latest'></p>
+    <p id = 'england_rate_text'></p>
+    <p>In addition to looking at how West Sussex compares to England overall, it is important to look at differences in neighbouring areas and local areas across the country.</p>
+    </div>
+
+   <div class = 'right-sidebar'>
+    <p>This figure uses a rate per 100,000 to standardise populations across areas (because some areas are much bigger or more densely populated than others) and using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends.</p>
+   </div> 
+
+   <h4 class = 'content_top'>Rates across upper tier authority areas in England</h4>
+
+  <div class = 'content'>
+     <p>The first figure in this section shows the latest 7 day rate of confirmed COVID-19 cases and the change in rate across Upper Tier and Unitary Local Authority (UTLA) areas as a map, which you can zoom into using the mouse or pointer. The initial map shows the rolling 7-day incidence rate (up to the most recent date for which we believe we have complete data). You can also change the map using the buttons on the top right to show the rolling 7-day total compared to the previous period as a percentage increase or decrease as well as the cumulative number of confirmed cases so far.</p>
+     <p>Interpreting the percentage change value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than having one case in one week and two in the next, yet the percentage increase is impossible to show from a starting value of zero. Equally, no change can mean two weeks of no new cases, or one case each week or 10.</p>
+    <p>It is important to consider each of these measures together; what are the cases now, what were the cases last week, how many cases have there been so far.</p>
+  </div>
+
+  <div class = 'right-sidebar'>
+    <p>Interpreting the percentage change value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than having one case in one week and two in the next, yet the percentage increase is impossible to show from a starting value of zero. Equally, no change can mean two weeks of no new cases, or one case each week or 10.</p>
+  </div>
+
+  <div class = 'content'>
+    <h4 id = 'summary_utla_rate_title'></h4>
+    <p id= 'summary_utla_rate_subtitle'></p>
+    <div id = 'rate_map_1'></div>
+    <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+  </div>
+  
+  <div class = 'right-sidebar'>
+    <p class = 'side'><b>What is a decile?</b></p>
+    <p class = 'side'>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided into 10 groups each representing 10% of the areas in England.</p>
+    <p id = 'selected_utla_key_title'></p>
+    <div id = 'utla_map_key'></div>
+  </div>
+
+  <div class = 'content'>
+    <p>The next figure shows a scatter plot of every upper tier local authority in England represented by a dot with the most recent 7-day incidence rate per 100,000 population along the x axis (from left to right) and the percentage change in cases from the previous 7 days on the y axis (from bottom to top).</p>
+    <p>This is useful for seeing the current picture (compared to other areas) and how the cases have changed over the recent past and if they are decreasing or increasing. You can use the slider to look at previous days going back to the start of January 2021.</p>
+    <h4 id = 'utla_growth_ts_rate_title'></h4>
+    <p class = 'stay-left-classy_1'>Use the slider to choose a date (the most recent complete date is shown by default on the right)</p>
+    <div class = 'stay-right-classy_1' id = 'utla_growth_slider'></div></span>
+  </div>
+
+  <div class = 'right-sidebar'>
+    <h4>Rates and change</h4>
+    <p class = 'side'>The closer to the left of the chart an areas is, the lower the 7 day incidence rate, and the closer to the bottom of the chart, the smaller the change from the previous week. If the area is below the dashed line at 0%, the number of cases is decreasing compared to the previous week.</p>
+    <p>Areas closest to the dashed line show stable levels of transmission, even if they are high.</p>
+  </div>
+  
+  <div class = 'content'>
+    <div id = 'utla_ts_growth_rate'></div>
+    <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+ 
+  </div>
+  
+  <div class = 'right-sidebar'>
+    <p>The three Sussex UTLAs have been highlighted (see the key below) as well as England in black to show how local areas compare to other areas and the national picture. You can change the date with the slider and hover over a dot to find out more.</p>
+    <h4>Area key</h4>
+    <div id = 'growth_key_utla'></div>
+  </div>
+  
     <h4 class = 'content_top'>Rates across lower tier authority areas in England</h4>
     <div class = 'content'>
-    </div>
-  
-    <div class="content">
-      <p id = 'england_cumulative_text'></p>
-      <p>The first figure in this section shows a scatter plot of every lower tier local authority in England represented by a dot with the most recent 7-day incidence rate per 100,000 population along the x axis (from left to right) and the percentage change in cases from the previous 7 days on the y axis (from bottom to top).</p>
-      <p>This figure uses a rate per 100,000 to standardise populations across areas (because some areas are much bigger or more densely populated than others) and using a rolling 7-day period helps to smooth out any large variation in daily cases due to operational issues such as test processing at weekends. This is useful for seeing the current picture (compared to other areas) and how the cases have changed over the recent past and if they are decreasing or increasing. You can use the slider to look at previous days going back to the start of November 2020.</p>
-      <p>The district and boroughs of West Sussex are highlighted here to make it easier to see local differences. The England rate is also highlighted in black. Hover over a dot to find out more.</p>
-      <h4 id = 'ltla_growth_ts_rate_title'></h4>
-      <p class = 'stay-left-classy_1'>Use the slider to choose a date (the most recent complete date is shown by default on the right)</p>
-      <div class = 'stay-right-classy_1' id = 'ltla_growth_slider'></div></span>
-    </div>
-    
-    <div class = 'right-sidebar'>
-      <h4>Rates and change</h4>
-      <p class = 'side_important'>The rolling 7 day total excludes the very recent few days as these are considered incomplete</p>
-      <p class = 'side'>The closer to the left of the chart an areas is, the lower the 7 day incidence rate, and the closer to the bottom of the chart, the smaller the change from the previous week. If the area is below the dashed line at 0%, the number of cases is decreasing compared to the previous week.</p>
-    </div>
-    
-    <div class = 'content'>
-      <div id = 'ltla_ts_growth_rate'></div>
-      <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-      <p>Interpreting the percentage change value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than having one case in one week and two in the next, yet the percentage increase is impossible to show from a starting value of zero. Equally, no change can mean two weeks of no new cases, or one case each week or 10.</p>
-      <p>Areas closest to the dashed line show stable levels of transmission, even if they are high.</p>
-    </div>
-      
-    <div class = 'right-sidebar'>
-      <h4>Area key</h4>
-      <div id = 'growth_key_ltla'></div>
-    </div>
-    
-    <div class = 'content'>
-      <p>The figure below shows the latest rates and change as a map, which you can zoom into using the mouse or pointer. The initial map shows the rolling 7-day incidence rate (up to the most recent date for which we believe we have complete data). You can change the map using the buttons on the top right to show the rolling 7-day total compared to the previous period as a percentage increase or decrease. Finally, you can look at the overall confirmed cases rate so far. It is important to consider each of these measures together;  what are the cases now, what were the cases last week, how many cases have there been so far.</p>
+      <p>The next figure shows the confirmed case rates for Lower Tier and Unitary Local Authority (LTLA) areas. </p>
       <h4 id = 'summary_ltla_rate_title'></h4>
       <p id= 'summary_ltla_rate_subtitle'></p>
       <div id = 'rate_map_2'></div>
       <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
     </div>
   
-    <div class = 'right-sidebar'>
-      <p class = 'side_important'>Remember that the rolling 7 day total excludes the very recent few days as these are considered incomplete</p>
-      <p class = 'side'><b>What is a decile?</b></p>
-      <p class = 'side'>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided into 10 groups each representing 10% of the areas in England.</p>
+    <div class = 'right-sidebar'>   
       <p id = 'selected_ltla_key_title'></p>
       <div id = 'ltla_map_key'></div>
     </div>
   
-    <h4 style = 'padding-left: 25px; padding-top: 10px;'>Rates across upper tier authority areas in England</h4>
-    <div class = 'content'>
-      <p>The next figure shows the rates and case changes but for upper tier local authority areas. The three Sussex Upper Tier and Unitary Local Authorities have been highlighted (see the key to the right) as well as England in black to show how local areas compare to other areas and the national picture. As before, you can change the date with the slider and hover over a dot to find out more.</p>
-      <h4 id = 'utla_growth_ts_rate_title'></h4>
+    <div class="content">
+      <p>In the next figure, the district and boroughs of West Sussex are highlighted here to make it easier to see local differences. The England rate is also highlighted in black. Hover over a dot to find out more.</p>
+      <h4 id = 'ltla_growth_ts_rate_title'></h4>
       <p class = 'stay-left-classy_1'>Use the slider to choose a date (the most recent complete date is shown by default on the right)</p>
-      <div class = 'stay-right-classy_1' id = 'utla_growth_slider'></div></span>
+      <div class = 'stay-right-classy_1' id = 'ltla_growth_slider'></div></span>
     </div>
-    
+        
     <div class = 'content'>
-      <div id = 'utla_ts_growth_rate'></div>
+      <div id = 'ltla_ts_growth_rate'></div>
       <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-      <p id = 'wsx_growth_rate_latest'></p>
     </div>
-    
+      
     <div class = 'right-sidebar'>
       <h4>Area key</h4>
-      <div id = 'growth_key_utla'></div>
+      <div id = 'growth_key_ltla'></div>
     </div>
-    
-    <div class = 'content'>
-      <h4 id = 'summary_utla_rate_title'></h4>
-      <p id= 'summary_utla_rate_subtitle'></p>
-      <div id = 'rate_map_1'></div>
-      <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-    </div>
-    
-    <div class = 'right-sidebar'>
-      <p id = 'selected_utla_key_title'></p>
-      <div id = 'utla_map_key'></div>
-    </div>
+  
   </section>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -166,15 +182,11 @@
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 <script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-<!-- <script src="https://unpkg.com/d3-simple-slider"></script> -->
-
 <script src = 'https://unpkg.com/d3-simple-slider@1.10.1/dist/d3-simple-slider.min.js'></script>
 
 <script src = 'Javascripts/params.js'></script>
-<script src = "Javascripts/figure_3a_rates_scatter.js"></script>
-<script src = "Javascripts/figure_3b_ltla_rates_scatter.js"></script>
-<script src = "Javascripts/figure_3_4_rate_maps.js"></script>
+<script src = "Javascripts/rate_growth_scatter.js"></script>
+<script src = "Javascripts/case_rate_maps.js"></script>
 
 </body>
 </html>
