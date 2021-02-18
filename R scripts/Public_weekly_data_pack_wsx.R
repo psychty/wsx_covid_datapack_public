@@ -528,9 +528,9 @@ england_rolling <- p12_test_df %>%
   ungroup() %>% 
   filter(Date == complete_date) %>% 
   filter(Name == 'England') %>% 
-  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Rolling_period, Label_3)
+  mutate(Label_3 = sub('In ', 'In England, in ', Label_3))
 
-paste0('The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ',', trim = TRUE), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ',', trim = TRUE), ' cases per 100,000 population</b>). ', england_rolling$Label_3) %>% 
+paste0(england_rolling$Label_3, ' The number of confirmed COVID-19 cases in England so far as at ', format(last_date, '%d %B'), ' is ', format(england_cumulative$Cumulative_cases, big.mark = ',', trim = TRUE), ' (<b>', format(round(england_cumulative$Cumulative_per_100000, 1), big.mark = ',', trim = TRUE), ' cases per 100,000 population</b>).') %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/england_cumulative.json'))
 
@@ -1479,12 +1479,6 @@ Occurrences %>%
 
 # Export to powerpoint ####
 
-# wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx'))
-# # 
-# layout_summary(wkly_template)
-# layout_properties(wkly_template, 'mortality')
-
-# Start powerpoint
 wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx')) %>%  
   add_slide(layout = "Intro_page", master = "Office Theme") %>% 
   ph_with(value = paste0('Pack date: ',format(Sys.Date(), '%d %B %Y')), 
@@ -1607,23 +1601,7 @@ wkly_template <- wkly_template %>%
   ph_with(value = paste0('Note that the very recent days are excluded in the 7-day total as these are thought to be incomplete. As such, this data represents cases in the ', rolling_period_x), 
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_ltla_rolling_rate_wsx,
-          location = ph_location_label(ph_label = 'Table Placeholder 7'))#%>%
-  # add_slide(layout = "pathways_layout", master = "Office Theme") %>%
-  # ph_with(value = external_img(src = paste0(github_repo_dir, '/Outputs/Figure_5_complete_triages_nhs_pathways.png')),
-  #         location = ph_location_label(ph_label = 'Picture Placeholder 10')) %>%
-  # ph_with(value = paste0('Pack date: ', format(Sys.Date(), '%d %B %Y')),
-  #         location = ph_location_label(ph_label = 'Date Placeholder 2')) %>%
-  # ph_with(value = 'This data is based on potential COVID-19 symptoms reported by members of the public to NHS Pathways through NHS 111 or 999 and 111 online.\nIt provides a view of service contacts and an early view of people concerned about their symptoms. It is not based on any outcomes of tests for COVID-19.\nThis is also not a count of people as a user can repeat the triage process several times.\nIn 111 online, any user that starts the COVID-19 assessment service is indicating that the may have symptoms of coronavirus.',
-  #         location = ph_location_label(ph_label = 'Text Placeholder 20')) %>%
-  # ph_with(value = 'Source: NHS Digital',
-  #         # href = 'https://coronavirus.data.gov.uk',
-  #         location = ph_location_label(ph_label = 'Text Placeholder 22')) %>%
-  # ph_with(value = paste0('Slide ', length(.) -1),
-  #         location = ph_location_label(ph_label = 'Text Placeholder 19')) %>%
-  # ph_with(value = nhs_pways_text_1,
-  #         location = ph_location_label(ph_label = 'Text Placeholder 13')) %>%
-  # ph_with(value = nhs_pways_text_2,
-  #         location = ph_location_label(ph_label = 'Text Placeholder 17'))
+          location = ph_location_label(ph_label = 'Table Placeholder 7'))
 
 # Death plots
 for(i in 1:length(areas_to_loop)){
@@ -1645,7 +1623,7 @@ for(i in 1:length(areas_to_loop)){
             location = ph_location_label(ph_label = 'Text Placeholder 19'))
 }
 
-# Last one - move the data source slide
+# Last part - move the data source slide
 wkly_template <- wkly_template %>% 
   move_slide(index = 1, to = length(.))
 
@@ -1700,14 +1678,13 @@ wkly_template %>%
 
 #paste0('Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.')
 
-# incidence and growth rate ####
+# Seven day incidence and growth rate ####
 
 # Exact Poisin confidence intervals are calculated using the pois.exact function from the epitools package (see https://www.rdocumentation.org/packages/epitools/versions/0.09/topics/pois.exact for details)
 
-library(epitools)
-
 growth_rate <- p12_test_df %>% 
   filter(Data_completeness == 'Complete') %>% 
+  filter(Date >= '2020-11-01') %>% 
   select(Name, Code, Type, Date, Rolling_7_day_new_cases, Perc_change_on_rolling_7_days_actual, Perc_change_on_rolling_7_days_tidy, Cumulative_cases, Cumulative_per_100000, Population, Label_3) %>%
   mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
   mutate(Rolling_7_day_rate = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
@@ -1729,24 +1706,18 @@ growth_rate_england <- growth_rate %>%
 
 growth_rate_ltla <- growth_rate %>%
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>%
-  mutate(Label_1 = paste0('The 7 day incidence rate (',round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>%
+  mutate(Label_1 = paste0('The 7 day incidence rate (', round(Rolling_7_day_rate, 1), ' per 100,000 population) is', ifelse(Rolling_rate_lcl > Eng_ucl, ' significantly higher than '  , ifelse(Rolling_rate_ucl < Eng_lcl, ' significantly lower than ', ' similar to ')), 'the national rate (', round(Eng_rate,1),')')) %>%
   mutate(Label_3 = paste0('As at ', format(Date, '%d %B'), ' there have been a total of ', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' cases (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' cases per 100,000).')) %>%
-  mutate(Label = paste(Label_1, Label_3, sep = '<br><br>')) %>%
+  mutate(Label = paste(Label_1, Label_2, Label_3, sep = '<br><br>')) %>%
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_ltla %>%
-  filter(Date >= '2020-12-01') %>%
+  filter(Date >= '2021-01-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_ltla$Name), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')))) %>% 
   arrange(Name) %>% 
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>% 
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
   toJSON() %>%
-  write_lines(paste0(output_directory_x,'/ltla_growth_since_december.json'))
-
-# growth_rate_ltla %>%
-#   filter(Date == complete_date) %>%
-#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label) %>%
-#   toJSON() %>%
-#   write_lines(paste0(output_directory_x,'/ltla_growth_latest.json'))
+  write_lines(paste0(output_directory_x,'/ltla_recent_growth.json'))
 
 growth_rate_utla <- growth_rate %>% 
   left_join(growth_rate_england[c('Date', 'Eng_rate', 'Eng_lcl', 'Eng_ucl')], by = 'Date') %>% 
@@ -1756,37 +1727,15 @@ growth_rate_utla <- growth_rate %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_utla %>% 
-  filter(Date >= '2020-12-01') %>%
+  filter(Date >= '2021-01-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_utla$Name), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')))) %>% 
   arrange(Name) %>% 
-  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/utla_growth_since_december.json'))
-
-# growth_rate_utla %>% 
-#   filter(Date == complete_date) %>% 
-#   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2, Label_3) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/utla_growth_latest.json'))
-
-# growth_rate_utla %>% 
-# filter(Date >= '2020-09-01') %>%
-# summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
-#           Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
-# mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/utla_growth_limits.json'))
-
-# growth_rate_utla %>% 
-#   filter(Date == complete_date) %>%
-#   summarise(Max_rolling_rate = max(Rolling_7_day_rate, na.rm = TRUE),
-#             Max_change_week = max(Change_actual_by_week, na.rm =TRUE)) %>% 
-#     mutate(Max_rolling_rate = ifelse(Max_rolling_rate <= 50, round_any(Max_rolling_rate, 5, ceiling), ifelse(Max_rolling_rate <= 100, round_any(Max_rolling_rate, 10, ceiling), ifelse(Max_rolling_rate <= 250, round_any(Max_rolling_rate, 25, ceiling), ifelse(Max_rolling_rate <= 500, round_any(Max_rolling_rate, 50, ceiling), ifelse(Max_rolling_rate <= 1000, round_any(Max_rolling_rate, 100, ceiling),  round_any(Max_rolling_rate, 200, ceiling))))))) %>%   mutate(Max_change_week = ifelse(Max_change_week <= 10, round_any(Max_change_week, 1, ceiling), ifelse(Max_change_week <= 20, round_any(Max_change_week, 2, ceiling), ifelse(Max_change_week <= 50, round_any(Max_change_week, 5, ceiling), round_any(Max_change_week, 10, ceiling))))) %>% 
-#     toJSON() %>% 
-#     write_lines(paste0(output_directory_x,'/utla_growth_limits_complete_date.json'))
+  write_lines(paste0(output_directory_x,'/utla_recent_growth.json'))
 
 growth_rate_utla %>% 
-  filter(Date >= '2020-12-01') %>%
+  filter(Date >= '2021-01-01') %>%
   select(Date) %>% 
   unique() %>% 
   arrange(Date) %>% 
