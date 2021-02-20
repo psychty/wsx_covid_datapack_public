@@ -1,85 +1,93 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>West Sussex C19 summary</title>
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-   crossorigin=""/>
-<link rel="stylesheet" type="text/css" href="style.css">
-<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>West Sussex C19 summary</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
 
-<body>
-<!-- <div class="wrapper"> -->
-<div class="small_screen_adapt">
-  <header>
-    <nav>
-      <div class="top_nav_title" id = 'content_size'>
-      <p class = 'head_title'>COVID-19 desktop data summary</p>
-      <ul class="nav-links" id="nav-links">
-        <li>
-          <a data-page="home" href="./index.html"
-            >Home</a
-          >
-        </li>
-        <li>
-          <a data-page="heatmap_section" href="./latest.html"
-            >Latest cases</a
-          >
-        </li>
-        <li>
-          <a data-page="tests_section" href="./tests.html"
-            >Number of tests</a
-          >
-        </li>
-        <li>
-          <a data-page="growth_section" href="./growth.html"
-            >Cases across England</a
-          >
-        </li>
-        <li>
-          <a data-page="local_section" href="./local.html"
-            >Cases in your area</a
-          >
-        </li>
-        <li>
-          <a data-page="healthcare_section" href = './healthcare.html'
-          >COVID-19 in hospitals</a>
-        </li>
-        <li>
-          <a data-page="restriction_section" href="./restrictions.html"
-            >Restrictions</a
-          >
-        </li>
-        <li>
-          <a data-page="mortality_section" href="./mortality.html"
-            >Deaths</a
-          >
-        </li>
-        <li>
-          <a data-page="attribution_section" href="./attribution.html"
-            >Data sources</a
-          >
-        </li>
-        <div class="bubble"></div>
-      </ul>
-      <div class="menu_line" onclick="navSlide()">
-        <div class="line_1"></div>
-        <div class="line_2"></div>
-        <div class="line_3"></div>
-      </div>
-    </nav>
-  </header>
-</div>
+  <body>
+    <!-- <div class="wrapper"> -->
+    <div class="small_screen_adapt">
+      <header>
+        <nav id="content_size">
+          <ul class="nav-links" id="nav-links">
+            <li>
+              <a data-page="home" href="./index.html">Home</a>
+            </li>
+            <li>
+              <a data-page="heatmap_section" href="./latest.html"
+                >Latest cases</a
+              >
+            </li>
+            <li>
+              <a data-page="tests_section" href="./tests.html"
+                >Number of tests</a
+              >
+            </li>
+            <li>
+              <a data-page="growth_section" href="./growth.html"
+                >Cases across England</a
+              >
+            </li>
+            <li>
+              <a data-page="local_section" href="./local.html"
+                >Cases in your area</a
+              >
+            </li>
+            <li>
+              <a data-page="healthcare_section" href="./healthcare.html"
+                >COVID-19 in hospitals</a
+              >
+            </li>
+            <li>
+              <a data-page="restriction_section" href="./restrictions.html"
+                >Restrictions</a
+              >
+            </li>
+            <li>
+              <a data-page="mortality_section" href="./mortality.html"
+                >Deaths</a
+              >
+            </li>
+            <li>
+              <a data-page="attribution_section" href="./attribution.html"
+                >Data sources</a
+              >
+            </li>
+            <div class="bubble"></div>
+          </ul>
+          <div class="menu_line" onclick="navSlide()">
+            <div class="line_1"></div>
+            <div class="line_2"></div>
+            <div class="line_3"></div>
+          </div>
+        </nav>
+      </header>
+    </div>
 
-<section class="restriction_section" id = 'restriction_section'>
-    <h4 class = 'content_top'>COVID-19 restrictions</h4>
-   <!-- <div class="content">
+    <section class="restriction_section" id="restriction_section">
+      <h4 class="content_top">COVID-19 restrictions</h4>
+      <!-- <div class="content">
      <p>Following a national lockdown in England between 5th November 2020 to 2nd December 2020 areas returned to a tiered system allocating each local authority across the country to one of three tiers with a review of each areas placement every 14 days. However, on Saturday 20th December, the UK Government announced a fourth tier (Stay at home) to try to limit the spread of rapidly rising rates of COVID-19.</p>
      <p>West Sussex has been placed in the highest tier <b>(Stay at home tier 4)</b>. A full breakdown of the Tier 2 restrictions can be found on the <a href = 'https://www.gov.uk/guidance/local-restriction-tiers-what-you-need-to-know'>GOV.UK website</a>.</p>
      <p>The map below shows how restrictions vary across England. Tier 1 areas are shaded yellow, whilst Tier 2 areas are light blue, Tier 3 (very high) is dark blue and the highest tier (Tier 4 - stay at home) is purple.</p>
@@ -95,22 +103,35 @@
      <div id = 'ltla_primary_schools_map'></div>
      <p>Early years settings should be available as normal from January 2021. Shielding advice is currently in place in tier 4 areas, and so all children still deemed clinically extremely vulnerable are advised not to attend school.</p>
    </div> -->
-   <div class = 'content'>
-   <p>On 4th January 2021, the Prime Minister announced a third national lockdown in England, issuing a stay at home message with education settings largely closed for face-to-face lessons to all except vulnerable children and children of critical workers</p>
-   <p>Further information is available on the <a href = 'https://www.gov.uk/guidance/national-lockdown-stay-at-home'>Gov.uk website</a>.</p>
-   </div>
- </section>
+      <div class="content">
+        <p>
+          On 4th January 2021, the Prime Minister announced a third national
+          lockdown in England, issuing a stay at home message with education
+          settings largely closed for face-to-face lessons to all except
+          vulnerable children and children of critical workers
+        </p>
+        <p>
+          Further information is available on the
+          <a href="https://www.gov.uk/guidance/national-lockdown-stay-at-home"
+            >Gov.uk website</a
+          >.
+        </p>
+      </div>
+    </section>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
-<script src="https://d3js.org/d3-format.v1.min.js"></script>
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
 
-<script src = "Javascripts/params.js"></script>
-<!-- <script src = "Javascripts/figure_4b_restriction_map.js"></script> -->
-
-</body>
+    <script src="Javascripts/params.js"></script>
+    <!-- <script src = "Javascripts/figure_4b_restriction_map.js"></script> -->
+  </body>
 </html>

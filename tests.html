@@ -1,127 +1,174 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>West Sussex C19 summary</title>
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-   crossorigin=""/>
-<link rel="stylesheet" type="text/css" href="style.css">
-<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>West Sussex C19 summary</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
 
-<body>
-<!-- <div class="wrapper"> -->
-<div class="small_screen_adapt">
-  <header>
-    <nav>
-      <div class="top_nav_title" id = 'content_size'>
-      <p class = 'head_title'>COVID-19 desktop data summary</p>
-      <ul class="nav-links" id="nav-links">
-        <li>
-          <a data-page="home" href="./index.html"
-            >Home</a
-          >
-        </li>
-        <li>
-          <a data-page="heatmap_section" href="./latest.html"
-            >Latest cases</a
-          >
-        </li>
-        <li>
-          <a data-page="tests_section" href="./tests.html"
-            >Number of tests</a
-          >
-        </li>
-        <li>
-          <a data-page="growth_section" href="./growth.html"
-            >Cases across England</a
-          >
-        </li>
-        <li>
-          <a data-page="local_section" href="./local.html"
-            >Cases in your area</a
-          >
-        </li>
-        <li>
-          <a data-page="healthcare_section" href = './healthcare.html'
-          >COVID-19 in hospitals</a>
-        </li>
-        <li>
-          <a data-page="restriction_section" href="./restrictions.html"
-            >Restrictions</a
-          >
-        </li>
-        <li>
-          <a data-page="mortality_section" href="./mortality.html"
-            >Deaths</a
-          >
-        </li>
-        <li>
-          <a data-page="attribution_section" href="./attribution.html"
-            >Data sources</a
-          >
-        </li>
-        <div class="bubble"></div>
-      </ul>
-      <div class="menu_line" onclick="navSlide()">
-        <div class="line_1"></div>
-        <div class="line_2"></div>
-        <div class="line_3"></div>
-      </div>
-    </nav>
-  </header>
-</div>
-  <section class="tests_section"  id = 'tests_section'>
-  
-    <h4  class = 'content_top'>Number of tests and positivity</h4>
-    <div class = 'content'>
-  
-      <p>The majority of COVID-19 testing in the UK to date has been Polymerase chain reaction (PCR) testing which is lab-based and tests for the presence of SARS-CoV-2 virus (rather than testing for the body's immune response or antibodies). This data shows the number of people who received at least one PCR test in the previous 7 days, as well as the percentage of people who received a PCR test in the previous 7 days who had at least one positive PCR test result (the positivity rate). People are only counted once in a 7 day period.</p>
-      <p id = 'positivity_text_1'></p>
-  
-      <table>
-        <thead>
-          <tr>
-            <th>Area</th>
-            <th id = 'positivity_date_heading_1'></th>
-            <th>PCR Positivity rate (weekly percentage of individuals tested who test positive for COVID-19)</th>
-          </tr>
-         </thead>
-   
-         <tbody id = 'positivity_table_1'></tbody>
-       </table>
-       <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-  
-      <!-- <span class = 'give_me_space'>Area: </span> -->
-      <!-- <select id='select_line_positivity_button'></select> -->
-      <!-- <div class = 'figure_style' id = 'positivity_figure'></div> -->
-      <p><b>It is important to consider test positivity with caution and alongside the other measures such as confirmed case numbers and the information available on those being tested.</b></p>
-      <p>A higher percentage of positive tests could suggest higher transmission, and perhaps that there are likely more people with coronavirus in the community who have not been tested yet, which could further indicate a need for conducting a higher number of tests. However, it could also be that a change in positivity is related to different groups of people coming forward for testing. It is likely a mixture of several reasons.</p>
-  
-      <p>Lateral flow device (LFD) virus tests are another type of COVID-19 test that look for the presence of SARS-CoV-2 virus. These are also swab tests, like the PCR tests, although they give results in less than an hour, without the need for laboratory processing. LFD tests are generally used for mass and routine testing of people who do not have COVID-19 symptoms. They are aimed at identifying individuals who may be infectious asymptomatic carriers and potential transmitters of the virus so these people can isolate and take the virus out of circulation in the community.</p>
-  
+  <body>
+    <!-- <div class="wrapper"> -->
+    <div class="small_screen_adapt">
+      <header>
+        <nav id="content_size">
+          <ul class="nav-links" id="nav-links">
+            <li>
+              <a data-page="home" href="./index.html">Home</a>
+            </li>
+            <li>
+              <a data-page="heatmap_section" href="./latest.html"
+                >Latest cases</a
+              >
+            </li>
+            <li>
+              <a data-page="tests_section" href="./tests.html"
+                >Number of tests</a
+              >
+            </li>
+            <li>
+              <a data-page="growth_section" href="./growth.html"
+                >Cases across England</a
+              >
+            </li>
+            <li>
+              <a data-page="local_section" href="./local.html"
+                >Cases in your area</a
+              >
+            </li>
+            <li>
+              <a data-page="healthcare_section" href="./healthcare.html"
+                >COVID-19 in hospitals</a
+              >
+            </li>
+            <li>
+              <a data-page="restriction_section" href="./restrictions.html"
+                >Restrictions</a
+              >
+            </li>
+            <li>
+              <a data-page="mortality_section" href="./mortality.html"
+                >Deaths</a
+              >
+            </li>
+            <li>
+              <a data-page="attribution_section" href="./attribution.html"
+                >Data sources</a
+              >
+            </li>
+            <div class="bubble"></div>
+          </ul>
+          <div class="menu_line" onclick="navSlide()">
+            <div class="line_1"></div>
+            <div class="line_2"></div>
+            <div class="line_3"></div>
+          </div>
+        </nav>
+      </header>
     </div>
-  
-  </section>
-  
- 
+    <section class="tests_section" id="tests_section">
+      <h4 class="content_top">Number of tests and positivity</h4>
+      <div class="content">
+        <p>
+          The majority of COVID-19 testing in the UK to date has been Polymerase
+          chain reaction (PCR) testing which is lab-based and tests for the
+          presence of SARS-CoV-2 virus (rather than testing for the body's
+          immune response or antibodies). This data shows the number of people
+          who received at least one PCR test in the previous 7 days, as well as
+          the percentage of people who received a PCR test in the previous 7
+          days who had at least one positive PCR test result (the positivity
+          rate). People are only counted once in a 7 day period.
+        </p>
+        <p id="positivity_text_1"></p>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
-<script src="https://d3js.org/d3-format.v1.min.js"></script>
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<!-- <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+        <table>
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th id="positivity_date_heading_1"></th>
+              <th>
+                PCR Positivity rate (weekly percentage of individuals tested who
+                test positive for COVID-19)
+              </th>
+            </tr>
+          </thead>
+
+          <tbody id="positivity_table_1"></tbody>
+        </table>
+        <p>
+          Data source:
+          <a
+            class="highlight_dl_link"
+            href="https://coronavirus-staging.data.gov.uk"
+            >https://coronavirus-staging.data.gov.uk</a
+          >
+        </p>
+
+        <!-- <span class = 'give_me_space'>Area: </span> -->
+        <!-- <select id='select_line_positivity_button'></select> -->
+        <!-- <div class = 'figure_style' id = 'positivity_figure'></div> -->
+        <p>
+          <b
+            >It is important to consider test positivity with caution and
+            alongside the other measures such as confirmed case numbers and the
+            information available on those being tested.</b
+          >
+        </p>
+        <p>
+          A higher percentage of positive tests could suggest higher
+          transmission, and perhaps that there are likely more people with
+          coronavirus in the community who have not been tested yet, which could
+          further indicate a need for conducting a higher number of tests.
+          However, it could also be that a change in positivity is related to
+          different groups of people coming forward for testing. It is likely a
+          mixture of several reasons.
+        </p>
+
+        <p>
+          Lateral flow device (LFD) virus tests are another type of COVID-19
+          test that look for the presence of SARS-CoV-2 virus. These are also
+          swab tests, like the PCR tests, although they give results in less
+          than an hour, without the need for laboratory processing. LFD tests
+          are generally used for mass and routine testing of people who do not
+          have COVID-19 symptoms. They are aimed at identifying individuals who
+          may be infectious asymptomatic carriers and potential transmitters of
+          the virus so these people can isolate and take the virus out of
+          circulation in the community.
+        </p>
+      </div>
+    </section>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <!-- <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 <script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>-->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
 
-<script src = 'Javascripts/params.js'></script>
-<script src = 'Javascripts/figure_positivity.js'></script>
-
-
-</body>
+    <script src="Javascripts/params.js"></script>
+    <script src="Javascripts/figure_positivity.js"></script>
+  </body>
 </html>
