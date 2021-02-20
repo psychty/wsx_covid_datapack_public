@@ -49,6 +49,7 @@ body {
 header {
   position: sticky;
   top: 0px;
+  padding-top: 20px;
   box-shadow: 0px 1px 5px #dbdbdb;
   background: #fff;
   z-index: 100;
