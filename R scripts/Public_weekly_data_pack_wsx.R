@@ -2350,7 +2350,7 @@ admissions_export_df %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/admissions_export_df.json'))
 
-admissions_export_df %>% view()
+# admissions_export_df %>% view()
 
 beds_occupied_export_df <- admissions_df %>% 
   select(Name, Date, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
@@ -2424,69 +2424,69 @@ trust_x <- 'England'
 admissions_x_df <- admissions_df %>% 
   filter(Name == trust_x)
 
-ggplot(admissions_x_df,
-       aes(x = Date,
-           y = Admissions_or_new_cases_in_last_24hrs)) +
-  geom_bar(stat = 'identity',
-           width = .9,
-           fill = '#901020') +
-  geom_line(aes(x = Date,
-                group = 1,
-                y = Rolling_average_7_day_admissions),
-            colour = '#000000',
-            lwd = 1.2) +
-  scale_x_date(date_labels = "%d %b %y",
-               breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
-               expand = c(0,0.01)) +
-  scale_y_continuous(expand = c(0,0.01)) +
-  labs(x = 'Date',
-       y = 'Number of admissions',
-       title = paste0('Number of new admissions with a positive COVID-19 test result; ',trust_x),
-       subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-
-ggplot(admissions_x_df,
-       aes(x = Date,
-           y = Rolling_7_day_admissions)) +
-  geom_line(group = 1,
-            colour = '#901020') +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
-               expand = c(0.01,0.01)) +
-  labs(x = 'Date',
-       y = 'Rolling 7 day admissions',
-       title = paste0('Rolling 7 day number of new admissions with a positive COVID-19 test result; ',trust_x),
-       subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-
-patients_in_beds_df <- admissions_df %>% 
-  select(Name, Date, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
-  filter(Date <= occupied_date$date) %>% 
-  pivot_longer(cols = c(Patients_occupying_non_mv_beds, Patients_occupying_mv_beds), names_to = 'Bed_type', values_to = 'Patients_occupying_beds') %>% 
-  mutate(Bed_type = ifelse(Bed_type == 'Patients_occupying_mv_beds', 'Mechanical ventilation', ifelse(Bed_type == 'Patients_occupying_non_mv_beds', 'Not capable of mechanical ventilation', NA)))
+# ggplot(admissions_x_df,
+#        aes(x = Date,
+#            y = Admissions_or_new_cases_in_last_24hrs)) +
+#   geom_bar(stat = 'identity',
+#            width = .9,
+#            fill = '#901020') +
+#   geom_line(aes(x = Date,
+#                 group = 1,
+#                 y = Rolling_average_7_day_admissions),
+#             colour = '#000000',
+#             lwd = 1.2) +
+#   scale_x_date(date_labels = "%d %b %y",
+#                breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
+#                expand = c(0,0.01)) +
+#   scale_y_continuous(expand = c(0,0.01)) +
+#   labs(x = 'Date',
+#        y = 'Number of admissions',
+#        title = paste0('Number of new admissions with a positive COVID-19 test result; ',trust_x),
+#        subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+# 
+# ggplot(admissions_x_df,
+#        aes(x = Date,
+#            y = Rolling_7_day_admissions)) +
+#   geom_line(group = 1,
+#             colour = '#901020') +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
+#                expand = c(0.01,0.01)) +
+#   labs(x = 'Date',
+#        y = 'Rolling 7 day admissions',
+#        title = paste0('Rolling 7 day number of new admissions with a positive COVID-19 test result; ',trust_x),
+#        subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+# 
+# patients_in_beds_df <- admissions_df %>% 
+#   select(Name, Date, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
+#   filter(Date <= occupied_date$date) %>% 
+#   pivot_longer(cols = c(Patients_occupying_non_mv_beds, Patients_occupying_mv_beds), names_to = 'Bed_type', values_to = 'Patients_occupying_beds') %>% 
+#   mutate(Bed_type = ifelse(Bed_type == 'Patients_occupying_mv_beds', 'Mechanical ventilation', ifelse(Bed_type == 'Patients_occupying_non_mv_beds', 'Not capable of mechanical ventilation', NA)))
 
 patients_in_beds_df_x <- patients_in_beds_df %>% 
   filter(Name == trust_x)
 
-ggplot(patients_in_beds_df_x,
-       aes(x = Date,
-           y = Patients_occupying_beds)) +
-  geom_bar(stat = 'identity',
-           colour = '#ffffff',
-           aes(fill = Bed_type)) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
-               expand = c(0.01,0.01)) +
-  scale_fill_manual(values = c('#006900', '#669900'),
-                    name = 'Bed type') +
-  labs(x = 'Date',
-       y = 'Number of inpatients',
-       title = paste0('Number of patients in hospital with positive COVID-19 test result; ',trust_x),
-       subtitle = paste0('Data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+# ggplot(patients_in_beds_df_x,
+#        aes(x = Date,
+#            y = Patients_occupying_beds)) +
+#   geom_bar(stat = 'identity',
+#            colour = '#ffffff',
+#            aes(fill = Bed_type)) +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
+#                expand = c(0.01,0.01)) +
+#   scale_fill_manual(values = c('#006900', '#669900'),
+#                     name = 'Bed type') +
+#   labs(x = 'Date',
+#        y = 'Number of inpatients',
+#        title = paste0('Number of patients in hospital with positive COVID-19 test result; ',trust_x),
+#        subtitle = paste0('Data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
 
 # Share of inpatient beds occupied ####
 
@@ -2553,27 +2553,27 @@ bed_used_df <- trust_c19_patients_occupying_ga_beds %>%
 beds_used_df_x <- bed_used_df %>% 
   filter(Name == trust_x)
 
-ggplot(beds_used_df_x,
-       aes(x = Date,
-           y = Proportion)) +
-  geom_bar(stat = 'identity',
-           position = position_fill(reverse = TRUE),
-           colour = '#ffffff',
-           aes(fill = Bed_status)) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(bed_used_df$Date) -(52*7), max(bed_used_df$Date), by = 7),
-               expand = c(0.01,0.01)) +
-  scale_fill_manual(values = c('#12263a', '#c96480', '#abcdef')) +
-  scale_y_continuous(limits = c(0,1),
-                     breaks = seq(0,1, .1),
-                     labels = percent_format(accuracy = 1)) +
-  labs(x = 'Date',
-       y = 'Proportion',
-       title = paste0('Proportion of patients occupying adult beds; ', trust_x),
-       subtitle = paste0('Share of all adult general and acute beds (%); data available from ',  format(min(bed_used_df$Date), '%d %B %Y'), ' up to ', format(max(bed_used_df$Date), '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y')),
-       caption = 'This measure only includes adult inpatient beds. It is estimated that adult beds comprised more than 99% of inpatient beds in NHS hospital trusts.') +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+# ggplot(beds_used_df_x,
+#        aes(x = Date,
+#            y = Proportion)) +
+#   geom_bar(stat = 'identity',
+#            position = position_fill(reverse = TRUE),
+#            colour = '#ffffff',
+#            aes(fill = Bed_status)) +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(max(bed_used_df$Date) -(52*7), max(bed_used_df$Date), by = 7),
+#                expand = c(0.01,0.01)) +
+#   scale_fill_manual(values = c('#12263a', '#c96480', '#abcdef')) +
+#   scale_y_continuous(limits = c(0,1),
+#                      breaks = seq(0,1, .1),
+#                      labels = percent_format(accuracy = 1)) +
+#   labs(x = 'Date',
+#        y = 'Proportion',
+#        title = paste0('Proportion of patients occupying adult beds; ', trust_x),
+#        subtitle = paste0('Share of all adult general and acute beds (%); data available from ',  format(min(bed_used_df$Date), '%d %B %Y'), ' up to ', format(max(bed_used_df$Date), '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y')),
+#        caption = 'This measure only includes adult inpatient beds. It is estimated that adult beds comprised more than 99% of inpatient beds in NHS hospital trusts.') +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
 
 bed_used_df_export_1 <- bed_used_df %>%
   mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
