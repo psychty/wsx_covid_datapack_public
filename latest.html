@@ -75,39 +75,6 @@
   </header>
 </div>
 
-<section class="heatmap_section" id = 'heatmap_section'>
-    <h4 class = 'content_top' id = 'summary_cases_title'></h4>
-    <div class = 'content'>
-    </div>
-    
-    <div class = 'right-sidebar'>
-    </div>
-  
-    <div class = 'content'>
-      <form class="btn-group btn-group-toggle stay-right-classy" data-toggle="buttons">
-          <label class="btn btn-secondary active">
-            <input type="radio" name = 'toggle_count_rate' value = 'counts' onchange="toggle_count_rate_func();">actual cases<br>
-          </label>
-          <label class="btn btn-secondary">
-            <input type="radio" name = 'toggle_count_rate' value = 'rate'  checked = 'checked' onchange ='toggle_count_rate_func();'>cases per 100,000<br>
-          </label>
-      </form>
-    </div>
-    
-    <div class = 'content'>
-      <div id = 'case_headings'></div>
-      <div id = 'new_cases_plotted'></div>
-      <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-      <p style = 'font-size: .7rem;' id = 'complete_seven'></p>
-      <p>The heatmap visualisation shows a quick overview of confirmed cases over time and across areas with each tile representing a day colour coded by the number of new cases (the darker red tiles denoting more cases). You can toggle between viewing the coloured tiles as actual confirmed cases or as confirmed cases per 100,000 population.</p>
-      <p>The cumulative cases are taken from the most recently available date, although number of confirmed cases in a single day (a proxy for new cases) is taken from six days prior (latest complete date).</p>
-    </div>
-  
-    <div class = 'right-sidebar'>
-      <p class = 'side'>The colour key for the tiles has been chosen to capture the breadth of new cases across the region, whilst being sensitive to small numbers as well as periods of no reported cases.</p>
-      <div id = 'new_case_key_figure'></div>
-    </div>
-  </section>
 
   <section class="latest_case_section" id = 'latest_case_section'>
     <h4 class = 'content_top'>Daily case changes</h4>
@@ -116,7 +83,6 @@
   
     <div class="content">
       <p>The figure below shows the daily confirmed cases of Covid-19 over time by area (showing West Sussex by default), but you can change this to any lower tier area within the county as well as the South East region and England for comparison. The black line represents the rolling average number of new cases confirmed in the previous seven days.</p>
-      <p>Case results are generally published in the afternoon and represent cases reported up to 9am of the reporting day. However, cases are assigned to the date on which the specimen was taken rather than when it was reported. It would be very unlikely that a specimen would be taken on the day of reporting with results returned by 9am. It can take as many as four days for results to be reported (e.g. specimens taken on 1st August may not be reported until the 5th). As such, we consider the last four days as incomplete as more cases may be added to the totals for these days.</p>
       <p>The figure includes key dates when changes to testing capacity and eligibility were announced. These are adapted from The Health Foundation <a href = 'https://www.health.org.uk/news-and-comment/charts-and-infographics/covid-19-policy-tracker'>Covid-19 Policy Tracker</a>.</p>
     </div>
   
@@ -196,7 +162,7 @@
   
     <div class = 'right-sidebar'>
       <h4>Age bands</h4>
-      <p class = 'side'>Age band key</p>
+      <!-- <p class = 'side'>Age band key</p> -->
       <div id = 'age_band_key_figure'></div>
     </div>
   
@@ -221,7 +187,7 @@
   
     <div class = 'right-sidebar'>
       <h4>Age bands</h4>
-      <p class = 'side'>Age band key</p>
+      <!-- <p class = 'side'>Age band key</p> -->
       <div id = 'age_band_u30_key_figure'></div>
     </div>
   </section>  
@@ -238,9 +204,8 @@
 <!-- <script src = 'https://unpkg.com/d3-simple-slider@1.10.1/dist/d3-simple-slider.min.js'></script>-->
 
 <script src = 'Javascripts/params.js'></script>
-<script src = "Javascripts/figure_1a_daily_bars.js"></script>
-<script src = "Javascripts/figure_1b_daily_bars.js"></script>
-<script src = "Javascripts/figure_2_heatmap.js"></script>
+<script src = "Javascripts/daily_confirmed_cases.js"></script>
+<script src = "Javascripts/small_multiples_confirmed_cases.js"></script>
 <script src = 'Javascripts/figure_age_specific_rates.js'></script>
 <script src = 'Javascripts/figure_age_specific_rates_u30.js'></script>
 

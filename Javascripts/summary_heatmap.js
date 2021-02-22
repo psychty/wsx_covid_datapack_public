@@ -1,7 +1,23 @@
 var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_daily_cases.json", false);
+request.send(null);
+var daily_cases = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var dates = d3
+  .map(daily_cases, function (d) {
+    return d.Date_label;
+  })
+  .keys();
+
+var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/daily_cases_bands.json", false);
 request.send(null);
 var new_cases_bands = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_case_new_summary.json", false);
+request.send(null);
+var case_summary = JSON.parse(request.responseText); // parse the fetched json data into a variable
 
 var new_cases_colours = [
   "#ffffb2",
@@ -40,8 +56,7 @@ var color_new_per_100000_cases = d3
 
 d3.select("#summary_cases_title").html(function (d) {
   return (
-    "Heatmap of Covid-19 pillar 1 and 2 confirmed cases; as at " +
-    data_refreshed_date
+    "An overview of confirmed COVID-19 cases; as at " + data_refreshed_date
   );
 });
 
@@ -49,7 +64,31 @@ d3.select("#complete_seven").html(function (d) {
   return "* seven days leading to " + latest_date + ".";
 });
 
-start_tile_x_pos = 550;
+d3.select("#arrow_explainer").html(function (d) {
+  return (
+    "*This denotes whether confirmed cases are increasing or decreasing in the seven days to " +
+    complete_date +
+    " compared to the previous week (the seven days to " +
+    rolling_seven_days_ago +
+    ")."
+  );
+});
+
+// d3.select("#heatmap_title").html(function (d) {
+//   return "Showing actual confirmed case numbers";
+// });
+
+// d3.select("#arrow_explainer").html(function (d) {
+//   return (
+//     "*The arrows denote whether cases are increasing (red arrows pointing up) or decreasing (green arrows point down) in the seven days to " +
+//     complete_date +
+//     " compared to the previous week (the seven days to " +
+//     previous_week_period +
+//     "). A blue equals symbol denotes cases have remained the same across the two weeks."
+//   );
+// });
+
+start_tile_x_pos = 480;
 
 var x = d3
   .scaleBand()
@@ -86,109 +125,83 @@ svg_title
 
 svg_title
   .append("text")
-  .attr("x", 125)
+  .attr("x", 225)
   .attr("y", 10)
-  .text("Total")
-  .attr("text-anchor", "start")
+  .text("Cases in the")
+  .attr("text-anchor", "end")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 125)
+  .attr("x", 225)
   .attr("y", 25)
-  .text("cases")
-  .attr("text-anchor", "start")
+  .text("seven days to")
+  .attr("text-anchor", "end")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 125)
+  .attr("x", 225)
   .attr("y", 40)
-  .text("so far")
-  .attr("text-anchor", "start")
+  .text(complete_date)
+  // .text(complete_date.substring(4, complete_date.length))
+  .attr("text-anchor", "end")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 175)
+  .attr("x", 250)
   .attr("y", 10)
-  .text("Total cases")
+  .text("Are cases going up")
   .attr("text-anchor", "start")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 175)
+  .attr("x", 250)
   .attr("y", 25)
-  .text("per 100,000")
+  .text("or down compared")
   .attr("text-anchor", "start")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 175)
+  .attr("x", 250)
   .attr("y", 40)
-  .text("population")
+  .text("to last week?*")
   .attr("text-anchor", "start")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 270)
+  .attr("x", 465)
   .attr("y", 10)
-  .text("Confirmed cases")
-  .attr("text-anchor", "start")
+  .text("Total number")
+  .attr("text-anchor", "end")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 270)
+  .attr("x", 465)
   .attr("y", 25)
-  .text("swabbed on")
-  .attr("text-anchor", "start")
+  .text("of confirmed")
+  .attr("text-anchor", "end")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
 svg_title
   .append("text")
-  .attr("x", 270)
+  .attr("x", 465)
   .attr("y", 40)
-  .text(complete_date.substring(4, complete_date.length))
-  .attr("text-anchor", "start")
-  .style("font-weight", "bold")
-  .style("font-size", ".8rem");
-
-svg_title
-  .append("text")
-  .attr("x", 385)
-  .attr("y", 10)
-  .text("Total number of")
-  .attr("text-anchor", "start")
-  .style("font-weight", "bold")
-  .style("font-size", ".8rem");
-
-svg_title
-  .append("text")
-  .attr("x", 385)
-  .attr("y", 25)
-  .text("cases in most")
-  .attr("text-anchor", "start")
-  .style("font-weight", "bold")
-  .style("font-size", ".8rem");
-
-svg_title
-  .append("text")
-  .attr("x", 385)
-  .attr("y", 40)
-  .text("recent 7 days*")
-  .attr("text-anchor", "start")
+  .text("cases so far")
+  .attr("text-anchor", "end")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
@@ -274,6 +287,10 @@ function counts_new_cases_tile_plot() {
       return d.Name === area_x_chosen;
     });
 
+    d3.select("#heatmap_title").html(function (d) {
+      return "Showing actual confirmed case numbers";
+    });
+
     var svg = d3
       .select("#new_cases_plotted")
       .append("svg")
@@ -342,12 +359,29 @@ function counts_new_cases_tile_plot() {
 
     svg
       .append("text")
-      .attr("x", 125)
+      .attr("x", 225)
       .attr("y", height_hm * 0.5)
       .text(function (d) {
         return d3.format(",.0f")(
-          area_x_case_summary[0]["Total confirmed cases so far"]
+          area_x_case_summary[0]["Rolling_7_day_new_cases"]
         );
+      })
+      .attr("text-anchor", "end")
+      .attr("font-weight", function (d) {
+        if (area_x_chosen === "West Sussex") {
+          return "bold";
+        } else {
+          return "normal";
+        }
+      })
+      .style("font-size", ".8rem");
+
+    svg
+      .append("text")
+      .attr("x", 250)
+      .attr("y", height_hm * 0.5)
+      .text(function (d) {
+        return area_x_case_summary[0]["Change_direction"];
       })
       .attr("text-anchor", "start")
       .attr("font-weight", function (d) {
@@ -361,14 +395,12 @@ function counts_new_cases_tile_plot() {
 
     svg
       .append("text")
-      .attr("x", 175)
+      .attr("x", 465)
       .attr("y", height_hm * 0.5)
       .text(function (d) {
-        return d3.format(",.1f")(
-          area_x_case_summary[0]["Total cases per 100,000 population"]
-        );
+        return d3.format(",.0f")(area_x_case_summary[0]["Cumulative_cases"]);
       })
-      .attr("text-anchor", "start")
+      .attr("text-anchor", "end")
       .attr("font-weight", function (d) {
         if (area_x_chosen === "West Sussex") {
           return "bold";
@@ -377,73 +409,6 @@ function counts_new_cases_tile_plot() {
         }
       })
       .style("font-size", ".8rem");
-
-    svg
-      .append("text")
-      .attr("x", 270)
-      .attr("y", height_hm * 0.5)
-      .text(function (d) {
-        return d3.format(",.0f")(
-          area_x_case_summary[0][
-            "Confirmed cases swabbed on most recent complete day"
-          ]
-        );
-      })
-      .attr("text-anchor", "start")
-      .attr("font-weight", function (d) {
-        if (area_x_chosen === "West Sussex") {
-          return "bold";
-        } else {
-          return "normal";
-        }
-      })
-      .style("font-size", ".8rem");
-
-    svg
-      .append("text")
-      .attr("x", 385)
-      .attr("y", height_hm * 0.5)
-      .text(function (d) {
-        if (
-          isNaN(
-            area_x_case_summary[0][
-              "Total cases confirmed in most recent seven days"
-            ]
-          )
-        ) {
-          return "No cases*";
-        }
-        return d3.format(",.0f")(
-          area_x_case_summary[0][
-            "Total cases confirmed in most recent seven days"
-          ]
-        );
-      })
-      .attr("text-anchor", "start")
-      .attr("font-weight", function (d) {
-        if (area_x_chosen === "West Sussex") {
-          return "bold";
-        } else {
-          return "normal";
-        }
-      })
-      .style("font-size", ".8rem");
-
-    // var increasing_symbol = d3.symbol()
-    //   .type('triangle-up')
-    //   .size(30);
-    //
-    // var triangles = svg
-    //   .selectAll('path')
-    //   .attr('id', 'whatdis')
-    //   // .data(data)
-    //   // .enter()
-    //   .attr('x', 125)
-    //   .attr('y', 20)
-    //   .append('path')
-    //   .attr('d', increasing_symbol)
-    //   .attr('stroke', 'black')
-    //   .attr('fill', 'green')
 
     svg
       .append("line")
@@ -537,6 +502,10 @@ function counts_new_cases_rates_tile_plot() {
       return d.Name === area_x_chosen;
     });
 
+    d3.select("#heatmap_title").html(function (d) {
+      return "Showing confirmed case numbers per 100,000 population";
+    });
+
     var svg = d3
       .select("#new_cases_plotted")
       .append("svg")
@@ -605,31 +574,29 @@ function counts_new_cases_rates_tile_plot() {
 
     svg
       .append("text")
-      .attr("x", 125)
-      .attr("y", height_hm * 0.5)
-      .text(function (d) {
-        return d3.format(",.0f")(
-          area_x_case_summary[0]["Total confirmed cases so far"]
-        );
-      })
-      .attr("text-anchor", "start")
-      .attr("font-weight", function (d) {
-        if (area_x_chosen === "West Sussex") {
-          return "bold";
-        } else {
-          return "normal";
-        }
-      })
-      .style("font-size", ".8rem");
-
-    svg
-      .append("text")
-      .attr("x", 175)
+      .attr("x", 225)
       .attr("y", height_hm * 0.5)
       .text(function (d) {
         return d3.format(",.1f")(
-          area_x_case_summary[0]["Total cases per 100,000 population"]
+          area_x_case_summary[0]["Rolling_7_day_new_cases_per_100000"]
         );
+      })
+      .attr("text-anchor", "end")
+      .attr("font-weight", function (d) {
+        if (area_x_chosen === "West Sussex") {
+          return "bold";
+        } else {
+          return "normal";
+        }
+      })
+      .style("font-size", ".8rem");
+
+    svg
+      .append("text")
+      .attr("x", 250)
+      .attr("y", height_hm * 0.5)
+      .text(function (d) {
+        return area_x_case_summary[0]["Change_direction"];
       })
       .attr("text-anchor", "start")
       .attr("font-weight", function (d) {
@@ -643,46 +610,14 @@ function counts_new_cases_rates_tile_plot() {
 
     svg
       .append("text")
-      .attr("x", 270)
+      .attr("x", 465)
       .attr("y", height_hm * 0.5)
       .text(function (d) {
-        return d3.format(",.0f")(
-          area_x_case_summary[0][
-            "Confirmed cases swabbed on most recent complete day"
-          ]
+        return d3.format(",.1f")(
+          area_x_case_summary[0]["Cumulative_per_100000"]
         );
       })
-      .attr("text-anchor", "start")
-      .attr("font-weight", function (d) {
-        if (area_x_chosen === "West Sussex") {
-          return "bold";
-        } else {
-          return "normal";
-        }
-      })
-      .style("font-size", ".8rem");
-
-    svg
-      .append("text")
-      .attr("x", 385)
-      .attr("y", height_hm * 0.5)
-      .text(function (d) {
-        if (
-          isNaN(
-            area_x_case_summary[0][
-              "Total cases confirmed in most recent seven days"
-            ]
-          )
-        ) {
-          return "No cases*";
-        }
-        return d3.format(",.0f")(
-          area_x_case_summary[0][
-            "Total cases confirmed in most recent seven days"
-          ]
-        );
-      })
-      .attr("text-anchor", "start")
+      .attr("text-anchor", "end")
       .attr("font-weight", function (d) {
         if (area_x_chosen === "West Sussex") {
           return "bold";

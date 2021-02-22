@@ -1,11 +1,3 @@
-d3.select("#data_recency").html(function (d) {
-  return (
-    "Whilst the capacity for testing and returning results has increased with new results reported in as soon as 24 hours, there can be some delay and as such data for very recent days are likely to change, and so <b>only data up to " +
-    complete_date +
-    " should be treated as complete.</b> In some parts of his data view, we do compare the most recent seven day period (including incomplete days) to the number of cases in the previous week to show how cases are changing. This may help to identify areas that are potentially increasing, and we would want to investigate this as soon as possible rather than wait for five days."
-  );
-});
-
 d3.select("#case_recency_text").html(function (d) {
   return (
     "As noted above, the most recent days are to be considered incomplete and may underestimate the true number of new cases occurring each day. As such, the total number of confirmed COVID-19 cases in the most recent complete seven day period (seven days leading to " +
@@ -61,10 +53,6 @@ d3.select("#selected_ltla_sm_title").html(function (d) {
     data_refreshed_date
   );
 });
-
-// d3.select("#case_key_title")
-//   .html(function(d) {
-//     return 'The bars on each figure are also coloured to show the most recent changes in case growth, by comparing the average number of cases in the last complete seven day period (' + data_date_range[0]['range'] + ') with the average number of cases in the seven day period prior to that (' + data_date_range[1]['range'] + '). Areas with bars coloured in red indicate that there is an increase in cases, whilst blue areas show a decline in confirmed cases and green areas indicate no confirmed cases in the most recent 7 day period (excluding incomplete days - see right).'});
 
 chosen_utla_df = daily_cases.filter(function (d) {
   // gets a subset of the json data

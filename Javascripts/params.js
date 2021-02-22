@@ -6,7 +6,7 @@ var width_hm = document.getElementById("content_size").offsetWidth * 0.75 - 50,
   incomplete_colour = "#999999",
   height_line = 410;
 
-var width_sm = width_hm / 2 - 10;
+var width_sm = width_hm / 3 - 10;
 
 // We dont want the small plots to be less than 325 pixels wide so this says if the
 if (width_sm < 300) {
@@ -36,29 +36,6 @@ var areas_1a = [
   "South East region",
   "England",
 ];
-
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/case_change_dates.json", false);
-request.send(null);
-var data_dates = JSON.parse(request.responseText).map(function (d) {
-  return d.Date_label;
-});
-
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/wsx_case_summary.json", false);
-request.send(null);
-var case_summary = JSON.parse(request.responseText); // parse the fetched json data into a variable
-
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/wsx_daily_cases.json", false);
-request.send(null);
-var daily_cases = JSON.parse(request.responseText); // parse the fetched json data into a variable
-
-var dates = d3
-  .map(daily_cases, function (d) {
-    return d.Date_label;
-  })
-  .keys();
 
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/range_dates.json", false);
@@ -153,9 +130,17 @@ var last_case_period = case_dates_df.filter(function (d) {
 // Update text based on selected area
 d3.select("#update_date").html(function (d) {
   return (
-    "The case data has been refreshed on " +
+    "The data has been refreshed on <b>" +
     data_refreshed_date +
-    " with cases confirmed up to " +
+    "</b> with cases confirmed up to " +
     latest_date
+  );
+});
+
+d3.select("#data_recency").html(function (d) {
+  return (
+    "Case results are published each day in the afternoon (around 4pm) and represent cases reported up to 9am of that day. Cases are assigned to the day on which the test (specimen) was taken and whilst results can be reported quickly, it can take several days for all results to be reported for specimens taken on a particular date. As such, data for very recent days are likely to change, and only data <b>up to " +
+    complete_date +
+    " should be treated as complete.</b>"
   );
 });

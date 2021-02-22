@@ -14,6 +14,29 @@ request.open("GET", "./Outputs/wsx_daily_case_limits.json", false);
 request.send(null);
 var daily_case_limits = JSON.parse(request.responseText);
 
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_case_new_summary.json", false);
+request.send(null);
+var case_summary = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/wsx_daily_cases.json", false);
+request.send(null);
+var daily_cases = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var dates = d3
+  .map(daily_cases, function (d) {
+    return d.Date_label;
+  })
+  .keys();
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/case_change_dates.json", false);
+request.send(null);
+var data_dates = JSON.parse(request.responseText).map(function (d) {
+  return d.Date_label;
+});
+
 // Daily cases bar chart
 var svg_daily_new_case_bars = d3
   .select("#daily_new_case_bars")
@@ -57,7 +80,7 @@ var bars_daily_cases_1_chosen = daily_cases.filter(function (d) {
 
 var total_cases_daily_chosen = case_summary.filter(function (d) {
   return d.Name === selected_figure_1a_area_option;
-})[0]["Total confirmed cases so far"];
+})[0]["Cumulative_cases"];
 
 var x_daily_cases = d3
   .scaleBand()
@@ -93,21 +116,15 @@ d3.select("#x_latest_figures")
       "The total number of confirmed Covid-19 cases so far in " +
       selected_figure_1a_area_option +
       " is " +
-      d3.format(",.0f")(d["Total confirmed cases so far"]) +
+      d3.format(",.0f")(d["Cumulative_cases"]) +
       ". This is " +
-      d3.format(",.0f")(d["Total cases per 100,000 population"]) +
-      " cases per 100,000 population. The current daily case count (using data from " +
+      d3.format(",.0f")(d["Cumulative_per_100000"]) +
+      " cases per 100,000 population. The current seven day rolling sum of cases (using data up to " +
       complete_date +
       ") is " +
-      d3.format(",.0f")(
-        d["Confirmed cases swabbed on most recent complete day"]
-      ) +
+      d3.format(",.0f")(d["Rolling_7_day_new_cases"]) +
       " new confirmed cases swabbed (" +
-      d3.format(",.1f")(
-        d[
-          "Confirmed cases swabbed per 100,000 population on most recent complete day"
-        ]
-      ) +
+      d3.format(",.1f")(d["Rolling_7_day_new_cases_per_100000"]) +
       " per 100,000)."
     );
   });
@@ -459,21 +476,15 @@ function update_daily_bars() {
         "The total number of confirmed Covid-19 cases so far in " +
         selected_figure_1a_area_option +
         " is " +
-        d3.format(",.0f")(d["Total confirmed cases so far"]) +
+        d3.format(",.0f")(d["Cumulative_cases"]) +
         ". This is " +
-        d3.format(",.0f")(d["Total cases per 100,000 population"]) +
-        " cases per 100,000 population. The current daily case count (using data from " +
+        d3.format(",.0f")(d["Cumulative_per_100000"]) +
+        " cases per 100,000 population. The current seven day rolling sum of cases (using data up to " +
         complete_date +
         ") is " +
-        d3.format(",.0f")(
-          d["Confirmed cases swabbed on most recent complete day"]
-        ) +
+        d3.format(",.0f")(d["Rolling_7_day_new_cases"]) +
         " new confirmed cases swabbed (" +
-        d3.format(",.1f")(
-          d[
-            "Confirmed cases swabbed per 100,000 population on most recent complete day"
-          ]
-        ) +
+        d3.format(",.1f")(d["Rolling_7_day_new_cases_per_100000"]) +
         " per 100,000)."
       );
     });

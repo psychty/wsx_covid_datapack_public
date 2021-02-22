@@ -1,104 +1,233 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>West Sussex C19 summary</title>
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-   crossorigin=""/>
-<link rel="stylesheet" type="text/css" href="style.css">
-<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>West Sussex C19 summary</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
 
-<body>
-<div class="small_screen_adapt">
-  <header>
-    <nav id = 'content_size'>
-      <ul class="nav-links" id="nav-links">
-        <li>
-          <a data-page="home" href="./index.html"
-            >Home</a
-          >
-        </li>
-        <li>
-          <a data-page="heatmap_section" href="./latest.html"
-            >Latest cases</a
-          >
-        </li>
-        <li>
-          <a data-page="tests_section" href="./tests.html"
-            >Number of tests</a
-          >
-        </li>
-        <li>
-          <a data-page="growth_section" href="./growth.html"
-            >Cases across England</a
-          >
-        </li>
-        <li>
-          <a data-page="local_section" href="./local.html"
-            >Cases in your area</a
-          >
-        </li>
-        <li>
-          <a data-page="healthcare_section" href = './healthcare.html'>COVID-19 in hospitals</a>
-      </li>
-        <li>
-          <a data-page="restriction_section" href="./restrictions.html"
-            >Restrictions</a
-          >
-        </li>
-        <li>
-          <a data-page="mortality_section" href="./mortality.html"
-            >Deaths</a
-          >
-        </li>
-        <li>
-          <a data-page="attribution_section" href="./attribution.html"
-            >Data sources</a
-          >
-        </li>
-        <div class="bubble"></div>
-      </ul>
-      <div class="menu_line" onclick="navSlide()">
-        <div class="line_1"></div>
-        <div class="line_2"></div>
-        <div class="line_3"></div>
-      </div>
-    </nav>
-  </header>
-</div>
+  <body>
+    <div class="small_screen_adapt">
+      <header>
+        <nav id="content_size">
+          <ul class="nav-links" id="nav-links">
+            <li>
+              <a data-page="home" href="./index.html">Home</a>
+            </li>
+            <li>
+              <a data-page="heatmap_section" href="./latest.html"
+                >Latest cases</a
+              >
+            </li>
+            <li>
+              <a data-page="tests_section" href="./tests.html"
+                >Number of tests</a
+              >
+            </li>
+            <li>
+              <a data-page="growth_section" href="./growth.html"
+                >Cases across England</a
+              >
+            </li>
+            <li>
+              <a data-page="local_section" href="./local.html"
+                >Cases in your area</a
+              >
+            </li>
+            <li>
+              <a data-page="healthcare_section" href="./healthcare.html"
+                >COVID-19 in hospitals</a
+              >
+            </li>
+            <li>
+              <a data-page="restriction_section" href="./restrictions.html"
+                >Restrictions</a
+              >
+            </li>
+            <li>
+              <a data-page="mortality_section" href="./mortality.html"
+                >Deaths</a
+              >
+            </li>
+            <li>
+              <a data-page="attribution_section" href="./attribution.html"
+                >Data sources</a
+              >
+            </li>
+            <div class="bubble"></div>
+          </ul>
+          <div class="menu_line" onclick="navSlide()">
+            <div class="line_1"></div>
+            <div class="line_2"></div>
+            <div class="line_3"></div>
+          </div>
+        </nav>
+      </header>
+    </div>
 
-<h4 class = 'small_screen_show_title'>West Sussex COVID-19 data summary</h4>
-<p class = 'small_screen_show'>This version of the COVID-19 analyses has been built for desktop and large screens. The size of your browser window or screen may be too small to read the data visualisation without some of it overlapping.</p>
-<p class = 'small_screen_show'>We recommend that you go to the <a href = 'https://wsx-c19-mobile.netlify.app/'>mobile friendly</a> version of this site (https://wsx-c19-mobile.netlify.app/).</p>
-<p class = 'small_screen_show'>Alternatively, please increase the window size until you can no longer see this message for the best view of the data.</p>
-<p class = 'small_screen_show'>If you have any comments or questions, please email us at <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
+    <h4 class="small_screen_show_title">West Sussex COVID-19 data summary</h4>
+    <p class="small_screen_show">
+      This version of the COVID-19 analyses has been built for desktop and large
+      screens. The size of your browser window or screen may be too small to
+      read the data visualisation without some of it overlapping.
+    </p>
+    <p class="small_screen_show">
+      We recommend that you go to the
+      <a href="https://wsx-c19-mobile.netlify.app/">mobile friendly</a> version
+      of this site (https://wsx-c19-mobile.netlify.app/).
+    </p>
+    <p class="small_screen_show">
+      Alternatively, please increase the window size until you can no longer see
+      this message for the best view of the data.
+    </p>
+    <p class="small_screen_show">
+      If you have any comments or questions, please email us at
+      <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack"
+        >publichealth@westsussex.gov.uk</a
+      >
+    </p>
 
-<div class = 'small_screen_adapt'>
-<section class = 'home' id = 'home'>
-  <!-- <h4 class = 'content_top'>West Sussex COVID-19 data summary</h4> -->
-  <div class = 'content'>
-  </div>
-<div class = "content">
-<p>West Sussex County Council Public Health Department monitors COVID-19 related information on a daily basis, and a summary pack is published as a powerpoint slide deck which can be found on the top right of this webpage or by clicking <a href = 'https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx' >this link to the file itself</a>. Links are provided to public data sources available.</p>
-<p><a href = 'https://wsx-c19-mobile.netlify.app/'>A mobile friendly</a>, quick glance, version of this site is also available (https://wsx-c19-mobile.netlify.app/).</p>
-<p class = 'warn'>Although this webpage has been made by a member of staff in the Public Health and Social Research Unit to support their work, it is not a West Sussex County Council website.</p>
-<p class ='highlight_dl' id = 'update_date'></p>
-<p id = 'data_recency'></p>
-<p>For more information please contact <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack">publichealth@westsussex.gov.uk</a></p>
-<p>We have separated this website into several individual pages to make it easier for users to find the information they are most interested in as quickly as possible. You can find out more information about <a href="./latest.html">cases</a>, <a href="./tests.html">tests</a>, <a href="./healthcare.html">healthcare</a>, and <a href="./mortality.html">mortality</a> using the headings at the top of each page</p>
-</div>
-<div class = 'right-sidebar'>
-  <p class = 'side'>This page works best in certain browsers such as Chrome, Firefox, and Safari, and does not currently work well in Internet Explorer. If you have difficulty viewing the charts on this page please consider using a different web browser.</p>
-  <p class = 'side'>This analysis has been created by Dr Rich Tyler at the West Sussex Public Health and Social Research Unit.</p>
-<p class = 'highlight_dl'>A powerpoint slide deck is available to <a class = 'highlight_dl' href = 'https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx' >download here</a></p>
-  </div>
-  </section>
+    <div class="small_screen_adapt home_class">
 
-</body>
+      <p class="warn">
+        This website works best in browsers such as Chrome, Edge, Firefox, and
+        Safari. However, it does not currently work in Internet Explorer. If you
+        have difficulty viewing the charts on this website please consider using
+        a different web browser.
+      </p>
+
+      <p>
+        West Sussex County Council Public Health Department monitors COVID-19
+        related information on a daily basis, and a summary (collated into a
+        Microsoft Powerpoint file) is published weekly. This is available to
+        <a
+          class="highlight_dl"
+          href="https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx"
+          >download here</a
+        >. Links are provided to public data sources available.
+      </p>
+
+      <p>
+        A <a href="https://wsx-c19-mobile.netlify.app/">mobile friendly</a>,
+        quick glance, version of this site is also available. For more
+        information please contact
+        <a
+          href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack"
+          >publichealth@westsussex.gov.uk</a
+        >
+      </p>
+
+      <p>
+        We have separated this website into several individual pages to make it
+        easier for users to find the information they are most interested in as
+        quickly as possible. You can find out more information about
+        <a href="./latest.html">cases</a>, <a href="./tests.html">tests</a>,
+        <a href="./healthcare.html">healthcare</a>, and
+        <a href="./mortality.html">mortality</a> using the headings at the top
+        of each page
+      </p>
+
+      <!-- <p class="warn">
+        Although this webpage has been made by the Public Health and Social
+        Research Unit to support their work, it is not a West Sussex County
+        Council website.
+      </p> -->
+
+  
+      <p class="highlight_dl" id="update_date"></p>
+      <p id="data_recency"></p>
+
+    
+    </div>
+
+ <section class="heatmap_section" id="heatmap_section">
+        <h4 class="content_top" id="summary_cases_title"></h4>
+        <!-- <div class="content"></div>
+
+        <div class="right-sidebar"></div> -->
+        <div class="content">
+        <p>
+          The table and visualisation below shows a quick overview of confirmed cases
+          over time and across areas with each tile representing a single day colour
+          coded by the number of new cases (the darker red tiles denote more
+          cases).</p>
+          <p>You can toggle between viewing the actual number of
+          confirmed cases or confirmed cases as a rate per 100,000 population using the buttons.
+        </p>
+
+          <form
+            class="btn-group btn-group-toggle stay-right-classy"
+            data-toggle="buttons"
+          >
+            <label class="btn btn-secondary active">
+              <input
+                type="radio"
+                name="toggle_count_rate"
+                value="counts"
+                onchange="toggle_count_rate_func();"
+              />actual cases</label>
+            <label class="btn btn-secondary">
+              <input
+                type="radio"
+                name="toggle_count_rate"
+                value="rate"
+                checked="checked"
+                onchange="toggle_count_rate_func();"
+              />cases per 100,000</label>
+          </form>
+        </div>
+
+        <div class="content">
+          <h6 id = 'heatmap_title'></h6>
+          <div id="case_headings"></div>
+          <div id="new_cases_plotted"></div>
+          <p>
+            Data source:
+            <a
+              class="highlight_dl_link"
+              href="https://coronavirus-staging.data.gov.uk"
+              >https://coronavirus-staging.data.gov.uk</a
+            >
+          </p>
+          <p id = 'arrow_explainer'></p>
+        </div>
+
+        <div class="right-sidebar">
+          <h4>New cases
+          </h4>
+          <div id="new_case_key_figure"></div>
+
+        </div>
+      </section>
+    </div>
+  </body>
 </html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+<script src="https://d3js.org/d3-format.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<!-- <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script> -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<script src="Javascripts/params.js"></script>
+<script src="Javascripts/summary_heatmap.js"></script>

@@ -331,6 +331,16 @@ header {
   display: inline-block;
 }
 
+.home_class {
+  float: none;
+  margin: 25px;
+  display: inline-block;
+}
+
+.home_class p {
+  font-size: 1rem;
+}
+
 .content p {
   font-size: 1rem;
 }
@@ -353,10 +363,10 @@ p {
   display: inline-block;
 }
 
-.warn {
-  font-size: 1rem;
+p.warn {
+  font-size: 0.8rem;
   font-weight: bold;
-  /* color: #256cb2; */
+  color: #256cb2;
 }
 
 a {

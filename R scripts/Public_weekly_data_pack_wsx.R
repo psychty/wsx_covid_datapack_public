@@ -363,6 +363,26 @@ wsx_summary %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/wsx_case_summary.json'))
 
+wsx_summary_p1_new <- p12_test_df %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000) 
+
+wsx_summary_p2_new <- p12_test_df %>% 
+  filter(Data_completeness == 'Complete') %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Perc_change_on_rolling_7_days_actual) %>% 
+  mutate(Perc_change_on_rolling_7_days_actual = ifelse(Perc_change_on_rolling_7_days_actual == Inf, 1, Perc_change_on_rolling_7_days_actual)) %>% 
+  mutate(Perc_change_on_rolling_7_days_actual = replace_na(Perc_change_on_rolling_7_days_actual, 0)) %>%
+  mutate(Change_direction = ifelse(Perc_change_on_rolling_7_days_actual <0, 'Down', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'Same', ifelse(Perc_change_on_rolling_7_days_actual > 0, 'Up', NA))))
+
+wsx_summary_new <- wsx_summary_p1_new %>% 
+  left_join(wsx_summary_p2_new, by = 'Name') %>% 
+  filter(Name %in% c(areas_to_loop, 'South East region', 'England'))
+
+wsx_summary_new %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/wsx_case_new_summary.json'))
+
 wsx_daily_cases <- p12_test_df %>% 
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
   select(Name, Date, New_cases, new_case_key, New_cases_per_100000, new_case_per_100000_key, Seven_day_average_new_cases, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Case_label, Rate_label, Seven_day_ave_new_label, Colour_key, Cumulative_cases)
