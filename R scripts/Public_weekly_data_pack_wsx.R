@@ -1503,7 +1503,7 @@ Occurrences %>%
 
 # Export to powerpoint ####
 
-wkly_template <- read_pptx(paste0(github_repo_dir, '/West Sussex C19 weekly datapack template.pptx')) %>%  
+wkly_template <- read_pptx(paste0(github_repo_dir, '/Source files/West Sussex C19 weekly datapack template.pptx')) %>%  
   add_slide(layout = "Intro_page", master = "Office Theme") %>% 
   ph_with(value = paste0('Pack date: ',format(Sys.Date(), '%d %B %Y')), 
           location = ph_location_label(ph_label = 'Date Placeholder 2')) %>% 
@@ -1626,11 +1626,7 @@ wkly_template <- wkly_template %>%
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_ltla_rolling_rate_wsx,
           location = ph_location_label(ph_label = 'Table Placeholder 7'))
-<<<<<<< HEAD
-  
-=======
 
->>>>>>> split_site
 # Death plots
 for(i in 1:length(areas_to_loop)){
   
@@ -2256,14 +2252,10 @@ ph_theme = function(){
   ) 
 }
 
-#github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
-github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
-output_directory_x <- paste0(github_repo_dir, '/Outputs')
-
-if(!file.exists(paste0(github_repo_dir, '/Source_files/etr.csv'))){
-  download.file('https://files.digital.nhs.uk/assets/ods/current/etr.zip', paste0(github_repo_dir, '/etr.zip'), mode = 'wb')
-  unzip(paste0(github_repo_dir, '/etr.zip'), exdir = github_repo_dir)
-  file.remove(paste0(github_repo_dir, '/etr.zip'), paste0(github_repo_dir, '/etr.pdf'))
+if(!file.exists(paste0(github_repo_dir, '/Source files/etr.csv'))){
+  download.file('https://files.digital.nhs.uk/assets/ods/current/etr.zip', paste0(github_repo_dir, '/Source files/etr.zip'), mode = 'wb')
+  unzip(paste0(github_repo_dir, '/Source files/etr.zip'), exdir = github_repo_dir)
+  file.remove(paste0(github_repo_dir, '/Source files/etr.zip'), paste0(github_repo_dir, '/Source files/etr.pdf'))
 }
 
 calls_hosp_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/') %>%
@@ -2473,11 +2465,7 @@ admissions_x_df <- admissions_df %>%
 #        subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
 #   ph_theme() +
 #   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-<<<<<<< HEAD
-
-=======
-# 
->>>>>>> split_site
+#
 # ggplot(admissions_x_df,
 #        aes(x = Date,
 #            y = Rolling_7_day_admissions)) +
