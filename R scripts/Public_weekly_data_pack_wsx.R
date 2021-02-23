@@ -335,9 +335,13 @@ test_timeline <- data.frame(Date_label_2 = c('27 Mar 20', '15 Apr 20','17 Apr 20
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/uk_testing_key_dates.json'))
 
-easing_timeline <- data.frame(Date_label_2 = c('23 Mar 20', '13 May 20', '01 Jun 20', '15 Jun 20', '04 Jul 20', '13 Jul 20', '24 Jul 20', '25 Jul 20', '30 Jul 20', '01 Aug 20', '03 Aug 20', '15 Aug 20', '26 Aug 20', '14 Sep 20', '21 Sep 20', '24 Sep 20', '14 Oct 20', '05 Nov 20', '02 Dec 20', '04 Jan 21'), Change = c('Lockdown starts, schools were closed to all but a few children and people are asked to stay at home.', 'Some people began returning to work if they were unable to work from home.', 'Schools reopened for more pupils in early years, reception, and years 1 and 6.<br>People were allowed to meet outdoors and those who were shielding advised that they could now go outdoors with people in their household.', 'Non-essential shops were allowed to reopen if safe, more year groups back to school, and face coverings became mandatory on public transport.', 'Change to social distancing advice from 2m to 1m+, some hospitality and leisure businesses allow to reopen, and two households allowed to meet inside whilst up to six people from different households allowed to meet outside.', 'Beauty salons, nail bars, tattoo studios allowed to reopen but cannot offer treatments or services which involve work directly in front of the face.', 'Face coverings became mandatory in many enclosed public spaces such as shops and banks.', 'Indoor gyms, swimming pools, and leisure centres reopen.', 'Self-isolation period for those with COVID-19 symptoms or a positive test increases from 7 to 10 days.', 'Shielding for clinically extremely vulnerable paused.<br>The government no longer recommends working from home if it is safe to go to work.', 'People encouraged to go to restaurants through the Eat Out to Help Out scheme offering discounted food from Monday-Wednesdays in August.', 'Casinos, indoor play and soft play centres, skating rinks, and bowling alleys reopen.<br>Beauty salons, spas, tattoo studios, and barbers now able to offer close contact services.', 'Schools and colleges have discretion to require face coverings in indoor communal areas where social distancing cannot be safely managed.', 'People can no longer meet with other households socially in groups of more than six people (including children). This includes private homes and gardens.', 'Childcare and unpaid care exempted from any interhousehold mixing restrictions in local areas.', 'Restaurants and bars must close at 10pm.<br>Those who can work from home now encouraged to do so by the government.', 'A three tiered set of restrictions for local areas in England began, mostly in northern England','A new national lockdown was announced, with education remaining open and no official shielding return', 'A return to a tier system for local authority areas', 'A third national lockdown was announced, with on-site education restricted to vulnerable children and children of key workers. Clinically vulnerable asked to shield')) %>% 
-  toJSON() %>% 
+easing_timeline <- data.frame(Date_label_2 = c('23 Mar 20', '13 May 20', '01 Jun 20', '15 Jun 20', '04 Jul 20', '13 Jul 20', '24 Jul 20', '25 Jul 20', '30 Jul 20', '01 Aug 20', '03 Aug 20', '15 Aug 20', '26 Aug 20', '14 Sep 20', '21 Sep 20', '24 Sep 20', '14 Oct 20', '05 Nov 20', '02 Dec 20', '04 Jan 21'), Change = c('Lockdown starts, schools were closed to all but a few children and people are asked to stay at home.', 'Some people began returning to work if they were unable to work from home.', 'Schools reopened for more pupils in early years, reception, and years 1 and 6.<br>People were allowed to meet outdoors and those who were shielding advised that they could now go outdoors with people in their household.', 'Non-essential shops were allowed to reopen if safe, more year groups back to school, and face coverings became mandatory on public transport.', 'Change to social distancing advice from 2m to 1m+, some hospitality and leisure businesses allow to reopen, and two households allowed to meet inside whilst up to six people from different households allowed to meet outside.', 'Beauty salons, nail bars, tattoo studios allowed to reopen but cannot offer treatments or services which involve work directly in front of the face.', 'Face coverings became mandatory in many enclosed public spaces such as shops and banks.', 'Indoor gyms, swimming pools, and leisure centres reopen.', 'Self-isolation period for those with COVID-19 symptoms or a positive test increases from 7 to 10 days.', 'Shielding for clinically extremely vulnerable paused.<br>The government no longer recommends working from home if it is safe to go to work.', 'People encouraged to go to restaurants through the Eat Out to Help Out scheme offering discounted food from Monday-Wednesdays in August.', 'Casinos, indoor play and soft play centres, skating rinks, and bowling alleys reopen.<br>Beauty salons, spas, tattoo studios, and barbers now able to offer close contact services.', 'Schools and colleges have discretion to require face coverings in indoor communal areas where social distancing cannot be safely managed.', 'People can no longer meet with other households socially in groups of more than six people (including children). This includes private homes and gardens.', 'Childcare and unpaid care exempted from any interhousehold mixing restrictions in local areas.', 'Restaurants and bars must close at 10pm.<br>Those who can work from home now encouraged to do so by the government.', 'A three tiered set of restrictions for local areas in England began, mostly in northern England','A new national lockdown was announced, with education remaining open and no official shielding return', 'A return to a tier system for local authority areas', 'A third national lockdown was announced, with on-site education restricted to vulnerable children and children of key workers. Clinically vulnerable asked to shield')) %>%
+  toJSON() %>%
   write_lines(paste0(output_directory_x,'/uk_restrictions_key_dates.json'))
+
+# easing_timeline <- data.frame(Date_label_2 = c('23 Mar 20', '05 Nov 20', '02 Dec 20', '04 Jan 21'), Change = c('Lockdown starts', 'A three tiered set of restrictions for local areas in England began, mostly in northern England','A new national lockdown was announced, with education remaining open and no official shielding return', 'A return to a tier system for local authority areas', 'A third national lockdown was announced, with on-site education restricted to vulnerable children and children of key workers. Clinically vulnerable asked to shield')) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/uk_restrictions_key_dates.json'))
 
 wsx_summary_p1 <- p12_test_df %>% 
   filter(Date == max(Date)) %>% 
@@ -362,6 +366,26 @@ wsx_summary <- wsx_summary_p1 %>%
 wsx_summary %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/wsx_case_summary.json'))
+
+wsx_summary_p1_new <- p12_test_df %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Cumulative_cases, Cumulative_per_100000) 
+
+wsx_summary_p2_new <- p12_test_df %>% 
+  filter(Data_completeness == 'Complete') %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Rolling_7_day_new_cases, Rolling_7_day_new_cases_per_100000, Perc_change_on_rolling_7_days_actual) %>% 
+  mutate(Perc_change_on_rolling_7_days_actual = ifelse(Perc_change_on_rolling_7_days_actual == Inf, 1, Perc_change_on_rolling_7_days_actual)) %>% 
+  mutate(Perc_change_on_rolling_7_days_actual = replace_na(Perc_change_on_rolling_7_days_actual, 0)) %>%
+  mutate(Change_direction = ifelse(Perc_change_on_rolling_7_days_actual <0, 'Down', ifelse(Perc_change_on_rolling_7_days_actual == 0, 'Same', ifelse(Perc_change_on_rolling_7_days_actual > 0, 'Up', NA))))
+
+wsx_summary_new <- wsx_summary_p1_new %>% 
+  left_join(wsx_summary_p2_new, by = 'Name') %>% 
+  filter(Name %in% c(areas_to_loop, 'South East region', 'England'))
+
+wsx_summary_new %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/wsx_case_new_summary.json'))
 
 wsx_daily_cases <- p12_test_df %>% 
   mutate(Date_label = format(Date, '%a %d %B')) %>% 
@@ -1602,7 +1626,11 @@ wkly_template <- wkly_template %>%
           location = ph_location_label(ph_label = 'Text Placeholder 6')) %>%
   ph_with(value = ft_ltla_rolling_rate_wsx,
           location = ph_location_label(ph_label = 'Table Placeholder 7'))
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> split_site
 # Death plots
 for(i in 1:length(areas_to_loop)){
   
@@ -2445,7 +2473,11 @@ admissions_x_df <- admissions_df %>%
 #        subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
 #   ph_theme() +
 #   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
+<<<<<<< HEAD
 
+=======
+# 
+>>>>>>> split_site
 # ggplot(admissions_x_df,
 #        aes(x = Date,
 #            y = Rolling_7_day_admissions)) +

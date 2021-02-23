@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>West Sussex C19 summary</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
+
+  <body>
+    <!-- <div class="wrapper"> -->
+    <div class="small_screen_adapt">
+      <header>
+        <nav id="content_size">
+          <ul class="nav-links" id="nav-links">
+            <li>
+              <a data-page="home" href="./index.html">Home</a>
+            </li>
+            <li>
+              <a data-page="heatmap_section" href="./latest.html"
+                >Latest cases</a
+              >
+            </li>
+            <li>
+              <a data-page="tests_section" href="./tests.html"
+                >Number of tests</a
+              >
+            </li>
+            <li>
+              <a data-page="growth_section" href="./growth.html"
+                >Cases across England</a
+              >
+            </li>
+            <li>
+              <a data-page="local_section" href="./local.html"
+                >Cases in your area</a
+              >
+            </li>
+            <li>
+              <a data-page="healthcare_section" href="./healthcare.html"
+                >COVID-19 in hospitals</a
+              >
+            </li>
+            <li>
+              <a data-page="restriction_section" href="./restrictions.html"
+                >Restrictions</a
+              >
+            </li>
+            <li>
+              <a data-page="mortality_section" href="./mortality.html"
+                >Deaths</a
+              >
+            </li>
+            <li>
+              <a data-page="attribution_section" href="./attribution.html"
+                >Data sources</a
+              >
+            </li>
+            <div class="bubble"></div>
+          </ul>
+          <div class="menu_line" onclick="navSlide()">
+            <div class="line_1"></div>
+            <div class="line_2"></div>
+            <div class="line_3"></div>
+          </div>
+        </nav>
+      </header>
+    </div>
+
+    <section class="healthcare_section" id="healthcare_section">
+      <h4 class="content_top">Impact on healthcare</h4>
+      <div class="content"></div>
+      <div class="content">
+        <p>
+          The COVID-19 pandemic has directly and indirectly put a great strain
+          on healthcare through treating patients with diseases related to
+          COVID-19 infections as well as patients with other conditions and the
+          knock on impacts of healthcare staff absences due to the virus. The
+          strain on healthcare, and number of people in hospital, was one factor
+          in the decision for a national lockdown in England at the end of 2020.
+        </p>
+
+        <p>
+          Data for admissions include people admitted to hospital who tested
+          positive for COVID-19 in the 14 days prior to admission, and those who
+          tested positive in hospital after admission. Inpatients diagnosed with
+          COVID-19 after admission are reported as being admitted on the day
+          prior to their diagnosis. Admissions to all NHS acute hospitals and
+          mental health and learning disability trusts, as well as independent
+          service providers commissioned by the NHS are included.
+        </p>
+
+        <p id="hospital_data_dates"></p>
+      </div>
+      <div class="right-sidebar">
+        <p class="side">
+          Hospital provider trusts do not have geographically defined boundaries
+          for their populations nor do they have complete lists of registered
+          patients and people may be treated in hospitals close to or far away
+          from where they live. As such it is more difficult to say how many
+          patients from a certain areas or even the whole of West Sussex county
+          are in hospital. However, we might expect the majority of West Sussex
+          residents who require hospital treatment to be in hospital sites of
+          one of five NHS Trusts:
+        </p>
+        <ul>
+          <li>
+            <b>Brighton and Sussex University Hospitals NHS Trust</b> (hospitals
+            in Brighton and Haywards Heath)
+          </li>
+          <li>
+            <b>Surrey and Sussex Healthcare NHS Trust</b> (hospitals in Crawley
+            and Redhill)
+          </li>
+          <li>
+            <b>Sussex Community NHS Foundation Trust</b> (sites across Brighton
+            and Hove, East Sussex, and West Sussex)
+          </li>
+          <li>
+            <b>Sussex Partnership NHS Foundation Trust</b> (sites across
+            Brighton and Hove, East Sussex, West Sussex, and Hampshire)
+          </li>
+          <li>
+            <b>Western Sussex Hospitals NHS Foundation Trust</b> (hospitals in
+            Chichester, Worthing, and Shoreham-by-sea)
+          </li>
+        </ul>
+      </div>
+
+      <div class="content">
+        <table>
+          <thead>
+            <tr>
+              <th class="trust_width">Trust</th>
+              <th id="hospital_date_heading_1"></th>
+              <th id="hospital_date_heading_2"></th>
+              <th id="hospital_date_heading_3"></th>
+              <th id="hospital_date_heading_4"></th>
+            </tr>
+          </thead>
+          <tbody id="healthcare_table_1"></tbody>
+        </table>
+        <p>
+          Data source:
+          <a class="highlight_dl_link" href="https://coronavirus.data.gov.uk/"
+            >https://coronavirus.data.gov.uk/</a
+          >
+        </p>
+
+        <p>
+          The figure below shows the rolling number of new admissions and
+          inpatient diagnoses in the past 7 days.
+        </p>
+        <p>
+          By default, we show the national picture, although you can select the
+          South East NHS region overall or one of the NHS Trusts operating
+          around the West Sussex area. This will include hospitals located
+          outside of the county.
+        </p>
+        <h4 id="admissions_title_1"></h4>
+        <select id="select_trust_1_button"></select>
+        <div id="daily_admissions_bars"></div>
+        <p>
+          Data source:
+          <a class="highlight_dl_link" href="https://coronavirus.data.gov.uk/"
+            >https://coronavirus.data.gov.uk/</a
+          >
+        </p>
+
+        <p>
+          The figure below shows the number of patients with a positive COVID-19
+          test result at 8:00am on a given day. It also shows the number of
+          patients occupying beds which are capable of mechanical ventilation.
+        </p>
+        <p>
+          Note that the data for people in hospital is two days ahead of the
+          data on admissions.
+        </p>
+      </div>
+
+      <div class="content">
+        <h4 id="admissions_title_2"></h4>
+        <select id="select_trust_2_button"></select>
+        <div id="daily_occupied_beds_bars"></div>
+        <p>
+          Data source:
+          <a class="highlight_dl_link" href="https://coronavirus.data.gov.uk/"
+            >https://coronavirus.data.gov.uk/</a
+          >
+        </p>
+
+        <p>
+          The next figure shows the number of COVID-19 positive patients
+          occupying General and Acute adult inpatient beds. This is not quite
+          the same as the number of patients in the figures above as it only
+          includes <b>adult inpatient beds</b>, but it is expected that adults
+          represent 99% of COVID-19 admissions in hospitals. This data is only
+          available from November 2020 onwards.
+        </p>
+      </div>
+
+      <div class="right-sidebar">
+        <b class="side">Bed type</b>
+        <div id="covid_bed_type_key"></div>
+      </div>
+
+      <div class="content">
+        <h4 id="admissions_title_3"></h4>
+        <select id="select_trust_3_button"></select>
+        <div id="daily_occupied_beds_as_share_ga_bars"></div>
+        <p>
+          Data source:
+          <a
+            class="highlight_dl_link"
+            href="https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/"
+            >NHS England</a
+          >
+        </p>
+      </div>
+
+      <div class="right-sidebar">
+        <b class="side">Patients</b>
+        <div id="covid_bed_share_type_key"></div>
+      </div>
+    </section>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+    <script src="https://d3js.org/d3-format.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="Javascripts/params.js"></script>
+    <script src="Javascripts/healthcare.js"></script>
+  </body>
+</html>

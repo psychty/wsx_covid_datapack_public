@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>West Sussex C19 summary</title>
+ <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+<link rel="stylesheet" type="text/css" href="style.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+<!-- <div class="wrapper"> -->
+<div class="small_screen_adapt" >
+  <header>
+    <nav id = 'content_size'>
+         <ul class="nav-links" id="nav-links">
+        <li>
+          <a data-page="home" href="./index.html"
+            >Home</a
+          >
+        </li>
+        <li>
+          <a data-page="heatmap_section" href="./latest.html"
+            >Latest cases</a
+          >
+        </li>
+        <li>
+          <a data-page="tests_section" href="./tests.html"
+            >Number of tests</a
+          >
+        </li>
+        <li>
+          <a data-page="growth_section" href="./growth.html"
+            >Cases across England</a
+          >
+        </li>
+        <li>
+          <a data-page="local_section" href="./local.html"
+            >Cases in your area</a
+          >
+        </li>
+        <li>
+          <a data-page="healthcare_section" href = './healthcare.html'
+          >COVID-19 in hospitals</a>
+        </li>
+        <li>
+          <a data-page="restriction_section" href="./restrictions.html"
+            >Restrictions</a
+          >
+        </li>
+        <li>
+          <a data-page="mortality_section" href="./mortality.html"
+            >Deaths</a
+          >
+        </li>
+        <li>
+          <a data-page="attribution_section" href="./attribution.html"
+            >Data sources</a
+          >
+        </li>
+        <div class="bubble"></div>
+      </ul>
+      <div class="menu_line" onclick="navSlide()">
+        <div class="line_1"></div>
+        <div class="line_2"></div>
+        <div class="line_3"></div>
+      </div>
+    </nav>
+  </header>
+</div>
+
+
+  <section class="latest_case_section" id = 'latest_case_section'>
+    <h4 class = 'content_top'>Daily case changes</h4>
+    <div class = 'content'>
+    </div>
+  
+    <div class="content">
+      <p>The figure below shows the daily confirmed cases of Covid-19 over time by area (showing West Sussex by default), but you can change this to any lower tier area within the county as well as the South East region and England for comparison. The black line represents the rolling average number of new cases confirmed in the previous seven days.</p>
+      <p>The figure includes key dates when changes to testing capacity and eligibility were announced. These are adapted from The Health Foundation <a href = 'https://www.health.org.uk/news-and-comment/charts-and-infographics/covid-19-policy-tracker'>Covid-19 Policy Tracker</a>.</p>
+    </div>
+  
+  <h4 style = 'padding-left: 25px; padding-top: 10px;' id = 'selected_daily_cases_bars_1_compare_title'></h4>
+    
+    <div class = 'content'>
+      <span class = 'give_me_space'>Area: </span>
+      <select id='select_bars_daily_cases_1_area_button'></select>
+      <span class = 'give_me_space'><input type="checkbox" class="checkbox" value="test_notes" checked><label>Show eligibility changes</label></span>
+      <span class = 'give_me_space'><input type="checkbox" class="checkbox" value="restriction_notes" checked><label> Show restriction changes</label></span>
+      <div id = 'daily_new_case_bars'></div>
+      <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+      <p id = 'x_latest_figures'></p>
+    </div>
+    
+    <div class = 'right-sidebar'>
+      <p class = 'side'>The grey lines with circles at the top show dates on which the Covid-19 testing eligibility criteria was amended to include a wider population. Hover over each point to see which population groups were added to the test eligibility criteria.</p>
+      <p class = 'side'>The red lines with circles at the top show dates on which restrictions were added and eased, starting with the national lockdown on 23rd March 2020. Hover over each point to see key changes.</p>
+      <p class = 'side_important'>Note that the scale may change as a new area is selected.</p>
+      <p class = 'side'>Pillar 1 testing includes NHS testing, such as tests of people being admitted to hospital or being discharged to a health/care home setting, pre-operative testing etc.</p>
+      <p class = 'side'>Pillar 2 testing is wider community testing</p>
+    </div>
+  
+  <h4 style="padding-left:25px;">Lower tier authority cases</h3>
+    <div class = 'content'>
+      <p>The next set of figures shows a quick glance of the lower tier local authorities within West Sussex. The black lines (shown on the actual numbers figures only) on each figure represent the rolling average number of new cases confirmed in the previous seven days.</p>
+      <p>You can toggle between looking at actual case numbers and rates of confirmed cases per 100,000 population.</p>
+      <p id = 'case_recency_text'></p>
+      <h4 id = 'selected_ltla_sm_title'></h4>
+      <div class = 'drop'>
+        <form class="btn-group btn-group-toggle stay-left-classy" data-toggle="buttons">
+            <label class="btn btn-secondary active">
+             <input type="radio" name = 'toggle_sm_rate' value = 'raw' checked = 'checked' onchange="toggle_sm_rate_func();">actual case numbers<br>
+            </label>
+            <label class="btn btn-secondary"> 
+             <input type="radio" name = 'toggle_sm_rate' value = 'rate' onchange ='toggle_sm_rate_func();'>rate per 100,000<br>
+            </label>
+        </form>
+      </div>
+      <div id = 'my_sm_dataviz' class = 'sm-container'></div>
+      <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+    </div>
+    
+    <div class = 'right-sidebar'>
+      <p class = 'side'>Given the differences in population sizes across West Sussex, you might naturally expect there to be more cases in one area than another. Viewing the cases per 100,000 allows you to compare across areas as if they had the same population size. We have used the mid year estimates for 2019 from the <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates'>Office for National Statistics</a> to calculate these rates.</p>
+      <p class = 'side'>Hover over a bar to see the number of new cases and cumulative cases to date.</p>
+      <p class = 'side_important'>It is important to check for any big spikes in the 'incomplete' period as these may not be highlighted by methods that exclude the last few days of data.</p>
+    </div>
+  
+  </div>
+  
+  </section>
+
+  <section class="asr_section"  id = 'asr_section'>
+    <h4 class = 'content_top'>Age-specific rates of COVID-19 cases</h4>
+    <!-- <div class = 'content'>
+    </div> -->
+  
+    <div class="content">
+      <p>The age distribution of confirmed COVID-19 cases is important as we have a good idea that whilst all age groups are susceptible to catching the virus, being older is thought to be a risk factor in becoming severely unwell with the virus.</p>
+      <p>We have seen from the national data that in the earlier waves of the pandemic, it was primarily older groups who were catching the virus, with a shift over the summer months to younger groups as more of society opened up and particularly as schools, colleges, and universities welcomed students back to classrooms.</p>
+      <p>From the end of October 2020, the UK government began publishing the number of confirmed COVID-19 cases by age group at local level. We have used these data to present a range of views of the age-specific confirmed transmission in West Sussex and other areas such as the South East region and England.</p>
+      <p>The first figure shows the 10 year age-specific rates over time in West Sussex. You can change the area using the drop down menu on the figure. Each line is coloured by age (see the key on the right). If you hover over a line or dot, the rest of the lines will fade and information about the number of cases and the age-specific rate (a method of standardising populations for comparison) at a given date.</p>
+    </div>
+    
+    <div class = 'right-sidebar'>
+      <p class = 'side'>Note that although we have tried to smooth out daily variation by using a rolling 7-day rate, at local levels when cases are still fairly low, there can be a lot of unsteady variation from day to day among some age groups. This can make the lines jump up and down. This is more so for lower tier areas and to a lesser extent for the county level. You may notice that the lines look much smoother at regional and national levels.</p>
+    </div>
+    
+    <div class = 'content'>
+      <h4 id = 'selected_age_line_1_compare_title'></h4>
+      <span class = 'give_me_space'>Area: </span>
+      <select id='select_lines_age_1_area_button'></select>
+      <div id = 'age_spec_fig_1'></div>
+      <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+    </div>
+  
+    <div class = 'right-sidebar'>
+      <h4>Age bands</h4>
+      <!-- <p class = 'side'>Age band key</p> -->
+      <div id = 'age_band_key_figure'></div>
+    </div>
+  
+    <div class = 'content'>
+      <p>There are similar patterns in the age-specific rates over time for West Sussex, South East region, and national data with rates among those aged 80+ far above other groups early in the pandemic. Following a dampening down of rates for all groups in the summer, younger cohorts rapidly exceeded the growth in cases of other groups from September onwards (potentially due to education settings but also likely due to hospitality venues such as bars and restaurants reopening).</p>
+      <p>It should also be considered that changes have occurred partly as test capacity and eligibility increased. Over time, more people were tested who were not displaying symptoms and these asymptomatic cases (perhaps picked up through workplace testing, or as a result of contact tracing) tended to be younger. It is possible that wider testing earlier in the pandemic may have identified many more younger aged cases of COVID-19.</p>
+      <p>Notwithstanding changes in testing, those aged 20-29 have continued to be key drivers of new infections in recent weeks and months whilst rates among 10-19's appear to be levelling off.</p>
+      <p>There has not been such a significant increase in infections among those aged 0-9 and the next figure shows a more detailed view of younger age groups. Again, you can change the area using the menu</p>
+    </div>
+  
+    <div class = 'right-sidebar'>
+      <p class = 'side'>The change in age-distribution of cases may be partly explained by different testing regimes with early testing only conducted among those who were symptomatic and often only among those who were hospitalised by the virus and as the testing capacity increased, more people were tested who did not have symptoms of a more severe illness.</p>
+    </div>
+  
+    <div class = 'content'>
+      <h4 id = 'selected_age_line_2_compare_title'></h4>
+      <span class = 'give_me_space'>Area: </span>
+      <select id='select_lines_age_2_area_button'></select>
+      <div id = 'age_spec_fig_u30'></div>
+      <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
+    </div>
+  
+    <div class = 'right-sidebar'>
+      <h4>Age bands</h4>
+      <!-- <p class = 'side'>Age band key</p> -->
+      <div id = 'age_band_u30_key_figure'></div>
+    </div>
+  </section>  
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+<script src="https://d3js.org/d3-format.v1.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<!-- <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script> -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<!-- <script src="https://unpkg.com/d3-simple-slider"></script> -->
+<!-- <script src = 'https://unpkg.com/d3-simple-slider@1.10.1/dist/d3-simple-slider.min.js'></script>-->
+
+<script src = 'Javascripts/params.js'></script>
+<script src = "Javascripts/daily_confirmed_cases.js"></script>
+<script src = "Javascripts/small_multiples_confirmed_cases.js"></script>
+<script src = 'Javascripts/figure_age_specific_rates.js'></script>
+<script src = 'Javascripts/figure_age_specific_rates_u30.js'></script>
+
+</body>
+</html>

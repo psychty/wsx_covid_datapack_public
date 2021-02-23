@@ -1,5 +1,6 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+<<<<<<< HEAD
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -265,14 +266,165 @@
     <p class = 'side'>Age band key</p>
     <div id = 'age_band_key_figure'></div>
   </div>
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>West Sussex C19 summary</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""
+    />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+  </head>
 
-  <div class = 'content'>
-    <p>There are similar patterns in the age-specific rates over time for West Sussex, South East region, and national data with rates among those aged 80+ far above other groups early in the pandemic. Following a dampening down of rates for all groups in the summer, younger cohorts rapidly exceeded the growth in cases of other groups from September onwards (potentially due to education settings but also likely due to hospitality venues such as bars and restaurants reopening).</p>
-    <p>It should also be considered that changes have occurred partly as test capacity and eligibility increased. Over time, more people were tested who were not displaying symptoms and these asymptomatic cases (perhaps picked up through workplace testing, or as a result of contact tracing) tended to be younger. It is possible that wider testing earlier in the pandemic may have identified many more younger aged cases of COVID-19.</p>
-    <p>Notwithstanding changes in testing, those aged 20-29 have continued to be key drivers of new infections in recent weeks and months whilst rates among 10-19's appear to be levelling off.</p>
-    <p>There has not been such a significant increase in infections among those aged 0-9 and the next figure shows a more detailed view of younger age groups. Again, you can change the area using the menu</p>
-  </div>
+  <body>
+    <div class="small_screen_adapt">
+      <header>
+        <nav id="content_size">
+          <ul class="nav-links" id="nav-links">
+            <li>
+              <a data-page="home" href="./index.html">Home</a>
+            </li>
+            <li>
+              <a data-page="heatmap_section" href="./latest.html"
+                >Latest cases</a
+              >
+            </li>
+            <li>
+              <a data-page="tests_section" href="./tests.html"
+                >Number of tests</a
+              >
+            </li>
+            <li>
+              <a data-page="growth_section" href="./growth.html"
+                >Cases across England</a
+              >
+            </li>
+            <li>
+              <a data-page="local_section" href="./local.html"
+                >Cases in your area</a
+              >
+            </li>
+            <li>
+              <a data-page="healthcare_section" href="./healthcare.html"
+                >COVID-19 in hospitals</a
+              >
+            </li>
+            <li>
+              <a data-page="restriction_section" href="./restrictions.html"
+                >Restrictions</a
+              >
+            </li>
+            <li>
+              <a data-page="mortality_section" href="./mortality.html"
+                >Deaths</a
+              >
+            </li>
+            <li>
+              <a data-page="attribution_section" href="./attribution.html"
+                >Data sources</a
+              >
+            </li>
+            <div class="bubble"></div>
+          </ul>
+          <div class="menu_line" onclick="navSlide()">
+            <div class="line_1"></div>
+            <div class="line_2"></div>
+            <div class="line_3"></div>
+          </div>
+        </nav>
+      </header>
+    </div>
+>>>>>>> split_site
 
+    <h4 class="small_screen_show_title">West Sussex COVID-19 data summary</h4>
+    <p class="small_screen_show">
+      This version of the COVID-19 analyses has been built for desktop and large
+      screens. The size of your browser window or screen may be too small to
+      read the data visualisation without some of it overlapping.
+    </p>
+    <p class="small_screen_show">
+      We recommend that you go to the
+      <a href="https://wsx-c19-mobile.netlify.app/">mobile friendly</a> version
+      of this site (https://wsx-c19-mobile.netlify.app/).
+    </p>
+    <p class="small_screen_show">
+      Alternatively, please increase the window size until you can no longer see
+      this message for the best view of the data.
+    </p>
+    <p class="small_screen_show">
+      If you have any comments or questions, please email us at
+      <a href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack"
+        >publichealth@westsussex.gov.uk</a
+      >
+    </p>
+
+    <div class="small_screen_adapt home_class">
+
+      <p class="warn">
+        This website works best in browsers such as Chrome, Edge, Firefox, and
+        Safari. However, it does not currently work in Internet Explorer. If you
+        have difficulty viewing the charts on this website please consider using
+        a different web browser.
+      </p>
+
+      <p>
+        West Sussex County Council Public Health Department monitors COVID-19
+        related information on a daily basis, and a summary (collated into a
+        Microsoft Powerpoint file) is published weekly. This is available to
+        <a
+          class="highlight_dl"
+          href="https://github.com/psychty/wsx_covid_datapack_public/raw/master/Latest_West_Sussex_C19_slide_deck.pptx"
+          >download here</a
+        >. Links are provided to public data sources available.
+      </p>
+
+      <p>
+        A <a href="https://wsx-c19-mobile.netlify.app/">mobile friendly</a>,
+        quick glance, version of this site is also available. For more
+        information please contact
+        <a
+          href="mailto:publichealth@westsussex.gov.uk?subject=COVID-19 datapack"
+          >publichealth@westsussex.gov.uk</a
+        >
+      </p>
+
+      <p>
+        We have separated this website into several individual pages to make it
+        easier for users to find the information they are most interested in as
+        quickly as possible. You can find out more information about
+        <a href="./latest.html">cases</a>, <a href="./tests.html">tests</a>,
+        <a href="./healthcare.html">healthcare</a>, and
+        <a href="./mortality.html">mortality</a> using the headings at the top
+        of each page
+      </p>
+
+      <!-- <p class="warn">
+        Although this webpage has been made by the Public Health and Social
+        Research Unit to support their work, it is not a West Sussex County
+        Council website.
+      </p> -->
+
+  
+      <p class="highlight_dl" id="update_date"></p>
+      <p id="data_recency"></p>
+
+<<<<<<< HEAD
   <div class = 'right-sidebar'>
     <p class = 'side'>The change in age-distribution of cases may be partly explained by different testing regimes with early testing only conducted among those who were symptomatic and often only among those who were hospitalised by the virus and as the testing capacity increased, more people were tested who did not have symptoms of a more severe illness.</p>
   </div>
@@ -319,74 +471,12 @@
     <p>Interpreting the percentage change value is actually easier if an area has at least some cases each week rather than having periods with no new cases. For example, an area with zero cases one week and two cases the next is perhaps better than having one case in one week and two in the next, yet the percentage increase is impossible to show from a starting value of zero. Equally, no change can mean two weeks of no new cases, or one case each week or 10.</p>
     <p>Areas closest to the dashed line show stable levels of transmission, even if they are high.</p>
   </div>
+=======
+>>>>>>> split_site
     
-  <div class = 'right-sidebar'>
-    <h4>Area key</h4>
-    <div id = 'growth_key_ltla'></div>
-  </div>
-  
-  <div class = 'content'>
-    <p>The figure below shows the latest rates and change as a map, which you can zoom into using the mouse or pointer. The initial map shows the rolling 7-day incidence rate (up to the most recent date for which we believe we have complete data). You can change the map using the buttons on the top right to show the rolling 7-day total compared to the previous period as a percentage increase or decrease. Finally, you can look at the overall confirmed cases rate so far. It is important to consider each of these measures together;  what are the cases now, what were the cases last week, how many cases have there been so far.</p>
-    <h4 id = 'summary_ltla_rate_title'></h4>
-    <p id= 'summary_ltla_rate_subtitle'></p>
-    <div id = 'rate_map_2'></div>
-    <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-  </div>
-
-  <div class = 'right-sidebar'>
-    <p class = 'side_important'>Remember that the rolling 7 day total excludes the very recent few days as these are considered incomplete</p>
-    <p class = 'side'><b>What is a decile?</b></p>
-    <p class = 'side'>Every area in England is ranked from highest to lowest rate of confirmed COVID-19 cases per 100,000 population and then areas are divided into 10 groups each representing 10% of the areas in England.</p>
-    <p id = 'selected_ltla_key_title'></p>
-    <div id = 'ltla_map_key'></div>
-  </div>
-
-  <h4 style = 'padding-left: 25px; padding-top: 10px;'>Rates across upper tier authority areas in England</h4>
-  <div class = 'content'>
-    <p>The next figure shows the rates and case changes but for upper tier local authority areas. The three Sussex Upper Tier and Unitary Local Authorities have been highlighted (see the key to the right) as well as England in black to show how local areas compare to other areas and the national picture. As before, you can change the date with the slider and hover over a dot to find out more.</p>
-    <h4 id = 'utla_growth_ts_rate_title'></h4>
-    <p class = 'stay-left-classy_1'>Use the slider to choose a date (the most recent complete date is shown by default on the right)</p>
-    <div class = 'stay-right-classy_1' id = 'utla_growth_slider'></div></span>
-  </div>
-  
-  <div class = 'content'>
-    <div id = 'utla_ts_growth_rate'></div>
-    <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-    <p id = 'wsx_growth_rate_latest'></p>
-  </div>
-  
-  <div class = 'right-sidebar'>
-    <h4>Area key</h4>
-    <div id = 'growth_key_utla'></div>
-  </div>
-  
-  <div class = 'content'>
-    <h4 id = 'summary_utla_rate_title'></h4>
-    <p id= 'summary_utla_rate_subtitle'></p>
-    <div id = 'rate_map_1'></div>
-    <p>Data source: <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >https://coronavirus-staging.data.gov.uk</a></p>
-  </div>
-  
-  <div class = 'right-sidebar'>
-    <p id = 'selected_utla_key_title'></p>
-    <div id = 'utla_map_key'></div>
-  </div>
-</section>
-
-<section class="local_section" id = 'local_section'>
-  <h4 class = 'content_top'>Cases in your local area</h4>
-  <div class = 'content'>
-  </div>
-
-  <div class="content">
-    <p>Data on the number of new confirmed cases at a very localised area called an output area (Middle Layer Super Output Area, or MSOAs for short) is now available. This is useful as it means you can see what cases are like where you live or where your friends and family live. We do not get the same detail from the data published at this level compared to wider areas and when there are fewer than three cases in a seven day period in the MSOA, these are supressed.</p>
-    <p>However, you can search for a postcode in the box below for any postcode in England and a marker will appear on the map with more detail about cases in that local area.</p>
-    
-    <div class='inputHolder'>
-      <input placeholder='Postcode' type='text' id='txtPostcode'/>
-      <input type='button' value='Search' id='btnPostcode'/>
     </div>
 
+<<<<<<< HEAD
     <div class = 'local_summary_tile'>
       <h4 id = 'local_case_summary_1'></h4>
       <p id = 'local_case_summary_2'></p>
@@ -476,37 +566,79 @@
     
     <div class = 'right-sidebar'>
       <p class = 'side'>The ONS weekly release of mortality at local authority level can be found <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard'>here</a>. Figures for previous weeks can be revised when new data are published to reflect more complete registrations.</p>
+=======
+ <section class="heatmap_section" id="heatmap_section">
+        <h4 class="content_top" id="summary_cases_title"></h4>
+        <!-- <div class="content"></div>
+
+        <div class="right-sidebar"></div> -->
+        <div class="content">
+        <p>
+          The table and visualisation below shows a quick overview of confirmed cases
+          over time and across areas with each tile representing a single day colour
+          coded by the number of new cases (the darker red tiles denote more
+          cases).</p>
+          <p>You can toggle between viewing the actual number of
+          confirmed cases or confirmed cases as a rate per 100,000 population using the buttons.
+        </p>
+
+          <form
+            class="btn-group btn-group-toggle stay-right-classy"
+            data-toggle="buttons"
+          >
+            <label class="btn btn-secondary active">
+              <input
+                type="radio"
+                name="toggle_count_rate"
+                value="counts"
+                onchange="toggle_count_rate_func();"
+              />actual cases</label>
+            <label class="btn btn-secondary">
+              <input
+                type="radio"
+                name="toggle_count_rate"
+                value="rate"
+                checked="checked"
+                onchange="toggle_count_rate_func();"
+              />cases per 100,000</label>
+          </form>
+        </div>
+
+        <div class="content">
+          <h6 id = 'heatmap_title'></h6>
+          <div id="case_headings"></div>
+          <div id="new_cases_plotted"></div>
+          <p>
+            Data source:
+            <a
+              class="highlight_dl_link"
+              href="https://coronavirus-staging.data.gov.uk"
+              >https://coronavirus-staging.data.gov.uk</a
+            >
+          </p>
+          <p id = 'arrow_explainer'></p>
+        </div>
+
+        <div class="right-sidebar">
+          <h4>New cases
+          </h4>
+          <div id="new_case_key_figure"></div>
+
+        </div>
+      </section>
+>>>>>>> split_site
     </div>
-</section>
-
-<section id = 'attribution_section'>
-  <h4 class = 'content_top'>Attributions</h4>
-  <div class = 'content'>
-    
-    <p>The data sources are given under each figure on this webpage but primarily come from <a class = 'highlight_dl_link' href = 'https://coronavirus-staging.data.gov.uk' >UK Government</a> for new case data, <a class = 'highlight_dl_link' href = 'https://digital.nhs.uk/dashboards/nhs-pathways#dashboard' >NHS Digital</a> for NHS pathway contacts, and <a href = 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard'>Office for National Statistics</a> for data on mortality.</p>
-    <p>Data used in this analyses are primarily supplied under Open Government Licence and a number of supporting products such as geographical boundaries and postcode lookups have also been used.</p>
-    <p>The following copyright notices are applicable:</p>
-    <ul>
-      <li>Contains Public Health England data © Crown copyright and database right 2020</li>
-      <li>Office for National Statistics licensed under the Open Government Licence v.3.0</li>
-      <li>Contains Ordnance Survey data © Crown copyright and database right 2020</li>
-      <li>Contains Royal Mail data © Royal Mail copyright and database right 2020</li>
-      <li>Contains MSOA names © Open Parliament copyright and database right 2020</li>
-    </ul>
-  </div>
-</div>
-</section>
-
-</div>
-
+  </body>
+</html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
 <script src="https://d3js.org/d3-format.v1.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+<!-- <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script> -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
+<<<<<<< HEAD
 <!-- <script src="https://unpkg.com/d3-simple-slider"></script> -->
 
 <script src = 'https://unpkg.com/d3-simple-slider@1.10.1/dist/d3-simple-slider.min.js'></script>
@@ -526,3 +658,7 @@
 
 </body>
 </html>
+=======
+<script src="Javascripts/params.js"></script>
+<script src="Javascripts/summary_heatmap.js"></script>
+>>>>>>> split_site
