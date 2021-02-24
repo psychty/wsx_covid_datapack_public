@@ -2131,7 +2131,8 @@ positivity_df <- positivity_ltla %>%
   mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) %>% 
   group_by(Name) %>% 
   arrange(Name, Date) %>% 
-  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) 
+  mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) %>% 
+  mutate(Date_label = format(Date, '%d %b %y'))
 
 positivity_df %>% 
   filter(Date == complete_date) %>% 
@@ -2150,7 +2151,32 @@ positivity_df %>%
 
 # Individuals tested more than once in the period are only counted once in the denominator, and those with more than one positive test result in the period are only included once in the numerator.
 
-positivity_worked <- positivity_df %>% 
+Areas <- c('Adur', 'Arun', 'Chichester','Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England')
+Dates <- seq.Date(min(positivity_df$Date), max(positivity_df$Date), by = '1 day')
+
+positivity_worked_raw <- data.frame(Name = character(), Date = character())
+
+for(i in 1:length(Areas)){
+  
+  area_x = Areas[i]
+  
+  df_x <- data.frame(Name = rep(area_x, length(Dates))) %>%
+    mutate(Date = seq.Date(min(positivity_df$Date), max(positivity_df$Date), by = '1 day')) %>%
+    mutate(Date = as.character(Date)) %>%
+    ungroup()
+  
+  positivity_worked_raw <- positivity_worked_raw %>%
+    bind_rows(df_x)
+  
+}
+
+positivity_df_raw <- positivity_df %>% 
+  mutate(Date = as.character(Date))
+
+positivity_worked <- positivity_worked_raw %>% 
+  left_join(positivity_df_raw, by = c('Name', 'Date')) %>% 
+  arrange(Date, Name) %>% 
+  mutate(uniquePeopleTestedBySpecimenDateRollingSum = replace_na(uniquePeopleTestedBySpecimenDateRollingSum, 0)) %>% 
   rename(Seven_day_PCR_positivity = uniqueCasePositivityBySpecimenDateRollingSum,
          Seven_day_PCR_tested_individuals = uniquePeopleTestedBySpecimenDateRollingSum) %>% 
   mutate(Perc_change_on_individuals_tested = round((Seven_day_PCR_tested_individuals - lag(Seven_day_PCR_tested_individuals, 7))/ lag(Seven_day_PCR_tested_individuals, 7), 2))  %>% 
@@ -2160,16 +2186,22 @@ positivity_worked <- positivity_df %>%
   mutate(Perc_change_on_individuals_tested = replace_na(Perc_change_on_individuals_tested, 0)) %>% 
   mutate(Perc_change_on_lfd_tests = replace_na(Perc_change_on_lfd_tests, 0)) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
-  arrange(Name, Date) %>% 
-  filter(Date >= max(Date) - 90)
-
-positivity_worked %>% 
-  filter(Date == complete_date)
+  arrange(Name, Date) 
 
 positivity_worked %>%
-  select(!Code) %>% 
+  select(!c(Date, Code)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/positivity_df.json'))
+
+positivity_worked %>% 
+  ungroup() %>% 
+  filter(!is.na(Seven_day_PCR_tested_individuals)) %>% 
+  filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 14)) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  select(Date_label) %>% 
+  unique() %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/test_dates.json'))
 
 library(lemon)
 

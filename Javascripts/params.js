@@ -137,6 +137,10 @@ d3.select("#update_date").html(function (d) {
   );
 });
 
+d3.select("#update_date_nav_label").html(function (d) {
+  return "Updated: " + data_refreshed_date;
+});
+
 d3.select("#data_recency").html(function (d) {
   return (
     "Case results are published each day in the afternoon (around 4pm) and represent cases reported up to 9am of that day. Cases are assigned to the day on which the test (specimen) was taken and whilst results can be reported quickly, it can take several days for all results to be reported for specimens taken on a particular date. As such, data for very recent days are likely to change, and only data <b>up to " +

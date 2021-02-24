@@ -1,3 +1,13 @@
+// Create svgs
+// Daily cases bar chart
+var svg_daily_new_case_bars = d3
+  .select("#daily_new_case_bars")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_line)
+  .append("g")
+  .attr("transform", "translate(" + 60 + "," + 10 + ")");
+
 // testing policy timelines
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/uk_testing_key_dates.json", false);
@@ -36,15 +46,6 @@ request.send(null);
 var data_dates = JSON.parse(request.responseText).map(function (d) {
   return d.Date_label;
 });
-
-// Daily cases bar chart
-var svg_daily_new_case_bars = d3
-  .select("#daily_new_case_bars")
-  .append("svg")
-  .attr("width", width_hm)
-  .attr("height", height_line)
-  .append("g")
-  .attr("transform", "translate(" + 60 + "," + 10 + ")");
 
 // We need to create a dropdown button for the user to choose which area to be displayed on the figure.
 d3.select("#select_bars_daily_cases_1_area_button")

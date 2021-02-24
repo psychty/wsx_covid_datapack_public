@@ -74,18 +74,17 @@
                 >Data sources</a
               >
             </li>
-            <div class="bubble"></div>
           </ul>
-          <div class="menu_line" onclick="navSlide()">
-            <div class="line_1"></div>
-            <div class="line_2"></div>
-            <div class="line_3"></div>
-          </div>
+          <p
+            style="text-align: right; padding-right: 25px"
+            id="update_date_nav_label"
+          ></p>
         </nav>
       </header>
     </div>
+
     <section class="tests_section" id="tests_section">
-      <h4 class="content_top">Number of tests and positivity</h4>
+      <h4 class="content_top">Testing for COVID-19</h4>
       <div class="content">
         <p>
           The majority of COVID-19 testing in the UK to date has been Polymerase
@@ -97,8 +96,23 @@
           days who had at least one positive PCR test result (the positivity
           rate). People are only counted once in a 7 day period.
         </p>
-        <p id="positivity_text_1"></p>
 
+        <p>
+          Lateral flow device (LFD) virus tests are another type of COVID-19
+          test that look for the presence of SARS-CoV-2 virus. These are also
+          swab tests, like the PCR tests, although they give results in less
+          than an hour, without the need for laboratory processing. LFD tests
+          are generally used for mass and routine testing of people who do not
+          have COVID-19 symptoms. They are aimed at identifying individuals who
+          may be infectious asymptomatic carriers and potential transmitters of
+          the virus so these people can isolate and take the virus out of
+          circulation in the community.
+        </p>
+
+        <p id="positivity_text_1"></p>
+      </div>
+
+      <div class="content">
         <table>
           <thead>
             <tr>
@@ -122,10 +136,9 @@
             >https://coronavirus-staging.data.gov.uk</a
           >
         </p>
+      </div>
 
-        <!-- <span class = 'give_me_space'>Area: </span> -->
-        <!-- <select id='select_line_positivity_button'></select> -->
-        <!-- <div class = 'figure_style' id = 'positivity_figure'></div> -->
+      <div class="content">
         <p>
           <b
             >It is important to consider test positivity with caution and
@@ -142,18 +155,58 @@
           different groups of people coming forward for testing. It is likely a
           mixture of several reasons.
         </p>
+      </div>
 
+      <h4 class="content_top">How testing has changed over time</h4>
+      <div class="content">
         <p>
-          Lateral flow device (LFD) virus tests are another type of COVID-19
-          test that look for the presence of SARS-CoV-2 virus. These are also
-          swab tests, like the PCR tests, although they give results in less
-          than an hour, without the need for laboratory processing. LFD tests
-          are generally used for mass and routine testing of people who do not
-          have COVID-19 symptoms. They are aimed at identifying individuals who
-          may be infectious asymptomatic carriers and potential transmitters of
-          the virus so these people can isolate and take the virus out of
-          circulation in the community.
+          The overall number of virus tests conducted (using lab-based and rapid
+          tests) each day is only available at a national level.
         </p>
+        <p>
+          For local areas (West Sussex or its districts and boroughs) we can
+          only see the number of individuals tested using PCR tests in a seven
+          day period or the total number of LFD tests conducted each day. These
+          two measures cannot be combined into a single metric for how many
+          people are being tested and must be considered separately.
+        </p>
+        <p>
+          The next figure shows how the rolling 7-day number of individuals
+          tested has changed over the course of the pandemic, and particularly
+          how testing ramped up towards the end of 2020.
+        </p>
+        <span class="give_me_space">Area: </span>
+        <select id="select_line_tested_button"></select>
+        <h4 id="selected_pcr_tested_bars_1_compare_title"></h4>
+      </div>
+
+      <div class="content">
+        <div class="figure_style" id="pcr_tested_figure"></div>
+        <p>
+          Data source:
+          <a
+            class="highlight_dl_link"
+            href="https://coronavirus-staging.data.gov.uk"
+            >https://coronavirus-staging.data.gov.uk</a
+          >
+        </p>
+      </div>
+
+      <div class="right-sidebar">
+        <p>
+          Individuals are counted once in any 7 day period even if they have
+          several PCR tests.
+        </p>
+      </div>
+
+      <div class="content">
+        <p>
+          Whilst the number of individuals tested using the lab-based PCR tests
+          is available for the whole of the pandemic (since February 2020), LFD
+          testing in England only became widely available from the 21st October
+          2020.
+        </p>
+        <!-- <p>As such, the time period for the next figure (number of LFD tests conducted) is much smaller (for the last few months only)</p> -->
       </div>
     </section>
 
@@ -161,8 +214,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
     <script src="https://d3js.org/d3-format.v1.min.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-    <!-- <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
-<script src= "https://unpkg.com/shpjs@latest/dist/shp.js"></script>-->
     <script
       src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
@@ -170,6 +221,6 @@
     ></script>
 
     <script src="Javascripts/params.js"></script>
-    <script src="Javascripts/figure_positivity.js"></script>
+    <script src="Javascripts/tests_positivity.js"></script>
   </body>
 </html>
