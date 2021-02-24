@@ -149,25 +149,25 @@ function new_date_growth_utla() {
     .text("compared to cases 7 days before.");
 }
 
-wsx_latest_growth = utla_growth_ts_data.filter(function (d) {
-  return (d.Name == "West Sussex") & (d.Date === complete_date_actual);
-});
+// wsx_latest_growth = utla_growth_ts_data.filter(function (d) {
+//   return (d.Name == "West Sussex") & (d.Date === complete_date_actual);
+// });
 
-england_latest_growth = utla_growth_ts_data.filter(function (d) {
-  return (d.Name == "England") & (d.Date === complete_date_actual);
-});
+// england_latest_growth = utla_growth_ts_data.filter(function (d) {
+//   return (d.Name == "England") & (d.Date === complete_date_actual);
+// });
 
-d3.select("#wsx_growth_rate_latest").html(function (d) {
-  return (
-    wsx_latest_growth[0]["Label_2"].replace(
-      "In ",
-      "Overall in West Sussex, in "
-    ) +
-    " " +
-    wsx_latest_growth[0]["Label_1"] +
-    "."
-  );
-});
+// d3.select("#wsx_growth_rate_latest").html(function (d) {
+//   return (
+//     wsx_latest_growth[0]["Label_2"].replace(
+//       "In ",
+//       "Overall in West Sussex, in "
+//     ) +
+//     " " +
+//     wsx_latest_growth[0]["Label_1"] +
+//     "."
+//   );
+// });
 
 // UTLA slider
 // This is not great, but it takes the number of unique dates and recreates an array of dates from september 01

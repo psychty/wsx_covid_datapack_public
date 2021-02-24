@@ -55,6 +55,10 @@ header {
   z-index: 100;
 }
 
+.place_holder {
+  background: #b8dbff;
+}
+
 /* navigation */
 nav {
   display: flex;

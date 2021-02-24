@@ -79,24 +79,6 @@ var ltla = $.ajax({
 });
 
 var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/england_cumulative.json", false);
-request.send(null);
-var england_cumulative_text_obj = JSON.parse(request.responseText);
-
-d3.select("#england_rate_text").html(function (d) {
-  return england_cumulative_text_obj;
-});
-
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/wsx_cumulative_rolling_label.json", false);
-request.send(null);
-var wsx_cumulative_text_obj = JSON.parse(request.responseText);
-
-d3.select("#west_sussex_cumulative_text").html(function (d) {
-  return wsx_cumulative_text_obj;
-});
-
-var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/percentage_change_bins.json", false);
 request.send(null);
 
