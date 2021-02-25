@@ -1759,6 +1759,13 @@ growth_rate_utla %>%
   write_lines(paste0(output_directory_x,'/utla_recent_growth.json'))
 
 growth_rate_utla %>% 
+  filter(Date == ccomplete_date) %>%
+  filteer(Name %in% c('West Sussex', 'England'))
+  select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2)# %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/wsx_eng_rate_change.json'))
+
+growth_rate_utla %>% 
   filter(Date >= '2021-01-01') %>%
   select(Date) %>% 
   unique() %>% 
@@ -2193,9 +2200,13 @@ positivity_worked %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/positivity_df.json'))
 
-positivity_worked %>% 
+
+positivity_worked <- positivity_worked %>% 
   ungroup() %>% 
-  filter(!is.na(Seven_day_PCR_tested_individuals)) %>% 
+  mutate(Date = as.Date(Date)) 
+
+positivity_worked %>% 
+  filter(Date <= complete_date) %>% 
   filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 14)) %>% 
   mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Date_label) %>% 
