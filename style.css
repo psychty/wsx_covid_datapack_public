@@ -126,7 +126,7 @@ nav {
 
 #ltla_restrictions_map {
   height: 50vh;
-  width: 600px;
+  width: calc(100% - 50px);
   margin: auto;
   z-index: 1;
   /* background: red; */
@@ -134,28 +134,35 @@ nav {
 
 #ltla_primary_schools_map {
   height: 50vh;
-  width: 600px;
+  width: calc(100% - 50px);
+  margin: auto;
+  z-index: 1;
+}
+
+#msoa_map_vaccine {
+  height: 600px;
+  width: calc(100% - 50px);
   margin: auto;
   z-index: 1;
 }
 
 #msoa_map_place {
   height: 600px;
-  width: 900px;
+  width: calc(100% - 50px);
   margin: auto;
   z-index: 1;
 }
 
 #rate_map_1 {
   height: 600px;
-  width: 800px;
+  width: calc(100% - 50px);
   margin: auto;
   z-index: 1;
 }
 
 #rate_map_2 {
   height: 600px;
-  width: 800px;
+  width: calc(100% - 50px);
   margin: auto;
   z-index: 1;
 }
@@ -245,35 +252,36 @@ td {
 @media screen and (max-width: 1400px) {
   #ltla_restrictions_map {
     height: 550px;
-    width: 550px;
   }
 }
 
 @media screen and (max-width: 1400px) {
   #ltla_primary_schools_map {
     height: 550px;
-    width: 550px;
   }
 }
 
 @media screen and (max-width: 1400px) {
   #msoa_map_place {
-    height: 550px;
-    width: 550px;
+    height: 400px;
+  }
+}
+
+@media screen and (max-width: 1400px) {
+  #msoa_map_vaccine {
+    height: 500px;
   }
 }
 
 @media screen and (max-width: 1400px) {
   #rate_map_1 {
     height: 550px;
-    width: 550px;
   }
 }
 
 @media screen and (max-width: 1400px) {
   #rate_map_2 {
     height: 550px;
-    width: 550px;
   }
 }
 
