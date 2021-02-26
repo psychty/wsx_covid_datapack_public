@@ -14,7 +14,24 @@ calls_vaccine_webpage <- grep('weekly-announced-vaccinations', calls_vaccine_web
 
 download.file(calls_vaccine_webpage, paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'), mode = 'wb')
 
-vaccine_published_date <- as.Date('2021-02-25')
+
+vaccine_meta <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+                                      sheet = 'Contents',
+                                      skip = 1,
+                                      n_max = 7,
+                           col_names = c('item', 'description'))
+
+as.character(vaccine_meta %>% 
+  filter(item == 'Published:') %>% 
+  select(description)) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccine_update_date.json'))
+
+as.character(vaccine_meta %>% 
+               filter(item == 'Period:') %>% 
+               select(description)) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccine_administered_date.json'))
 
 # LTLA vaccine data ####
 
@@ -27,10 +44,28 @@ vaccine_df_ltla <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccin
   left_join(mye_total, by = c('LTLA_code' = 'Code')) %>% 
   mutate(Rate_age_known_per_100000 = pois.exact(Total_where_age_known, Population)[[3]]*100000) %>% 
   mutate(Rate_age_known_lcl = pois.exact(Total_where_age_known, Population)[[4]]*100000) %>% 
-  mutate(Rate_age_known_ucl = pois.exact(Total_where_age_known, Population)[[5]]*100000) 
+  mutate(Rate_age_known_ucl = pois.exact(Total_where_age_known, Population)[[5]]*100000) %>% 
+  rename(Name = LTLA_name)
+
+
+vaccine_df_wsx <-vaccine_df_ltla %>% 
+  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
+  select(Total_where_age_known) %>% 
+  summarise(Total_where_age_known = sum(Total_where_age_known)) %>% 
+  mutate(Name = 'West Sussex',
+         Code = 'E10000032') %>% 
+  left_join(mye_total, by = 'Code') %>% 
+  mutate(Rate_age_known_per_100000 = pois.exact(Total_where_age_known, Population)[[3]]*100000) %>% 
+  mutate(Rate_age_known_lcl = pois.exact(Total_where_age_known, Population)[[4]]*100000) %>% 
+  mutate(Rate_age_known_ucl = pois.exact(Total_where_age_known, Population)[[5]]*100000)
+  
 
 vaccine_df_ltla %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing'))
+  filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+  bind_rows(vaccine_df_wsx) %>% 
+  select(Name, Total_where_age_known, Rate_age_known_per_100000) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
 
 lad_boundary <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
   filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing')) %>% 
