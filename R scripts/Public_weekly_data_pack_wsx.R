@@ -179,7 +179,7 @@ p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(
   mutate(Previous_7_days_sum = lag(Rolling_7_day_new_cases, 7)) %>% 
   ungroup()
 
-rm(daily_cases, Areas, Dates, first_date, mye_total, area_code_names, daily_cases_reworked)
+rm(daily_cases, Areas, Dates, first_date, area_code_names, daily_cases_reworked)
 
 p12_test_df_2 <- p12_test_df_raw %>% 
   group_by(Name) %>% 
