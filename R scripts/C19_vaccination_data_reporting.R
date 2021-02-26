@@ -37,7 +37,7 @@ as.character(vaccine_meta %>%
 
 mye_ages_70_plus <- mye_ages %>% 
   filter(Age %in% c('70-74 years', '75-79 years', '80+ years')) %>% 
-  group_by(Name, Code, Type) %>% 
+  group_by(Code, Type) %>% 
   summarise(Population_70plus = sum(Population))
 
 # LTLA vaccine data ####
@@ -190,7 +190,7 @@ row.names(vaccine_df_msoa) <- df$ID
 # Then use df as the second argument to the spatial dataframe conversion function:
 MSOA_boundary <- SpatialPolygonsDataFrame(MSOA_boundary, vaccine_df_msoa)  
 
-geojson_write(ms_simplify(geojson_json(MSOA_boundary), keep = 0.2), file = paste0(output_directory_x, '/msoa_covid_vaccine_latest.geojson'))
+geojson_write(ms_simplify(geojson_json(MSOA_boundary), keep = 0.6), file = paste0(output_directory_x, '/msoa_covid_vaccine_latest.geojson'))
 
 MSOA_boundary_gg <- MSOA_boundary %>%
   fortify(region = "MSOA11CD") %>%
