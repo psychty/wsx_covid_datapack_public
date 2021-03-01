@@ -1,13 +1,13 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","2,814","4,376.3","259th","Decile 9","28","43.5","293rd","10% of authorities
-with lowest rate","seven days to 23 February"
-"Arun","7,828","4,869.4","219th","Decile 7","194","120.7","101st","Decile 4","seven days to 23 February"
-"Chichester","4,699","3,879.3","274th","Decile 9","69","57.0","256th","Decile 9","seven days to 23 February"
-"Crawley","7,574","6,737.9","111th","Decile 4","122","108.5","121st","Decile 4","seven days to 23 February"
-"Horsham","5,473","3,806.2","278th","Decile 9","52","36.2","303rd","10% of authorities
-with lowest rate","seven days to 23 February"
-"Mid Sussex","6,618","4,382.1","258th","Decile 9","119","78.8","192nd","Decile 7","seven days to 23 February"
-"Worthing","5,079","4,593.5","243rd","Decile 8","114","103.1","138th","Decile 5","seven days to 23 February"
-"West Sussex","40,085","4,639.6","-","-",NA,NA,NA,NA,NA
-"South East region","518,936","5,652.8","-","-",NA,NA,NA,NA,NA
-"England","3,658,352","6,499.5","-","-",NA,NA,NA,NA,NA
+"Adur","2,816","4,379.4","259th","Decile 9","28","43.5","287th","10% of authorities
+with lowest rate","seven days to 24 February"
+"Arun","7,846","4,880.6","219th","Decile 7","176","109.5","118th","Decile 4","seven days to 24 February"
+"Chichester","4,700","3,880.2","274th","Decile 9","63","52.0","258th","Decile 9","seven days to 24 February"
+"Crawley","7,585","6,747.7","111th","Decile 4","120","106.8","123rd","Decile 4","seven days to 24 February"
+"Horsham","5,476","3,808.3","278th","Decile 9","47","32.7","304th","10% of authorities
+with lowest rate","seven days to 24 February"
+"Mid Sussex","6,620","4,383.5","258th","Decile 9","108","71.5","196th","Decile 7","seven days to 24 February"
+"Worthing","5,084","4,598.0","243rd","Decile 8","122","110.3","114th","Decile 4","seven days to 24 February"
+"West Sussex","40,127","4,644.4","-","-",NA,NA,NA,NA,NA
+"South East region","519,448","5,658.4","-","-",NA,NA,NA,NA,NA
+"England","3,663,090","6,507.9","-","-",NA,NA,NA,NA,NA
