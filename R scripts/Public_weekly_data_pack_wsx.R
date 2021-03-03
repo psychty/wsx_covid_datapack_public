@@ -2193,13 +2193,15 @@ positivity_worked <- positivity_worked_raw %>%
   mutate(Perc_change_on_individuals_tested = replace_na(Perc_change_on_individuals_tested, 0)) %>% 
   mutate(Perc_change_on_lfd_tests = replace_na(Perc_change_on_lfd_tests, 0)) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
-  arrange(Name, Date) 
+  arrange(Name, Date) %>% 
+  mutate(Date = as.Date(Date)) %>% 
+  mutate(Date_label = format(Date, '%d %b %y'))
 
 positivity_worked %>%
-  select(!c(Date, Code)) %>% 
+  filter(Date <= complete_date) %>% 
+  select(!c(Date, Code, newLFDTests, LFD_7_day_tests, Perc_change_on_lfd_tests)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/positivity_df.json'))
-
 
 positivity_worked <- positivity_worked %>% 
   ungroup() %>% 
@@ -2207,12 +2209,35 @@ positivity_worked <- positivity_worked %>%
 
 positivity_worked %>% 
   filter(Date <= complete_date) %>% 
-  filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 14)) %>% 
+  filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 14)| Date == min(Date)) %>% 
   mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Date_label) %>% 
   unique() %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/test_dates.json'))
+
+positivity_worked %>%
+  filter(Date >= '2020-10-21') %>% 
+  mutate(LFD_7_day_tests = replace_na(LFD_7_day_tests, 0)) %>% 
+  select(!c(Date, Code, Seven_day_PCR_tested_individuals, Seven_day_PCR_positivity, Perc_change_on_individuals_tested)) %>%
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/lfd_df.json'))
+
+positivity_worked %>% 
+  filter(Date >= '2020-10-21') %>% 
+  # filter(Date <= complete_date) %>% 
+  filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 7)| Date == min(Date)) %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  select(Date_label) %>% 
+  unique() %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/lfd_test_dates.json'))
+
+# LFD export - perhaps the positivity should be separate.
+
+# lfd_tests_figure
+
+
 
 library(lemon)
 

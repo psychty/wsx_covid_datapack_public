@@ -58,7 +58,6 @@ d3.select("#select_line_tested_button")
   });
 
 // Create svgs
-// Daily cases bar chart
 var svg_pcr_tested_figure = d3
   .select("#pcr_tested_figure")
   .append("svg")
@@ -109,7 +108,7 @@ var bars_7_day_pcr_chosen = test_df.filter(function (d) {
 var x_pcr_tested = d3
   .scaleBand()
   .domain(pcr_tested_dates)
-  .range([0, width_hm - 65]);
+  .range([0, width_hm - 80]);
 
 var xAxis_pcr_tested = svg_pcr_tested_figure
   .append("g")
@@ -142,6 +141,45 @@ var yAxis_pcr_tested = svg_pcr_tested_figure
 
 yAxis_pcr_tested.selectAll("text").style("font-size", ".8rem");
 
+var tooltip_tested_pcr = d3
+  .select("#pcr_tested_figure")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", ".7rem");
+
+var showTooltip_tested_pcr = function (d) {
+  tooltip_tested_pcr
+    .html(
+      "<h5>" +
+        d.Name +
+        " " +
+        d.Date_label +
+        "</h5><p class = 'tt_text'>In the seven days to " +
+        d.Date_label +
+        ", " +
+        d3.format(",.0f")(d.Seven_day_PCR_tested_individuals) +
+        " people were tested for COVID-19 using the PCR testing.</p><p class = 'tt_text'>Of these, " +
+        d.Seven_day_PCR_positivity +
+        "% of those tested received a positivie result.</p>"
+    )
+    .style("opacity", 1)
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("opacity", 1)
+    .style("visibility", "visible");
+};
+
+var mouseleave_tested_pcr = function (d) {
+  tooltip_tested_pcr.style("opacity", 0).style("visibility", "hidden");
+};
+
 var weekly_pcr_tested_bars = svg_pcr_tested_figure
   .selectAll("mybar")
   .data(bars_7_day_pcr_chosen)
@@ -160,7 +198,9 @@ var weekly_pcr_tested_bars = svg_pcr_tested_figure
   .attr("fill", function (d) {
     return "#a35112";
   })
-  .style("opacity", 1);
+  .style("opacity", 1)
+  .on("mousemove", showTooltip_tested_pcr)
+  .on("mouseout", mouseleave_tested_pcr);
 
 // ! on change
 function update_pcr_tested() {
@@ -224,4 +264,225 @@ d3.select("#select_line_tested_button").on("change", function (d) {
     .select("#select_line_tested_button")
     .property("value");
   update_pcr_tested();
+});
+
+// ! LFD tests
+
+// This will be to highlight a particular line on the figure (and show some key figures)
+d3.select("#select_line_lfd_tests_button")
+  .selectAll("myOptions")
+  .data(areas_1a)
+  .enter()
+  .append("option")
+  .text(function (d) {
+    return d;
+  })
+  .attr("value", function (d) {
+    return d;
+  });
+
+// Create svgs
+var svg_lfd_tests_figure = d3
+  .select("#lfd_tests_figure")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_line)
+  .append("g")
+  .attr("transform", "translate(" + 80 + "," + 10 + ")");
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/lfd_df.json", false);
+request.send(null);
+var lfd_test_df = JSON.parse(request.responseText); // parse the fetched json data into a variable
+
+var lfd_tests_dates = d3
+  .map(lfd_test_df, function (d) {
+    return d.Date_label;
+  })
+  .keys();
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/lfd_test_dates.json", false);
+request.send(null);
+var lfd_test_data_dates = JSON.parse(request.responseText).map(function (d) {
+  return d.Date_label;
+});
+
+// Retrieve the selected area name
+var selected_lfd_tests_area = d3
+  .select("#select_line_lfd_tests_button")
+  .property("value");
+
+// Update text based on selected area
+d3.select("#selected_pcr_tested_bars_1_compare_title").html(function (d) {
+  return (
+    "Number of LFD (Lateral flow device) tests in the previous 7 days; " +
+    selected_lfd_tests_area +
+    "; up to " +
+    complete_date +
+    " as at " +
+    data_refreshed_date
+  );
+});
+
+var bars_7_day_lfd_chosen = lfd_test_df.filter(function (d) {
+  return d.Name === selected_lfd_tests_area;
+});
+
+var x_lfd_tests = d3
+  .scaleBand()
+  .domain(lfd_tests_dates)
+  .range([0, width_hm - 80]);
+
+var xAxis_lfd_tests = svg_lfd_tests_figure
+  .append("g")
+  .attr("transform", "translate(0," + (height_line - 80) + ")")
+  .call(d3.axisBottom(x_lfd_tests).tickValues(lfd_test_data_dates));
+
+xAxis_lfd_tests
+  .selectAll("text")
+  .attr(
+    "transform",
+    "translate(-" + (x_lfd_tests.bandwidth() + 5) + ",10)rotate(-90)"
+  )
+  .style("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+var y_lfd_tests = d3
+  .scaleLinear()
+  .domain([
+    0,
+    d3.max(bars_7_day_lfd_chosen, function (d) {
+      return +d.LFD_7_day_tests;
+    }),
+  ])
+  .range([height_line - 80, 0])
+  .nice();
+
+var yAxis_lfd_tests = svg_lfd_tests_figure
+  .append("g")
+  .call(d3.axisLeft(y_lfd_tests));
+
+yAxis_lfd_tests.selectAll("text").style("font-size", ".8rem");
+
+var tooltip_lfd_tests = d3
+  .select("#lfd_tests_figure")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", ".7rem");
+
+var showTooltip_lfd_tests = function (d) {
+  tooltip_lfd_tests
+    .html(
+      "<h5>" +
+        d.Name +
+        " " +
+        d.Date_label +
+        "</h5><p class = 'tt_text'>In the seven days to " +
+        d.Date_label +
+        ", there were " +
+        d3.format(",.0f")(d.LFD_7_day_tests) +
+        " lateral flow device tests for COVID-19.</p>"
+    )
+    .style("opacity", 1)
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("opacity", 1)
+    .style("visibility", "visible");
+};
+
+var mouseleave_lfd_tests = function (d) {
+  tooltip_lfd_tests.style("opacity", 0).style("visibility", "hidden");
+};
+
+var weekly_lfd_tests_bars = svg_lfd_tests_figure
+  .selectAll("mybar")
+  .data(bars_7_day_lfd_chosen)
+  .enter()
+  .append("rect")
+  .attr("x", function (d) {
+    return x_lfd_tests(d.Date_label);
+  })
+  .attr("y", function (d) {
+    return y_lfd_tests(d.LFD_7_day_tests);
+  })
+  .attr("width", x_lfd_tests.bandwidth())
+  .attr("height", function (d) {
+    return height_line - 80 - y_lfd_tests(d.LFD_7_day_tests);
+  })
+  .attr("fill", function (d) {
+    return "#0a75ad";
+  })
+  .style("opacity", 1)
+  .on("mousemove", showTooltip_lfd_tests)
+  .on("mouseout", mouseleave_lfd_tests);
+
+// ! on change
+function update_lfd_tests() {
+  // Retrieve the selected area name
+  var selected_lfd_tests_area = d3
+    .select("#select_line_lfd_tests_button")
+    .property("value");
+
+  // Update text based on selected area
+  d3.select("#selected_pcr_tested_bars_1_compare_title").html(function (d) {
+    return (
+      "Number of LFD (Lateral flow device) tests in the previous 7 days; " +
+      selected_lfd_tests_area +
+      "; up to " +
+      complete_date +
+      " as at " +
+      data_refreshed_date
+    );
+  });
+
+  var bars_7_day_lfd_chosen = lfd_test_df.filter(function (d) {
+    return d.Name === selected_lfd_tests_area;
+  });
+
+  y_lfd_tests
+    .domain([
+      0,
+      d3.max(bars_7_day_lfd_chosen, function (d) {
+        return +d.LFD_7_day_tests;
+      }),
+    ])
+    .nice();
+
+  yAxis_lfd_tests.transition().duration(1000).call(d3.axisLeft(y_lfd_tests));
+
+  yAxis_lfd_tests.selectAll("text").style("font-size", ".8rem");
+
+  weekly_lfd_tests_bars
+    .data(bars_7_day_lfd_chosen)
+    .transition()
+    .duration(1000)
+    .attr("x", function (d) {
+      return x_lfd_tests(d.Date_label);
+    })
+    .attr("y", function (d) {
+      return y_lfd_tests(d.LFD_7_day_tests);
+    })
+    .attr("width", x_lfd_tests.bandwidth())
+    .attr("height", function (d) {
+      return height_line - 80 - y_lfd_tests(d.LFD_7_day_tests);
+    })
+    .attr("fill", function (d) {
+      return "#0a75ad";
+    })
+    .style("opacity", 1);
+}
+
+d3.select("#select_line_lfd_tests_button").on("change", function (d) {
+  var selected_lfd_tests_area = d3
+    .select("#select_line_lfd_tests_button")
+    .property("value");
+  update_lfd_tests();
 });
