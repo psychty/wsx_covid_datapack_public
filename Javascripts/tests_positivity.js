@@ -314,7 +314,7 @@ var selected_lfd_tests_area = d3
   .property("value");
 
 // Update text based on selected area
-d3.select("#selected_pcr_tested_bars_1_compare_title").html(function (d) {
+d3.select("#selected_lfd_tests_bars_1_compare_title").html(function (d) {
   return (
     "Number of LFD (Lateral flow device) tests in the previous 7 days; " +
     selected_lfd_tests_area +
@@ -432,7 +432,7 @@ function update_lfd_tests() {
     .property("value");
 
   // Update text based on selected area
-  d3.select("#selected_pcr_tested_bars_1_compare_title").html(function (d) {
+  d3.select("#selected_lfd_tests_bars_1_compare_title").html(function (d) {
     return (
       "Number of LFD (Lateral flow device) tests in the previous 7 days; " +
       selected_lfd_tests_area +
