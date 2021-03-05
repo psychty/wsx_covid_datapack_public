@@ -36,11 +36,11 @@ function loadTable_ltla_vaccine(vaccine_at_a_glance) {
   for (let item of vaccine_at_a_glance) {
     dataHTML += `<tr><td>${item.Name}</td><td>${d3.format(",.0f")(
       item.Total_where_age_known
-    )}</td><td>${d3.format(",.1f")(
-      item.Rate_age_known_per_100000
-    )}</td><td>${d3.format(",.0f")(
-      item.Individuals_70_plus
-    )}</td><td>${d3.format(".0%")(item.Proportion_70_plus)}</td></tr>`;
+    )}</td><td>${d3.format(".1%")(
+      item.Proportion_age_known
+    )}</td><td>${d3.format(",.0f")(item.Age_65_and_over)}</td><td>${d3.format(
+      ".1%"
+    )(item.Proportion_65_plus)}</td></tr>`;
   }
 
   tableBody.innerHTML = dataHTML;
@@ -117,7 +117,6 @@ function style_msoa_vaccine_total(feature) {
 }
 
 // msoa_map_vaccine;
-
 $.when(msoa_vaccine_total).done(function () {
   var msoa_map_vaccine_leaf = L.map("msoa_map_vaccine");
 
@@ -138,8 +137,15 @@ $.when(msoa_vaccine_total).done(function () {
         layer.feature.properties.LTLA_name +
         ")</b></p><p>A total of <b>" +
         d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
-        "</b> people have received at least one dose of a COVID-19 vaccine.</p><p>Data correct as at " +
-        vaccine_update_date
+        "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+        " </b>of the estimated population in this area.</p><p>A total of <b>" +
+        d3.format(",.0f")(layer.feature.properties.Age_65_and_over) +
+        " </b>people aged 65+ have received at least one dose (<b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_65_plus) +
+        "</b>).</p><p>Data correct as at " +
+        vaccine_update_date +
+        ".</p>"
       );
     });
 
