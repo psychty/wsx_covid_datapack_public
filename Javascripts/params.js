@@ -6,6 +6,10 @@ var width_hm = document.getElementById("content_size").offsetWidth * 0.75 - 50,
   incomplete_colour = "#999999",
   height_line = 410;
 
+if (width_hm < 400) {
+  width_hm = 400;
+}
+
 var width_sm = width_hm / 3 - 10;
 
 // We dont want the small plots to be less than 325 pixels wide so this says if the
@@ -123,6 +127,14 @@ var first_case_period = case_dates_df.filter(function (d) {
 
 var last_case_period = case_dates_df.filter(function (d) {
   return d.Item === "last_case_period";
+})[0]["Label"];
+
+var last_pcr_test_period = case_dates_df.filter(function (d) {
+  return d.Item === "last_pcr_test_period";
+})[0]["Label"];
+
+var last_lfd_test_period = case_dates_df.filter(function (d) {
+  return d.Item === "last_lfd_test_period";
 })[0]["Label"];
 
 // console.log(first_case_period, last_case_period);

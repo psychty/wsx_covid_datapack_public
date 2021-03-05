@@ -106,6 +106,25 @@ xAxis_daily_cases
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
 
+if (width_hm < 750) {
+  xAxis_daily_cases.call(
+    d3
+      .axisBottom(x_daily_cases)
+      .tickValues([first_case_period, last_case_period])
+  );
+
+  xAxis_daily_cases
+    .selectAll("text")
+    .attr(
+      "transform",
+      "translate(-" + x_daily_cases.bandwidth() + ",10)rotate(0)"
+    )
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
+
 x_summary = case_summary.filter(function (d, i) {
   return d.Name === selected_figure_1a_area_option;
 });

@@ -106,6 +106,20 @@ xAxis_asr_1
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
 
+if (width_hm < 750) {
+  xAxis_asr_1.call(
+    d3.axisBottom(x_asr_1).tickValues([first_case_period, last_pcr_test_period])
+  );
+
+  xAxis_asr_1
+    .selectAll("text")
+    .attr("transform", "translate(-" + x_asr_1.bandwidth() + ",10)rotate(0)")
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
+
 y_asr_1_ts = d3
   .scaleLinear()
   .domain([
@@ -442,22 +456,6 @@ function update_asr_1() {
       return d.Age;
     })
     .entries(age_spec_1_chosen);
-
-  x_asr_1.domain(dates_asr);
-
-  xAxis_asr_1
-    .transition()
-    .duration(500)
-    .call(d3.axisBottom(x_asr_1).tickValues(chosen_dates_asr_ticks));
-
-  xAxis_asr_1
-    .selectAll("text")
-    .attr(
-      "transform",
-      "translate(-" + (x_asr_1.bandwidth() + 15) + ",10)rotate(-90)"
-    )
-    .style("text-anchor", "end")
-    .style("font-size", ".8rem");
 
   y_asr_1_ts
     .domain([

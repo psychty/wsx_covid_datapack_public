@@ -192,6 +192,28 @@ xAxis_admissions
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
 
+var first_admission_period = admissions_dates[0];
+var last_admission_period = admissions_dates[admissions_dates.length - 1];
+
+if (width_hm < 750) {
+  xAxis_admissions.call(
+    d3
+      .axisBottom(x_daily_admissions)
+      .tickValues([first_admission_period, last_admission_period])
+  );
+
+  xAxis_admissions
+    .selectAll("text")
+    .attr(
+      "transform",
+      "translate(-" + x_daily_admissions.bandwidth() + ",10)rotate(0)"
+    )
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
+
 var y_daily_admissions = d3
   .scaleLinear()
   .domain([
@@ -477,6 +499,29 @@ xAxis_beds_occupied
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
 
+var first_bed_occupied_period = beds_ouccupied_dates[0];
+var last_bed_occupied_period =
+  beds_ouccupied_dates[beds_ouccupied_dates.length - 1];
+
+if (width_hm < 750) {
+  xAxis_beds_occupied.call(
+    d3
+      .axisBottom(x_daily_beds_occupied)
+      .tickValues([first_bed_occupied_period, last_bed_occupied_period])
+  );
+
+  xAxis_beds_occupied
+    .selectAll("text")
+    .attr(
+      "transform",
+      "translate(-" + x_daily_beds_occupied.bandwidth() + ",10)rotate(0)"
+    )
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
+
 var bed_type = ["Patients_occupying_non_mv_beds", "Patients_occupying_mv_beds"];
 
 var bed_type_label = d3
@@ -760,6 +805,32 @@ xAxis_beds_share_occupied
   )
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
+
+var first_bed_share_occupied_period = beds_share_ouccupied_dates[0];
+var last_bed_share_occupied_period =
+  beds_share_ouccupied_dates[beds_share_ouccupied_dates.length - 1];
+
+if (width_hm < 750) {
+  xAxis_beds_share_occupied.call(
+    d3
+      .axisBottom(x_daily_beds_share_occupied)
+      .tickValues([
+        first_bed_share_occupied_period,
+        last_bed_share_occupied_period,
+      ])
+  );
+
+  xAxis_beds_share_occupied
+    .selectAll("text")
+    .attr(
+      "transform",
+      "translate(-" + x_daily_beds_share_occupied.bandwidth() + ",10)rotate(0)"
+    )
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
 
 var bed_share_type = ["covid_19_patients", "other", "vacant"];
 

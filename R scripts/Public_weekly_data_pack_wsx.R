@@ -89,17 +89,6 @@ daily_cases <- read_csv('https://coronavirus.data.gov.uk/downloads/csv/coronavir
   left_join(mye_total, by = 'Code') %>% 
   ungroup()
 
-# If no specimens are taken on a day, there is no row for it, and it would be missing data. Indeed, the only zeros are on the latest day. We need to therefore backfill and say if no date exists where it should, then add it, with the cumulative total and zero for new cases.
-
-# One way to do this is to create a new dataframe with a row for each area and date, and left join the daily_cases data to it.
-first_date <- min(daily_cases$Date)
-last_case_date <- max(daily_cases$Date)
-
-data.frame(Item = 'first_case_period', Label =  format(first_date, '%d %b %y')) %>% 
-  add_row(Item = 'last_case_period', Label =  format(last_case_date, '%d %b %y')) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/case_date_labels.json'))
-
 # remotes::install_github("publichealthengland/coronavirus-dashboard-api-R-sdk")
 # install.packages("ukcovid19")
 library(ukcovid19)
@@ -120,6 +109,22 @@ query_structure <- list(
 last_date <- as.Date(last_update(filters = query_filters, structure = query_structure))
 # daily_cases <- get_data(filters = query_filters, structure = query_structure)
 # last_date <- as.Date('2020-08-26')
+# PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
+complete_date <- last_date - 5
+
+
+# If no specimens are taken on a day, there is no row for it, and it would be missing data. Indeed, the only zeros are on the latest day. We need to therefore backfill and say if no date exists where it should, then add it, with the cumulative total and zero for new cases.
+
+# One way to do this is to create a new dataframe with a row for each area and date, and left join the daily_cases data to it.
+first_date <- min(daily_cases$Date)
+last_case_date <- max(daily_cases$Date)
+
+data.frame(Item = 'first_case_period', Label =  format(first_date, '%d %b %y')) %>% 
+  add_row(Item = 'last_case_period', Label =  format(last_case_date, '%d %b %y')) %>% 
+  add_row(Item = 'last_lfd_test_period', Label =  format(last_case_date, '%d %b %y')) %>% 
+  add_row(Item = 'last_pcr_test_period', Label =  format(complete_date, '%d %b %y')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/case_date_labels.json'))
 
 Areas = daily_cases %>% 
   select(Name, Code, Type) %>% 
@@ -137,8 +142,7 @@ daily_cases_reworked <- data.frame(Name = rep(Areas$Name, length(Dates)), Code =
   filter(!is.na(Cumulative_cases)) %>% 
   mutate(Calculated_same_as_original = ifelse(Cumulative_cases == New_cumulative, 'Yaas', 'Negative'))
 
-# PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
-complete_date <- last_date - 5
+
 
 p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(Areas$Code, length(Dates)), Type = rep(Areas$Type, length(Dates)), check.names = FALSE) %>% 
   arrange(Name) %>% 
@@ -2198,8 +2202,9 @@ positivity_worked <- positivity_worked_raw %>%
   mutate(Date_label = format(Date, '%d %b %y'))
 
 positivity_worked %>%
-  filter(Date <= complete_date) %>% 
-  select(!c(Date, Code, newLFDTests, LFD_7_day_tests, Perc_change_on_lfd_tests)) %>% 
+  # filter(Date <= complete_date) %>% 
+  select(!c(Date, Code)) %>% 
+  mutate(LFD_7_day_tests = replace_na(LFD_7_day_tests, 0)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/positivity_df.json'))
 
@@ -2208,30 +2213,30 @@ positivity_worked <- positivity_worked %>%
   mutate(Date = as.Date(Date)) 
 
 positivity_worked %>% 
-  filter(Date <= complete_date) %>% 
-  filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 14)| Date == min(Date)) %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  select(Date_label) %>% 
-  unique() %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/test_dates.json'))
-
-positivity_worked %>%
-  filter(Date >= '2020-10-21') %>% 
-  mutate(LFD_7_day_tests = replace_na(LFD_7_day_tests, 0)) %>% 
-  select(!c(Date, Code, Seven_day_PCR_tested_individuals, Seven_day_PCR_positivity, Perc_change_on_individuals_tested)) %>%
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/lfd_df.json'))
-
-positivity_worked %>% 
-  filter(Date >= '2020-10-21') %>% 
-  # filter(Date <= complete_date) %>% 
+#  filter(Date <= complete_date) %>% 
   filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 7)| Date == min(Date)) %>% 
   mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(Date_label) %>% 
-  unique() %>% 
+  unique() %>%
   toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/lfd_test_dates.json'))
+  write_lines(paste0(output_directory_x, '/test_dates.json'))
+
+# positivity_worked %>%
+#   # filter(Date >= '2020-10-21') %>%
+#   mutate(LFD_7_day_tests = replace_na(LFD_7_day_tests, 0)) %>% 
+#   select(!c(Date, Code, Seven_day_PCR_tested_individuals, Seven_day_PCR_positivity, Perc_change_on_individuals_tested)) %>%
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/lfd_df.json'))
+# 
+# positivity_worked %>% 
+#   # filter(Date >= '2020-10-21') %>% 
+#   # filter(Date <= complete_date) %>% 
+#   filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 7)| Date == min(Date)) %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   select(Date_label) %>% 
+#   unique() %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/lfd_test_dates.json'))
 
 # LFD export - perhaps the positivity should be separate.
 

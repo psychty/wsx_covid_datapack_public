@@ -77,6 +77,8 @@ var pcr_tested_dates = d3
   })
   .keys();
 
+var first_test_period = pcr_tested_dates[0];
+
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/test_dates.json", false);
 request.send(null);
@@ -123,6 +125,25 @@ xAxis_pcr_tested
   )
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
+
+if (width_hm < 750) {
+  xAxis_pcr_tested.call(
+    d3
+      .axisBottom(x_pcr_tested)
+      .tickValues([first_test_period, last_pcr_test_period])
+  );
+
+  xAxis_pcr_tested
+    .selectAll("text")
+    .attr(
+      "transform",
+      "translate(-" + x_pcr_tested.bandwidth() + ",10)rotate(0)"
+    )
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
 
 var y_pcr_tested = d3
   .scaleLinear()
@@ -290,23 +311,23 @@ var svg_lfd_tests_figure = d3
   .append("g")
   .attr("transform", "translate(" + 80 + "," + 10 + ")");
 
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/lfd_df.json", false);
-request.send(null);
-var lfd_test_df = JSON.parse(request.responseText); // parse the fetched json data into a variable
+// var request = new XMLHttpRequest();
+// request.open("GET", "./Outputs/lfd_df.json", false);
+// request.send(null);
+// var lfd_test_df = JSON.parse(request.responseText); // parse the fetched json data into a variable
 
-var lfd_tests_dates = d3
-  .map(lfd_test_df, function (d) {
-    return d.Date_label;
-  })
-  .keys();
+// var lfd_tests_dates = d3
+//   .map(lfd_test_df, function (d) {
+//     return d.Date_label;
+//   })
+//   .keys();
 
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/lfd_test_dates.json", false);
-request.send(null);
-var lfd_test_data_dates = JSON.parse(request.responseText).map(function (d) {
-  return d.Date_label;
-});
+// var request = new XMLHttpRequest();
+// request.open("GET", "./Outputs/lfd_test_dates.json", false);
+// request.send(null);
+// var lfd_test_data_dates = JSON.parse(request.responseText).map(function (d) {
+//   return d.Date_label;
+// });
 
 // Retrieve the selected area name
 var selected_lfd_tests_area = d3
@@ -319,34 +340,53 @@ d3.select("#selected_lfd_tests_bars_1_compare_title").html(function (d) {
     "Number of LFD (Lateral flow device) tests in the previous 7 days; " +
     selected_lfd_tests_area +
     "; up to " +
-    complete_date +
+    latest_date +
     " as at " +
     data_refreshed_date
   );
 });
 
-var bars_7_day_lfd_chosen = lfd_test_df.filter(function (d) {
+var bars_7_day_lfd_chosen = test_df.filter(function (d) {
   return d.Name === selected_lfd_tests_area;
 });
 
 var x_lfd_tests = d3
   .scaleBand()
-  .domain(lfd_tests_dates)
-  .range([0, width_hm - 80]);
+  .domain(pcr_tested_dates)
+  .range([0, width_hm - 90]);
 
 var xAxis_lfd_tests = svg_lfd_tests_figure
   .append("g")
   .attr("transform", "translate(0," + (height_line - 80) + ")")
-  .call(d3.axisBottom(x_lfd_tests).tickValues(lfd_test_data_dates));
+  .call(d3.axisBottom(x_lfd_tests).tickValues(test_data_dates));
 
 xAxis_lfd_tests
   .selectAll("text")
   .attr(
     "transform",
-    "translate(-" + (x_lfd_tests.bandwidth() + 5) + ",10)rotate(-90)"
+    "translate(-" + (x_lfd_tests.bandwidth() + 15) + ",10)rotate(-90)"
   )
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
+
+if (width_hm < 750) {
+  xAxis_lfd_tests.call(
+    d3
+      .axisBottom(x_lfd_tests)
+      .tickValues([first_test_period, last_lfd_test_period])
+  );
+
+  xAxis_lfd_tests
+    .selectAll("text")
+    .attr(
+      "transform",
+      "translate(-" + x_lfd_tests.bandwidth() + ",10)rotate(0)"
+    )
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
 
 var y_lfd_tests = d3
   .scaleLinear()
@@ -437,13 +477,13 @@ function update_lfd_tests() {
       "Number of LFD (Lateral flow device) tests in the previous 7 days; " +
       selected_lfd_tests_area +
       "; up to " +
-      complete_date +
+      latest_date +
       " as at " +
       data_refreshed_date
     );
   });
 
-  var bars_7_day_lfd_chosen = lfd_test_df.filter(function (d) {
+  var bars_7_day_lfd_chosen = test_df.filter(function (d) {
     return d.Name === selected_lfd_tests_area;
   });
 

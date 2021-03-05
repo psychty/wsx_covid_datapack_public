@@ -89,9 +89,7 @@ var chosen_m1_df = deaths_by_week_all.filter(function (d) {
 });
 
 var chosen_latest = chosen_m1_df.filter(function (d) {
-  return (
-    d.Week_number === ons_mortality_figures_dates[0]['Week_number']
-  );
+  return d.Week_number === ons_mortality_figures_dates[0]["Week_number"];
 });
 
 // var chosen_latest = chosen_m1_df.filter(function (d) {
@@ -162,7 +160,6 @@ weeks = chosen_m1_df.map(function (d) {
   return d.Date_label;
 });
 
-
 // append the svg object to the body of the page
 var svg_fg_mortality_1 = d3
   .select("#covid_non_covid_mortality_all_settings")
@@ -188,6 +185,25 @@ xAxis_mortality_1
   .attr("transform", "translate(-10,10)rotate(-90)")
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
+
+var first_mortality_period = weeks[0];
+var last_mortality_period = weeks[weeks.length - 1];
+
+if (width_hm < 750) {
+  xAxis_mortality_1.call(
+    d3
+      .axisBottom(x_m1)
+      .tickValues([first_mortality_period, last_mortality_period])
+  );
+
+  xAxis_mortality_1
+    .selectAll("text")
+    .attr("transform", "rotate(0)")
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
 
 var y_m1_ts = d3
   .scaleLinear()
@@ -289,10 +305,7 @@ svg_fg_mortality_1
   .attr("y", 85)
   .attr("text-anchor", "start")
   .style("font-size", ".8rem")
-  .text(
-    "so far up to " +
-      ons_mortality_figures_dates[0].Occurring_week_ending
-  );
+  .text("so far up to " + ons_mortality_figures_dates[0].Occurring_week_ending);
 
 svg_fg_mortality_1
   .append("text")
@@ -380,16 +393,14 @@ svg_fg_mortality_1
       " of all deaths."
   );
 
-///// Figure 2
+//! Figure 2
 
 var chosen_m2_df = deaths_by_week_ch.filter(function (d) {
   return d.Name === chosen_m1_area;
 });
 
 var chosen_latest_ch = chosen_m2_df.filter(function (d) {
-  return (
-    d.Week_number === ons_mortality_figures_dates[0]['Week_number']
-  );
+  return d.Week_number === ons_mortality_figures_dates[0]["Week_number"];
 });
 
 // Create a tooltip for the lines and functions for displaying the tooltips as well as highlighting certain lines.
@@ -468,6 +479,22 @@ xAxis_mortality_2
   .attr("transform", "translate(-10,10)rotate(-90)")
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
+
+if (width_hm < 750) {
+  xAxis_mortality_2.call(
+    d3
+      .axisBottom(x_m2)
+      .tickValues([first_mortality_period, last_mortality_period])
+  );
+
+  xAxis_mortality_2
+    .selectAll("text")
+    .attr("transform", "rotate(0)")
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
 
 var y_m2_ts = d3
   .scaleLinear()
@@ -575,10 +602,7 @@ svg_fg_mortality_2
   .attr("y", 85)
   .attr("text-anchor", "start")
   .style("font-size", ".8rem")
-  .text(
-    "so far up to " +
-      ons_mortality_figures_dates[0].Occurring_week_ending
-  );
+  .text("so far up to " + ons_mortality_figures_dates[0].Occurring_week_ending);
 
 svg_fg_mortality_2
   .append("text")
@@ -676,9 +700,7 @@ function update_m12() {
   });
 
   var chosen_latest = chosen_m1_df.filter(function (d) {
-    return (
-      d.Week_number === ons_mortality_figures_dates[0]['Week_number']
-    );
+    return d.Week_number === ons_mortality_figures_dates[0]["Week_number"];
   });
 
   var chosen_m2_df = deaths_by_week_ch.filter(function (d) {
@@ -686,9 +708,7 @@ function update_m12() {
   });
 
   var chosen_latest_ch = chosen_m2_df.filter(function (d) {
-    return (
-      d.Week_number === ons_mortality_figures_dates[0]['Week_number']
-    );
+    return d.Week_number === ons_mortality_figures_dates[0]["Week_number"];
   });
 
   var chosen_limits = deaths_limits_by_area.filter(function (d) {
@@ -853,8 +873,7 @@ function update_m12() {
     .attr("text-anchor", "start")
     .style("font-size", ".8rem")
     .text(
-      "so far up to " +
-        ons_mortality_figures_dates[0].Occurring_week_ending
+      "so far up to " + ons_mortality_figures_dates[0].Occurring_week_ending
     );
 
   svg_fg_mortality_1
@@ -1098,8 +1117,7 @@ function update_m12() {
     .attr("text-anchor", "start")
     .style("font-size", ".8rem")
     .text(
-      "so far up to " +
-        ons_mortality_figures_dates[0].Occurring_week_ending
+      "so far up to " + ons_mortality_figures_dates[0].Occurring_week_ending
     );
 
   svg_fg_mortality_2

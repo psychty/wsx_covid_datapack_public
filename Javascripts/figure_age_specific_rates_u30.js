@@ -100,6 +100,20 @@ xAxis_asr_u30
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
 
+if (width_hm < 750) {
+  xAxis_asr_u30.call(
+    d3.axisBottom(x_asr_1).tickValues([first_case_period, last_pcr_test_period])
+  );
+
+  xAxis_asr_u30
+    .selectAll("text")
+    .attr("transform", "translate(-" + x_asr_u30.bandwidth() + ",10)rotate(0)")
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
+
 y_asr_u30_ts = d3
   .scaleLinear()
   .domain([
@@ -406,21 +420,21 @@ function update_asr_u30() {
     })
     .entries(age_spec_u30_chosen);
 
-  x_asr_u30.domain(dates_u30_asr);
+  // x_asr_u30.domain(dates_u30_asr);
 
-  xAxis_asr_u30
-    .transition()
-    .duration(500)
-    .call(d3.axisBottom(x_asr_u30).tickValues(chosen_dates_u30_asr_ticks));
+  // xAxis_asr_u30
+  //   .transition()
+  //   .duration(500)
+  //   .call(d3.axisBottom(x_asr_u30).tickValues(chosen_dates_u30_asr_ticks));
 
-  xAxis_asr_u30
-    .selectAll("text")
-    .attr(
-      "transform",
-      "translate(-" + (x_asr_u30.bandwidth() + 10) + ",10)rotate(-90)"
-    )
-    .style("text-anchor", "end");
-  // .style("font-size", "10px");
+  // xAxis_asr_u30
+  //   .selectAll("text")
+  //   .attr(
+  //     "transform",
+  //     "translate(-" + (x_asr_u30.bandwidth() + 10) + ",10)rotate(-90)"
+  //   )
+  //   .style("text-anchor", "end");
+  // // .style("font-size", "10px");
 
   y_asr_u30_ts
     .domain([
