@@ -9,6 +9,8 @@ window.onload = () => {
   loadTable_positivity(p_at_a_glance_all_ages);
 };
 
+var formatPercent = d3.format(".0%");
+
 d3.select("#positivity_text_1").html(function (d) {
   return (
     "The table below shows the number of individuals tested (using PCR tests) and the PCR positivity for West Sussex districts and the regional and national comparision for the seven days to " +
@@ -60,6 +62,15 @@ d3.select("#select_line_tested_button")
 // Create svgs
 var svg_pcr_tested_figure = d3
   .select("#pcr_tested_figure")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_line)
+  .append("g")
+  .attr("transform", "translate(" + 80 + "," + 10 + ")");
+
+// Create svgs
+var svg_pcr_positivity_figure = d3
+  .select("#pcr_positivity_figure")
   .append("svg")
   .attr("width", width_hm)
   .attr("height", height_line)
@@ -188,7 +199,7 @@ var showTooltip_tested_pcr = function (d) {
         d3.format(",.0f")(d.Seven_day_PCR_tested_individuals) +
         " people were tested for COVID-19 using the PCR testing.</p><p class = 'tt_text'>Of these, " +
         d.Seven_day_PCR_positivity +
-        "% of those tested received a positivie result.</p>"
+        "% of those tested received a positive result.</p>"
     )
     .style("opacity", 1)
     .style("top", event.pageY - 10 + "px")
@@ -222,6 +233,153 @@ var weekly_pcr_tested_bars = svg_pcr_tested_figure
   .style("opacity", 1)
   .on("mousemove", showTooltip_tested_pcr)
   .on("mouseout", mouseleave_tested_pcr);
+
+d3.select("#selected_pcr_positivity_1_compare_title").html(function (d) {
+  return (
+    "Proportion of people receiving a positive PCR (Polymerase chain reaction) result in the previous 7 days; " +
+    selected_pcr_tested_area +
+    "; up to " +
+    complete_date +
+    " as at " +
+    data_refreshed_date
+  );
+});
+
+var x_pcr_positivity = d3
+  .scaleBand()
+  .domain(pcr_tested_dates)
+  .range([0, width_hm - 80]);
+
+var xAxis_pcr_positivity = svg_pcr_positivity_figure
+  .append("g")
+  .attr("transform", "translate(0," + (height_line - 80) + ")")
+  .call(d3.axisBottom(x_pcr_positivity).tickValues(test_data_dates));
+
+xAxis_pcr_positivity
+  .selectAll("text")
+  .attr(
+    "transform",
+    "translate(-" + (x_pcr_positivity.bandwidth() + 15) + ",10)rotate(-90)"
+  )
+  .style("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+if (width_hm < 750) {
+  xAxis_pcr_positivity.call(
+    d3
+      .axisBottom(x_pcr_positivity)
+      .tickValues([first_test_period, last_pcr_test_period])
+  );
+
+  xAxis_pcr_positivity
+    .selectAll("text")
+    .attr(
+      "transform",
+      "translate(-" + x_pcr_positivity.bandwidth() + ",10)rotate(0)"
+    )
+    .style("text-anchor", function (d, i) {
+      return i % 2 ? "end" : "start";
+    })
+    .style("font-size", ".8rem");
+}
+
+var y_pcr_positivity = d3
+  .scaleLinear()
+  .domain([
+    0,
+    d3.max(bars_7_day_pcr_chosen, function (d) {
+      return +d.Seven_day_PCR_positivity;
+    }),
+  ])
+  .range([height_line - 80, 0])
+  .nice();
+
+var yAxis_pcr_positivity = svg_pcr_positivity_figure
+  .append("g")
+  .call(d3.axisLeft(y_pcr_positivity).tickFormat(formatPercent));
+
+yAxis_pcr_positivity.selectAll("text").style("font-size", ".8rem");
+
+var tooltip_pcr_positivity = d3
+  .select("#pcr_positivity_figure")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", ".7rem");
+
+var showTooltip_pcr_positivity = function (d) {
+  tooltip_pcr_positivity
+    .html(
+      "<h5>" +
+        d.Name +
+        " " +
+        d.Date_label +
+        "</h5><p class = 'tt_text'>In the seven days to " +
+        d.Date_label +
+        ", " +
+        d3.format(".1%")(d.Seven_day_PCR_positivity) +
+        " of people tested for COVID-19 using the PCR testing received at least one positive result.</p><p class = 'tt_text'>The number of individuals tested overall was  " +
+        d3.format(",.0f")(d.Seven_day_PCR_tested_individuals) +
+        "</p>"
+    )
+    .style("opacity", 1)
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("opacity", 1)
+    .style("visibility", "visible");
+};
+
+var mouseleave_pcr_positivity = function (d) {
+  tooltip_pcr_positivity.style("opacity", 0).style("visibility", "hidden");
+};
+
+var lines_pcr_positivity_1 = svg_pcr_positivity_figure
+  .append("path")
+  .datum(bars_7_day_pcr_chosen)
+  .attr("fill", "none")
+  .attr("stroke", "#000000")
+  .attr("stroke-width", 2)
+  .attr(
+    "d",
+    d3
+      .line()
+      .defined((d) => !isNaN(d.Seven_day_PCR_positivity))
+      .x(function (d) {
+        return (
+          x_pcr_positivity(d.Date_label) + x_pcr_positivity.bandwidth() / 2
+        );
+      })
+      .y(function (d) {
+        return y_pcr_positivity(d.Seven_day_PCR_positivity);
+      })
+  );
+
+var dots_pcr_positivity_1 = svg_pcr_positivity_figure
+  .selectAll("myCircles")
+  .data(bars_7_day_pcr_chosen)
+  .enter()
+  .append("circle")
+  .attr("cx", function (d) {
+    return x_pcr_positivity(d.Date_label) + x_pcr_positivity.bandwidth() / 2;
+  })
+  .attr("cy", function (d) {
+    return y_pcr_positivity(+d.Seven_day_PCR_positivity);
+  })
+  .attr("r", 1)
+  .style("fill", function (d) {
+    return "#000";
+  })
+  .attr("stroke", function (d) {
+    return "#000";
+  })
+  .on("mousemove", showTooltip_pcr_positivity)
+  .on("mouseout", mouseleave_pcr_positivity);
 
 // ! on change
 function update_pcr_tested() {
@@ -278,6 +436,52 @@ function update_pcr_tested() {
       return "#a35112";
     })
     .style("opacity", 1);
+
+  y_pcr_positivity
+    .domain([
+      0,
+      d3.max(bars_7_day_pcr_chosen, function (d) {
+        return +d.Seven_day_PCR_positivity;
+      }),
+    ])
+    .nice();
+
+  yAxis_pcr_positivity
+    .transition()
+    .duration(1000)
+    .call(d3.axisLeft(y_pcr_positivity).tickFormat(formatPercent));
+
+  yAxis_pcr_positivity.selectAll("text").style("font-size", ".8rem");
+
+  lines_pcr_positivity_1
+    .datum(bars_7_day_pcr_chosen)
+    .transition()
+    .duration(1000)
+    .attr(
+      "d",
+      d3
+        .line()
+        .defined((d) => !isNaN(d.Seven_day_PCR_positivity))
+        .x(function (d) {
+          return (
+            x_pcr_positivity(d.Date_label) + x_pcr_positivity.bandwidth() / 2
+          );
+        })
+        .y(function (d) {
+          return y_pcr_positivity(d.Seven_day_PCR_positivity);
+        })
+    );
+
+  dots_pcr_positivity_1
+    .data(bars_7_day_pcr_chosen)
+    .transition()
+    .duration(1000)
+    .attr("cx", function (d) {
+      return x_pcr_positivity(d.Date_label);
+    })
+    .attr("cy", function (d) {
+      return y_pcr_positivity(+d.Seven_day_PCR_positivity);
+    });
 }
 
 d3.select("#select_line_tested_button").on("change", function (d) {
