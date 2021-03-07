@@ -399,6 +399,17 @@ function update_pcr_tested() {
     );
   });
 
+  d3.select("#selected_pcr_positivity_1_compare_title").html(function (d) {
+    return (
+      "Proportion of people receiving a positive PCR (Polymerase chain reaction) result in the previous 7 days; " +
+      selected_pcr_tested_area +
+      "; up to " +
+      complete_date +
+      " as at " +
+      data_refreshed_date
+    );
+  });
+
   var bars_7_day_pcr_chosen = test_df.filter(function (d) {
     return d.Name === selected_pcr_tested_area;
   });
