@@ -2205,6 +2205,8 @@ positivity_worked %>%
   # filter(Date <= complete_date) %>% 
   select(!c(Date, Code)) %>% 
   mutate(LFD_7_day_tests = replace_na(LFD_7_day_tests, 0)) %>% 
+  mutate(Seven_day_PCR_positivity = Seven_day_PCR_positivity/100) %>% 
+  view()
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/positivity_df.json'))
 
