@@ -118,6 +118,19 @@ var bars_7_day_pcr_chosen = test_df.filter(function (d) {
   return d.Name === selected_pcr_tested_area;
 });
 
+incomplete_bars_7_day_pcr_chosen = bars_7_day_pcr_chosen.filter(function (d) {
+  if (isNaN(d.Seven_day_PCR_positivity)) {
+    return true;
+  }
+  return false;
+});
+
+var pcr_tested_dates_dots_to_hide = d3
+  .map(incomplete_bars_7_day_pcr_chosen, function (d) {
+    return d.Date_label;
+  })
+  .keys();
+
 var x_pcr_tested = d3
   .scaleBand()
   .domain(pcr_tested_dates)
@@ -371,7 +384,14 @@ var dots_pcr_positivity_1 = svg_pcr_positivity_figure
   .attr("cy", function (d) {
     return y_pcr_positivity(+d.Seven_day_PCR_positivity);
   })
-  .attr("r", 1)
+  // .attr("r", 1)
+  .attr("r", function (d) {
+    if (pcr_tested_dates_dots_to_hide.indexOf(d.Date_label) >= 0) {
+      return 0;
+    } else {
+      return 1;
+    }
+  })
   .style("fill", function (d) {
     return "#000";
   })
@@ -413,6 +433,19 @@ function update_pcr_tested() {
   var bars_7_day_pcr_chosen = test_df.filter(function (d) {
     return d.Name === selected_pcr_tested_area;
   });
+
+  incomplete_bars_7_day_pcr_chosen = bars_7_day_pcr_chosen.filter(function (d) {
+    if (isNaN(d.Seven_day_PCR_positivity)) {
+      return true;
+    }
+    return false;
+  });
+
+  var pcr_tested_dates_dots_to_hide = d3
+    .map(incomplete_bars_7_day_pcr_chosen, function (d) {
+      return d.Date_label;
+    })
+    .keys();
 
   y_pcr_tested
     .domain([
@@ -487,6 +520,13 @@ function update_pcr_tested() {
     .data(bars_7_day_pcr_chosen)
     .transition()
     .duration(1000)
+    .attr("r", function (d) {
+      if (pcr_tested_dates_dots_to_hide.indexOf(d.Date_label) >= 0) {
+        return 0;
+      } else {
+        return 1;
+      }
+    })
     .attr("cx", function (d) {
       return x_pcr_positivity(d.Date_label);
     })
