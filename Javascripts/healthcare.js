@@ -54,7 +54,13 @@ d3.select("#select_trust_2_button")
 // This will be to highlight a particular line on the figure (and show some key figures)
 d3.select("#select_trust_3_button")
   .selectAll("myOptions")
-  .data(trusts)
+  .data([
+    "England",
+    "South East",
+    "Brighton and Sussex University Hospitals NHS Trust",
+    "Surrey and Sussex Healthcare NHS Trust",
+    "Western Sussex Hospitals NHS Foundation Trust",
+  ])
   .enter()
   .append("option")
   .text(function (d) {
