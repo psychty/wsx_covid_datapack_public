@@ -2286,45 +2286,8 @@ png(paste0(output_directory_x, '/Figure_7_day_rolling_positivity_rates_latest_fa
 print(positivity_worked_plotted)
 dev.off() 
 
-# Hospital activity ####
-
 
 # Hospital admissions ####
-
-library(easypackages)
-
-libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools')
-
-capwords = function(s, strict = FALSE) {
-  cap = function(s) paste(toupper(substring(s, 1, 1)),
-                          {s = substring(s, 2); if(strict) tolower(s) else s},sep = "", collapse = " " )
-  sapply(strsplit(s, split = " "), cap, USE.NAMES = !is.null(names(s)))}
-
-options(scipen = 999)
-
-ph_theme = function(){
-  theme( 
-    plot.title = element_text(colour = "#000000", face = "bold", size = 10),    
-    plot.subtitle = element_text(colour = "#000000", size = 10),
-    panel.grid.major.x = element_blank(), 
-    panel.grid.minor.x = element_blank(),
-    panel.background = element_rect(fill = "#FFFFFF"), 
-    panel.grid.major.y = element_line(colour = "#E7E7E7", size = .3),
-    panel.grid.minor.y = element_blank(), 
-    strip.text = element_text(colour = "#000000", size = 10, face = "bold"), 
-    strip.background = element_blank(), 
-    axis.ticks = element_line(colour = "#dbdbdb"), 
-    legend.position = "bottom", 
-    legend.title = element_text(colour = "#000000", size = 9, face = "bold"), 
-    legend.background = element_rect(fill = "#ffffff"), 
-    legend.key = element_rect(fill = "#ffffff", colour = "#ffffff"), 
-    legend.text = element_text(colour = "#000000", size = 9), 
-    axis.text.y = element_text(colour = "#000000", size = 8), 
-    axis.text.x = element_text(colour = "#000000", angle = 0, hjust = 1, vjust = .5, size = 8), 
-    axis.title =  element_text(colour = "#000000", size = 9, face = "bold"),   
-    axis.line = element_line(colour = "#dbdbdb")
-  ) 
-}
 
 if(!file.exists(paste0(github_repo_dir, '/Source files/etr.csv'))){
   download.file('https://files.digital.nhs.uk/assets/ods/current/etr.zip', paste0(github_repo_dir, '/Source files/etr.zip'), mode = 'wb')
@@ -2513,10 +2476,10 @@ beds_occupied_export_df %>%
 #   mutate(Rolling_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, sum, align = 'right', fill = NA),
 #          Total_admissions = cumsum(Admissions_or_new_cases_in_last_24hrs)) 
 
-trust_x <- 'England'
+#trust_x <- 'England'
 
-admissions_x_df <- admissions_df %>% 
-  filter(Name == trust_x)
+#admissions_x_df <- admissions_df %>% 
+ # filter(Name == trust_x)
 
 # ggplot(admissions_x_df,
 #        aes(x = Date,
@@ -2561,8 +2524,8 @@ admissions_x_df <- admissions_df %>%
 #   pivot_longer(cols = c(Patients_occupying_non_mv_beds, Patients_occupying_mv_beds), names_to = 'Bed_type', values_to = 'Patients_occupying_beds') %>% 
 #   mutate(Bed_type = ifelse(Bed_type == 'Patients_occupying_mv_beds', 'Mechanical ventilation', ifelse(Bed_type == 'Patients_occupying_non_mv_beds', 'Not capable of mechanical ventilation', NA)))
 
-patients_in_beds_df_x <- patients_in_beds_df %>% 
-  filter(Name == trust_x)
+#patients_in_beds_df_x <- patients_in_beds_df %>% 
+#  filter(Name == trust_x)
 
 # ggplot(patients_in_beds_df_x,
 #        aes(x = Date,
@@ -2635,6 +2598,8 @@ bed_used_df <- trust_c19_patients_occupying_ga_beds %>%
          Proportion = Beds/sum(Beds)) %>% 
   mutate(Bed_status = factor(ifelse(Bed_status == 'c19_patients_occupying_ga_beds', 'COVID-19 + patients', ifelse(Bed_status == 'other_patients_occupying_ga_beds', 'Other patients', ifelse(Bed_status == 'vacant_ga_beds', 'Vacant (open) beds', NA))), levels = c('COVID-19 + patients', 'Other patients', 'Vacant (open) beds')))
 
+unique(bed_used_df$Name)
+
 # trust_admissions_metadata <- read_excel( paste0(github_repo_dir,'/Source_files/trust_admissions.xlsx'),
 #                                          sheet = 'All beds COVID',
 #                                          skip = 2, 
@@ -2644,8 +2609,8 @@ bed_used_df <- trust_c19_patients_occupying_ga_beds %>%
 #          Description = ...2) %>%
 #   mutate(Description = ifelse(Item == 'Published:', as.character(format(as.Date(as.numeric(Description), origin = "1899-12-30"), '%d-%b-%Y')), Description))
 
-beds_used_df_x <- bed_used_df %>% 
-  filter(Name == trust_x)
+# beds_used_df_x <- bed_used_df %>% 
+#   filter(Name == trust_x)
 
 # ggplot(beds_used_df_x,
 #        aes(x = Date,
