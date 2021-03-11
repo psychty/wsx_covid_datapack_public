@@ -142,8 +142,6 @@ daily_cases_reworked <- data.frame(Name = rep(Areas$Name, length(Dates)), Code =
   filter(!is.na(Cumulative_cases)) %>% 
   mutate(Calculated_same_as_original = ifelse(Cumulative_cases == New_cumulative, 'Yaas', 'Negative'))
 
-
-
 p12_test_df_raw <- data.frame(Name = rep(Areas$Name, length(Dates)), Code = rep(Areas$Code, length(Dates)), Type = rep(Areas$Type, length(Dates)), check.names = FALSE) %>% 
   arrange(Name) %>% 
   group_by(Name) %>% 
