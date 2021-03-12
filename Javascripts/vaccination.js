@@ -108,9 +108,9 @@ function vaccine_msoa_colour(d) {
 function style_msoa_vaccine_total(feature) {
   return {
     fillColor: vaccine_msoa_colour(feature.properties.Total_banded),
-    weight: 1,
+    weight: 0.5,
     opacity: 1,
-    color: "#c9c9c9",
+    color: "#000000",
     // dashArray: "3",
     fillOpacity: 1,
   };
@@ -134,7 +134,7 @@ $.when(msoa_vaccine_total).done(function () {
         "<p><b>" +
         layer.feature.properties.msoa11nm +
         " (" +
-        layer.feature.properties.LTLA_name +
+        layer.feature.properties.msoa11cd +
         ")</b></p><p>A total of <b>" +
         d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
         "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
