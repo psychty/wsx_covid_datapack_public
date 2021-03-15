@@ -146,6 +146,13 @@ nav {
   z-index: 1;
 }
 
+#msoa_map_vaccine_ages_currently_eligible {
+  height: 600px;
+  width: calc(100% - 50px);
+  margin: auto;
+  z-index: 1;
+}
+
 #msoa_map_place {
   height: 600px;
   width: calc(100% - 50px);
@@ -483,6 +490,38 @@ a.highlight_dl {
 }
 
 .key_list_msoa_cases {
+  display: block;
+  padding: 5px;
+  border-radius: 4px;
+  color: #000000;
+  background: #ffffff;
+  text-align: left;
+  font-size: 0.8rem;
+  font-family: inherit;
+  margin: 0 0 1px;
+  border-left: 13px solid #ccc;
+  opacity: 0.7;
+  position: relative;
+  z-index: 1;
+}
+
+.key_list_vaccine_all {
+  display: block;
+  padding: 5px;
+  border-radius: 4px;
+  color: #000000;
+  background: #ffffff;
+  text-align: left;
+  font-size: 0.8rem;
+  font-family: inherit;
+  margin: 0 0 1px;
+  border-left: 13px solid #ccc;
+  opacity: 0.7;
+  position: relative;
+  z-index: 1;
+}
+
+.key_list_vaccine_ages_currently_eligible {
   display: block;
   padding: 5px;
   border-radius: 4px;

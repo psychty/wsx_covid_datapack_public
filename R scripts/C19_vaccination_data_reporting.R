@@ -223,7 +223,7 @@ png(paste0(output_directory_x, '/Proportion_all_age_vaccination_ltla_latest.png'
     width = 1280,
     height = 640,
     res = 110)
-print(ltla_all_age_proportion)
+print(ltla_all_age_proportion + theme(plot.caption = element_text(hjust = 0)))
 dev.off()
 
 vac_llim_prop_65_plus <- round_any(min(lad_boundary$Proportion_65_plus, na.rm = TRUE), .05, floor)
@@ -292,7 +292,7 @@ png(paste0(output_directory_x, '/Proportion_age_65_plus_vaccination_ltla_latest.
     width = 1280,
     height = 640,
     res = 110)
-print(ltla_65_plus_age_proportion)
+print(ltla_65_plus_age_proportion + theme(plot.caption = element_text(hjust = 0)))
 dev.off()
 
 png(paste0(output_directory_x, '/Proportion_vaccination_ltla_latest.png'),
@@ -417,7 +417,7 @@ msoa_all_age_proportion <- ggplot() +
                size = 1) +
   labs(title = paste0('Proportion of individuals receiving at least one dose of a COVID-19 vaccine (aged 16+);\nData as at ', vaccine_published_date),
        subtitle = paste0('Sussex Middle layer Super Output Areas (MSOAs)'),
-       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS) for those aged 16 and over.')  +
+       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\nfor those aged 16 and over.')  +
     guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
   theme(legend.position = 'bottom')
 
@@ -452,7 +452,7 @@ msoa_total_age_65_plus_so_far <- ggplot() +
                size = 1) +
   labs(title = paste0('Cumulative number of individuals aged 65 and over receiving at least Covid-19 vaccination dose;\nData as at ', vaccine_published_date),
        subtitle = paste0('Sussex Middle layer Super Output Areas (MSOAs)'),
-       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS) for those aged 65 and over.') +
+       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\n for those aged 65 and over.') +
   guides(fill = guide_legend(nrow = 3, byrow = TRUE)) +
   theme(legend.position = c(.85,.1))
 
@@ -490,7 +490,7 @@ msoa_age_65_proportion <- ggplot() +
                size = 1) +
   labs(title = paste0('Proportion of individuals aged 65 and over receiving at least one dose of a COVID-19 vaccine;\nData as at ', vaccine_published_date),
        subtitle = paste0('Sussex Middle layer Super Output Areas (MSOAs)'),
-       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS) for those aged 65 and over.')  +
+       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\nfor those aged 65 and over.')  +
   guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
   theme(legend.position = 'bottom')
 
@@ -532,4 +532,32 @@ dev.off()
 
 # What about age groups ####
 
+mye_nims_ltla_age <- mye_nims_ltla %>% 
+  select(!c('Population', 'Age_16_and_over', 'Population_65_and_over')) %>% 
+  pivot_longer(cols = !c('LTLA_code', 'LTLA_name'), values_to = 'NIMS_population') %>% 
+  rename(Age_group = 'name')
+
+# LTLA vaccine data ####
+
+vaccine_df_ltla_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+                              sheet = 'LTLA',
+                              skip = 15,
+                              col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'Under_60', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
+  filter(!is.na(Region_name)) %>% 
+  pivot_longer(cols = !c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name'), values_to = 'At_least_one_dose') %>% 
+  left_join(mye_nims_ltla_age[c('LTLA_code', 'Age_16_and_over', 'Population_65_and_over')], by = 'LTLA_code')
+
 # What about social care staff and residents ####
+
+# Total eligible due to not having had COVID-19 in last 28 days
+
+vaccine_df_utla_asc <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+                                  sheet = 'Care Homes Vaccinations by UTLA',
+                                  skip = 16,
+                                  col_names = c('Name', 'Null_1','Total_residents', 'Total_eligible_residents', 'Number_eligible_residents_vaccinated_dose_one', 'Proportion_eligible_residents_vaccinated_dose_one', 'Null_2', 'Total_staff', 'Total_eligible_staff', 'Number_staff_vaccinatied_dose_one', 'Proportion_eligible_staff_vaccinated_dose_one')) %>% 
+  select(!c('Null_1', 'Null_2')) %>% 
+  filter(!is.na(Total_residents)) 
+
+vaccine_df_utla_asc %>% 
+  filter(Name %in% c('West Sussex', 'East Sussex', 'Brighton and Hove'))
+                                  

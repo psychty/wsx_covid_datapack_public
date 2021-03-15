@@ -396,6 +396,8 @@ function key_change_utla_rate_keys() {
 
 key_rolling_utla_rate_deciles();
 
+// Lower tiers
+
 function LTLA_cumulative_rate_colour(d) {
   return d === ltla_cumulative_rate_bins[0]
     ? decile_colours[0]

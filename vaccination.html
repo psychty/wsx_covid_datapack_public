@@ -222,6 +222,11 @@
           registered with GPs including people who are homeless.
         </p>
       </div>
+
+      <!-- <h4 class="content_top">Vaccine uptake by age group</h4>
+      <div class="content"></div>
+      <div class="right-sidebar"></div> -->
+
       <h4 class="content_top">Local vaccine uptake</h4>
       <div class="content">
         <p>
@@ -246,11 +251,42 @@
       </div>
 
       <div class="content">
-        <h4>
-          Cumulative number of individuals receiving at least one Covid-19
-          vaccination dose; Sussex MSOAs;
-        </h4>
+        <h4 id="msoa_map_vaccine_all_title"></h4>
         <div id="msoa_map_vaccine"></div>
+        <p>
+          Data source:
+          <a
+            class="highlight_dl_link"
+            href="https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/"
+            >NHS England</a
+          >
+        </p>
+        <p>
+          <b
+            >Remember, not all residents are currently eligible for receiving
+            the COVID-19 vaccination.</b
+          >
+          It may be that those areas with a lower proportion of uptake, simply
+          have more individuals who are not yet eligible.
+        </p>
+      </div>
+      <div class="right-sidebar">
+        <h5 id="all_age_msoa_map_key_title">
+          Number of people receiving at least one dose
+        </h5>
+        <p id="msoa_vaccine_key"></p>
+      </div>
+
+      <div class="content">
+        <p>
+          The map below shows the proportion of adults aged 65 and over who have
+          had at least one dose of a COVID-19 vaccination. This may be more
+          useful to understand inequalities in uptake across areas because we
+          know that as at the beginning of March 2021, all those aged 65 should
+          have received an offer of an appointment to be vaccinated.
+        </p>
+        <h4 id="msoa_map_vaccine_ages_currently_eligible_title"></h4>
+        <div id="msoa_map_vaccine_ages_currently_eligible"></div>
         <p>
           Data source:
           <a
@@ -261,9 +297,13 @@
         </p>
       </div>
       <div class="right-sidebar">
-        <h5>Number of people receiving at least one dose</h5>
-        <p id="msoa_vaccine_key"></p>
+        <h5 id="ages_currently_eligible_msoa_map_key_title"></h5>
+        <p id="msoa_vaccine_ages_currently_eligible_key"></p>
       </div>
+
+      <!-- <h4 class="content_top">Vaccine uptake among adult social care workforce and residents</h4>
+      <div class="content"></div>
+      <div class="right-sidebar"></div> -->
     </section>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

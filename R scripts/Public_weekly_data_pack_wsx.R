@@ -2220,29 +2220,6 @@ positivity_worked %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/test_dates.json'))
 
-# positivity_worked %>%
-#   # filter(Date >= '2020-10-21') %>%
-#   mutate(LFD_7_day_tests = replace_na(LFD_7_day_tests, 0)) %>% 
-#   select(!c(Date, Code, Seven_day_PCR_tested_individuals, Seven_day_PCR_positivity, Perc_change_on_individuals_tested)) %>%
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/lfd_df.json'))
-# 
-# positivity_worked %>% 
-#   # filter(Date >= '2020-10-21') %>% 
-#   # filter(Date <= complete_date) %>% 
-#   filter(Date %in% seq.Date(max(Date) -(52*7), max(Date), by = 7)| Date == min(Date)) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   select(Date_label) %>% 
-#   unique() %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/lfd_test_dates.json'))
-
-# LFD export - perhaps the positivity should be separate.
-
-# lfd_tests_figure
-
-
-
 library(lemon)
 
 data_dummy_positivity_worked <- positivity_worked %>% 
@@ -2264,8 +2241,8 @@ positivity_worked_plotted <- ggplot(positivity_worked,
   theme(axis.text.x = element_text(angle = 90, size = 6),
         legend.position = 'none') +
   scale_y_continuous(labels = label_comma(accuracy = 1, suffix = '%'),
-                     limits = c(0,30),
-                     breaks = seq(0, 30, 5)) +
+                     limits = c(0,40),
+                     breaks = seq(0, 40, 5)) +
   scale_x_date(date_labels = "%b %d",
                breaks = seq.Date(complete_date -(52*7), complete_date, by = 7),
                limits = c(min(positivity_worked$Date), complete_date),
