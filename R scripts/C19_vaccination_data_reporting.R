@@ -117,27 +117,28 @@ vaccine_df_ltla <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccin
   # mutate(Rate_age_known_per_100000 = pois.exact(Total_where_age_known, Age_16_and_over)[[3]]*100000) %>% 
   # mutate(Rate_65_plus_per_100000 = pois.exact(Age_65_and_over, Population_65_and_over)[[3]]*100000) %>% 
   # select(LTLA_code, LTLA_name, Total_where_age_known, Rate_age_known_per_100000, Age_65_and_over, Rate_65_plus_per_100000, Age_16_and_over, Population_65_and_over)
-  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_65_and_over, Proportion_65_plus, Age_16_and_over, Population_65_and_over)
+  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_65_and_over, Proportion_65_plus, Age_16_and_over, Population_65_and_over) %>% 
+  rename(Population_16_and_over = Age_16_and_over)
 
 vaccine_df_wsx <- vaccine_df_ltla %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
   summarise(Total_where_age_known = sum(Total_where_age_known),
             Age_65_and_over = sum(Age_65_and_over),
-            Age_16_and_over = sum(Age_16_and_over),
+            Population_16_and_over = sum(Population_16_and_over),
             Population_65_and_over = sum(Population_65_and_over)) %>% 
   mutate(LTLA_name = 'West Sussex',
          LTLA_code = 'E10000032') %>%
-  mutate(Proportion_age_known = Total_where_age_known/ Age_16_and_over) %>% 
+  mutate(Proportion_age_known = Total_where_age_known/ Population_16_and_over) %>% 
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>%
   # mutate(Rate_age_known_per_100000 = pois.exact(Total_where_age_known, Age_16_and_over)[[3]]*100000) %>% 
   # mutate(Rate_65_plus_per_100000 = pois.exact(Age_65_and_over, Population_65_and_over)[[3]]*100000)
-  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_65_and_over, Proportion_65_plus, Age_16_and_over, Population_65_and_over) 
+  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_65_and_over, Proportion_65_plus, Population_16_and_over, Population_65_and_over) 
 
 vaccine_df_ltla %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
   bind_rows(vaccine_df_wsx) %>% 
   rename(Name = 'LTLA_name') %>% 
-  select(Name, Total_where_age_known, Proportion_age_known, Age_65_and_over, Proportion_65_plus) %>% 
+  select(Name, Total_where_age_known, Proportion_age_known, Age_65_and_over, Proportion_65_plus, Population_16_and_over, Population_65_and_over) %>% 
   # select(Name, Total_where_age_known, Rate_age_known_per_100000, Age_65_and_over, Rate_65_plus_per_100000) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
