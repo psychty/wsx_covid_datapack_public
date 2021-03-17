@@ -97,7 +97,6 @@ var x = d3
   .padding(0.05);
 
 order_areas = [
-  "West Sussex",
   "Adur",
   "Arun",
   "Chichester",
@@ -105,6 +104,7 @@ order_areas = [
   "Horsham",
   "Mid Sussex",
   "Worthing",
+  "West Sussex",
 ];
 
 var svg_title = d3

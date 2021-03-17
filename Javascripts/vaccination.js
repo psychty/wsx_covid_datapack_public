@@ -46,6 +46,17 @@ function loadTable_ltla_vaccine(vaccine_at_a_glance) {
   tableBody.innerHTML = dataHTML;
 }
 
+// ! LTLA Age
+
+// var request = new XMLHttpRequest();
+// request.open("GET", "./Outputs/vaccine_ltla_age.json", false);
+// request.send(null);
+// var vaccine_ltla_age = JSON.parse(request.responseText);
+
+
+
+// ! Map
+
 // Parameters
 
 var msoa_covid_vaccines_raw = [
