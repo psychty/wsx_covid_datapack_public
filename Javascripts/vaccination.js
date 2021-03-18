@@ -290,6 +290,14 @@ var colour_vaccinated = d3
   .domain(vaccine_status)
   .range(["#ff4f03", "#e6e7e8"]);
 
+var vaccine_status_label = d3
+  .scaleOrdinal()
+  .domain(["At_least_one_dose", "Individuals_not_vaccinated"])
+  .range([
+    "At least one dose",
+    "Estimated population who have not receive the vaccine",
+  ]);
+
 var selected_vaccine_area = d3
   .select("#select_guage_area_button")
   .property("value");
@@ -431,6 +439,22 @@ var bars_vaccine_age = svg_vaccine_age_1
   })
   .on("mousemove", showTooltip_vaccine_age)
   .on("mouseout", mouseleave_vaccine_age);
+
+vaccine_status.forEach(function (item, index) {
+  var list = document.createElement("li");
+  list.innerHTML = vaccine_status_label(item);
+  list.className = "key_list";
+  list.style.borderColor = colour_vaccinated(index);
+  var tt = document.createElement("div");
+  tt.className = "side_tt";
+  tt.style.borderColor = colour_vaccinated(index);
+  var tt_h3_1 = document.createElement("h3");
+  tt_h3_1.innerHTML = item;
+
+  tt.appendChild(tt_h3_1);
+  var div = document.getElementById("vaccine_status_key");
+  div.appendChild(list);
+});
 
 // ! Map
 
