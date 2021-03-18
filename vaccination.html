@@ -145,9 +145,25 @@
       </div>
 
       <div class="content">
+        <p id="wsx_so_far"></p>
         <p>
-          The first table shows the number of people who have received at least
-          one dose of a COVID-19 vaccine in West Sussex districts.
+          The figure below shows the proportion of adults aged 16+ who have
+          received a vaccine dose in West Sussex. You can use the drop down menu
+          below to choose a different area or use the table below to see all
+          West Sussex areas.
+        </p>
+        <select id="select_guage_area_button"></select>
+        <div id="overall_guage_1"></div>
+        <p>
+          The data provided by NHS England specify the number of individuals
+          under the age of 60 who have been vaccinated, it is assumed that this
+          figure does not include any individuals under the age of 16, as they
+          are not currently eligible for vaccination. As such, the population
+          denominator used excludes those aged 0-15.
+        </p>
+        <p>
+          The table shows the number of people who have received at least one
+          dose of a COVID-19 vaccine in West Sussex districts.
         </p>
         <p>
           The table shows the number and proportion of the population overall as
@@ -222,12 +238,17 @@
           registered with GPs including people who are homeless.
         </p>
       </div>
-      <!-- 
-      <h4 class="content_top">Vaccine uptake by age group</h4>
-      <div class="content">
-        <select id="select_guage_area_button"></select>
-        <div id="overall_guage_1"></div>
 
+      <h4 class="content_top">Vaccine uptake by age group</h4>
+
+      <div class="content">
+        <p>
+          The weekly publication of vaccination data by NHS England includes
+          broad age groups. Currently, whilst those in younger age groups are
+          not yet eligible, anyone aged under 60 years old are grouped together.
+          Over time, as more age groups become eligible for the vaccination, it
+          is expected that more groups will be available.
+        </p>
         <h4>
           Number of individuals receiving at least one dose by age group; West
           Sussex residents
@@ -241,8 +262,15 @@
             >NHS England</a
           >
         </p>
+        <p>
+          * The data provided by NHS England specify the number of individuals
+          under the age of 60 who have been vaccinated, it is assumed that this
+          figure does not include any individuals under the age of 16, as they
+          are not currently eligible for vaccination. As such, the population
+          denominator used excludes those aged 0-15.
+        </p>
       </div>
-      <div class="right-sidebar"></div> -->
+      <div class="right-sidebar"></div>
 
       <h4 class="content_top">Local vaccine uptake</h4>
       <div class="content">
@@ -337,6 +365,5 @@
 
     <script src="Javascripts/params.js"></script>
     <script src="Javascripts/vaccination.js"></script>
-    <script src="Javascripts/test.js"></script>
   </body>
 </html>

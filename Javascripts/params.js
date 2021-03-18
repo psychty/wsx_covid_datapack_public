@@ -4,9 +4,10 @@ var width_hm = document.getElementById("content_size").offsetWidth * 0.75 - 50,
   height_hm_explainer = 15,
   height_sm = 220,
   incomplete_colour = "#999999",
-  height_line = window.innerHeight * 0.25;
+  height_line = window.innerHeight * 0.25,
+  half_width = document.getElementById("content_size").offsetWidth * 0.5;
 
-console.log(height_line, width_hm);
+// console.log(height_line, width_hm);
 
 if (width_hm > 800) {
   height_line = window.innerHeight * 0.3;

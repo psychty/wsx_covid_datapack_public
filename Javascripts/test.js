@@ -1,281 +1,134 @@
-// var request = new XMLHttpRequest();
-// request.open("GET", "./Outputs/vaccine_ltla_age.json", false);
-// request.send(null);
-// var vaccine_ltla_age = JSON.parse(request.responseText);
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/data.json", false);
+request.send(null);
+var data_df = JSON.parse(request.responseText);
 
-// This will be to highlight a particular line on the figure (and show some key figures)
-d3.select("#select_guage_area_button")
-  .selectAll("myOptions")
-  .data([
-    "West Sussex",
-    "Adur",
-    "Arun",
-    "Chichester",
-    "Crawley",
-    "Horsham",
-    "Mid Sussex",
-    "Worthing",
-  ])
+var keys = data_df.columns.slice(2);
+
+var year = [...new Set(data_df.map((d) => d.Year))];
+var states = [...new Set(data_df.map((d) => d.State))];
+
+var options = d3
+  .select("#year")
+  .selectAll("option")
+  .data(year)
   .enter()
   .append("option")
-  .text(function (d) {
-    return d;
-  })
-  .attr("value", function (d) {
+  .text((d) => d);
+
+var svg = d3.select("#test_1"),
+  margin = { top: 35, left: 35, bottom: 0, right: 0 },
+  width = +svg.attr("width") - margin.left - margin.right,
+  height = +svg.attr("height") - margin.top - margin.bottom;
+
+var x = d3
+  .scaleBand()
+  .range([margin.left, width - margin.right])
+  .padding(0.1);
+
+var y = d3.scaleLinear().rangeRound([height - margin.bottom, margin.top]);
+
+var xAxis = svg
+  .append("g")
+  .attr("transform", `translate(0,${height - margin.bottom})`)
+  .attr("class", "x-axis");
+
+var yAxis = svg
+  .append("g")
+  .attr("transform", `translate(${margin.left},0)`)
+  .attr("class", "y-axis");
+
+var z = d3
+  .scaleOrdinal()
+  .range(["steelblue", "darkorange", "lightblue"])
+  .domain(keys);
+
+update(d3.select("#year").property("value"), 0);
+
+function update(input, speed) {
+  var data = data_df.filter((f) => f.Year == input);
+
+  data.forEach(function (d) {
+    d.total = d3.sum(keys, (k) => +d[k]);
     return d;
   });
 
-// ! Guage percentage donut
+  y.domain([0, d3.max(data, (d) => d3.sum(keys, (k) => +d[k]))]).nice();
 
-var width_guage = 230;
-var height_guage = width_guage;
+  svg
+    .selectAll(".y-axis")
+    .transition()
+    .duration(speed)
+    .call(d3.axisLeft(y).ticks(null, "s"));
 
-var twoPi = 2 * Math.PI;
-
-var attributed = 0;
-var total = 1;
-
-// Load the svgs before reading data
-
-var svg_overall_vaccinated = d3
-  .select("#overall_guage_1")
-  .append("svg")
-  .attr("width", width_guage)
-  .attr("height", height_guage)
-  .append("g")
-  .attr(
-    "transform",
-    "translate(" + width_guage / 2 + "," + height_guage / 2 + ")"
-  )
-  .attr("class", "percentage_guage");
-
-// Retrieve the selected area name
-var selected_vaccine_area = d3
-  .select("#select_guage_area_button")
-  .property("value");
-
-overall_cumulative = vaccine_at_a_glance.filter(function (d) {
-  return d.Name === selected_vaccine_area;
-});
-
-number_vaccinated = overall_cumulative[0].Total_where_age_known;
-proportion_vaccinated = overall_cumulative[0].Proportion_age_known;
-estimated_population = overall_cumulative[0].Population_16_and_over;
-
-var arc_vaccine_overall = d3
-  .arc()
-  .startAngle(0)
-  .innerRadius(85)
-  .outerRadius(115);
-
-svg_overall_vaccinated
-  .append("path")
-  .attr("class", "background")
-  .attr("d", arc_vaccine_overall.endAngle(twoPi));
-
-var foreground_vaccinated = svg_overall_vaccinated
-  .append("path")
-  .attr("class", "foreground");
-
-var Percent_vaccinated_1 = svg_overall_vaccinated
-  .append("text")
-  .attr("id", "vaccine_overall_perc")
-  .attr("text-anchor", "middle")
-  .attr("class", "percent-vaccine")
-  .attr("dy", "-0.25em");
-// .text(d3.format(".0%")(proportion_vaccinated));
-
-svg_overall_vaccinated
-  .append("text")
-  .attr("text-anchor", "middle")
-  .attr("id", "vaccinated_label_1")
-  .attr("class", "description")
-  .attr("dy", "0.5em")
-  .text(
-    d3.format(",.0f")(number_vaccinated) +
-      " / " +
-      d3.format(",.0f")(estimated_population)
+  data.sort(
+    d3.select("#sort").property("checked")
+      ? (a, b) => b.total - a.total
+      : (a, b) => states.indexOf(a.State) - states.indexOf(b.State)
   );
 
-svg_overall_vaccinated
-  .append("text")
-  .attr("text-anchor", "middle")
-  .attr("id", "deaths_label_2")
-  .attr("class", "description")
-  .attr("dy", "1.5em")
-  .text("aged 16+ received");
+  x.domain(data.map((d) => d.State));
 
-svg_overall_vaccinated
-  .append("text")
-  .attr("text-anchor", "middle")
-  .attr("id", "deaths_label_3")
-  .attr("class", "description")
-  .attr("dy", "2.5em")
-  .text("at least one dose");
+  svg
+    .selectAll(".x-axis")
+    .transition()
+    .duration(speed)
+    .call(d3.axisBottom(x).tickSizeOuter(0));
 
-var i_vaccinated_prop = d3.interpolate(0, proportion_vaccinated);
+  var group = svg
+    .selectAll("g.layer")
+    .data(d3.stack().keys(keys)(data), (d) => d.key);
 
-svg_overall_vaccinated
-  .transition()
-  .duration(5000)
-  .tween("vaccinated", function () {
-    return function (t) {
-      vaccinated = i_vaccinated_prop(t);
-      foreground_vaccinated
-        .attr("d", arc_vaccine_overall.endAngle(twoPi * vaccinated))
-        .attr("fill", "#ff4f03");
-      Percent_vaccinated_1.text(d3.format(".1%")(vaccinated));
-    };
-  });
+  group.exit().remove();
 
-// // Initialize the plot with the first dataset
+  group
+    .enter()
+    .append("g")
+    .classed("layer", true)
+    .attr("fill", (d) => z(d.key));
 
-// function update_attributable_risk(selectedCondition_attribOption) {
-//   attributed_deaths = deaths_attributed[0].Proportion;
-//   var old_attributed_deaths = attributed_deaths;
+  var bars = svg
+    .selectAll("g.layer")
+    .selectAll("rect")
+    .data(
+      (d) => d,
+      (e) => e.data.State
+    );
 
-//   if (old_attributed_deaths === undefined) {
-//     old_attributed_deaths = 0.001;
-//   }
+  bars.exit().remove();
 
-//   total_deaths = deaths_attributed[0].Total_burden;
-//   var old_total_deaths = total_deaths;
+  bars
+    .enter()
+    .append("rect")
+    .attr("width", x.bandwidth())
+    .merge(bars)
+    .transition()
+    .duration(speed)
+    .attr("x", (d) => x(d.data.State))
+    .attr("y", (d) => y(d[1]))
+    .attr("height", (d) => y(d[0]) - y(d[1]));
 
-//   attributed_yll = yll_attributed[0].Proportion;
-//   var old_attributed_yll = attributed_yll;
+  var text = svg.selectAll(".text").data(data, (d) => d.State);
 
-//   if (old_attributed_yll === undefined) {
-//     old_attributed_yll = 0.001;
-//   }
+  text.exit().remove();
 
-//   var selectedCondition_attribOption = d3
-//     .select("#selectCondition_attribButton")
-//     .property("value");
+  text
+    .enter()
+    .append("text")
+    .attr("class", "text")
+    .attr("text-anchor", "middle")
+    .merge(text)
+    .transition()
+    .duration(speed)
+    .attr("x", (d) => x(d.State) + x.bandwidth() / 2)
+    .attr("y", (d) => y(d.total) - 5)
+    .text((d) => d.total);
+}
 
-//   // Select the div id total_death_string (this is where you want the result of this to be displayed in the html page)
-//   d3.select("#selected_condition_attrib_title").text(function (d) {
-//     return (
-//       "Burden attributed to risk factors associated with " +
-//       d3
-//         .select("#selectCondition_attribButton")
-//         .property("value")
-//         .replace("All causes", "all causes of ill health") +
-//       "; both males and females; all ages; West Sussex; 2017"
-//     );
-//   });
+var select = d3.select("#year").on("change", function () {
+  update(this.value, 750);
+});
 
-//   deaths_attributed = explained_burden.filter(function (d) {
-//     return (
-//       (d.Measure === "Deaths") & (d.Cause === selectedCondition_attribOption)
-//     );
-//   });
-
-//   var number_deaths = deaths_attributed[0].Number;
-//   var attributed_deaths = deaths_attributed[0].Proportion;
-//   var total_deaths = deaths_attributed[0].Total_burden;
-//   var i_deaths = d3.interpolate(
-//     old_attributed_deaths,
-//     attributed_deaths / total
-//   );
-
-//   meter_deaths.selectAll("#deaths_label_1").remove();
-
-//   meter_deaths.selectAll("#deaths_label_2").remove();
-
-//   meter_deaths.selectAll("#deaths_label_3").remove();
-
-//   meter_deaths.selectAll("#deaths_label_4");
-
-//   if (total_deaths === 0) {
-//     meter_deaths.selectAll("#attributed_deaths_perc").style("opacity", 0);
-//   }
-
-//   if (total_deaths !== 0) {
-//     meter_deaths
-//       .selectAll("#attributed_deaths_perc")
-//       .transition()
-//       .duration(750)
-//       .style("opacity", 1);
-//   }
-
-//   foreground_deaths
-//     .transition()
-//     .duration(1500)
-//     .attr("fill", function (d) {
-//       return color_cause_for_risk(selectedCondition_attribOption);
-//     });
-
-//   meter_deaths
-//     .transition()
-//     .duration(3000)
-//     .tween("attributed", function () {
-//       return function (t) {
-//         attributed = i_deaths(t);
-//         foreground_deaths.attr("d", arc_vaccine_overall.endAngle(twoPi * attributed));
-//         percentAttributed_deaths.text(d3.format(".1%")(attributed));
-//       };
-//     });
-
-//   if (total_deaths !== 0) {
-//     meter_deaths
-//       .append("text")
-//       .attr("text-anchor", "middle")
-//       .attr("id", "deaths_label_1")
-//       .attr("class", "description")
-//       .attr("dy", "0.5em")
-//       .text(
-//         d3.format(",.0f")(number_deaths) +
-//           " / " +
-//           d3.format(",.0f")(total_deaths)
-//       );
-
-//     meter_deaths
-//       .append("text")
-//       .attr("text-anchor", "middle")
-//       .attr("id", "deaths_label_2")
-//       .attr("class", "description")
-//       .attr("dy", "1.5em")
-//       .text("deaths attributed");
-
-//     meter_deaths
-//       .append("text")
-//       .attr("text-anchor", "middle")
-//       .attr("id", "deaths_label_3")
-//       .attr("class", "description")
-//       .attr("dy", "2.5em")
-//       .text("to risk factors");
-//   }
-
-//   if (total_deaths === 0) {
-//     meter_deaths
-//       .append("text")
-//       .attr("text-anchor", "middle")
-//       .attr("id", "deaths_label_1")
-//       .attr("class", "description_none")
-//       .attr("dy", "-1em")
-//       .text("There were no");
-
-//     meter_deaths
-//       .append("text")
-//       .attr("text-anchor", "middle")
-//       .attr("id", "deaths_label_2")
-//       .attr("class", "description_none")
-//       .attr("dy", "0em")
-//       .text("deaths for this");
-
-//     meter_deaths
-//       .append("text")
-//       .attr("text-anchor", "middle")
-//       .attr("id", "deaths_label_3")
-//       .attr("class", "description_none")
-//       .attr("dy", "1em")
-//       .text("condition group");
-//   }
-// }
-
-// d3.select("#selectCondition_attribButton").on("change", function (d) {
-//   var selectedCondition_attribOption = d3
-//     .select("#selectCondition_attribButton")
-//     .property("value");
-//   update_attributable_risk(selectedCondition_attribOption);
-// });
+var checkbox = d3.select("#sort").on("click", function () {
+  update(select.property("value"), 750);
+});
