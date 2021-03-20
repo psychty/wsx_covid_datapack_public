@@ -1,5 +1,5 @@
 width_hm_mort = width_hm + 100;
-height_line_mort = height_line - 80;
+height_line_mort = height_line 
 
 var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/ons_weekly_mortality_dates.json", false);
