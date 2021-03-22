@@ -2321,14 +2321,14 @@ admissions_df <- admissions_df_trust %>%
 # patients occupying beds as at 8am
 admissions_date <- admissions_df_trust %>% 
   filter(!is.na(newAdmissions)) %>% 
-  filter(date == max(date)) %>% 
+  filter(date == max(date, na.rm = TRUE)) %>% 
   select(date) %>% 
   unique() %>% 
   mutate(item = 'Admissions')
 
 occupied_date <- admissions_df_trust %>% 
   filter(!is.na(hospitalCases)) %>% 
-  filter(date == max(date)) %>% 
+  filter(date == max(date, na.rm = TRUE)) %>% 
   select(date) %>% 
   unique() %>% 
   mutate(item = 'Patients in hospital')
