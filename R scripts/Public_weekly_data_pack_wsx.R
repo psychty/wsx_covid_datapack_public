@@ -1762,7 +1762,7 @@ growth_rate_utla %>%
 
 growth_rate_utla %>% 
   filter(Date == ccomplete_date) %>%
-  filteer(Name %in% c('West Sussex', 'England'))
+  filter(Name %in% c('West Sussex', 'England'))
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2)# %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/wsx_eng_rate_change.json'))
