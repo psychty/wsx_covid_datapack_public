@@ -1,6 +1,6 @@
 library(easypackages)
 
-libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'patchwork', 'lemon')
+libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'patchwork', 'lemon', 'PostcodesioR')
 
 capwords = function(s, strict = FALSE) {aa
   cap = function(s) paste(toupper(substring(s, 1, 1)),
@@ -63,6 +63,45 @@ map_theme = function(){
     axis.ticks = element_blank()
   ) 
 } 
+
+imd_msoa <- read_csv(paste0(github_repo_dir,'/Source files/msoa_pop_weighted_imd.csv'))
+
+# Vaccine sites
+
+# List updated every Friday
+calls_vaccine_sites_webpage <- read_html('https://www.england.nhs.uk/coronavirus/publication/vaccination-sites/') %>%
+  html_nodes("a") %>%
+  html_attr("href")
+
+# keep only xlsx files
+calls_vaccine_sites_webpage <- unique(grep('.xlsx', calls_vaccine_sites_webpage, value = T))
+
+download.file(calls_vaccine_sites_webpage, paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'), mode = 'wb')
+
+nhs_vaccine_sites_hospital_hub <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
+                                sheet = 'Hospital hubs') %>% 
+  mutate(Type = 'Hospital Hub')
+
+nhs_vaccine_sites_gp_led <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
+                                             sheet = 'GP led vaccination services') %>% 
+  mutate(Type = 'GP led service')
+
+nhs_vaccine_sites_pharm <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
+                                       sheet = 'Pharmacies') %>% 
+  mutate(Type = 'Pharmacies')
+
+nhs_vaccine_sites_centre <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
+                                       sheet = 'Vaccination centres') %>% 
+  mutate(Type = 'Vaccination centre')
+
+vaccine_sites <- nhs_vaccine_sites_hospital_hub %>% 
+  bind_rows(nhs_vaccine_sites_gp_led) %>% 
+  bind_rows(nhs_vaccine_sites_pharm) %>% 
+  bind_rows(nhs_vaccine_sites_centre)
+
+rm(nhs_vaccine_sites_hospital_hub, nhs_vaccine_sites_gp_led, nhs_vaccine_sites_pharm, nhs_vaccine_sites_centre)
+
+
 
 # Vaccine data
 calls_vaccine_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/') %>%
