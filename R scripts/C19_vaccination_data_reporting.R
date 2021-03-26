@@ -79,27 +79,100 @@ calls_vaccine_sites_webpage <- unique(grep('.xlsx', calls_vaccine_sites_webpage,
 download.file(calls_vaccine_sites_webpage, paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'), mode = 'wb')
 
 nhs_vaccine_sites_hospital_hub <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
-                                sheet = 'Hospital hubs') %>% 
-  mutate(Type = 'Hospital Hub')
+                                sheet = 'Hospital Hubs') %>% 
+  rename(Site = `Trust or site name`) %>% 
+  mutate(Type = 'Hospital Hub') 
 
 nhs_vaccine_sites_gp_led <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
-                                             sheet = 'GP led vaccination services') %>% 
-  mutate(Type = 'GP led service')
+                                             sheet = 'GP led local vaccination servic') %>% 
+  mutate(Type = 'GP led service') %>% 
+  rename(Site = 'Name of site')
 
 nhs_vaccine_sites_pharm <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
                                        sheet = 'Pharmacies') %>% 
-  mutate(Type = 'Pharmacies')
+  mutate(Type = 'Pharmacies') %>% 
+  rename(Site = 'Name of site')
 
 nhs_vaccine_sites_centre <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
-                                       sheet = 'Vaccination centres') %>% 
-  mutate(Type = 'Vaccination centre')
+                                       sheet = 'Vaccination Centres') %>% 
+  mutate(Type = 'Vaccination centre') %>% 
+  rename(Site = Centre)
 
 vaccine_sites <- nhs_vaccine_sites_hospital_hub %>% 
   bind_rows(nhs_vaccine_sites_gp_led) %>% 
   bind_rows(nhs_vaccine_sites_pharm) %>% 
-  bind_rows(nhs_vaccine_sites_centre)
+  bind_rows(nhs_vaccine_sites_centre) %>% 
+  select(Type, Site, Address, Postcode) %>% 
+  mutate(Postcode = gsub(' ', '', Postcode)) %>% 
+  mutate(Postcode = gsub(',','', Postcode)) %>% 
+  mutate(Postcode = ifelse(Postcode == 'OX169A', 'OX169AL', ifelse(Postcode == ' SO160YU', 'SO160YU', Postcode)))
 
-rm(nhs_vaccine_sites_hospital_hub, nhs_vaccine_sites_gp_led, nhs_vaccine_sites_pharm, nhs_vaccine_sites_centre)
+lookup_result <- data.frame(postcode = character(), longitude = double(), latitude = double(), lsoa_code = character(), msoa_code = character(), msoa = character())
+
+for(i in 1:nrow(vaccine_sites)){
+  lookup_result_x <- postcode_lookup(vaccine_sites$Postcode[i]) %>% 
+    select(postcode, longitude, latitude, lsoa_code, msoa_code, msoa)
+  
+  lookup_result <- lookup_result_x %>% 
+    bind_rows(lookup_result)
+}
+
+uncaught_postcodes <- lookup_result %>% 
+  filter(is.na(latitude))
+
+lookup_result <- lookup_result %>% 
+  filter(!postcode %in% uncaught_postcodes$postcode)
+
+lookup_result_uncaught <- data.frame(postcode = character(), longitude = double(), latitude = double())
+
+if(nrow(uncaught_postcodes != 0)){
+for(i in 1:nrow(uncaught_postcodes)){
+
+lookup_result_x <- terminated_postcode(uncaught_postcodes$postcode[i]) %>%
+  select(postcode, longitude, latitude)
+
+  lookup_result_uncaught <- lookup_result_x %>%
+    bind_rows(lookup_result_uncaught)
+}
+}  
+  
+lookup_result_final <- lookup_result %>% 
+  bind_rows(lookup_result_uncaught) %>% 
+  rename(Postcode = postcode) %>% 
+  mutate(Postcode = gsub(' ', '', Postcode))
+
+vaccine_sites_final <- vaccine_sites %>% 
+  left_join(lookup_result_final, by = 'Postcode') %>% 
+  unique()
+
+rm(nhs_vaccine_sites_hospital_hub, nhs_vaccine_sites_gp_led, nhs_vaccine_sites_pharm, nhs_vaccine_sites_centre, vaccine_sites, lookup_result, lookup_result_final, lookup_result_uncaught, lookup_result_x, uncaught_postcodes)
+
+IMD_2019 <- read_csv('https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/845345/File_7_-_All_IoD2019_Scores__Ranks__Deciles_and_Population_Denominators_3.csv') %>% 
+  select("LSOA code (2011)",  "Local Authority District name (2019)", "Index of Multiple Deprivation (IMD) Score", "Index of Multiple Deprivation (IMD) Rank (where 1 is most deprived)", "Index of Multiple Deprivation (IMD) Decile (where 1 is most deprived 10% of LSOAs)") %>% 
+  rename(lsoa_code = 'LSOA code (2011)',
+         LTLA = 'Local Authority District name (2019)',
+         IMD_2019_score = 'Index of Multiple Deprivation (IMD) Score',
+         IMD_2019_rank = "Index of Multiple Deprivation (IMD) Rank (where 1 is most deprived)", 
+         IMD_2019_decile = "Index of Multiple Deprivation (IMD) Decile (where 1 is most deprived 10% of LSOAs)") 
+
+vaccine_sites_final <- vaccine_sites_final %>% 
+  left_join(IMD_2019, by = 'lsoa_code')
+
+Sussex_vaccine_sites <- vaccine_sites_final %>% 
+  filter(LTLA %in% c('Brighton and Hove', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden'))
+
+Sussex_vaccine_sites %>% 
+  group_by(LTLA) %>% 
+  summarise(Sites = n())
+
+# Check Appletree Centre (Hindu Temple), Crawley RH110AF - this is not appearing in the .gov list updated Friday 26th March
+
+Sussex_vaccine_sites %>% 
+  group_by(IMD_2019_decile) %>% 
+  summarise(Sites = n())
+
+# We probably want a Sussex wide rank of areas, not just nationally.
+# We should probably display lsoa level deprivation if possible, showing national and sussex wide ranks.
 
 
 

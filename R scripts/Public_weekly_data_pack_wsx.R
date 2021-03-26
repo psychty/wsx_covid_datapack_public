@@ -2,7 +2,7 @@
 
 library(easypackages)
 
-libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek'ri, 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools')
+libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR')
 
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
@@ -2150,7 +2150,7 @@ positivity_df %>%
   mutate(LFD_7_day_tests = format(LFD_7_day_tests, big.mark = ',')) %>% 
   select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum, LFD_7_day_tests) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
-  arrange(Name) %>% 
+  arrange(Name)# %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/positivity_at_a_glance.json'))
 
@@ -2260,7 +2260,6 @@ png(paste0(output_directory_x, '/Figure_7_day_rolling_positivity_rates_latest_fa
     res = 130)
 print(positivity_worked_plotted)
 dev.off() 
-
 
 # Hospital admissions ####
 
