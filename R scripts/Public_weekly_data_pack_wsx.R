@@ -2150,7 +2150,7 @@ positivity_df %>%
   mutate(LFD_7_day_tests = format(LFD_7_day_tests, big.mark = ',')) %>% 
   select(Name, uniquePeopleTestedBySpecimenDateRollingSum, uniqueCasePositivityBySpecimenDateRollingSum, LFD_7_day_tests) %>% 
   mutate(Name = factor(Name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East region', 'England'))) %>% 
-  arrange(Name)# %>% 
+  arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/positivity_at_a_glance.json'))
 
