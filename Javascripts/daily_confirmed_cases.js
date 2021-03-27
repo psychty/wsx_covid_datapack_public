@@ -232,17 +232,17 @@ svg_daily_new_case_bars
   .on("mousemove", showTooltip_testing_key_dates)
   .on("mouseout", mouseleave_testing_key_dates);
 
-svg_daily_new_case_bars
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("class", "test_notes")
-  .attr("x", function (d) {
-    return x_daily_cases("26 Mar 20") + x_daily_cases.bandwidth() / 2;
-  })
-  .attr("y", 2)
-  .style("font-size", ".8rem")
-  .text("Testing eligibility changes -")
-  .attr("text-anchor", "end");
+// svg_daily_new_case_bars
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("class", "test_notes")
+//   .attr("x", function (d) {
+//     return x_daily_cases("26 Mar 20") + x_daily_cases.bandwidth() / 2;
+//   })
+//   .attr("y", 2)
+//   .style("font-size", ".8rem")
+//   .text("Testing eligibility changes -")
+//   .attr("text-anchor", "end");
 
 // Restriction changes
 
@@ -315,17 +315,17 @@ svg_daily_new_case_bars
   .on("mousemove", showTooltip_restrictions_key_dates)
   .on("mouseout", mouseleave_restrictions_key_dates);
 
-svg_daily_new_case_bars
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("class", "restriction_notes")
-  .attr("x", function (d) {
-    return x_daily_cases("22 Mar 20") + x_daily_cases.bandwidth() / 2;
-  })
-  .attr("y", 42)
-  .text("Lockdown begins -")
-  .style("font-size", ".8rem")
-  .attr("text-anchor", "end");
+// svg_daily_new_case_bars
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("class", "restriction_notes")
+//   .attr("x", function (d) {
+//     return x_daily_cases("22 Mar 20") + x_daily_cases.bandwidth() / 2;
+//   })
+//   .attr("y", 42)
+//   .text("Lockdown begins -")
+//   .style("font-size", ".8rem")
+//   .attr("text-anchor", "end");
 
 // Bars
 var tooltip_daily_case_1 = d3
@@ -437,31 +437,33 @@ var svg_daily_average_case_bars = svg_daily_new_case_bars
       })
   );
 
-svg_daily_new_case_bars
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_daily_cases("31 Jan 20") + x_daily_cases.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return height_line - 165;
-  })
-  .style("font-size", ".8rem")
-  .text("The black line represents")
-  .attr("text-anchor", "start");
 
-svg_daily_new_case_bars
-  .append("text")
-  .attr("id", "test_milestones")
-  .attr("x", function (d) {
-    return x_daily_cases("31 Jan 20") + x_daily_cases.bandwidth() / 2;
-  })
-  .attr("y", function (d) {
-    return height_line - 150;
-  })
-  .style("font-size", ".8rem")
-  .text("seven day average new cases")
-  .attr("text-anchor", "start");
+
+// svg_daily_new_case_bars
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_daily_cases("31 Jan 20") + x_daily_cases.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return height_line - 165;
+//   })
+//   .style("font-size", ".8rem")
+//   .text("The black line represents")
+//   .attr("text-anchor", "start");
+
+// svg_daily_new_case_bars
+//   .append("text")
+//   .attr("id", "test_milestones")
+//   .attr("x", function (d) {
+//     return x_daily_cases("31 Jan 20") + x_daily_cases.bandwidth() / 2;
+//   })
+//   .attr("y", function (d) {
+//     return height_line - 150;
+//   })
+//   .style("font-size", ".8rem")
+//   .text("seven day average new cases")
+//   .attr("text-anchor", "start");
 
 function update_daily_bars() {
   var selected_figure_1a_area_option = d3
