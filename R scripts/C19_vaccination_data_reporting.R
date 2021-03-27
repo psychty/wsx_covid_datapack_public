@@ -35,7 +35,7 @@ ph_theme = function(){
   ) 
 }
 
-#github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
+# github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
 github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
@@ -153,28 +153,55 @@ IMD_2019 <- read_csv('https://assets.publishing.service.gov.uk/government/upload
          LTLA = 'Local Authority District name (2019)',
          IMD_2019_score = 'Index of Multiple Deprivation (IMD) Score',
          IMD_2019_rank = "Index of Multiple Deprivation (IMD) Rank (where 1 is most deprived)", 
-         IMD_2019_decile = "Index of Multiple Deprivation (IMD) Decile (where 1 is most deprived 10% of LSOAs)") 
-
-vaccine_sites_final <- vaccine_sites_final %>% 
-  left_join(IMD_2019, by = 'lsoa_code')
+         IMD_2019_decile = "Index of Multiple Deprivation (IMD) Decile (where 1 is most deprived 10% of LSOAs)") %>% 
+  filter(LTLA %in% c('Brighton and Hove', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden')) %>% 
+  arrange(desc(IMD_2019_score)) %>% 
+  mutate(Rank_in_Sussex = rank(desc(IMD_2019_score))) %>% 
+  mutate(Decile_in_Sussex = abs(ntile(IMD_2019_score, 10) - 11)) 
 
 Sussex_vaccine_sites <- vaccine_sites_final %>% 
-  filter(LTLA %in% c('Brighton and Hove', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden'))
+  left_join(IMD_2019, by = 'lsoa_code') %>% 
+  filter(LTLA %in% c('Brighton and Hove', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden')) 
 
-Sussex_vaccine_sites %>% 
-  group_by(LTLA) %>% 
-  summarise(Sites = n())
+WSx_vaccine_sites <- Sussex_vaccine_sites %>% 
+  filter(LTLA %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+  group_by(Type) %>% 
+  summarise(Sites = n()) %>% 
+  mutate(LTLA = 'West Sussex')
+
+ESx_vaccine_sites <- Sussex_vaccine_sites %>% 
+  filter(LTLA %in% c('Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden')) %>% 
+  group_by(Type) %>% 
+  summarise(Sites = n()) %>% 
+  mutate(LTLA = 'East Sussex')
+
+Total_sites_by_district <- Sussex_vaccine_sites %>% 
+  group_by(LTLA, Type) %>% 
+  summarise(Sites = n()) %>% 
+  bind_rows(WSx_vaccine_sites) %>% 
+  bind_rows(ESx_vaccine_sites) %>% 
+  pivot_wider(names_from = Type, values_from = Sites) %>% 
+  mutate(`GP led service` = replace_na(`GP led service`, 0),
+         `Hospital Hub` = replace_na(`Hospital Hub`, 0),
+         `Vaccination centre` = replace_na(`Vaccination centre`, 0),
+         Pharmacies = replace_na(Pharmacies, 0)) %>% 
+  mutate(Total = `GP led service` + `Hospital Hub` + `Vaccination centre` + Pharmacies) %>% 
+  rename(Area = LTLA) %>% 
+  mutate(Area = factor(Area, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'Brighton and Hove', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden','East Sussex'))) %>% 
+  arrange(Area)
 
 # Check Appletree Centre (Hindu Temple), Crawley RH110AF - this is not appearing in the .gov list updated Friday 26th March
 
+Total_sites_by_district %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/total_vaccination_sites_summary_table.json'))
+
 Sussex_vaccine_sites %>% 
-  group_by(IMD_2019_decile) %>% 
-  summarise(Sites = n())
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/Sussex_vaccination_sites.json'))
 
 # We probably want a Sussex wide rank of areas, not just nationally.
 # We should probably display lsoa level deprivation if possible, showing national and sussex wide ranks.
-
-
 
 # Vaccine data
 calls_vaccine_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/') %>%
