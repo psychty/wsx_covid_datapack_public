@@ -1,0 +1,53 @@
+"Type","Site","Address","Postcode","longitude","latitude","lsoa_code","msoa_code","msoa","LTLA","IMD_2019_score","IMD_2019_rank","IMD_2019_decile","Rank_in_Sussex","Decile_in_Sussex"
+"Hospital Hub","Brighton and Sussex University Hosptials NHS Trust","Princess Royal Hospital, Lewes Road Haywards Heath","RH164EX",-0.090282,50.991095,"E01031756","E02006614","Mid Sussex 011","Mid Sussex",5.536,29984,10,894,9
+"Hospital Hub","Conquest Hospital, East Sussex Healthcare NHS Trust","Pharmacy Department, Conquest Hospital, The Ridge, St. Leonards-on-Sea,","TN377RD",0.56727,50.885167,"E01020986","E02004369","Hastings 002","Hastings",15.601,18355,6,459,5
+"Hospital Hub","East Sussex Healthcare NHS Trust","Eastbourne District General Hospital, Kings Drive, Eastbourne","BN212UD",0.271108,50.786969,"E01020948","E02004363","Eastbourne 008","Eastbourne",10.777,23571,8,668,7
+"Hospital Hub","Queen Victoria Hospital Foundation Trust (East Grinstead)","Holtye Road, East Grinstead","RH193DZ",-0.0029,51.135073,"E01031731","E02006604","Mid Sussex 001","Mid Sussex",19.867,14461,5,303,4
+"Hospital Hub","Royal Sussex County Hospital (Brighton and Sussex University Hospitals NHS Trust)","Eastern Road, Brighton","BN25BE",-0.118177,50.819468,"E01016862","E02003521","Brighton and Hove 031","Brighton and Hove",14.188,19757,7,525,6
+"Hospital Hub","Sussex Partnership Foundation NHS Trust","Woodside, The Drive, Hellingly, Hailsham, East Sussex","BN274ER",0.270122,50.889851,"E01021195","E02004420","Wealden 018","Wealden",20.069,14287,5,294,3
+"Hospital Hub","Sussex Partnership Foundation NHS Trust","Mill View Hospital, Nevill Avenue, Hove","BN37HZ",-0.19071,50.842991,"E01016879","E02003503","Brighton and Hove 013","Brighton and Hove",28.964,8509,3,131,2
+"Hospital Hub","Sussex Partnership Foundation NHS Trust","Uckfield Community Hospital, Uckfield, East Sussex","TN225AW",0.105639,50.96595,"E01021221","E02004414","Wealden 012","Wealden",10.275,24170,8,698,7
+"Hospital Hub","Western Sussex Hospitals NHS Foundation Trust","St Richard's Hospital, Spitalfield Lane, Chichester, West Sussex","PO196SE",-0.768027,50.843553,"E01031488","E02006568","Chichester 008","Chichester",16.223,17733,6,433,5
+"Hospital Hub","Worthing & Southlands Hospital, Western Sussex Hospitals NHS Foundation Trust","NHS Trust Pharmacy Department, Park Avenue, Worthing,","BN112DH",-0.363429,50.816691,"E01031789","E02006631","Worthing 011","Worthing",27.568,9256,3,163,2
+"Hospital Hub","South East Coast Ambulance Service NHS Foundation Trust","Nexus House, 4 Gatwick Road, Crawley","RH109BG",-0.168947,51.132742,"E01031583","E02006578","Crawley 004","Crawley",22.983,12066,4,233,3
+"GP led service","Brighton Racecourse","Freshfield Road, Brighton","BN29XZ",-0.112962,50.82907,"E01016864","E02003515","Brighton and Hove 025","Brighton and Hove",52.803,1751,1,17,1
+"GP led service","Henfield Medical Centre","Deer Park, Henfield","BN59JQ",-0.275597,50.936107,"E01031643","E02006601","Horsham 014","Horsham",14.677,19254,6,502,6
+"GP led service","Beacon Shopping Centre","Eastbourne","BN213NW",0.284661,50.769278,"E01020911","E02004365","Eastbourne 010","Eastbourne",38.451,4750,2,62,1
+"GP led service","Etchingham Village Hall","Parsonage Croft, Etchingham","TN197BY",0.428228,51.007808,"E01021141","E02004392","Rother 001","Rother",11.69,22532,7,620,7
+"GP led service","Princess Park Health Centre","Wartling Road, Eastbourne","BN227PG",0.302876,50.781493,"E01020913","E02006857","Eastbourne 013","Eastbourne",29.254,8377,3,126,2
+"GP led service","River Lodge Surgery","Malling Street, Lewes","BN72RD",0.018818,50.874836,"E01021033","E02004381","Lewes 003","Lewes",11.921,22258,7,611,7
+"GP led service","Saxonbury House Medical Group","Saxonbury House, Croft Road, Crowborough","TN61DL",0.161938,51.058455,"E01021160","E02004406","Wealden 004","Wealden",13.382,20638,7,550,6
+"GP led service","Sidley Surgery","44 Turkey Road, Bexhill-On-Sea","TN395HE",0.463982,50.857326,"E01021137","E02004398","Rother 007","Rother",35.802,5607,2,76,1
+"GP led service","Sovereign Centre","Royal Parade, Eastbourne","BN227LQ",0.311081,50.780432,"E01020913","E02006857","Eastbourne 013","Eastbourne",29.254,8377,3,126,2
+"GP led service","Sussex Community NHS Foundation Trust - Pharmacy Dispensary","Pharmacy Dispensary, Crawley Hospital, Pharmacy Department, West Green Drive, Crawley","RH117DH",-0.197375,51.1166,"E01031608","E02006581","Crawley 007","Crawley",24.847,10859,4,199,2
+"GP led service","The Kings Church, Hastings","The Hastings Centre, The Ridge","TN342SA",0.569875,50.886764,"E01020986","E02004369","Hastings 002","Hastings",15.601,18355,6,459,5
+"GP led service","The Meads Medical Centre","Bell Farm Road","TN221BA",0.091624,50.969686,"E01021219","E02004411","Wealden 009","Wealden",3.972,31532,10,946,10
+"GP led service","Angmering Medical Centre","Station Road, Angmering","BN164HL",-0.485017,50.828109,"E01031389","E02006546","Arun 005","Arun",6.053,29392,9,872,9
+"GP led service","Christ Hospital - Blue Coats","Blue Coats, Christ Hospital, Horsham","RH130YB",-0.360798,51.04516,"E01031679","E02006595","Horsham 008","Horsham",10.669,23690,8,676,7
+"GP led service","Clair Hall","Perrymount Road, Haywards Heath","RH163DN",-0.103326,51.003579,"E01031761","E02006612","Mid Sussex 009","Mid Sussex",5.654,29849,10,887,9
+"GP led service","Lancing Parish Hall","36 South Street, Lancing","BN158AJ",-0.323665,50.823843,"E01031377","E02006541","Adur 008","Adur",23.819,11491,4,219.5,3
+"GP led service","Leacroft Medical Practice","Langley House, Langley Drive, Langley Green, Crawley","RH117TF",-0.196029,51.126566,"E01031576","E02006575","Crawley 001","Crawley",24.002,11382,4,216,3
+"GP led service","Meridian Hall","East Court, College Lane, East Grinstead","RH193LT",-0.001784,51.129469,"E01031730","E02006606","Mid Sussex 003","Mid Sussex",6.698,28663,9,844,9
+"GP led service","Park Surgery","Albion Way, Horsham","RH121BG",-0.327381,51.064354,"E01031653","E02006593","Horsham 006","Horsham",12.666,21418,7,575.5,6
+"GP led service","Pulborough Medical Group","Spiro Close, Pulborough, Chichester","RH201FG",-0.509104,50.961138,"E01031662","E02006600","Horsham 013","Horsham",7.562,27615,9,808,9
+"GP led service","Riverbank Medical Centre","Dodsley Lane, Midhurst, West Sussex","GU299AW",-0.735087,50.993474,"E01031497","E02006564","Chichester 004","Chichester",8.205,26820,9,787,8
+"GP led service","Saxonbrook","Saxonbrook Medical, Maidenbower Place, Crawley","RH107QH",-0.153336,51.107379,"E01031580","E02006582","Crawley 008","Crawley",6.419,28961,9,854.5,9
+"GP led service","St Lawrence Surgery","79 St Lawrence Avenue, Worthing, West Sussex","BN147JL",-0.390026,50.823979,"E01031797","E02006624","Worthing 004","Worthing",4.791,30715,10,922,10
+"GP led service","Tangmere Hall","Malcom Road, Tangmere","PO202HS",-0.71845,50.851023,"E01031538","E02006572","Chichester 012","Chichester",17.566,16497,6,380,4
+"GP led service","The Glebe Surgery","The Glebe Surgery, The Glebe, Storrington","RH204FR",-0.458843,50.918032,"E01031630","E02006600","Horsham 013","Horsham",7.645,27493,9,805,9
+"GP led service","The Selsey Centre","The Selsey Centre, Manor Road, Selsey","PO200SE",-0.78229,50.738611,"E01031522","E02006574","Chichester 014","Chichester",23.362,11794,4,227,3
+"GP led service","Westcourt Medical Centre","12 The Street, Rustington, Littlehampton","BN163NX",-0.513745,50.81149,"E01031464","E02006548","Arun 007","Arun",17.552,16505,6,381,4
+"GP led service","County Oak Medical","Carden Hill, Brighton","BN18DD",-0.126631,50.862197,"E01016926","E02003491","Brighton and Hove 001","Brighton and Hove",28.304,8879,3,144,2
+"GP led service","Portslade Health Centre","Church Road, Portslade","BN411LX",-0.213225,50.833673,"E01016975","E02003511","Brighton and Hove 021","Brighton and Hove",31.813,7162,3,103,2
+"GP led service","Bognor Medical Centre","West Street, Bognor Regis","PO211UT",-0.67724,50.783629,"E01031436","E02006558","Arun 017","Arun",46.261,2809,1,31,1
+"GP led service","Durrington Health Centre","Durrington Lane, Worthing","BN132RX",-0.413187,50.830482,"E01031795","E02006623","Worthing 003","Worthing",27.721,9187,3,160,2
+"GP led service","Northbourne Medical Centre","193A Upper Shoreham Road, Shoreham-by-Sea","BN436BT",-0.260244,50.840955,"E01031365","E02006535","Adur 002","Adur",12.536,21567,7,582,6
+"GP led service","Pound Hill Medical Group","1 Crawley Lane, Pound Hill, Crawley","RH107DX",-0.156409,51.118813,"E01031591","E02006579","Crawley 005","Crawley",15.181,18735,6,476,5
+"GP led service","Strand Medical Group","1b The Causeway, Goring-by-Sea","BN126FA",-0.41094,50.818463,"E01031784","E02006627","Worthing 007","Worthing",13.168,20871,7,556,6
+"Pharmacies","Laycocks Pharmacy","494-498 Old London Road, Hastings, East Sussex","TN355BL",0.609224,50.873368,"E01021006","E02004371","Hastings 004","Hastings",23.865,11459,4,218,3
+"Pharmacies","Midhurst Pharmacy","Midhurst Memorial Hall, North Street, Midhurst, West Sussex","GU299DH",-0.738651,50.987658,"E01032717","E02006564","Chichester 004","Chichester",13.472,20524,7,546,6
+"Pharmacies","Ticehurst Village Hall","Lower High Street, Ticehurst, East Sussex","TN57BB",0.412085,51.045348,"E01021140","E02004392","Rother 001","Rother",12.07,22092,7,599,6
+"Vaccination centre","Westgate Leisure Centre","Chichester, Sussex","PO191RJ",-0.786857,50.833319,"E01031490","E02006570","Chichester 010","Chichester",15.59,18367,6,461,5
+"Vaccination centre","Brighton Centre","Kings Road, Brighton","BN12GR",-0.14632,50.82152,"E01016952","E02003517","Brighton and Hove 027","Brighton and Hove",28.349,8856,3,143,2
+"Vaccination centre","Crawley Hospital","W Green Dr, Crawley","RH117DH",-0.197375,51.1166,"E01031608","E02006581","Crawley 007","Crawley",24.847,10859,4,199,2
+"Vaccination centre","Devonshire Quarter","Devonshire Park, College Rd, Eastbourne","BN214JJ",0.282092,50.763127,"E01020935","E02004366","Eastbourne 011","Eastbourne",23.757,11536,4,222,3

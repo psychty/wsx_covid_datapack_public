@@ -217,6 +217,9 @@ Sussex_vaccine_sites %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/Sussex_vaccination_sites.json'))
 
+Sussex_vaccine_sites %>% 
+  write.csv(., paste0(output_directory_x, '/Sussex_vaccination_sites.csv'), row.names = FALSE)
+
 # Vaccine data
 calls_vaccine_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/') %>%
   html_nodes("a") %>%
@@ -286,6 +289,9 @@ vaccine_df_msoa <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccin
 vaccine_df_msoa %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_data.json'))
+
+vaccine_df_msoa %>% 
+ write.csv(. , paste0(output_directory_x, '/vaccine_msoa_data.csv'), row.names = FALSE)
 
 MSOA_boundary <- geojson_read('https://github.com/psychty/wsx_covid_datapack_public/raw/master/Source%20files/failsafe_msoa_boundary.geojson', what = 'sp') %>% 
   filter(MSOA11CD %in% vaccine_df_msoa$msoa11cd) %>% 
