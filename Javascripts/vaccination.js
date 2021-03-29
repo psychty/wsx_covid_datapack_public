@@ -781,23 +781,25 @@ $.when(msoa_vaccine_total).done(function () {
 
   console.log(sussex_vaccination_sites);
 
-  for (var i = 0; i < sussex_vaccination_sites.length; i++) {
-    marker = new L.marker([
-      sussex_vaccination_sites[i]["latitude"],
-      sussex_vaccination_sites[i]["longitude"],
-    ])
-      .bindPopup(sussex_vaccination_sites[i]["Site"])
-      .addTo(msoa_map_vaccine_leaf);
-  }
+  // https://www.d3-graph-gallery.com/graph/bubblemap_buttonControl.html
+
+  // for (var i = 0; i < sussex_vaccination_sites.length; i++) {
+  //   marker = new L.marker([
+  //     sussex_vaccination_sites[i]["latitude"],
+  //     sussex_vaccination_sites[i]["longitude"],
+  //   ])
+  //     .bindPopup(sussex_vaccination_sites[i]["Site"])
+  //     .addTo(msoa_map_vaccine_leaf);
+  // }
 
   var baseMaps_all_age = {
     "Number of individuals": msoa_vaccine_all_age_1_count_map_layer,
     "Proportion of estimated population aged 16+": msoa_vaccine_all_age_2_proportion_map_layer,
   };
 
-  var overlayMaps_all_age = {
-    "Show vaccination sites": marker,
-  };
+  // var overlayMaps_all_age = {
+  //   "Show vaccination sites": marker,
+  // };
 
   var basemap_msoa_vaccine = L.tileLayer(tileUrl, {
     attribution,
@@ -805,7 +807,8 @@ $.when(msoa_vaccine_total).done(function () {
   }).addTo(msoa_map_vaccine_leaf);
 
   L.control
-    .layers(baseMaps_all_age, overlayMaps_all_age, { collapsed: false })
+    .layers(baseMaps_all_age, null, { collapsed: false })
+    // .layers(baseMaps_all_age, overlayMaps_all_age, { collapsed: false })
     .addTo(msoa_map_vaccine_leaf);
 
   msoa_map_vaccine_leaf.fitBounds(
