@@ -171,14 +171,48 @@ IMD_2019 <- read_csv('https://assets.publishing.service.gov.uk/government/upload
          IMD_2019_score = 'Index of Multiple Deprivation (IMD) Score',
          IMD_2019_rank = "Index of Multiple Deprivation (IMD) Rank (where 1 is most deprived)", 
          IMD_2019_decile = "Index of Multiple Deprivation (IMD) Decile (where 1 is most deprived 10% of LSOAs)") %>% 
+  mutate(IMD_2019_decile = factor(ifelse(IMD_2019_decile == 1, '10% most deprived',  ifelse(IMD_2019_decile == 2, 'Decile 2',  ifelse(IMD_2019_decile == 3, 'Decile 3',  ifelse(IMD_2019_decile == 4, 'Decile 4',  ifelse(IMD_2019_decile == 5, 'Decile 5',  ifelse(IMD_2019_decile == 6, 'Decile 6',  ifelse(IMD_2019_decile == 7, 'Decile 7',  ifelse(IMD_2019_decile == 8, 'Decile 8',  ifelse(IMD_2019_decile == 9, 'Decile 9',  ifelse(IMD_2019_decile == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>% 
   filter(LTLA %in% c('Brighton and Hove', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden')) %>% 
   arrange(desc(IMD_2019_score)) %>% 
   mutate(Rank_in_Sussex = rank(desc(IMD_2019_score))) %>% 
-  mutate(Decile_in_Sussex = abs(ntile(IMD_2019_score, 10) - 11)) 
+  mutate(Decile_in_Sussex = abs(ntile(IMD_2019_score, 10) - 11)) %>% 
+  mutate(Decile_in_Sussex = factor(ifelse(Decile_in_Sussex == 1, '10% most deprived',  ifelse(Decile_in_Sussex == 2, 'Decile 2',  ifelse(Decile_in_Sussex == 3, 'Decile 3',  ifelse(Decile_in_Sussex == 4, 'Decile 4',  ifelse(Decile_in_Sussex == 5, 'Decile 5',  ifelse(Decile_in_Sussex == 6, 'Decile 6',  ifelse(Decile_in_Sussex == 7, 'Decile 7',  ifelse(Decile_in_Sussex == 8, 'Decile 8',  ifelse(Decile_in_Sussex == 9, 'Decile 9',  ifelse(Decile_in_Sussex == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>%   mutate(UTLA = ifelse(LTLA %in% c('Brighton and Hove'),'Brighton and Hove', ifelse(LTLA %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing'), 'West Sussex', ifelse(LTLA %in% c('Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden'), 'East Sussex', NA)))) %>% 
+  group_by(UTLA) %>% 
+  arrange(UTLA, desc(IMD_2019_score)) %>% 
+  mutate(Rank_in_UTLA = rank(desc(IMD_2019_score))) %>% 
+  mutate(Decile_in_UTLA = abs(ntile(IMD_2019_score, 10) - 11)) %>% 
+  mutate(Decile_in_UTLA = factor(ifelse(Decile_in_UTLA == 1, '10% most deprived',  ifelse(Decile_in_UTLA == 2, 'Decile 2',  ifelse(Decile_in_UTLA == 3, 'Decile 3',  ifelse(Decile_in_UTLA == 4, 'Decile 4',  ifelse(Decile_in_UTLA == 5, 'Decile 5',  ifelse(Decile_in_UTLA == 6, 'Decile 6',  ifelse(Decile_in_UTLA == 7, 'Decile 7',  ifelse(Decile_in_UTLA == 8, 'Decile 8',  ifelse(Decile_in_UTLA == 9, 'Decile 9',  ifelse(Decile_in_UTLA == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>% 
+  mutate(UTLA = ifelse(LTLA %in% c('Brighton and Hove'),'Brighton and Hove', ifelse(LTLA %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing'), 'West Sussex', ifelse(LTLA %in% c('Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden'), 'East Sussex', NA)))) %>% 
+  rename(LSOA11CD = lsoa_code) %>% 
+  arrange(LSOA11CD)
+
+if(file.exists(paste0(output_directory_x, '/lsoa_deprivation_2019_sussex.geojson')) == FALSE){
+
+# Read in the lsoa geojson boundaries for our lsoas (actually this downloads all 30,000+ and then we filter)
+lsoa_spdf <- geojson_read('https://opendata.arcgis.com/datasets/8bbadffa6ddc493a94078c195a1e293b_0.geojson',  what = "sp") %>%
+  filter(LSOA11CD %in% IMD_2019$LSOA11CD) %>% 
+  arrange(LSOA11CD)
+
+df <- data.frame(ID = character())
+
+# Get the IDs of spatial polygon
+for (i in lsoa_spdf@polygons ) { df <- rbind(df, data.frame(ID = i@ID, stringsAsFactors = FALSE))  }
+
+# and set rowname = ID
+row.names(IMD_2019) <- df$ID
+
+# Then use df as the second argument to the spatial dataframe conversion function:
+lsoa_spdf_json <- SpatialPolygonsDataFrame(lsoa_spdf, IMD_2019)  
+
+geojson_write(geojson_json(lsoa_spdf), file = paste0(output_directory_x, '/lsoa_deprivation_2019_sussex.geojson'))
+
+}
 
 Sussex_vaccine_sites <- vaccine_sites_final %>% 
-  left_join(IMD_2019, by = 'lsoa_code') %>% 
+  left_join(IMD_2019, by = c('lsoa_code' = 'LSOA11CD')) %>% 
   filter(LTLA %in% c('Brighton and Hove', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden')) 
+
+# Check Appletree Centre (Hindu Temple), Crawley RH110AF - this is not appearing in the .gov list updated Friday 26th March
 
 WSx_vaccine_sites <- Sussex_vaccine_sites %>% 
   filter(LTLA %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
@@ -207,11 +241,12 @@ Total_sites_by_district <- Sussex_vaccine_sites %>%
   mutate(Area = factor(Area, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'Brighton and Hove', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden','East Sussex'))) %>% 
   arrange(Area)
 
-# Check Appletree Centre (Hindu Temple), Crawley RH110AF - this is not appearing in the .gov list updated Friday 26th March
-
 Total_sites_by_district %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/total_vaccination_sites_summary_table.json'))
+
+Total_sites_by_district %>% 
+  write.csv(., paste0(output_directory_x, '/total_vaccination_sites_summary_table.csv'), row.names = FALSE)
 
 Sussex_vaccine_sites %>% 
   toJSON() %>% 
@@ -252,6 +287,13 @@ as.character(vaccine_meta %>%
                select(description)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_administered_date.json'))
+
+# ICS/STP Ethnicity data
+ics_ethnicity <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+           sheet = 'Ethnicity & ICS STP',
+           skip = 15,
+           col_names = c('Region_code', 'Null_1', 'Region_name', 'A: White British', 'B: White Irish', 'C: White Any other White background', 'D: Mixed White and Black Caribbean', 'E: Mixed White and Black African', 'F: Mixed White and Asian', 'G: Mixed Any other Mixed background' , 'H: Asian or Asian British Indian', 'J: Asian or Asian British Pakistani', 'K: Asian or Asian British Bangladeshi', 'L: Asian or Asian British Any other Asian background', 'M: Black or Black British Caribbean', 'N: Black or Black British African', 'P: Black or Black British Any other Black background', 'R: Other ethnic groups Chinese', 'S: Other ethnic groups Any other ethnic group', 'Not stated/Unknown', 'Null_2', 'Cumulative_total')) %>% 
+  select(!c(Null_1, Null_2))
 
 # MSOA vaccine data ####
 

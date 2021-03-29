@@ -457,6 +457,10 @@ vaccine_status.forEach(function (item, index) {
 });
 
 // ! Map
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/Sussex_vaccination_sites.json", false);
+request.send(null);
+var sussex_vaccination_sites = JSON.parse(request.responseText);
 
 // Parameters
 
@@ -731,7 +735,7 @@ $.when(msoa_vaccine_total).done(function () {
   ).bindPopup(function (layer) {
     return (
       "<p><b>" +
-      layer.feature.properties.msoa11nm +
+      layer.feature.properties.msoa11hclnm +
       " (" +
       layer.feature.properties.msoa11cd +
       ")</b></p><p>A total of <b>" +
@@ -758,7 +762,7 @@ $.when(msoa_vaccine_total).done(function () {
     .bindPopup(function (layer) {
       return (
         "<p><b>" +
-        layer.feature.properties.msoa11nm +
+        layer.feature.properties.msoa11hclnm +
         " (" +
         layer.feature.properties.msoa11cd +
         ")</b></p><p>A total of <b>" +
@@ -775,9 +779,24 @@ $.when(msoa_vaccine_total).done(function () {
       );
     });
 
+  console.log(sussex_vaccination_sites);
+
+  for (var i = 0; i < sussex_vaccination_sites.length; i++) {
+    marker = new L.marker([
+      sussex_vaccination_sites[i]["latitude"],
+      sussex_vaccination_sites[i]["longitude"],
+    ])
+      .bindPopup(sussex_vaccination_sites[i]["Site"])
+      .addTo(msoa_map_vaccine_leaf);
+  }
+
   var baseMaps_all_age = {
     "Number of individuals": msoa_vaccine_all_age_1_count_map_layer,
     "Proportion of estimated population aged 16+": msoa_vaccine_all_age_2_proportion_map_layer,
+  };
+
+  var overlayMaps_all_age = {
+    "Show vaccination sites": marker,
   };
 
   var basemap_msoa_vaccine = L.tileLayer(tileUrl, {
@@ -786,7 +805,7 @@ $.when(msoa_vaccine_total).done(function () {
   }).addTo(msoa_map_vaccine_leaf);
 
   L.control
-    .layers(baseMaps_all_age, null, { collapsed: false })
+    .layers(baseMaps_all_age, overlayMaps_all_age, { collapsed: false })
     .addTo(msoa_map_vaccine_leaf);
 
   msoa_map_vaccine_leaf.fitBounds(
@@ -818,7 +837,7 @@ $.when(msoa_vaccine_total).done(function () {
   ).bindPopup(function (layer) {
     return (
       "<p><b>" +
-      layer.feature.properties.msoa11nm +
+      layer.feature.properties.msoa11hclnm +
       " (" +
       layer.feature.properties.msoa11cd +
       ")</b></p><p>A total of <b>" +
@@ -841,7 +860,7 @@ $.when(msoa_vaccine_total).done(function () {
     .bindPopup(function (layer) {
       return (
         "<p><b>" +
-        layer.feature.properties.msoa11nm +
+        layer.feature.properties.msoa11hclnm +
         " (" +
         layer.feature.properties.msoa11cd +
         ")</b></p><p>A total of <b>" +
