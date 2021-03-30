@@ -907,8 +907,6 @@ $.when(msoa_vaccine_total).done(function () {
   }
   vaccination_centre_markers.addTo(msoa_map_vaccine_leaf);
 
-  console.log(vaccine_centre_vac_sites);
-
   var baseMaps_all_age = {
     "Number of individuals": msoa_vaccine_all_age_1_count_map_layer,
     "Proportion of estimated population aged 16+": msoa_vaccine_all_age_2_proportion_map_layer,
@@ -1001,13 +999,110 @@ $.when(msoa_vaccine_total).done(function () {
     "Proportion of estimated population aged 50+": msoa_vaccine_older_age_2_proportion_map_layer,
   };
 
+  // If you want to create a group of markers you want to hide/show you need to add them to a layergroup inside the loop, then add the layergroup to the map
+  pharmacy_site_markers_eligible = L.layerGroup();
+  for (item of pharmacy_vac_sites) {
+    pharm_mark_item_eligible = L.marker([item.latitude, item.longitude], {
+      icon: pharm_icon,
+    })
+      .bindPopup(
+        "<p><b>" +
+          item.Site +
+          " (" +
+          item.LTLA +
+          ")</b></p><p>Address: " +
+          item.Address +
+          " " +
+          item.Postcode +
+          "</p><p>This is a pharmacy led vaccination site.</p>"
+      )
+      .addTo(pharmacy_site_markers_eligible);
+  }
+
+  gp_led_markers_eligible = L.layerGroup();
+  for (item of gp_vac_sites) {
+    gp_mark_item_eligible = L.marker([item.latitude, item.longitude], {
+      icon: gp_icon,
+    })
+      .bindPopup(
+        "<p><b>" +
+          item.Site +
+          " (" +
+          item.LTLA +
+          ")</b></p><p>Address: " +
+          item.Address +
+          " " +
+          item.Postcode +
+          "</p><p>This is a GP led vaccination site.</p>"
+      )
+      .addTo(gp_led_markers_eligible);
+  }
+
+  hospital_hub_markers_eligible = L.layerGroup();
+  for (item of hh_vac_sites) {
+    hh_mark_item_eligible = L.marker([item.latitude, item.longitude], {
+      icon: hh_icon,
+    })
+      .bindPopup(
+        "<p><b>" +
+          item.Site +
+          " (" +
+          item.LTLA +
+          ")</b></p><p>Address: " +
+          item.Address +
+          " " +
+          item.Postcode +
+          "</p><p>This is a hospital hub vaccination site.</p>"
+      )
+      .addTo(hospital_hub_markers_eligible);
+  }
+
+  vaccination_centre_markers_eligible = L.layerGroup();
+  for (item of vaccine_centre_vac_sites) {
+    vac_centre_mark_item_eligible = L.marker([item.latitude, item.longitude], {
+      icon: vac_site_icon,
+    })
+      .bindPopup(
+        "<p><b>" +
+          item.Site +
+          " (" +
+          item.LTLA +
+          ")</b></p><p>Address: " +
+          item.Address +
+          " " +
+          item.Postcode +
+          "</p><p>This is a vaccination centre site.</p>"
+      )
+      .addTo(vaccination_centre_markers_eligible);
+  }
+
+  pharmacy_site_markers_eligible.addTo(
+    msoa_map_ages_currently_eligible_vaccine_leaf
+  );
+  gp_led_markers_eligible.addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
+  hospital_hub_markers_eligible.addTo(
+    msoa_map_ages_currently_eligible_vaccine_leaf
+  );
+  vaccination_centre_markers_eligible.addTo(
+    msoa_map_ages_currently_eligible_vaccine_leaf
+  );
+
+  var overlayMaps_ages_eligible = {
+    "Show Pharmacy sites": pharmacy_site_markers_eligible,
+    "Show GP led sites": gp_led_markers_eligible,
+    "Show Hospital hub sites": hospital_hub_markers_eligible,
+    "Show Vaccination centre sites": vaccination_centre_markers_eligible,
+  };
+
   var basemap_msoa_ages_currently_eligible_vaccine = L.tileLayer(tileUrl, {
     attribution,
     minZoom: 8,
   }).addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
 
   L.control
-    .layers(baseMaps_age_currently_eligible, null, { collapsed: false })
+    .layers(baseMaps_age_currently_eligible, overlayMaps_ages_eligible, {
+      collapsed: false,
+    })
     .addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
 
   msoa_map_ages_currently_eligible_vaccine_leaf.fitBounds(
