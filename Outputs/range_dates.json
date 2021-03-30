@@ -1,5 +1,1 @@
-<<<<<<< HEAD
 [{"Date":"2020-01-30","Period":"30 January","Date_label":"Thu 30 January","Order":"First"},{"Date":"2021-03-18","Period":"18 March","Date_label":"Thu 18 March","Order":"Seven_days_ago"},{"Date":"2021-03-25","Period":"25 March","Date_label":"Thu 25 March","Order":"Complete"},{"Date":"2021-03-26","Period":"26 March","Date_label":"Fri 26 March","Order":"First_incomplete"},{"Date":"2021-03-29","Period":"29 March","Date_label":"Mon 29 March","Order":"Last"}]
-=======
-[{"Date":"2020-01-30","Period":"30 January","Date_label":"Thu 30 January","Order":"First"},{"Date":"2021-03-17","Period":"17 March","Date_label":"Wed 17 March","Order":"Seven_days_ago"},{"Date":"2021-03-24","Period":"24 March","Date_label":"Wed 24 March","Order":"Complete"},{"Date":"2021-03-25","Period":"25 March","Date_label":"Thu 25 March","Order":"First_incomplete"},{"Date":"2021-03-28","Period":"28 March","Date_label":"Sun 28 March","Order":"Last"}]
->>>>>>> ac8daba2f1aa3ef17792b998b9734609b17d8cab
