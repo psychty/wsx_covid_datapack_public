@@ -277,14 +277,6 @@ var vaccine_ages = d3
 var vaccine_status = ["At_least_one_dose", "Individuals_not_vaccinated"];
 // var vaccine_status = ["At_least_one_dose"];
 
-console.log(
-  d3
-    .map(vaccine_status, function (d) {
-      return d;
-    })
-    .keys()
-);
-
 var colour_vaccinated = d3
   .scaleOrdinal()
   .domain(vaccine_status)
@@ -298,16 +290,77 @@ var vaccine_status_label = d3
     "Estimated population who have not receive the vaccine",
   ]);
 
-var selected_vaccine_area = d3
-  .select("#select_guage_area_button")
+d3.select("#select_vaccine_ltla_age_area_button")
+  .selectAll("myOptions")
+  .data([
+    "West Sussex",
+    "Adur",
+    "Arun",
+    "Chichester",
+    "Crawley",
+    "Horsham",
+    "Mid Sussex",
+    "Worthing",
+  ])
+  .enter()
+  .append("option")
+  .text(function (d) {
+    return d;
+  })
+  .attr("value", function (d) {
+    return d;
+  });
+
+var selected_vaccine_ltla_area = d3
+  .select("#select_vaccine_ltla_age_area_button")
   .property("value");
 
+d3.select("#ltla_age_selected_bars_title").html(function (d) {
+  return (
+    "Number of individuals receiving at least one dose by age group; " +
+    selected_vaccine_ltla_area +
+    " residents; vaccinations as at " +
+    vaccine_update_date
+  );
+});
+
+d3.select("#ltla_age_selected_bars_title_2").html(function (d) {
+  return (
+    "Proportion of individuals receiving at least one dose by age group; " +
+    selected_vaccine_ltla_area +
+    " residents; vaccinations as at " +
+    vaccine_update_date
+  );
+});
+
 var chosen_vaccine_age_area = vaccine_ltla_age.filter(function (d) {
-  return d.Name === selected_vaccine_area;
+  return d.Name === selected_vaccine_ltla_area;
 });
 
 var stackedData_vaccine_1 = d3.stack().keys(vaccine_status)(
   chosen_vaccine_age_area
+);
+
+var chosen_vaccine_age_area_normalised = vaccine_ltla_age.filter(function (d) {
+  return d.Name === selected_vaccine_ltla_area;
+});
+
+chosen_vaccine_age_area_normalised.forEach(function (d) {
+  // Compute the total
+  tot = 0;
+  for (i in vaccine_status) {
+    status = vaccine_status[i];
+    tot += +d[status];
+  }
+  // Now normalize
+  for (i in vaccine_status) {
+    status = vaccine_status[i];
+    d[status] = (d[status] / tot) * 100;
+  }
+});
+
+var stackedData_vaccine_2 = d3.stack().keys(vaccine_status)(
+  chosen_vaccine_age_area_normalised
 );
 
 // Use the stacked data to find the max height (length) of the bars
@@ -317,7 +370,20 @@ var max_vaccine_limit = d3.max(stackedData_vaccine_1, function (d) {
 
 // Create a tooltip for the lines and functions for displaying the tooltips as well as highlighting certain lines.
 var tooltip_vaccine_age = d3
-  .select("#vaccine_uptake_by_age")
+  .select("#vaccine_uptake_by_age_1")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px");
+
+var tooltip_vaccine_age_2 = d3
+  .select("#vaccine_uptake_by_age_2")
   .append("div")
   .style("opacity", 0)
   .attr("class", "tooltip_class")
@@ -335,6 +401,14 @@ var type_individual_vaccine_label = d3
   .range([
     " people with at least one does of a COVID-19 vaccination.",
     " people who have not yet received a single dose of a COVID-19 vaccination (based on NIMS population estimates).",
+  ]);
+
+var type_individual_vaccine_label_2 = d3
+  .scaleOrdinal()
+  .domain(["At_least_one_dose", "Individuals_not_vaccinated"])
+  .range([
+    " of the estimated population have received at least one does of a COVID-19 vaccination (based on NIMS population estimates).",
+    " of the estimated population have not yet received a single dose of a COVID-19 vaccination (based on NIMS population estimates).",
   ]);
 
 var showTooltip_vaccine_age = function (d, i) {
@@ -358,6 +432,24 @@ var showTooltip_vaccine_age = function (d, i) {
     .style("top", event.pageY - 10 + "px")
     .style("left", event.pageX + 10 + "px")
     .style("visibility", "visible");
+
+  tooltip_vaccine_age_2
+    .html(
+      "<h5>" +
+        d.data.Name +
+        '</h5><p class = "side"><b>' +
+        d.data.Age_group +
+        "</b></p><p><b>" +
+        d3.format(",.1f")(TypeValue) +
+        "%</b>" +
+        type_individual_vaccine_label_2(TypeName) +
+        '</p><p class = "side">This excludes a small number of individuals where the age was not recorded.</p>'
+    )
+    .style("opacity", 1)
+    .attr("visibility", "visible")
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("visibility", "visible");
 };
 
 var mouseleave_vaccine_age = function (d) {
@@ -366,7 +458,7 @@ var mouseleave_vaccine_age = function (d) {
 
 // append the svg object to the body of the page
 var svg_vaccine_age_1 = d3
-  .select("#vaccine_uptake_by_age")
+  .select("#vaccine_uptake_by_age_1")
   .append("svg")
   .attr("width", width_hm)
   .attr("height", height_bars + 30)
@@ -376,12 +468,6 @@ var svg_vaccine_age_1 = d3
 // x axis
 var x_vaccine_ages = d3
   .scaleLinear()
-  // .domain([
-  //   d3.max(chosen_vaccine_age_area, function (d) {
-  //     return +d.At_least_one_dose;
-  //   }),
-  //   0,
-  // ])
   .domain([max_vaccine_limit, 0])
   .range([width_hm - 150, 0])
   .nice();
@@ -440,6 +526,217 @@ var bars_vaccine_age = svg_vaccine_age_1
   .on("mousemove", showTooltip_vaccine_age)
   .on("mouseout", mouseleave_vaccine_age);
 
+// Proportion
+
+var svg_vaccine_age_2 = d3
+  .select("#vaccine_uptake_by_age_2")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_bars + 30)
+  .append("g")
+  .attr("transform", "translate(" + 120 + "," + 30 + ")");
+
+// x axis
+var x_vaccine_ages_2 = d3
+  .scaleLinear()
+  .domain([100, 0])
+  .range([width_hm - 150, 0])
+  .nice();
+
+var xAxis_vaccine_ages_2 = svg_vaccine_age_2
+  .append("g")
+  .attr("transform", "translate(0," + (height_bars - 30) + ")")
+  .call(d3.axisBottom(x_vaccine_ages_2).tickFormat(d3.format(",.0f")));
+
+xAxis_vaccine_ages_2.selectAll("text").style("font-size", ".8rem");
+
+// y axis
+var y_vaccine_ages_2 = d3
+  .scaleBand()
+  .domain(vaccine_ages)
+  .range([height_bars, 0])
+  .padding([0.2]);
+
+var yAxis_vaccine_ages_2 = svg_vaccine_age_2
+  .append("g")
+  .attr("transform", "translate(0,-30)")
+  .call(d3.axisLeft(y_vaccine_ages_2));
+
+yAxis_vaccine_ages_2
+  .selectAll("text")
+  .attr("transform", "translate(0,0)")
+  .style("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+var bars_vaccine_age_2 = svg_vaccine_age_2
+  .append("g")
+  .selectAll("g")
+  .data(stackedData_vaccine_2)
+  .enter()
+  .append("g")
+  .attr("fill", function (d) {
+    return colour_vaccinated(d.key);
+  })
+  .selectAll("rect")
+  .data(function (d) {
+    return d;
+  })
+  .enter()
+  .append("rect")
+  .attr("id", "bars_vaccine_age_2")
+  .attr("x", function (d) {
+    return x_vaccine_ages_2(d[0]);
+  })
+  .attr("height", y_vaccine_ages_2.bandwidth())
+  .attr("y", function (d) {
+    return y_vaccine_ages_2(d.data.Age_group) - y_vaccine_ages_2.bandwidth();
+  })
+  .attr("width", function (d) {
+    return x_vaccine_ages_2(d[1]) - x_vaccine_ages_2(d[0]);
+  })
+  .on("mousemove", showTooltip_vaccine_age)
+  .on("mouseout", mouseleave_vaccine_age);
+
+// ! Update LTLA age bars
+function update_ltla_vaccine_ages() {
+  var selected_vaccine_ltla_area = d3
+    .select("#select_vaccine_ltla_age_area_button")
+    .property("value");
+
+  d3.select("#ltla_age_selected_bars_title").html(function (d) {
+    return (
+      "Number of individuals receiving at least one dose by age group; " +
+      selected_vaccine_ltla_area +
+      " residents; vaccinations as at " +
+      vaccine_update_date
+    );
+  });
+
+  d3.select("#ltla_age_selected_bars_title_2").html(function (d) {
+    return (
+      "Proportion of individuals receiving at least one dose by age group; " +
+      selected_vaccine_ltla_area +
+      " residents; vaccinations as at " +
+      vaccine_update_date
+    );
+  });
+
+  var chosen_vaccine_age_area = vaccine_ltla_age.filter(function (d) {
+    return d.Name === selected_vaccine_ltla_area;
+  });
+
+  var stackedData_vaccine_1 = d3.stack().keys(vaccine_status)(
+    chosen_vaccine_age_area
+  );
+
+  var chosen_vaccine_age_area_normalised = vaccine_ltla_age.filter(function (
+    d
+  ) {
+    return d.Name === selected_vaccine_ltla_area;
+  });
+
+  chosen_vaccine_age_area_normalised.forEach(function (d) {
+    // Compute the total
+    tot = 0;
+    for (i in vaccine_status) {
+      status = vaccine_status[i];
+      tot += +d[status];
+    }
+    // Now normalize
+    for (i in vaccine_status) {
+      status = vaccine_status[i];
+      d[status] = (d[status] / tot) * 100;
+    }
+  });
+
+  var stackedData_vaccine_2 = d3.stack().keys(vaccine_status)(
+    chosen_vaccine_age_area_normalised
+  );
+
+  var max_vaccine_limit = d3.max(stackedData_vaccine_1, function (d) {
+    return d[0][1];
+  });
+
+  x_vaccine_ages.domain([max_vaccine_limit, 0]);
+
+  xAxis_vaccine_ages
+    .transition()
+    .duration(1500)
+    .call(d3.axisBottom(x_vaccine_ages).tickFormat(d3.format(",.0f")));
+
+  xAxis_vaccine_ages.selectAll("text").style("font-size", ".8rem");
+
+  svg_vaccine_age_1.selectAll("#bars_vaccine_age").remove();
+
+  var bars_vaccine_age = svg_vaccine_age_1
+    .append("g")
+    .selectAll("g")
+    .data(stackedData_vaccine_1)
+    .enter()
+    .append("g")
+    .attr("fill", function (d) {
+      return colour_vaccinated(d.key);
+    })
+    .selectAll("rect")
+    .data(function (d) {
+      return d;
+    })
+    .enter()
+    .append("rect")
+    .attr("id", "bars_vaccine_age")
+    .attr("x", function (d) {
+      return x_vaccine_ages(d[0]);
+    })
+    .attr("height", y_vaccine_ages.bandwidth())
+    .attr("y", function (d) {
+      return y_vaccine_ages(d.data.Age_group) - y_vaccine_ages.bandwidth();
+    })
+    .attr("width", function (d) {
+      return x_vaccine_ages(d[1]) - x_vaccine_ages(d[0]);
+    })
+    .on("mousemove", showTooltip_vaccine_age)
+    .on("mouseout", mouseleave_vaccine_age);
+
+  svg_vaccine_age_2.selectAll("#bars_vaccine_age_2").remove();
+
+  var bars_vaccine_age_2 = svg_vaccine_age_2
+    .append("g")
+    .selectAll("g")
+    .data(stackedData_vaccine_2)
+    .enter()
+    .append("g")
+    .attr("fill", function (d) {
+      return colour_vaccinated(d.key);
+    })
+    .selectAll("rect")
+    .data(function (d) {
+      return d;
+    })
+    .enter()
+    .append("rect")
+    .attr("id", "bars_vaccine_age_2")
+    .attr("x", function (d) {
+      return x_vaccine_ages_2(d[0]);
+    })
+    .attr("height", y_vaccine_ages_2.bandwidth())
+    .attr("y", function (d) {
+      return y_vaccine_ages_2(d.data.Age_group) - y_vaccine_ages_2.bandwidth();
+    })
+    .attr("width", function (d) {
+      return x_vaccine_ages_2(d[1]) - x_vaccine_ages_2(d[0]);
+    })
+    .on("mousemove", showTooltip_vaccine_age)
+    .on("mouseout", mouseleave_vaccine_age);
+}
+
+d3.select("#select_vaccine_ltla_age_area_button").on("change", function (d) {
+  var selected_vaccine_ltla_area = d3
+    .select("#select_vaccine_ltla_age_area_button")
+    .property("value");
+  update_ltla_vaccine_ages();
+});
+
+// Key
 vaccine_status.forEach(function (item, index) {
   var list = document.createElement("li");
   list.innerHTML = vaccine_status_label(item);
