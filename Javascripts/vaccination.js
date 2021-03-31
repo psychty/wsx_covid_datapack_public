@@ -341,27 +341,27 @@ var stackedData_vaccine_1 = d3.stack().keys(vaccine_status)(
   chosen_vaccine_age_area
 );
 
-var chosen_vaccine_age_area_normalised = vaccine_ltla_age.filter(function (d) {
-  return d.Name === selected_vaccine_ltla_area;
-});
+// var chosen_vaccine_age_area_normalised = vaccine_ltla_age.filter(function (d) {
+//   return d.Name === selected_vaccine_ltla_area;
+// });
 
-chosen_vaccine_age_area_normalised.forEach(function (d) {
-  // Compute the total
-  tot = 0;
-  for (i in vaccine_status) {
-    status = vaccine_status[i];
-    tot += +d[status];
-  }
-  // Now normalize
-  for (i in vaccine_status) {
-    status = vaccine_status[i];
-    d[status] = (d[status] / tot) * 100;
-  }
-});
+// chosen_vaccine_age_area_normalised.forEach(function (d) {
+//   // Compute the total
+//   tot = 0;
+//   for (i in vaccine_status) {
+//     status = vaccine_status[i];
+//     tot += +d[status];
+//   }
+//   // Now normalize
+//   for (i in vaccine_status) {
+//     status = vaccine_status[i];
+//     d[status] = (d[status] / tot) * 100;
+//   }
+// });
 
-var stackedData_vaccine_2 = d3.stack().keys(vaccine_status)(
-  chosen_vaccine_age_area_normalised
-);
+// var stackedData_vaccine_2 = d3.stack().keys(vaccine_status)(
+//   chosen_vaccine_age_area_normalised
+// );
 
 // Use the stacked data to find the max height (length) of the bars
 var max_vaccine_limit = d3.max(stackedData_vaccine_1, function (d) {
@@ -526,76 +526,76 @@ var bars_vaccine_age = svg_vaccine_age_1
   .on("mousemove", showTooltip_vaccine_age)
   .on("mouseout", mouseleave_vaccine_age);
 
-// Proportion
+// ! Proportion
 
-var svg_vaccine_age_2 = d3
-  .select("#vaccine_uptake_by_age_2")
-  .append("svg")
-  .attr("width", width_hm)
-  .attr("height", height_bars + 30)
-  .append("g")
-  .attr("transform", "translate(" + 120 + "," + 30 + ")");
+// var svg_vaccine_age_2 = d3
+//   .select("#vaccine_uptake_by_age_2")
+//   .append("svg")
+//   .attr("width", width_hm)
+//   .attr("height", height_bars + 30)
+//   .append("g")
+//   .attr("transform", "translate(" + 120 + "," + 30 + ")");
 
-// x axis
-var x_vaccine_ages_2 = d3
-  .scaleLinear()
-  .domain([100, 0])
-  .range([width_hm - 150, 0])
-  .nice();
+// // x axis
+// var x_vaccine_ages_2 = d3
+//   .scaleLinear()
+//   .domain([100, 0])
+//   .range([width_hm - 150, 0])
+//   .nice();
 
-var xAxis_vaccine_ages_2 = svg_vaccine_age_2
-  .append("g")
-  .attr("transform", "translate(0," + (height_bars - 30) + ")")
-  .call(d3.axisBottom(x_vaccine_ages_2).tickFormat(d3.format(",.0f")));
+// var xAxis_vaccine_ages_2 = svg_vaccine_age_2
+//   .append("g")
+//   .attr("transform", "translate(0," + (height_bars - 30) + ")")
+//   .call(d3.axisBottom(x_vaccine_ages_2).tickFormat(d3.format(",.0f")));
 
-xAxis_vaccine_ages_2.selectAll("text").style("font-size", ".8rem");
+// xAxis_vaccine_ages_2.selectAll("text").style("font-size", ".8rem");
 
-// y axis
-var y_vaccine_ages_2 = d3
-  .scaleBand()
-  .domain(vaccine_ages)
-  .range([height_bars, 0])
-  .padding([0.2]);
+// // y axis
+// var y_vaccine_ages_2 = d3
+//   .scaleBand()
+//   .domain(vaccine_ages)
+//   .range([height_bars, 0])
+//   .padding([0.2]);
 
-var yAxis_vaccine_ages_2 = svg_vaccine_age_2
-  .append("g")
-  .attr("transform", "translate(0,-30)")
-  .call(d3.axisLeft(y_vaccine_ages_2));
+// var yAxis_vaccine_ages_2 = svg_vaccine_age_2
+//   .append("g")
+//   .attr("transform", "translate(0,-30)")
+//   .call(d3.axisLeft(y_vaccine_ages_2));
 
-yAxis_vaccine_ages_2
-  .selectAll("text")
-  .attr("transform", "translate(0,0)")
-  .style("text-anchor", "end")
-  .style("font-size", ".8rem");
+// yAxis_vaccine_ages_2
+//   .selectAll("text")
+//   .attr("transform", "translate(0,0)")
+//   .style("text-anchor", "end")
+//   .style("font-size", ".8rem");
 
-var bars_vaccine_age_2 = svg_vaccine_age_2
-  .append("g")
-  .selectAll("g")
-  .data(stackedData_vaccine_2)
-  .enter()
-  .append("g")
-  .attr("fill", function (d) {
-    return colour_vaccinated(d.key);
-  })
-  .selectAll("rect")
-  .data(function (d) {
-    return d;
-  })
-  .enter()
-  .append("rect")
-  .attr("id", "bars_vaccine_age_2")
-  .attr("x", function (d) {
-    return x_vaccine_ages_2(d[0]);
-  })
-  .attr("height", y_vaccine_ages_2.bandwidth())
-  .attr("y", function (d) {
-    return y_vaccine_ages_2(d.data.Age_group) - y_vaccine_ages_2.bandwidth();
-  })
-  .attr("width", function (d) {
-    return x_vaccine_ages_2(d[1]) - x_vaccine_ages_2(d[0]);
-  })
-  .on("mousemove", showTooltip_vaccine_age)
-  .on("mouseout", mouseleave_vaccine_age);
+// var bars_vaccine_age_2 = svg_vaccine_age_2
+//   .append("g")
+//   .selectAll("g")
+//   .data(stackedData_vaccine_2)
+//   .enter()
+//   .append("g")
+//   .attr("fill", function (d) {
+//     return colour_vaccinated(d.key);
+//   })
+//   .selectAll("rect")
+//   .data(function (d) {
+//     return d;
+//   })
+//   .enter()
+//   .append("rect")
+//   .attr("id", "bars_vaccine_age_2")
+//   .attr("x", function (d) {
+//     return x_vaccine_ages_2(d[0]);
+//   })
+//   .attr("height", y_vaccine_ages_2.bandwidth())
+//   .attr("y", function (d) {
+//     return y_vaccine_ages_2(d.data.Age_group) - y_vaccine_ages_2.bandwidth();
+//   })
+//   .attr("width", function (d) {
+//     return x_vaccine_ages_2(d[1]) - x_vaccine_ages_2(d[0]);
+//   })
+//   .on("mousemove", showTooltip_vaccine_age)
+//   .on("mouseout", mouseleave_vaccine_age);
 
 // ! Update LTLA age bars
 function update_ltla_vaccine_ages() {
@@ -629,35 +629,35 @@ function update_ltla_vaccine_ages() {
     chosen_vaccine_age_area
   );
 
-  var chosen_vaccine_age_area_normalised = vaccine_ltla_age.filter(function (
-    d
-  ) {
-    return d.Name === selected_vaccine_ltla_area;
-  });
+  // var chosen_vaccine_age_area_normalised = vaccine_ltla_age.filter(function (
+  //   d
+  // ) {
+  //   return d.Name === selected_vaccine_ltla_area;
+  // });
 
-  chosen_vaccine_age_area_normalised.forEach(function (d) {
-    // Compute the total
-    tot = 0;
-    for (i in vaccine_status) {
-      status = vaccine_status[i];
-      tot += +d[status];
-    }
-    // Now normalize
-    for (i in vaccine_status) {
-      status = vaccine_status[i];
-      d[status] = (d[status] / tot) * 100;
-    }
-  });
+  // chosen_vaccine_age_area_normalised.forEach(function (d) {
+  //   // Compute the total
+  //   tot = 0;
+  //   for (i in vaccine_status) {
+  //     status = vaccine_status[i];
+  //     tot += +d[status];
+  //   }
+  //   // Now normalize
+  //   for (i in vaccine_status) {
+  //     status = vaccine_status[i];
+  //     d[status] = (d[status] / tot) * 100;
+  //   }
+  // });
 
-  var stackedData_vaccine_2 = d3.stack().keys(vaccine_status)(
-    chosen_vaccine_age_area_normalised
-  );
+  // var stackedData_vaccine_2 = d3.stack().keys(vaccine_status)(
+  //   chosen_vaccine_age_area_normalised
+  // );
 
   var max_vaccine_limit = d3.max(stackedData_vaccine_1, function (d) {
     return d[0][1];
   });
 
-  x_vaccine_ages.domain([max_vaccine_limit, 0]);
+  x_vaccine_ages.domain([max_vaccine_limit, 0]).nice();
 
   xAxis_vaccine_ages
     .transition()
@@ -697,36 +697,36 @@ function update_ltla_vaccine_ages() {
     .on("mousemove", showTooltip_vaccine_age)
     .on("mouseout", mouseleave_vaccine_age);
 
-  svg_vaccine_age_2.selectAll("#bars_vaccine_age_2").remove();
+  // svg_vaccine_age_2.selectAll("#bars_vaccine_age_2").remove();
 
-  var bars_vaccine_age_2 = svg_vaccine_age_2
-    .append("g")
-    .selectAll("g")
-    .data(stackedData_vaccine_2)
-    .enter()
-    .append("g")
-    .attr("fill", function (d) {
-      return colour_vaccinated(d.key);
-    })
-    .selectAll("rect")
-    .data(function (d) {
-      return d;
-    })
-    .enter()
-    .append("rect")
-    .attr("id", "bars_vaccine_age_2")
-    .attr("x", function (d) {
-      return x_vaccine_ages_2(d[0]);
-    })
-    .attr("height", y_vaccine_ages_2.bandwidth())
-    .attr("y", function (d) {
-      return y_vaccine_ages_2(d.data.Age_group) - y_vaccine_ages_2.bandwidth();
-    })
-    .attr("width", function (d) {
-      return x_vaccine_ages_2(d[1]) - x_vaccine_ages_2(d[0]);
-    })
-    .on("mousemove", showTooltip_vaccine_age)
-    .on("mouseout", mouseleave_vaccine_age);
+  // var bars_vaccine_age_2 = svg_vaccine_age_2
+  //   .append("g")
+  //   .selectAll("g")
+  //   .data(stackedData_vaccine_2)
+  //   .enter()
+  //   .append("g")
+  //   .attr("fill", function (d) {
+  //     return colour_vaccinated(d.key);
+  //   })
+  //   .selectAll("rect")
+  //   .data(function (d) {
+  //     return d;
+  //   })
+  //   .enter()
+  //   .append("rect")
+  //   .attr("id", "bars_vaccine_age_2")
+  //   .attr("x", function (d) {
+  //     return x_vaccine_ages_2(d[0]);
+  //   })
+  //   .attr("height", y_vaccine_ages_2.bandwidth())
+  //   .attr("y", function (d) {
+  //     return y_vaccine_ages_2(d.data.Age_group) - y_vaccine_ages_2.bandwidth();
+  //   })
+  //   .attr("width", function (d) {
+  //     return x_vaccine_ages_2(d[1]) - x_vaccine_ages_2(d[0]);
+  //   })
+  //   .on("mousemove", showTooltip_vaccine_age)
+  //   .on("mouseout", mouseleave_vaccine_age);
 }
 
 d3.select("#select_vaccine_ltla_age_area_button").on("change", function (d) {
