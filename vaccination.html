@@ -155,7 +155,7 @@
       </div>
 
       <div class="content">
-        <p id="wsx_so_far"></p>
+        <!-- <p id="wsx_so_far"></p>
         <p>
           The figure below shows the proportion of adults aged 16+ who have
           received a vaccine dose in West Sussex. You can use the drop down menu
@@ -163,7 +163,7 @@
           West Sussex areas.
         </p>
         <select id="select_guage_area_button"></select>
-        <div id="overall_guage_1"></div>
+        <div id="overall_guage_1"></div> -->
         <p>
           The data provided by NHS England specify the number of individuals
           under the age of 50 who have been vaccinated, it is assumed that this
@@ -339,9 +339,7 @@
         </p>
       </div>
       <div class="right-sidebar">
-        <h5 id="all_age_msoa_map_key_title">
-          Number of people receiving at least one dose
-        </h5>
+        <h5 id="all_age_msoa_map_key_title"></h5>
         <p id="msoa_vaccine_key"></p>
       </div>
 
@@ -367,6 +365,43 @@
       <div class="right-sidebar">
         <h5 id="ages_currently_eligible_msoa_map_key_title"></h5>
         <p id="msoa_vaccine_ages_currently_eligible_key"></p>
+      </div>
+
+      <h4 class="content_top">Vaccination sites</h4>
+      <div class="content">
+        <p>
+          The map below shows the latest available information on open
+          vaccination sites across Sussex. The list is updated once a week on a
+          Friday by NHS England. Note that this may not include mobile or 'pop
+          up' style sites which can be set up quickly to further support local
+          needs.
+        </p>
+        <p>
+          Sussex Health and Care Partnership, the Integrated Care System across
+          Sussex, also provides a
+          <a
+            href="https://www.sussexhealthandcare.uk/keepsussexsafe/sussex-covid-19-vaccination-programme/when-will-i-get-my-jab/west-sussex-gp-led-vaccination-services"
+            >list of sites</a
+          >
+          where people can get vaccinated, as well as key information on getting
+          the vaccination and help with things like transport for those who may
+          find it difficult to travel to get their jab.
+        </p>
+        <h4 id="msoa_map_vaccine_sites_title"></h4>
+        <div id="msoa_map_vaccine_sites"></div>
+        <p>
+          Data source:
+          <a
+            class="highlight_dl_link"
+            href="https://www.england.nhs.uk/coronavirus/publication/vaccination-sites/"
+            >NHS England</a
+          >
+        </p>
+      </div>
+
+      <div class="right-sidebar">
+        <h5>Vaccination sites</h5>
+        <p id="vaccine_site_key"></p>
       </div>
 
       <!-- <h4 class="content_top">Vaccine uptake among adult social care workforce and residents</h4>

@@ -66,197 +66,197 @@ d3.select("#wsx_so_far").html(function (d) {
   );
 });
 
-// ! Percentage visual
+// // ! Percentage visual
 
-d3.select("#select_guage_area_button")
-  .selectAll("myOptions")
-  .data([
-    "West Sussex",
-    "Adur",
-    "Arun",
-    "Chichester",
-    "Crawley",
-    "Horsham",
-    "Mid Sussex",
-    "Worthing",
-  ])
-  .enter()
-  .append("option")
-  .text(function (d) {
-    return d;
-  })
-  .attr("value", function (d) {
-    return d;
-  });
+// d3.select("#select_guage_area_button")
+//   .selectAll("myOptions")
+//   .data([
+//     "West Sussex",
+//     "Adur",
+//     "Arun",
+//     "Chichester",
+//     "Crawley",
+//     "Horsham",
+//     "Mid Sussex",
+//     "Worthing",
+//   ])
+//   .enter()
+//   .append("option")
+//   .text(function (d) {
+//     return d;
+//   })
+//   .attr("value", function (d) {
+//     return d;
+//   });
 
-var width_guage = 250;
-var height_guage = width_guage;
-var innerR = width_guage * 0.3;
-var outerR = width_guage * 0.4;
-var twoPi = 2 * Math.PI;
+// var width_guage = 250;
+// var height_guage = width_guage;
+// var innerR = width_guage * 0.3;
+// var outerR = width_guage * 0.4;
+// var twoPi = 2 * Math.PI;
 
-var svg_overall_vaccinated = d3
-  .select("#overall_guage_1")
-  .append("svg")
-  .attr("width", width_guage)
-  .attr("height", height_guage)
-  .append("g")
-  .attr(
-    "transform",
-    "translate(" + width_guage / 2 + "," + height_guage / 2 + ")"
-  )
-  .attr("class", "percentage_guage");
+// var svg_overall_vaccinated = d3
+//   .select("#overall_guage_1")
+//   .append("svg")
+//   .attr("width", width_guage)
+//   .attr("height", height_guage)
+//   .append("g")
+//   .attr(
+//     "transform",
+//     "translate(" + width_guage / 2 + "," + height_guage / 2 + ")"
+//   )
+//   .attr("class", "percentage_guage");
 
-// Retrieve the selected area name
-var selected_vaccine_area = d3
-  .select("#select_guage_area_button")
-  .property("value");
+// // Retrieve the selected area name
+// var selected_vaccine_area = d3
+//   .select("#select_guage_area_button")
+//   .property("value");
 
-overall_cumulative = vaccine_at_a_glance.filter(function (d) {
-  return d.Name === selected_vaccine_area;
-});
+// overall_cumulative = vaccine_at_a_glance.filter(function (d) {
+//   return d.Name === selected_vaccine_area;
+// });
 
-number_vaccinated = overall_cumulative[0].Total_where_age_known;
-proportion_vaccinated = overall_cumulative[0].Proportion_age_known;
-estimated_population = overall_cumulative[0].Population_16_and_over;
+// number_vaccinated = overall_cumulative[0].Total_where_age_known;
+// proportion_vaccinated = overall_cumulative[0].Proportion_age_known;
+// estimated_population = overall_cumulative[0].Population_16_and_over;
 
-var arc_vaccine_overall = d3
-  .arc()
-  .startAngle(0)
-  .innerRadius(innerR)
-  .outerRadius(outerR);
+// var arc_vaccine_overall = d3
+//   .arc()
+//   .startAngle(0)
+//   .innerRadius(innerR)
+//   .outerRadius(outerR);
 
-svg_overall_vaccinated
-  .append("path")
-  .attr("class", "background")
-  .attr("d", arc_vaccine_overall.endAngle(twoPi));
+// svg_overall_vaccinated
+//   .append("path")
+//   .attr("class", "background")
+//   .attr("d", arc_vaccine_overall.endAngle(twoPi));
 
-var foreground_vaccinated = svg_overall_vaccinated
-  .append("path")
-  .attr("class", "foreground");
+// var foreground_vaccinated = svg_overall_vaccinated
+//   .append("path")
+//   .attr("class", "foreground");
 
-var Percent_vaccinated_1 = svg_overall_vaccinated
-  .append("text")
-  .attr("id", "vaccine_overall_perc")
-  .attr("text-anchor", "middle")
-  .attr("class", "percent-vaccine")
-  .attr("dy", "-0.25em");
+// var Percent_vaccinated_1 = svg_overall_vaccinated
+//   .append("text")
+//   .attr("id", "vaccine_overall_perc")
+//   .attr("text-anchor", "middle")
+//   .attr("class", "percent-vaccine")
+//   .attr("dy", "-0.25em");
 
-svg_overall_vaccinated
-  .append("text")
-  .attr("text-anchor", "middle")
-  .attr("id", "vaccinated_label_1")
-  .attr("class", "description")
-  .attr("dy", "0.5em")
-  .text(
-    d3.format(",.0f")(number_vaccinated) +
-      " / " +
-      d3.format(",.0f")(estimated_population)
-  );
+// svg_overall_vaccinated
+//   .append("text")
+//   .attr("text-anchor", "middle")
+//   .attr("id", "vaccinated_label_1")
+//   .attr("class", "description")
+//   .attr("dy", "0.5em")
+//   .text(
+//     d3.format(",.0f")(number_vaccinated) +
+//       " / " +
+//       d3.format(",.0f")(estimated_population)
+//   );
 
-svg_overall_vaccinated
-  .append("text")
-  .attr("text-anchor", "middle")
-  .attr("id", "deaths_label_2")
-  .attr("class", "description")
-  .attr("dy", "1.5em")
-  .text("aged 16+ received");
+// svg_overall_vaccinated
+//   .append("text")
+//   .attr("text-anchor", "middle")
+//   .attr("id", "deaths_label_2")
+//   .attr("class", "description")
+//   .attr("dy", "1.5em")
+//   .text("aged 16+ received");
 
-svg_overall_vaccinated
-  .append("text")
-  .attr("text-anchor", "middle")
-  .attr("id", "deaths_label_3")
-  .attr("class", "description")
-  .attr("dy", "2.5em")
-  .text("at least one dose");
+// svg_overall_vaccinated
+//   .append("text")
+//   .attr("text-anchor", "middle")
+//   .attr("id", "deaths_label_3")
+//   .attr("class", "description")
+//   .attr("dy", "2.5em")
+//   .text("at least one dose");
 
-var i_vaccinated_prop = d3.interpolate(0, proportion_vaccinated);
+// var i_vaccinated_prop = d3.interpolate(0, proportion_vaccinated);
 
-svg_overall_vaccinated
-  .transition()
-  .duration(3000)
-  .tween("vaccinated", function () {
-    return function (t) {
-      vaccinated = i_vaccinated_prop(t);
-      foreground_vaccinated
-        .attr("d", arc_vaccine_overall.endAngle(twoPi * vaccinated))
-        .attr("fill", "#ff4f03");
-      Percent_vaccinated_1.text(d3.format(".1%")(vaccinated));
-    };
-  });
+// svg_overall_vaccinated
+//   .transition()
+//   .duration(3000)
+//   .tween("vaccinated", function () {
+//     return function (t) {
+//       vaccinated = i_vaccinated_prop(t);
+//       foreground_vaccinated
+//         .attr("d", arc_vaccine_overall.endAngle(twoPi * vaccinated))
+//         .attr("fill", "#ff4f03");
+//       Percent_vaccinated_1.text(d3.format(".1%")(vaccinated));
+//     };
+//   });
 
-function update_vaccine_guage(selected_vaccine_area) {
-  var old_number_vaccinated = number_vaccinated;
+// function update_vaccine_guage(selected_vaccine_area) {
+//   var old_number_vaccinated = number_vaccinated;
 
-  if (number_vaccinated === undefined) {
-    old_number_vaccinated = 0.001;
-  }
+//   if (number_vaccinated === undefined) {
+//     old_number_vaccinated = 0.001;
+//   }
 
-  var old_vaccine_percentage = proportion_vaccinated;
+//   var old_vaccine_percentage = proportion_vaccinated;
 
-  if (proportion_vaccinated === undefined) {
-    old_vaccine_percentage = 0.001;
-  }
+//   if (proportion_vaccinated === undefined) {
+//     old_vaccine_percentage = 0.001;
+//   }
 
-  var selected_vaccine_area = d3
-    .select("#select_guage_area_button")
-    .property("value");
+//   var selected_vaccine_area = d3
+//     .select("#select_guage_area_button")
+//     .property("value");
 
-  overall_cumulative = vaccine_at_a_glance.filter(function (d) {
-    return d.Name === selected_vaccine_area;
-  });
+//   overall_cumulative = vaccine_at_a_glance.filter(function (d) {
+//     return d.Name === selected_vaccine_area;
+//   });
 
-  number_vaccinated = overall_cumulative[0].Total_where_age_known;
-  proportion_vaccinated = overall_cumulative[0].Proportion_age_known;
-  estimated_population = overall_cumulative[0].Population_16_and_over;
+//   number_vaccinated = overall_cumulative[0].Total_where_age_known;
+//   proportion_vaccinated = overall_cumulative[0].Proportion_age_known;
+//   estimated_population = overall_cumulative[0].Population_16_and_over;
 
-  var i_vaccinated_prop = d3.interpolate(
-    old_vaccine_percentage,
-    proportion_vaccinated
-  );
+//   var i_vaccinated_prop = d3.interpolate(
+//     old_vaccine_percentage,
+//     proportion_vaccinated
+//   );
 
-  svg_overall_vaccinated
-    .selectAll("#vaccinated_label_1")
-    .transition()
-    .duration(750)
-    .style("opacity", 0);
+//   svg_overall_vaccinated
+//     .selectAll("#vaccinated_label_1")
+//     .transition()
+//     .duration(750)
+//     .style("opacity", 0);
 
-  svg_overall_vaccinated
-    .transition()
-    .duration(3000)
-    .tween("vaccinated", function () {
-      return function (t) {
-        vaccinated = i_vaccinated_prop(t);
-        foreground_vaccinated
-          .attr("d", arc_vaccine_overall.endAngle(twoPi * vaccinated))
-          .attr("fill", "#ff4f03");
-        Percent_vaccinated_1.text(d3.format(".1%")(vaccinated));
-      };
-    });
+//   svg_overall_vaccinated
+//     .transition()
+//     .duration(3000)
+//     .tween("vaccinated", function () {
+//       return function (t) {
+//         vaccinated = i_vaccinated_prop(t);
+//         foreground_vaccinated
+//           .attr("d", arc_vaccine_overall.endAngle(twoPi * vaccinated))
+//           .attr("fill", "#ff4f03");
+//         Percent_vaccinated_1.text(d3.format(".1%")(vaccinated));
+//       };
+//     });
 
-  svg_overall_vaccinated
-    .append("text")
-    .attr("text-anchor", "middle")
-    .attr("id", "vaccinated_label_1")
-    .attr("class", "description")
-    .attr("dy", "0.5em")
-    .text(
-      d3.format(",.0f")(number_vaccinated) +
-        " / " +
-        d3.format(",.0f")(estimated_population)
-    )
-    .style("opacity", 0)
-    .transition()
-    .duration(500)
-    .style("opacity", 1);
-}
+//   svg_overall_vaccinated
+//     .append("text")
+//     .attr("text-anchor", "middle")
+//     .attr("id", "vaccinated_label_1")
+//     .attr("class", "description")
+//     .attr("dy", "0.5em")
+//     .text(
+//       d3.format(",.0f")(number_vaccinated) +
+//         " / " +
+//         d3.format(",.0f")(estimated_population)
+//     )
+//     .style("opacity", 0)
+//     .transition()
+//     .duration(500)
+//     .style("opacity", 1);
+// }
 
-d3.select("#select_guage_area_button").on("change", function (d) {
-  var selected_vaccine_area = d3
-    .select("#select_guage_area_button")
-    .property("value");
-  update_vaccine_guage(selected_vaccine_area);
-});
+// d3.select("#select_guage_area_button").on("change", function (d) {
+//   var selected_vaccine_area = d3
+//     .select("#select_guage_area_button")
+//     .property("value");
+//   update_vaccine_guage(selected_vaccine_area);
+// });
 
 // ! LTLA Age
 
@@ -410,6 +410,14 @@ var type_individual_vaccine_label_2 = d3
     " of the estimated population have received at least one does of a COVID-19 vaccination (based on NIMS population estimates).",
     " of the estimated population have not yet received a single dose of a COVID-19 vaccination (based on NIMS population estimates).",
   ]);
+
+site_types = [
+  "GP led service",
+  "Pharmacies",
+  "Hospital Hub",
+  "Vaccination centre",
+];
+site_type_colours = ["#2a81cb", "#2aad27", "#cb2b3e", "#9c2bcb"];
 
 var showTooltip_vaccine_age = function (d, i) {
   var TypeName = d3.select(this.parentNode).datum().key;
@@ -1076,145 +1084,17 @@ $.when(msoa_vaccine_total).done(function () {
       );
     });
 
-  // ! Vaccination sites
-  var myIconClass = L.Icon.extend({
-    options: {
-      // iconUrl:
-      //   "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-      shadowUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    },
-  });
-
-  var pharm_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-    }),
-    gp_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
-    }),
-    hh_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-    }),
-    vac_site_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
-    });
-
-  pharmacy_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "Pharmacies";
-  });
-
-  gp_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "GP led service";
-  });
-
-  hh_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "Hospital Hub";
-  });
-
-  vaccine_centre_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "Vaccination centre";
-  });
-
-  // If you want to create a group of markers you want to hide/show you need to add them to a layergroup inside the loop, then add the layergroup to the map
-  pharmacy_site_markers = L.layerGroup();
-  for (item of pharmacy_vac_sites) {
-    pharm_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: pharm_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a pharmacy led vaccination site.</p>"
-      )
-      .addTo(pharmacy_site_markers);
-  }
-  pharmacy_site_markers.addTo(msoa_map_vaccine_leaf);
-
-  gp_led_markers = L.layerGroup();
-  for (item of gp_vac_sites) {
-    gp_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: gp_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a GP led vaccination site.</p>"
-      )
-      .addTo(gp_led_markers);
-  }
-  gp_led_markers.addTo(msoa_map_vaccine_leaf);
-
-  hospital_hub_markers = L.layerGroup();
-  for (item of hh_vac_sites) {
-    hh_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: hh_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a hospital hub vaccination site.</p>"
-      )
-      .addTo(hospital_hub_markers);
-  }
-  hospital_hub_markers.addTo(msoa_map_vaccine_leaf);
-
-  vaccination_centre_markers = L.layerGroup();
-  for (item of vaccine_centre_vac_sites) {
-    vac_centre_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: vac_site_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a vaccination centre site.</p>"
-      )
-      .addTo(vaccination_centre_markers);
-  }
-  vaccination_centre_markers.addTo(msoa_map_vaccine_leaf);
-
   var baseMaps_all_age = {
     "Number of individuals": msoa_vaccine_all_age_1_count_map_layer,
     "Proportion of estimated population aged 16+": msoa_vaccine_all_age_2_proportion_map_layer,
   };
 
-  var overlayMaps_all_age = {
-    "Show Pharmacy sites": pharmacy_site_markers,
-    "Show GP led sites": gp_led_markers,
-    "Show Hospital hub sites": hospital_hub_markers,
-    "Show Vaccination centre sites": vaccination_centre_markers,
-  };
+  // var overlayMaps_all_age = {
+  //   "Show Pharmacy sites": pharmacy_site_markers,
+  //   "Show GP led sites": gp_led_markers,
+  //   "Show Hospital hub sites": hospital_hub_markers,
+  //   "Show Vaccination centre sites": vaccination_centre_markers,
+  // };
 
   var basemap_msoa_vaccine = L.tileLayer(tileUrl, {
     attribution,
@@ -1222,8 +1102,8 @@ $.when(msoa_vaccine_total).done(function () {
   }).addTo(msoa_map_vaccine_leaf);
 
   L.control
-    // .layers(baseMaps_all_age, null, { collapsed: false })
-    .layers(baseMaps_all_age, overlayMaps_all_age, { collapsed: false })
+    .layers(baseMaps_all_age, null, { collapsed: false })
+    // .layers(baseMaps_all_age, overlayMaps_all_age, { collapsed: false })
     .addTo(msoa_map_vaccine_leaf);
 
   msoa_map_vaccine_leaf.fitBounds(
@@ -1296,108 +1176,13 @@ $.when(msoa_vaccine_total).done(function () {
     "Proportion of estimated population aged 50+": msoa_vaccine_older_age_2_proportion_map_layer,
   };
 
-  // If you want to create a group of markers you want to hide/show you need to add them to a layergroup inside the loop, then add the layergroup to the map
-  pharmacy_site_markers_eligible = L.layerGroup();
-  for (item of pharmacy_vac_sites) {
-    pharm_mark_item_eligible = L.marker([item.latitude, item.longitude], {
-      icon: pharm_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a pharmacy led vaccination site.</p>"
-      )
-      .addTo(pharmacy_site_markers_eligible);
-  }
-
-  gp_led_markers_eligible = L.layerGroup();
-  for (item of gp_vac_sites) {
-    gp_mark_item_eligible = L.marker([item.latitude, item.longitude], {
-      icon: gp_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a GP led vaccination site.</p>"
-      )
-      .addTo(gp_led_markers_eligible);
-  }
-
-  hospital_hub_markers_eligible = L.layerGroup();
-  for (item of hh_vac_sites) {
-    hh_mark_item_eligible = L.marker([item.latitude, item.longitude], {
-      icon: hh_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a hospital hub vaccination site.</p>"
-      )
-      .addTo(hospital_hub_markers_eligible);
-  }
-
-  vaccination_centre_markers_eligible = L.layerGroup();
-  for (item of vaccine_centre_vac_sites) {
-    vac_centre_mark_item_eligible = L.marker([item.latitude, item.longitude], {
-      icon: vac_site_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a vaccination centre site.</p>"
-      )
-      .addTo(vaccination_centre_markers_eligible);
-  }
-
-  pharmacy_site_markers_eligible.addTo(
-    msoa_map_ages_currently_eligible_vaccine_leaf
-  );
-  gp_led_markers_eligible.addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
-  hospital_hub_markers_eligible.addTo(
-    msoa_map_ages_currently_eligible_vaccine_leaf
-  );
-  vaccination_centre_markers_eligible.addTo(
-    msoa_map_ages_currently_eligible_vaccine_leaf
-  );
-
-  var overlayMaps_ages_eligible = {
-    "Show Pharmacy sites": pharmacy_site_markers_eligible,
-    "Show GP led sites": gp_led_markers_eligible,
-    "Show Hospital hub sites": hospital_hub_markers_eligible,
-    "Show Vaccination centre sites": vaccination_centre_markers_eligible,
-  };
-
   var basemap_msoa_ages_currently_eligible_vaccine = L.tileLayer(tileUrl, {
     attribution,
     minZoom: 8,
   }).addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
 
   L.control
-    .layers(baseMaps_age_currently_eligible, overlayMaps_ages_eligible, {
+    .layers(baseMaps_age_currently_eligible, null, {
       collapsed: false,
     })
     .addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
@@ -1562,3 +1347,159 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 }
 
 key_msoa_ages_currently_eligible_vaccines();
+
+// // ! Vaccination sites
+// var myIconClass = L.Icon.extend({
+//   options: {
+//     // iconUrl:
+//     //   "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+//     shadowUrl:
+//       "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+//     iconSize: [25, 41],
+//     iconAnchor: [12, 41],
+//     popupAnchor: [1, -34],
+//     shadowSize: [41, 41],
+//   },
+// });
+
+// var pharm_icon = new myIconClass({
+//     iconUrl:
+//       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+//   }),
+//   gp_icon = new myIconClass({
+//     iconUrl:
+//       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+//   }),
+//   hh_icon = new myIconClass({
+//     iconUrl:
+//       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+//   }),
+//   vac_site_icon = new myIconClass({
+//     iconUrl:
+//       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
+//   });
+
+// pharmacy_vac_sites = sussex_vaccination_sites.filter(function (d) {
+//   return d.Type === "Pharmacies";
+// });
+
+// gp_vac_sites = sussex_vaccination_sites.filter(function (d) {
+//   return d.Type === "GP led service";
+// });
+
+// hh_vac_sites = sussex_vaccination_sites.filter(function (d) {
+//   return d.Type === "Hospital Hub";
+// });
+
+// vaccine_centre_vac_sites = sussex_vaccination_sites.filter(function (d) {
+//   return d.Type === "Vaccination centre";
+// });
+
+// // If you want to create a group of markers you want to hide/show you need to add them to a layergroup inside the loop, then add the layergroup to the map
+// pharmacy_site_markers = L.layerGroup();
+// for (item of pharmacy_vac_sites) {
+//   pharm_mark_item = L.marker([item.latitude, item.longitude], {
+//     icon: pharm_icon,
+//   })
+//     .bindPopup(
+//       "<p><b>" +
+//         item.Site +
+//         " (" +
+//         item.LTLA +
+//         ")</b></p><p>Address: " +
+//         item.Address +
+//         " " +
+//         item.Postcode +
+//         "</p><p>This is a pharmacy led vaccination site.</p>"
+//     )
+//     .addTo(pharmacy_site_markers);
+// }
+// pharmacy_site_markers.addTo(msoa_map_vaccine_leaf);
+
+// gp_led_markers = L.layerGroup();
+// for (item of gp_vac_sites) {
+//   gp_mark_item = L.marker([item.latitude, item.longitude], {
+//     icon: gp_icon,
+//   })
+//     .bindPopup(
+//       "<p><b>" +
+//         item.Site +
+//         " (" +
+//         item.LTLA +
+//         ")</b></p><p>Address: " +
+//         item.Address +
+//         " " +
+//         item.Postcode +
+//         "</p><p>This is a GP led vaccination site.</p>"
+//     )
+//     .addTo(gp_led_markers);
+// }
+// gp_led_markers.addTo(msoa_map_vaccine_leaf);
+
+// hospital_hub_markers = L.layerGroup();
+// for (item of hh_vac_sites) {
+//   hh_mark_item = L.marker([item.latitude, item.longitude], {
+//     icon: hh_icon,
+//   })
+//     .bindPopup(
+//       "<p><b>" +
+//         item.Site +
+//         " (" +
+//         item.LTLA +
+//         ")</b></p><p>Address: " +
+//         item.Address +
+//         " " +
+//         item.Postcode +
+//         "</p><p>This is a hospital hub vaccination site.</p>"
+//     )
+//     .addTo(hospital_hub_markers);
+// }
+// hospital_hub_markers.addTo(msoa_map_vaccine_leaf);
+
+// vaccination_centre_markers = L.layerGroup();
+// for (item of vaccine_centre_vac_sites) {
+//   vac_centre_mark_item = L.marker([item.latitude, item.longitude], {
+//     icon: vac_site_icon,
+//   })
+//     .bindPopup(
+//       "<p><b>" +
+//         item.Site +
+//         " (" +
+//         item.LTLA +
+//         ")</b></p><p>Address: " +
+//         item.Address +
+//         " " +
+//         item.Postcode +
+//         "</p><p>This is a vaccination centre site.</p>"
+//     )
+//     .addTo(vaccination_centre_markers);
+// }
+// vaccination_centre_markers.addTo(msoa_map_vaccine_leaf);
+
+// var overlayMaps_sites = {
+//   "Show Pharmacy sites": pharmacy_site_markers,
+//   "Show GP led sites": gp_led_markers,
+//   "Show Hospital hub sites": hospital_hub_markers,
+//   "Show Vaccination centre sites": vaccination_centre_markers,
+// };
+
+site_type_colour_func = d3
+  .scaleOrdinal()
+  .domain(site_types)
+  .range(site_type_colours);
+
+site_types.forEach(function (item, index) {
+  var list = document.createElement("li");
+  list.innerHTML = item;
+  list.className = "key_list";
+  list.style.borderColor = site_type_colour_func(index);
+  var tt = document.createElement("div");
+  tt.className = "side_tt";
+  tt.style.borderColor = site_type_colour_func(index);
+  var tt_h3_1 = document.createElement("h3");
+  tt_h3_1.innerHTML = item;
+
+  tt.appendChild(tt_h3_1);
+  var div = document.getElementById("vaccine_site_key");
+  div.appendChild(list);
+});

@@ -292,8 +292,12 @@ as.character(vaccine_meta %>%
 ics_ethnicity <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
            sheet = 'Ethnicity & ICS STP',
            skip = 15,
-           col_names = c('Region_code', 'Null_1', 'Region_name', 'A: White British', 'B: White Irish', 'C: White Any other White background', 'D: Mixed White and Black Caribbean', 'E: Mixed White and Black African', 'F: Mixed White and Asian', 'G: Mixed Any other Mixed background' , 'H: Asian or Asian British Indian', 'J: Asian or Asian British Pakistani', 'K: Asian or Asian British Bangladeshi', 'L: Asian or Asian British Any other Asian background', 'M: Black or Black British Caribbean', 'N: Black or Black British African', 'P: Black or Black British Any other Black background', 'R: Other ethnic groups Chinese', 'S: Other ethnic groups Any other ethnic group', 'Not stated/Unknown', 'Null_2', 'Cumulative_total')) %>% 
-  select(!c(Null_1, Null_2))
+           col_names = c('Region_code', 'Null_1', 'Region_name', 'A: White British', 'B: White Irish', 'C: White Any other White background', 'D: Mixed White and Black Caribbean', 'E: Mixed White and Black African', 'F: Mixed White and Asian', 'G: Mixed Any other Mixed background' , 'H: Asian or Asian British Indian', 'J: Asian or Asian British Pakistani', 'K: Asian or Asian British Bangladeshi', 'L: Asian or Asian British Any other Asian background', 'M: Black or Black British Caribbean', 'N: Black or Black British African', 'P: Black or Black British Any other Black background', 'R: Other ethnic groups Chinese', 'S: Other ethnic groups Any other ethnic group', 'Not stated/Unknown', 'Null_2', 'Cumulative_total_second', 'Null_3', 'Cumulative_doses_1_and_2')) %>% 
+  select(!c(Null_1, Null_2, Null_3))
+
+County_boundary <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
+  filter(ctyua19nm %in% c('West Sussex', 'East Sussex', 'Brighton and Hove')) %>%
+  spTransform(CRS("+init=epsg:4326"))
 
 # MSOA vaccine data ####
 
@@ -393,10 +397,6 @@ print(msoa_total_so_far)
 dev.off()
 
 all_age_prop_colours <- c("#440154", "#482576", "#414487", "#35608D", "#2A788E", "#21908C", "#22A884", "#43BF71", "#7AD151", "#BBDF27", "#FDE725")
-
-County_boundary <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
-  filter(ctyua19nm %in% c('West Sussex', 'East Sussex', 'Brighton and Hove')) %>%
-  spTransform(CRS("+init=epsg:4326"))
 
 msoa_all_age_proportion <- ggplot() +
   coord_fixed(1.5) +
@@ -585,8 +585,6 @@ lad_boundary <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664
   mutate(Proportion_age_known_banded = factor(ifelse(Proportion_age_known < .3, 'Less than 30%', ifelse(Proportion_age_known < .4, '30-39%', ifelse(Proportion_age_known < .5, '40-49%', ifelse(Proportion_age_known < .6, '50-59%', ifelse(Proportion_age_known < .7, '60-69%', ifelse(Proportion_age_known < .8, '70-79%', ifelse(Proportion_age_known < .9, '80-89%', ifelse(Proportion_age_known < 1, '90-99%', '100% of estimated population')))))))), levels = c('Less than 30%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population'))) %>% 
   mutate(Proportion_50_plus_banded = factor(ifelse(Proportion_50_plus < .8, 'Less than 80%', ifelse(Proportion_50_plus < .85, '80-84%', ifelse(Proportion_50_plus < .9, '85-89%', ifelse(Proportion_50_plus < .95, '90-94%', ifelse(Proportion_50_plus < 1, '95-99%', '100% of estimated population'))))), levels = c('Less than 80%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) 
 
-
-
 vac_llim_prop_all_age <- round_any(min(lad_boundary$Proportion_age_known, na.rm = TRUE), .05, floor)
 vac_ulim_prop_all_age <- round_any(max(lad_boundary$Proportion_age_known, na.rm = TRUE), .05, ceiling)
 
@@ -619,37 +617,6 @@ ltla_all_age_proportion <- ggplot() +
        subtitle = paste0('Sussex Lower Tier Local and Unitary Authorities'),
        caption = 'Note: This excludes a small number of individuals where the age was not known.')  +
   theme(legend.position = c(.9,.1))
-
-# all_age_prop_colours <- c("#440154", "#472D7B", "#3B528B", "#2C728E", "#21908C", "#27AD81", "#5DC863", "#AADC32", "#FDE725")
-# 
-# ltla_all_age_proportion <- ggplot() +
-#   coord_fixed(1.5) +
-#   map_theme() +
-#   geom_polygon(data = lad_boundary,
-#                aes(x=long,
-#                    y=lat,
-#                    group = group,
-#                    fill = Proportion_age_known_banded),
-#                color="#ffffff",
-#                size = .1,
-#                alpha = 1,
-#                show.legend = TRUE) +
-#   scale_fill_manual(values = all_age_prop_colours,
-#                     breaks = levels(lad_boundary$Proportion_age_known_banded),
-#                     drop = FALSE,
-#                     name = 'Proportion of population\n(aged 16+)') +
-#   geom_polygon(data = County_boundary,
-#                aes(x = long,
-#                    y = lat,
-#                    group = group),
-#                colour = '#630436',
-#                fill = NA,
-#                size = 1) +
-#   labs(title = paste0('Proportion of individuals receiving at least one dose of a COVID-19 vaccine (aged 16+);\nData as at ', vaccine_published_date),
-#        subtitle = paste0('Sussex Lower Tier Local and Unitary Authorities; Excludes inviduals where no age was recorded.'),
-#        caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS) for those aged 16 and over.')  +
-#     guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
-#   theme(legend.position = 'bottom')
 
 png(paste0(output_directory_x, '/Proportion_all_age_vaccination_ltla_latest.png'),
     width = 1280,
@@ -692,33 +659,6 @@ ltla_50_plus_age_proportion <- ggplot() +
   # guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
   theme(legend.position = c(.9, .1))
 
-# ltla_65_plus_age_proportion <- ggplot() +
-#   coord_fixed(1.5) +
-#   map_theme() +
-#   geom_polygon(data = lad_boundary,
-#                aes(x=long,
-#                    y=lat,
-#                    group = group,
-#                    fill = Proportion_65_plus_banded),
-#                color="#ffffff",
-#                size = .1,
-#                alpha = 1,
-#                show.legend = TRUE) +
-#   scale_fill_manual(values = all_age_prop_colours,
-#                     breaks = levels(lad_boundary$Proportion_65_plus_banded),
-#                        name = 'Proportion of those aged\n65 years and over') +
-#   geom_polygon(data = County_boundary,
-#                aes(x = long,
-#                    y = lat,
-#                    group = group),
-#                colour = '#630436',
-#                fill = NA,
-#                size = 1) +
-#   labs(title = paste0('Proportion of individuals aged 65+ receiving at least one dose of a COVID-19 vaccine per 100,000 population (aged 65+);\nData as at ', vaccine_published_date),
-#        subtitle = paste0('Sussex Lower Tier Local and Unitary Authorities; Includes inviduals where age was recorded.'),
-#        caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS) for those aged 16 and over.')  +
-#   guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
-#   theme(legend.position = 'bottom')
 
 png(paste0(output_directory_x, '/Proportion_age_50_plus_vaccination_ltla_latest.png'),
     width = 1280,
@@ -825,17 +765,33 @@ vaccine_df_wsx_age_wide %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_ltla_age.json'))
 
+
+
+# MSOA by age ####
+vaccine_df_msoa_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+                                  sheet = 'MSOA',
+                                  skip = 15,
+                                  col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'Under_50', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
+  filter(!is.na(Region_name)) %>% 
+  pivot_longer(cols = !c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm'), values_to = 'At_least_one_dose') %>% 
+  rename(Age_group = name) %>% 
+  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) #%>% 
+  # left_join(mye_nims_ltla_age, by = c('LTLA_code', 'LTLA_name', 'Age_group')) %>% 
+  # mutate(Age_group = factor(ifelse(Age_group == 'Under_50', 'Age under 50*', ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group)))))))), levels = c('Age under 50*', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>% 
+  # mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose)
+
+
 # What about social care staff and residents ####
 
 # Total eligible due to not having had COVID-19 in last 28 days
 
-vaccine_df_utla_asc <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
-                                  sheet = 'Care Homes by UTLA',
-                                  skip = 16,
-                                  col_names = c('Name', 'Null_1','Total_residents', 'Total_eligible_residents', 'Number_eligible_residents_vaccinated_dose_one', 'Proportion_eligible_residents_vaccinated_dose_one', 'Null_2', 'Total_staff', 'Total_eligible_staff', 'Number_staff_vaccinatied_dose_one', 'Proportion_eligible_staff_vaccinated_dose_one')) %>% 
-  select(!c('Null_1', 'Null_2')) %>% 
-  filter(!is.na(Total_residents)) 
-
-vaccine_df_utla_asc %>% 
-  filter(Name %in% c('West Sussex', 'East Sussex', 'Brighton and Hove'))
+# vaccine_df_utla_asc <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+#                                   sheet = 'Care Homes by UTLA',
+#                                   skip = 16,
+#                                   col_names = c('Name', 'Null_1','Total_residents', 'Total_eligible_residents', 'Number_eligible_residents_vaccinated_dose_one', 'Proportion_eligible_residents_vaccinated_dose_one', 'Null_2', 'Total_staff', 'Total_eligible_staff', 'Number_staff_vaccinatied_dose_one', 'Proportion_eligible_staff_vaccinated_dose_one')) %>% 
+#   select(!c('Null_1', 'Null_2')) %>% 
+#   filter(!is.na(Total_residents)) 
+# 
+# vaccine_df_utla_asc %>% 
+#   filter(Name %in% c('West Sussex', 'East Sussex', 'Brighton and Hove'))
                                   
