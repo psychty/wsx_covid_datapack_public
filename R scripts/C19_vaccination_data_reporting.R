@@ -101,17 +101,17 @@ nhs_vaccine_sites_hospital_hub <- read_excel(paste0(github_repo_dir,'/Source fil
   mutate(Type = 'Hospital Hub') 
 
 nhs_vaccine_sites_gp_led <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
-                                             sheet = 'GP led local vaccination servic') %>% 
+                                             sheet = 'GP-led vaccination services') %>% 
   mutate(Type = 'GP led service') %>% 
-  rename(Site = 'Name of site')
+  rename(Site = 'Site name')
 
 nhs_vaccine_sites_pharm <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
                                        sheet = 'Pharmacies') %>% 
   mutate(Type = 'Pharmacies') %>% 
-  rename(Site = 'Name of site')
+  rename(Site = 'Site name')
 
 nhs_vaccine_sites_centre <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
-                                       sheet = 'Vaccination Centres') %>% 
+                                       sheet = 'Vaccination centres') %>% 
   mutate(Type = 'Vaccination centre') %>% 
   rename(Site = Centre)
 
@@ -535,13 +535,12 @@ png(paste0(output_directory_x, '/Vaccination_msoa_50_plus_latest.png'),
 (msoa_total_age_50_plus_so_far +  scale_fill_manual(name = 'Number of individuals\naged 50 and over\nreceiving at least one dose', values = rev(c('#ffffb2','#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026')), breaks = rev(levels(MSOA_boundary_gg$Total_age_50_banded)), drop = FALSE) + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))/(msoa_age_50_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))
 dev.off()
 
-
-
 # LTLA vaccine data ####
 
 mye_nims_ltla <- read_csv(paste0(github_repo_dir, '/Source files/ltla_nims_pop_estimates.csv')) %>% 
   mutate(Population = Under_16 + Age_16_and_over) %>% 
-  mutate(Population_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over)
+  mutate(Population_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over)
 
 vaccine_df_ltla <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                               sheet = 'LTLA',
@@ -550,29 +549,34 @@ vaccine_df_ltla <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccin
   filter(!is.na(Region_name)) %>% 
   mutate(Total_where_age_known = Under_50 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Age_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  left_join(mye_nims_ltla[c('LTLA_code', 'Age_16_and_over', 'Population_50_and_over')], by = 'LTLA_code') %>% 
+  mutate(Age_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  left_join(mye_nims_ltla[c('LTLA_code', 'Age_16_and_over', 'Population_50_and_over', 'Population_65_and_over')], by = 'LTLA_code') %>% 
   mutate(Proportion_age_known = Total_where_age_known/ Age_16_and_over) %>% 
   mutate(Proportion_50_plus = Age_50_and_over/Population_50_and_over) %>% 
-  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Age_16_and_over, Population_50_and_over) %>% 
+  mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>% 
+  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Age_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) %>% 
   rename(Population_16_and_over = Age_16_and_over)
 
 vaccine_df_wsx <- vaccine_df_ltla %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
   summarise(Total_where_age_known = sum(Total_where_age_known),
             Age_50_and_over = sum(Age_50_and_over),
+            Age_65_and_over = sum(Age_65_and_over),
             Population_16_and_over = sum(Population_16_and_over),
-            Population_50_and_over = sum(Population_50_and_over)) %>% 
+            Population_50_and_over = sum(Population_50_and_over),
+            Population_65_and_over = sum(Population_65_and_over)) %>% 
   mutate(LTLA_name = 'West Sussex',
          LTLA_code = 'E10000032') %>%
   mutate(Proportion_age_known = Total_where_age_known/ Population_16_and_over) %>% 
   mutate(Proportion_50_plus = Age_50_and_over/Population_50_and_over) %>%
-  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over) 
+  mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>%
+  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) 
 
 vaccine_df_ltla %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
   bind_rows(vaccine_df_wsx) %>% 
   rename(Name = 'LTLA_name') %>% 
-  select(Name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over) %>% 
+  select(Name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
 
@@ -765,9 +769,14 @@ vaccine_df_wsx_age_wide %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_ltla_age.json'))
 
-
-
 # MSOA by age ####
+mye_nims_msoa_age <- mye_nims_msoa %>% 
+  select(!c('Population', 'Age_16_and_over', 'Population_50_and_over')) %>% 
+  pivot_longer(cols = !c('msoa11cd', 'msoa11nm'), values_to = 'NIMS_population') %>% 
+  rename(Age_group = 'name') %>% 
+  mutate(Age_group = ifelse(Age_group == 'Age_16_49', 'Under_50', Age_group)) %>% 
+  filter(Age_group != 'Under_16')
+
 vaccine_df_msoa_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                                   sheet = 'MSOA',
                                   skip = 15,
@@ -775,11 +784,18 @@ vaccine_df_msoa_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_va
   filter(!is.na(Region_name)) %>% 
   pivot_longer(cols = !c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm'), values_to = 'At_least_one_dose') %>% 
   rename(Age_group = name) %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) #%>% 
-  # left_join(mye_nims_ltla_age, by = c('LTLA_code', 'LTLA_name', 'Age_group')) %>% 
-  # mutate(Age_group = factor(ifelse(Age_group == 'Under_50', 'Age under 50*', ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group)))))))), levels = c('Age under 50*', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>% 
-  # mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose)
+  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+  left_join(mye_nims_msoa_age, by = c('msoa11cd', 'msoa11nm', 'Age_group')) %>%
+  mutate(Age_group = factor(ifelse(Age_group == 'Under_50', 'Age under 50*', ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group)))))))), levels = c('Age under 50*', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>%
+  mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose)
 
+vaccine_df_wsx_age_msoa_wide <- vaccine_df_msoa_age %>% 
+  filter(msoa11cd %in% vaccine_df_msoa$msoa11cd) %>% 
+  select('LTLA_name', 'msoa11cd', 'msoa11nm', 'Age_group', 'At_least_one_dose', 'Individuals_not_vaccinated', 'NIMS_population') 
+
+vaccine_df_wsx_age_msoa_wide %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccine_msoa_age.json'))
 
 # What about social care staff and residents ####
 
