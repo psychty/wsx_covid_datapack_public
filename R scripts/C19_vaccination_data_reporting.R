@@ -40,6 +40,9 @@ github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
+mobile_github_repo_dir <- "~/GitHub/wsx_covid_public_mobile_site"
+mobile_output_directory_x <- paste0(mobile_github_repo_dir, '/Outputs')
+
 # Age is based on age on 31st March 2021 to align with JCVI priority assignments
 map_theme = function(){
   theme( 
@@ -282,11 +285,21 @@ vaccine_published_date %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_update_date.json'))
 
+substr(vaccine_published_date, 1, nchar(vaccine_published_date) - 5) %>% 
+  toJSON() %>% 
+  write_lines(paste0(mobile_output_directory_x, '/vaccine_update_date.json'))
+
 as.character(vaccine_meta %>% 
                filter(item == 'Period:') %>% 
                select(description)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_administered_date.json'))
+
+as.character(vaccine_meta %>% 
+               filter(item == 'Period:') %>% 
+               select(description)) %>% 
+  toJSON() %>% 
+  write_lines(paste0(mobile_output_directory_x, '/vaccine_administered_date.json'))
 
 # ICS/STP Ethnicity data
 ics_ethnicity <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
@@ -572,10 +585,53 @@ vaccine_df_wsx <- vaccine_df_ltla %>%
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>%
   select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) 
 
+
+
+# Add SE and England
+
+mye_ons_region <- read_csv(paste0(github_repo_dir, '/Source files/region_ons_pop_estimates.csv')) %>% 
+  mutate(Population = Under_16 + Age_16_and_over) %>% 
+  mutate(Population_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  rename(Region_name = Area) %>% 
+  mutate(Region_name = ifelse(Region_name == 'England', 'England', paste0(Region_name, ' region')))
+
+vaccine_df_region <- read_excel("GitHub/wsx_covid_datapack_public/Source files/nhs_e_vaccines.xlsx", 
+                                sheet = "NHS Region", 
+                                range = "B14:K22",
+                                col_names = c('Region_name', 'Null_1','Under_50', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>%
+  select(!Null_1) %>% 
+  filter(!is.na(Region_name)) %>%
+  mutate(Region_name = ifelse(Region_name == 'Total', 'England', paste0(Region_name, ' region'))) %>% 
+  mutate(Total_where_age_known = Under_50 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Age_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Age_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  left_join(mye_ons_region[c('Region_name', 'Age_16_and_over', 'Population_50_and_over', 'Population_65_and_over')], by = 'Region_name') %>% 
+  mutate(Proportion_age_known = Total_where_age_known/ Age_16_and_over) %>% 
+  mutate(Proportion_50_plus = Age_50_and_over/Population_50_and_over) %>% 
+  mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>% 
+  select(Region_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Age_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) %>% 
+  rename(Population_16_and_over = Age_16_and_over) %>% 
+  filter(Region_name %in% c('South East region', 'England')) %>% 
+  rename(Name = Region_name) %>% 
+  mutate(Name = factor(Name, levels = c('South East region', 'England'))) %>% 
+  arrange(Name)
+
 vaccine_df_ltla %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
   bind_rows(vaccine_df_wsx) %>% 
   rename(Name = 'LTLA_name') %>% 
+  bind_rows(vaccine_df_region) %>% 
+  select(Name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) %>% 
+  toJSON() %>% 
+  write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
+
+
+vaccine_df_ltla %>% 
+  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+  bind_rows(vaccine_df_wsx) %>% 
+  rename(Name = 'LTLA_name') %>% 
+ # bind_rows(vaccine_df_region) %>% 
   select(Name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
@@ -662,7 +718,6 @@ ltla_50_plus_age_proportion <- ggplot() +
        caption = paste0('Note: This excludes a smaller number of individuals where the age was not known.'))  +
   # guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
   theme(legend.position = c(.9, .1))
-
 
 png(paste0(output_directory_x, '/Proportion_age_50_plus_vaccination_ltla_latest.png'),
     width = 1280,
@@ -768,6 +823,10 @@ vaccine_df_wsx_age_wide <- vaccine_df_ltla_age %>%
 vaccine_df_wsx_age_wide %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_ltla_age.json'))
+
+vaccine_df_wsx_age_wide %>% 
+  toJSON() %>% 
+  write_lines(paste0(mobile_output_directory_x, '/vaccine_ltla_age.json'))
 
 # MSOA by age ####
 mye_nims_msoa_age <- mye_nims_msoa %>% 
