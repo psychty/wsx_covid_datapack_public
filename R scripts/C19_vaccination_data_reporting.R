@@ -645,6 +645,11 @@ lad_boundary <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664
   mutate(Proportion_age_known_banded = factor(ifelse(Proportion_age_known < .3, 'Less than 30%', ifelse(Proportion_age_known < .4, '30-39%', ifelse(Proportion_age_known < .5, '40-49%', ifelse(Proportion_age_known < .6, '50-59%', ifelse(Proportion_age_known < .7, '60-69%', ifelse(Proportion_age_known < .8, '70-79%', ifelse(Proportion_age_known < .9, '80-89%', ifelse(Proportion_age_known < 1, '90-99%', '100% of estimated population')))))))), levels = c('Less than 30%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population'))) %>% 
   mutate(Proportion_50_plus_banded = factor(ifelse(Proportion_50_plus < .8, 'Less than 80%', ifelse(Proportion_50_plus < .85, '80-84%', ifelse(Proportion_50_plus < .9, '85-89%', ifelse(Proportion_50_plus < .95, '90-94%', ifelse(Proportion_50_plus < 1, '95-99%', '100% of estimated population'))))), levels = c('Less than 80%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) 
 
+lad_boundary_export <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
+  filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing'))
+
+geojson_write(ms_simplify(geojson_json(lad_boundary_export), keep = 0.6), file = paste0(output_directory_x, '/lad_boundary_export.geojson'))
+
 vac_llim_prop_all_age <- round_any(min(lad_boundary$Proportion_age_known, na.rm = TRUE), .05, floor)
 vac_ulim_prop_all_age <- round_any(max(lad_boundary$Proportion_age_known, na.rm = TRUE), .05, ceiling)
 

@@ -174,6 +174,13 @@ nav {
   z-index: 1;
 }
 
+#map_vaccine_sites {
+  height: 600px;
+  width: calc(100% - 50px);
+  margin: auto;
+  z-index: 1;
+}
+
 table {
   border-collapse: collapse;
   width: auto;
@@ -288,6 +295,12 @@ td {
 
 @media screen and (max-width: 1400px) {
   #rate_map_2 {
+    height: 550px;
+  }
+}
+
+@media screen and (max-width: 1400px) {
+  #map_vaccine_sites {
     height: 550px;
   }
 }
