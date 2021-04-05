@@ -648,7 +648,7 @@ lad_boundary <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664
 lad_boundary_export <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
   filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing'))
 
-geojson_write(ms_simplify(geojson_json(lad_boundary_export), keep = 0.6), file = paste0(output_directory_x, '/lad_boundary_export.geojson'))
+geojson_write(ms_simplify(geojson_json(lad_boundary_export), keep = 1), file = paste0(output_directory_x, '/lad_boundary_export.geojson'))
 
 vac_llim_prop_all_age <- round_any(min(lad_boundary$Proportion_age_known, na.rm = TRUE), .05, floor)
 vac_ulim_prop_all_age <- round_any(max(lad_boundary$Proportion_age_known, na.rm = TRUE), .05, ceiling)

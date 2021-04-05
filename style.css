@@ -754,3 +754,31 @@ section {
   /* font-weight: bold; */
   fill: #d80727;
 }
+
+
+/* searchable table */
+#title {
+  font: 26px sans-serif;
+  position: absolute;
+  top: -40px;
+  left: 50px;
+}
+
+#FilterableTable {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 40px;
+  left: 20px;
+}
+
+.SearchBar { 
+  display: inline; 
+  position: relative;
+  left: 1%;
+}
+
+.SearchBar input {
+  position: relative;
+  left: 2%;
+}
