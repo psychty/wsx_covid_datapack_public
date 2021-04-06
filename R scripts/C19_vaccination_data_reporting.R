@@ -346,8 +346,14 @@ vaccine_df_msoa <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccin
   select(msoa11cd, msoa11hclnm, LTLA_name, Total_where_age_known, Proportion_age_known, Total_banded, Proportion_age_known_banded, Age_50_and_over, Proportion_50_plus, Total_age_50_banded, Proportion_50_plus_banded, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_65_plus, Total_age_65_banded, Proportion_65_plus_banded, Estimated_left_to_vaccinate_65_plus, Pop_weighted_imd_score, National_pop_weighted_rank, National_pop_weighted_decile, Rank_in_Sussex, Decile_in_Sussex, RUC11) 
 
 vaccine_df_msoa %>% 
+  group_by(LTLA_name) %>% 
+  mutate(Proportion_rank_50_plus_within_LTLA = rank(desc(Proportion_50_plus))) %>% 
+  mutate(Proportion_rank_65_plus_within_LTLA = rank(desc(Proportion_65_plus))) %>% 
+  mutate(MSOA_name = paste0(msoa11hclnm, ' (', msoa11cd, ')')) %>% 
+  select(LTLA_name, MSOA_name, Total_where_age_known, Age_50_and_over, Proportion_rank_50_plus_within_LTLA, Proportion_50_plus, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_rank_65_plus_within_LTLA,Proportion_65_plus, Estimated_left_to_vaccinate_65_plus, Pop_weighted_imd_score) %>% 
+  arrange(LTLA_name, Proportion_rank_50_plus_within_LTLA) %>% 
   toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/vaccine_msoa_data.json'))
+  write_lines(paste0(output_directory_x, '/vaccine_msoa_explore_data.json'))
 
 vaccine_df_msoa %>% 
  write.csv(. , paste0(output_directory_x, '/vaccine_msoa_data.csv'), row.names = FALSE)
@@ -860,6 +866,9 @@ vaccine_df_wsx_age_msoa_wide <- vaccine_df_msoa_age %>%
 vaccine_df_wsx_age_msoa_wide %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_age.json'))
+
+
+
 
 # What about social care staff and residents ####
 
