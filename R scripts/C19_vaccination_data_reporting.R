@@ -598,8 +598,6 @@ vaccine_df_wsx <- vaccine_df_ltla %>%
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>%
   select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) 
 
-
-
 # Add SE and England
 
 mye_ons_region <- read_csv(paste0(github_repo_dir, '/Source files/region_ons_pop_estimates.csv')) %>% 
@@ -638,7 +636,6 @@ vaccine_df_ltla %>%
   select(Name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over) %>% 
   toJSON() %>% 
   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
-
 
 vaccine_df_ltla %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
@@ -874,9 +871,6 @@ vaccine_df_wsx_age_msoa_wide %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_age.json'))
 
-
-
-
 # What about social care staff and residents ####
 
 # Total eligible due to not having had COVID-19 in last 28 days
@@ -890,4 +884,3 @@ vaccine_df_wsx_age_msoa_wide %>%
 # 
 # vaccine_df_utla_asc %>% 
 #   filter(Name %in% c('West Sussex', 'East Sussex', 'Brighton and Hove'))
-                                  
