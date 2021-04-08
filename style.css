@@ -181,6 +181,14 @@ nav {
   z-index: 1;
 }
 
+#msoa_map_vaccine_deprivation {
+  height: 50vh;
+  width: calc(100% - 50px);
+  margin: auto;
+  z-index: 1;
+  /* background: red; */
+}
+
 table {
   border-collapse: collapse;
   width: auto;
@@ -301,6 +309,12 @@ td {
 
 @media screen and (max-width: 1400px) {
   #map_vaccine_sites {
+    height: 550px;
+  }
+}
+
+@media screen and (max-width: 1400px) {
+  #msoa_map_vaccine_deprivation {
     height: 550px;
   }
 }
@@ -633,6 +647,22 @@ p.key_list .side_tt {
 }
 
 .key_list_restrictions {
+  display: block;
+  padding: 5px;
+  border-radius: 4px;
+  color: #000000;
+  background: #ffffff;
+  text-align: left;
+  font-size: 0.8rem;
+  font-family: inherit;
+  margin: 0 0 1px;
+  border-left: 13px solid #ccc;
+  opacity: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.key_list_imd_all {
   display: block;
   padding: 5px;
   border-radius: 4px;

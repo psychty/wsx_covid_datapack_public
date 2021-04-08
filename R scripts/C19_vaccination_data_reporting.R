@@ -245,6 +245,9 @@ Total_sites_by_district <- Sussex_vaccine_sites %>%
   arrange(Area)
 
 Total_sites_by_district %>% 
+  rename(GP_led = `GP led service`,
+         Hospital_hub = `Hospital Hub`,
+         Vaccination_centre = `Vaccination centre`) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/total_vaccination_sites_summary_table.json'))
 
@@ -361,6 +364,10 @@ vaccine_df_msoa %>%
 MSOA_boundary <- geojson_read('https://github.com/psychty/wsx_covid_datapack_public/raw/master/Source%20files/failsafe_msoa_boundary.geojson', what = 'sp') %>% 
   filter(MSOA11CD %in% vaccine_df_msoa$msoa11cd) %>% 
   arrange(MSOA11CD)
+
+vaccine_df_msoa <- vaccine_df_msoa %>% 
+  mutate(National_pop_weighted_decile = factor(ifelse(National_pop_weighted_decile == 1, '10% most deprived',  ifelse(National_pop_weighted_decile == 2, 'Decile 2',  ifelse(National_pop_weighted_decile == 3, 'Decile 3',  ifelse(National_pop_weighted_decile == 4, 'Decile 4',  ifelse(National_pop_weighted_decile == 5, 'Decile 5',  ifelse(National_pop_weighted_decile == 6, 'Decile 6',  ifelse(National_pop_weighted_decile == 7, 'Decile 7',  ifelse(National_pop_weighted_decile == 8, 'Decile 8',  ifelse(National_pop_weighted_decile == 9, 'Decile 9',  ifelse(National_pop_weighted_decile == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>% 
+  mutate(Decile_in_Sussex = factor(ifelse(Decile_in_Sussex == 1, '10% most deprived',  ifelse(Decile_in_Sussex == 2, 'Decile 2',  ifelse(Decile_in_Sussex == 3, 'Decile 3',  ifelse(Decile_in_Sussex == 4, 'Decile 4',  ifelse(Decile_in_Sussex == 5, 'Decile 5',  ifelse(Decile_in_Sussex == 6, 'Decile 6',  ifelse(Decile_in_Sussex == 7, 'Decile 7',  ifelse(Decile_in_Sussex == 8, 'Decile 8',  ifelse(Decile_in_Sussex == 9, 'Decile 9',  ifelse(Decile_in_Sussex == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived')))
 
 df <- data.frame(ID = character())
 

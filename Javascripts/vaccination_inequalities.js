@@ -881,3 +881,424 @@ headers.on("click", function (d) {
   //   }
   // }
 }); // end of click listeners
+
+// ! Vaccine sites table
+
+var request = new XMLHttpRequest();
+request.open(
+  "GET",
+  "./Outputs/total_vaccination_sites_summary_table.json",
+  false
+);
+request.send(null);
+var vaccine_sites_at_a_glance = JSON.parse(request.responseText);
+
+console.log(vaccine_sites_at_a_glance);
+
+window.onload = () => {
+  loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance);
+};
+
+function loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance) {
+  const tableBody = document.getElementById("vaccine_sites_table_1");
+  var dataHTML = "";
+
+  for (let item of vaccine_sites_at_a_glance) {
+    dataHTML += `<tr><td>${item.Area}</td><td>${d3.format(",.0f")(
+      item.Total
+    )}</td><td>${d3.format(",.0f")(item.GP_led)}</td><td>${d3.format(",.0f")(
+      item.Pharmacies
+    )}</td><td>${d3.format(",.0f")(item.Hospital_hub)}</td><td>${d3.format(
+      ",.0f"
+    )(item.Vaccination_centre)}</td></tr>`;
+  }
+
+  tableBody.innerHTML = dataHTML;
+}
+
+// ! Map
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/Sussex_vaccination_sites.json", false);
+request.send(null);
+var sussex_vaccination_sites = JSON.parse(request.responseText);
+
+// Parameters
+
+var deprivation_deciles = [
+  "10% most deprived",
+  "Decile 2",
+  "Decile 3",
+  "Decile 4",
+  "Decile 5",
+  "Decile 6",
+  "Decile 7",
+  "Decile 8",
+  "Decile 9",
+  "10% least deprived",
+];
+
+var deprivation_colours = [
+  "#0000FF",
+  "#2080FF",
+  "#40E0FF",
+  "#70FFD0",
+  "#90FFB0",
+  "#C0E1B0",
+  "#E0FFA0",
+  "#E0FF70",
+  "#F0FF30",
+  "#FFFF00",
+];
+
+var msoa_covid_imd_colour_func = d3
+  .scaleOrdinal()
+  .domain(deprivation_deciles)
+  .range(deprivation_colours);
+
+var msoa_covid_vaccines_ages_currently_eligible_proportion_raw = [
+  "Less than 70%",
+  "70-74%",
+  "75-79%",
+  "80-84%",
+  "85-89%",
+  "90-94%",
+  "95-99%",
+  "100% of estimated population",
+];
+
+var msoa_covid_vaccines_ages_currently_eligible_proportion_colours = [
+  "#F0F921",
+  "#FEBC2A",
+  "#F48849",
+  "#DB5C68",
+  "#B93289",
+  "#8B0AA5",
+  "#5402A3",
+  "#0D0887",
+];
+
+var msoa_covid_vaccines_ages_currently_eligible_colour_proportions_func = d3
+  .scaleOrdinal()
+  .domain(msoa_covid_vaccines_ages_currently_eligible_proportion_raw)
+  .range(msoa_covid_vaccines_ages_currently_eligible_proportion_colours);
+
+// Add AJAX request for data
+var msoa_imd_map_data = $.ajax({
+  url: "./Outputs/msoa_covid_vaccine_latest.geojson",
+  dataType: "json",
+  success: console.log("MSOA boundary data successfully loaded."),
+  error: function (xhr) {
+    alert(xhr.statusText);
+  },
+});
+
+var lad_boundaries = $.ajax({
+  url: "./Outputs/lad_boundary_export.geojson",
+  dataType: "json",
+  success: console.log("LAD boundary data successfully loaded."),
+  error: function (xhr) {
+    alert(xhr.statusText);
+  },
+});
+
+var tileUrl = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+var attribution =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a><br> Contains Ordnance Survey data © Crown copyright and database right 2020.<br>Zoom in/out using your mouse wheel or the plus (+) and minus (-) buttons. Click on an area to find out more';
+
+// IMD style
+
+function vaccine_msoa_covid_imd_style(d) {
+  return d === deprivation_deciles[0]
+    ? deprivation_colours[0]
+    : d === deprivation_deciles[1]
+    ? deprivation_colours[1]
+    : d === deprivation_deciles[2]
+    ? deprivation_colours[2]
+    : d === deprivation_deciles[3]
+    ? deprivation_colours[3]
+    : d === deprivation_deciles[4]
+    ? deprivation_colours[4]
+    : d === deprivation_deciles[5]
+    ? deprivation_colours[5]
+    : d === deprivation_deciles[6]
+    ? deprivation_colours[6]
+    : d === deprivation_deciles[7]
+    ? deprivation_colours[7]
+    : d === deprivation_deciles[8]
+    ? deprivation_colours[8]
+    : d === deprivation_deciles[9]
+    ? deprivation_colours[9]
+    : "#feebe2";
+}
+
+function style_msoa_imd_decile_national(feature) {
+  return {
+    fillColor: vaccine_msoa_covid_imd_style(
+      feature.properties.National_pop_weighted_decile
+    ),
+    weight: 0.5,
+    opacity: 1,
+    color: "#000000",
+    // dashArray: "3",
+    fillOpacity: 0.75,
+  };
+}
+
+function style_msoa_imd_decile_sussex(feature) {
+  return {
+    fillColor: vaccine_msoa_covid_imd_style(
+      feature.properties.Decile_in_Sussex
+    ),
+    weight: 0.5,
+    opacity: 1,
+    color: "#000000",
+    // dashArray: "3",
+    fillOpacity: 0.75,
+  };
+}
+function style_lad_boundary(feature) {
+  return {
+    weight: 1.5,
+    opacity: 1,
+    color: "#000000",
+    // dashArray: "3",
+    fillOpacity: 0,
+  };
+}
+
+// Ages currently eligible proportion
+function vaccine_msoa_colour_ages_currently_eligible_proportion(d) {
+  return d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[0]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[0]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[1]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[1]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[2]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[2]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[3]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[3]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[4]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[4]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[5]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[5]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[6]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[6]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[7]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[7]
+    : "#feebe2";
+}
+
+function style_msoa_vaccine_ages_currently_eligible_proportion(feature) {
+  return {
+    fillColor: vaccine_msoa_colour_ages_currently_eligible_proportion(
+      feature.properties.Proportion_50_plus_banded
+    ),
+    weight: 0.5,
+    opacity: 1,
+    color: "#000000",
+    // dashArray: "3",
+    fillOpacity: 0.75,
+  };
+}
+
+$.when(msoa_imd_map_data).done(function () {
+  var msoa_map_vaccine_imd_leaf = L.map("msoa_map_vaccine_deprivation");
+
+  var msoa_imd_national_map_layer = L.geoJSON(msoa_imd_map_data.responseJSON, {
+    style: style_msoa_imd_decile_national,
+  }).bindPopup(function (layer) {
+    return (
+      "<p><b>" +
+      layer.feature.properties.msoa11hclnm +
+      " (" +
+      layer.feature.properties.msoa11cd +
+      ")</b></p>This MSOA is ranked in <b>" +
+      layer.feature.properties.National_pop_weighted_decile +
+      "</b> with 1 being the most deprived 10% of neighbourhoods nationally and 10 being the least deprived 10% of neighbourhoods.</p><p> A total of <b> " +
+      d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
+      "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+      " </b>of the estimated population in this area.</p><p>A total of <b>" +
+      d3.format(",.0f")(layer.feature.properties.Age_50_and_over) +
+      " </b>people aged 50+ have received at least one dose (<b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_50_plus) +
+      "</b>).</p>"
+    );
+  });
+
+  var msoa_imd_sussex_map_layer = L.geoJSON(msoa_imd_map_data.responseJSON, {
+    style: style_msoa_imd_decile_sussex,
+  }).bindPopup(function (layer) {
+    return (
+      "<p><b>" +
+      layer.feature.properties.msoa11hclnm +
+      " (" +
+      layer.feature.properties.msoa11cd +
+      ")</b></p>This MSOA is ranked in <b>" +
+      layer.feature.properties.Decile_in_Sussex +
+      "</b> with 1 being the most deprived 10% of neighbourhoods in Sussex and 10 being the least deprived 10% of neighbourhoods.</p><p> A total of <b> " +
+      d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
+      "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+      " </b>of the estimated population in this area.</p><p>A total of <b>" +
+      d3.format(",.0f")(layer.feature.properties.Age_50_and_over) +
+      " </b>people aged 50+ have received at least one dose (<b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_50_plus) +
+      "</b>).</p>"
+    );
+  });
+
+  var msoa_vaccine_50_plus_proportion_map_layer = L.geoJSON(
+    msoa_imd_map_data.responseJSON,
+    {
+      style: style_msoa_vaccine_ages_currently_eligible_proportion,
+    }
+  ).bindPopup(function (layer) {
+    return (
+      "<p><b>" +
+      layer.feature.properties.msoa11hclnm +
+      " (" +
+      layer.feature.properties.msoa11cd +
+      ")</b></p>This MSOA is ranked in <b>" +
+      layer.feature.properties.Decile_in_Sussex +
+      "</b> with 1 being the most deprived 10% of neighbourhoods in Sussex and <b>" +
+      layer.feature.properties.National_pop_weighted_decile +
+      "</b> nationallly, with 10 being the least deprived 10 % of neighbourhoods.</p ><p> A total of <b> " +
+      d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
+      "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+      " </b>of the estimated population in this area.</p><p>A total of <b>" +
+      d3.format(",.0f")(layer.feature.properties.Age_50_and_over) +
+      " </b>people aged 50+ have received at least one dose (<b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_50_plus) +
+      "</b>).</p>"
+    );
+  });
+
+  var baseMaps_imd = {
+    "Deprivation deciles (national ranks)": msoa_imd_national_map_layer,
+    "Deprivation deciles (ranks within Sussex)": msoa_imd_sussex_map_layer,
+    "Proportion of those aged 50+ receiving first dose": msoa_vaccine_50_plus_proportion_map_layer,
+  };
+
+  var basemap_msoa_imd_vaccine = L.tileLayer(tileUrl, {
+    attribution,
+    minZoom: 8,
+  }).addTo(msoa_map_vaccine_imd_leaf);
+
+  L.control
+    .layers(baseMaps_imd, null, { collapsed: false })
+    .addTo(msoa_map_vaccine_imd_leaf);
+
+  msoa_map_vaccine_imd_leaf.fitBounds(msoa_imd_national_map_layer.getBounds());
+
+  msoa_map_vaccine_imd_leaf.on("baselayerchange", function (ev) {
+    console.log("Base layer changes");
+    var selected_base_layer = ev.name;
+    if (selected_base_layer === "Deprivation deciles (national ranks)") {
+      key_msoa_imd_national();
+    }
+    if (selected_base_layer === "Deprivation deciles (ranks within Sussex)") {
+      key_msoa_imd_sussex();
+    }
+    if (
+      selected_base_layer ===
+      "Proportion of those aged 50+ receiving first dose"
+    ) {
+      key_msoa_vaccines_ages_currently_eligible_proportion();
+    }
+  });
+});
+
+function key_msoa_imd_national() {
+  $(".key_list_vaccine_all").remove();
+
+  d3.select("#msoa_map_vaccine_deprivation_title").html(function (d) {
+    return "Indices of multiple deprivation (2019); Population weighted to MSOA level; National deprivation deciles; Sussex MSOAs;";
+  });
+
+  d3.select("#imd_msoa_map_key_title").html(function (d) {
+    return "Neighbourhoods ranked nationally";
+  });
+
+  deprivation_deciles.forEach(function (item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = "key_list_vaccine_all";
+    list.style.borderColor = msoa_covid_imd_colour_func(index);
+    var tt = document.createElement("div");
+    tt.className = "side_tt";
+    tt.style.borderColor = msoa_covid_imd_colour_func(index);
+    var tt_h3_1 = document.createElement("h3");
+    tt_h3_1.innerHTML = item;
+
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("list_imd_all_key");
+    div.appendChild(list);
+  });
+}
+
+function key_msoa_imd_sussex() {
+  $(".key_list_vaccine_all").remove();
+
+  d3.select("#msoa_map_vaccine_deprivation_title").html(function (d) {
+    return "Indices of multiple deprivation (2019); Population weighted to MSOA level; Deprivation ranked within Sussex; Sussex MSOAs;";
+  });
+
+  d3.select("#imd_msoa_map_key_title").html(function (d) {
+    return "Neighbourhoods ranked within Sussex only";
+  });
+
+  deprivation_deciles.forEach(function (item, index) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = "key_list_vaccine_all";
+    list.style.borderColor = msoa_covid_imd_colour_func(index);
+    var tt = document.createElement("div");
+    tt.className = "side_tt";
+    tt.style.borderColor = msoa_covid_imd_colour_func(index);
+    var tt_h3_1 = document.createElement("h3");
+    tt_h3_1.innerHTML = item;
+
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("list_imd_all_key");
+    div.appendChild(list);
+  });
+}
+
+function key_msoa_vaccines_ages_currently_eligible_proportion() {
+  $(".key_list_vaccine_all").remove();
+
+  d3.select("#msoa_map_vaccine_deprivation_title").html(function (d) {
+    return "Proportion of individuals (aged 50+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+  });
+
+  d3.select("#imd_msoa_map_key_title").html(function (d) {
+    return "Proportion of people aged 50+ receiving at least one dose";
+  });
+
+  msoa_covid_vaccines_ages_currently_eligible_proportion_raw.forEach(function (
+    item,
+    index
+  ) {
+    var list = document.createElement("li");
+    list.innerHTML = item;
+    list.className = "key_list_vaccine_all";
+    list.style.borderColor = msoa_covid_vaccines_ages_currently_eligible_colour_proportions_func(
+      index
+    );
+    var tt = document.createElement("div");
+    tt.className = "side_tt";
+    tt.style.borderColor = msoa_covid_vaccines_ages_currently_eligible_colour_proportions_func(
+      index
+    );
+    var tt_h3_1 = document.createElement("h3");
+    tt_h3_1.innerHTML = item;
+
+    tt.appendChild(tt_h3_1);
+    var div = document.getElementById("list_imd_all_key");
+    div.appendChild(list);
+  });
+}
+
+key_msoa_imd_national();
