@@ -182,7 +182,7 @@ nav {
 }
 
 #msoa_map_vaccine_deprivation {
-  height: 50vh;
+  height: 600px;
   width: calc(100% - 50px);
   margin: auto;
   z-index: 1;
@@ -862,4 +862,23 @@ td {
   text-align: right;
   padding: 2px;
   font-size: 0.9rem;
+}
+
+/* Arrows */
+
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+}
+
+.up {
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
+}
+
+.down {
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
 }

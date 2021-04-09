@@ -7,7 +7,7 @@ column_names = [
   "Proportion aged 50+ receiving at least one dose",
   "Estimated number of people aged 50+ still to receive their first dose",
   "Number aged 65+ receiving at least one dose",
-  "Rank of uptake (%)  aged 65+ within Local Authority area",
+  "Rank of uptake (%) aged 65+ within Local Authority area",
   "Proportion aged 65+ receiving at least one dose",
   "Estimated number of people aged 50+ still to receive their first dose",
 ];
@@ -75,8 +75,6 @@ request.open("GET", "./Outputs/vaccine_msoa_explore_data.json", false);
 request.send(null);
 var vaccine_msoa_data = JSON.parse(request.responseText);
 
-console.log(vaccine_msoa_data);
-
 // draw table body with rows
 msoa_table.append("tbody").attr("class", "msoa_table");
 
@@ -103,7 +101,19 @@ row_entries = rows
         arr.push(d[k]);
       }
     }
-    return [arr[3], arr[1], arr[2], arr[0]];
+    return [
+      arr[0],
+      arr[1],
+      d3.format(",.0f")(arr[2]),
+      d3.format(",.0f")(arr[3]),
+      arr[4],
+      d3.format(".1%")(arr[5]),
+      d3.format(",.0f")(arr[6]),
+      d3.format(",.0f")(arr[7]),
+      arr[8],
+      d3.format(".1%")(arr[9]),
+      d3.format(",.0f")(arr[10]),
+    ];
   })
   .enter()
   .append("td");
@@ -291,8 +301,6 @@ d3.select("#search_ltla").on("keyup", function () {
     .enter()
     .append("td");
 
-  console.log(row_entries);
-
   // draw row entries with no anchor
   row_entries_no_anchor = row_entries.filter(function (d) {
     return /https?:\/\//.test(d) == false;
@@ -385,8 +393,6 @@ d3.select("#search_msoa").on("keyup", function () {
     .enter()
     .append("td");
 
-  console.log(row_entries);
-
   // draw row entries with no anchor
   row_entries_no_anchor = row_entries.filter(function (d) {
     return /https?:\/\//.test(d) == false;
@@ -416,46 +422,6 @@ d3.select("#search_msoa").on("keyup", function () {
 // ! Create sort function for every column you want to be sortable - the code will depend on the type of data
 
 headers.on("click", function (d) {
-  // if (d == "Number of individuals receiving at least one dose") {
-  //   clicks.Total_where_age_known++;
-  //   // even number of clicks
-  //   if (clicks.Total_where_age_known % 2 == 0) {
-  //     // sort ascending: alphabetically
-  //     rows.sort(function (a, b) {
-  //       if (
-  //         a.Total_where_age_known.toUpperCase() <
-  //         b.Total_where_age_known.toUpperCase()
-  //       ) {
-  //         return -1;
-  //       } else if (
-  //         a.Total_where_age_known.toUpperCase() >
-  //         b.Total_where_age_known.toUpperCase()
-  //       ) {
-  //         return 1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //     // odd number of clicks
-  //   } else if (clicks.Total_where_age_known % 2 != 0) {
-  //     // sort descending: alphabetically
-  //     rows.sort(function (a, b) {
-  //       if (
-  //         a.Total_where_age_known.toUpperCase() <
-  //         b.Total_where_age_known.toUpperCase()
-  //       ) {
-  //         return 1;
-  //       } else if (
-  //         a.Total_where_age_known.toUpperCase() >
-  //         b.Total_where_age_known.toUpperCase()
-  //       ) {
-  //         return -1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //   }
-  // }
   if (d == "Number of individuals receiving at least one dose") {
     clicks.Total_where_age_known++;
     // even number of clicks
@@ -993,15 +959,6 @@ var msoa_imd_map_data = $.ajax({
   },
 });
 
-var lad_boundaries = $.ajax({
-  url: "./Outputs/lad_boundary_export.geojson",
-  dataType: "json",
-  success: console.log("LAD boundary data successfully loaded."),
-  error: function (xhr) {
-    alert(xhr.statusText);
-  },
-});
-
 var tileUrl = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
 var attribution =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a><br> Contains Ordnance Survey data © Crown copyright and database right 2020.<br>Zoom in/out using your mouse wheel or the plus (+) and minus (-) buttons. Click on an area to find out more';
@@ -1041,7 +998,7 @@ function style_msoa_imd_decile_national(feature) {
     opacity: 1,
     color: "#000000",
     // dashArray: "3",
-    fillOpacity: 0.75,
+    fillOpacity: 0.95,
   };
 }
 
@@ -1054,16 +1011,7 @@ function style_msoa_imd_decile_sussex(feature) {
     opacity: 1,
     color: "#000000",
     // dashArray: "3",
-    fillOpacity: 0.75,
-  };
-}
-function style_lad_boundary(feature) {
-  return {
-    weight: 1.5,
-    opacity: 1,
-    color: "#000000",
-    // dashArray: "3",
-    fillOpacity: 0,
+    fillOpacity: 0.95,
   };
 }
 
@@ -1106,25 +1054,29 @@ $.when(msoa_imd_map_data).done(function () {
 
   var msoa_imd_national_map_layer = L.geoJSON(msoa_imd_map_data.responseJSON, {
     style: style_msoa_imd_decile_national,
-  }).bindPopup(function (layer) {
-    return (
-      "<p><b>" +
-      layer.feature.properties.msoa11hclnm +
-      " (" +
-      layer.feature.properties.msoa11cd +
-      ")</b></p>This MSOA is ranked in <b>" +
-      layer.feature.properties.National_pop_weighted_decile +
-      "</b> with 1 being the most deprived 10% of neighbourhoods nationally and 10 being the least deprived 10% of neighbourhoods.</p><p> A total of <b> " +
-      d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
-      "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
-      " </b>of the estimated population in this area.</p><p>A total of <b>" +
-      d3.format(",.0f")(layer.feature.properties.Age_50_and_over) +
-      " </b>people aged 50+ have received at least one dose (<b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_50_plus) +
-      "</b>).</p>"
-    );
-  });
+  })
+    .addTo(msoa_map_vaccine_imd_leaf)
+    .bindPopup(function (layer) {
+      return (
+        "<p><b>" +
+        layer.feature.properties.msoa11hclnm +
+        " (" +
+        layer.feature.properties.msoa11cd +
+        ")</b></p>This MSOA is ranked in <b>" +
+        layer.feature.properties.National_pop_weighted_decile +
+        "</b> with 1 being the most deprived 10% of neighbourhoods nationally and 10 being the least deprived 10% of neighbourhoods.</p><p> A total of <b> " +
+        d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
+        "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+        " </b>of the estimated population in this area.</p><p>A total of <b>" +
+        d3.format(",.0f")(layer.feature.properties.Age_50_and_over) +
+        " </b>people aged 50+ have received at least one dose (<b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_50_plus) +
+        "</b>).</p>"
+      );
+    });
+
+  msoa_map_vaccine_imd_leaf.fitBounds(msoa_imd_national_map_layer.getBounds());
 
   var msoa_imd_sussex_map_layer = L.geoJSON(msoa_imd_map_data.responseJSON, {
     style: style_msoa_imd_decile_sussex,
@@ -1183,7 +1135,7 @@ $.when(msoa_imd_map_data).done(function () {
 
   var basemap_msoa_imd_vaccine = L.tileLayer(tileUrl, {
     attribution,
-    minZoom: 8,
+    minZoom: 6,
   }).addTo(msoa_map_vaccine_imd_leaf);
 
   L.control
@@ -1302,3 +1254,5 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 }
 
 key_msoa_imd_national();
+
+// Scatter plot
