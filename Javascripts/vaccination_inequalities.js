@@ -1256,3 +1256,21 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 key_msoa_imd_national();
 
 // Scatter plot
+
+d3.select("#msoa_vaccine_scatter_deprivation_title").html(function (d) {
+  return "Proportion of individuals (aged 50+) receiving at least one Covid-19 vaccination dose by deprivation score; Sussex MSOAs;";
+});
+
+msoa_vaccine_scatter_deprivation;
+
+d3.select("#select_scatter_measure_button")
+  .selectAll("myOptions")
+  .data(["Proportion over 50", "Proportion over 65", "Proportion aged 50-64"])
+  .enter()
+  .append("option")
+  .text(function (d) {
+    return d;
+  })
+  .attr("value", function (d) {
+    return d;
+  });
