@@ -1256,12 +1256,11 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 key_msoa_imd_national();
 
 // Scatter plot
+var height_scatter = 400;
 
 d3.select("#msoa_vaccine_scatter_deprivation_title").html(function (d) {
   return "Proportion of individuals (aged 50+) receiving at least one Covid-19 vaccination dose by deprivation score; Sussex MSOAs;";
 });
-
-msoa_vaccine_scatter_deprivation;
 
 d3.select("#select_scatter_measure_button")
   .selectAll("myOptions")
@@ -1274,3 +1273,71 @@ d3.select("#select_scatter_measure_button")
   .attr("value", function (d) {
     return d;
   });
+
+// Daily admissions bar chart
+var svg_scatter = d3
+  .select("#msoa_vaccine_scatter_deprivation")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_scatter)
+  .append("g")
+  .attr("transform", "translate(" + 60 + "," + 10 + ")");
+
+console.log(vaccine_msoa_data);
+
+// Add X axis
+var x_dep_vs_uptake = d3
+  .scaleLinear()
+  .domain([
+    0,
+    d3.max(vaccine_msoa_data, function (d) {
+      return +d.Pop_weighted_imd_score;
+    }),
+  ])
+  .range([0, width_hm - 10]);
+
+xAxis_dep_vs_uptake = svg_scatter
+  .append("g")
+  .attr("transform", "translate(0," + (height_scatter - 60) + ")")
+  .call(d3.axisBottom(x_dep_vs_uptake).tickFormat(d3.format(",.0f")));
+
+xAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
+
+// Add Y axis
+var y_dep_vs_uptake = d3
+  .scaleLinear()
+  .domain([
+    0,
+    // d3.max(vaccine_msoa_data, function (d) {
+    //   return +d.Proportion_50_plus;
+    // }),
+    1,
+  ])
+  .range([height_scatter - 30, 30]);
+
+var yAxis_dep_vs_uptake = svg_scatter
+  .append("g")
+  .attr("transform", "translate(0,-30)")
+  .call(d3.axisLeft(y_dep_vs_uptake).tickFormat(d3.format(".1%")));
+
+yAxis_dep_vs_uptake
+  .selectAll("text")
+  .attr("transform", "translate(0,0)")
+  .style("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+// Add dots
+svg_scatter_plot_1 = svg_scatter
+  .append("g")
+  .selectAll("dot")
+  .data(vaccine_msoa_data)
+  .enter()
+  .append("circle")
+  .attr("cx", function (d) {
+    return x_dep_vs_uptake(d.Pop_weighted_imd_score);
+  })
+  .attr("cy", function (d) {
+    return y_dep_vs_uptake(d.Proportion_50_plus);
+  })
+  .attr("r", 3)
+  .style("fill", "#69b3a2");
