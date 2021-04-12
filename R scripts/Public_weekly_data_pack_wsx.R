@@ -4,6 +4,7 @@ library(easypackages)
 
 libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR')
 
+
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
                           {s = substring(s, 2); if(strict) tolower(s) else s},sep = "", collapse = " " )
@@ -1982,12 +1983,17 @@ msoa_cases_1 <-read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ms
   rename(Latest_rate = newCasesBySpecimenDateRollingRate) %>% 
   mutate(Latest_rate_key = factor(ifelse(is.na(Latest_rate), 'Less than 3 cases', ifelse(Latest_rate <= 50, 'Up to 50 per 100,000', ifelse(Latest_rate <= 100, '51-100 cases per 100,000', ifelse(Latest_rate <= 150, '101-150 cases per 100,000', ifelse(Latest_rate <= 200, '151-200 cases per 100,000', 'More than 200 cases per 100,000'))))), levels = c('Less than 3 cases', 'Up to 50 cases per 100,000', '51-100 cases per 100,000', '101-150 cases per 100,000', '151-200 cases per 100,000', 'More than 200 cases per 100,000')))
 
+msoa_cases_raw %>% 
+  filter(areaCode %in% 'E02006711') %>% 
+  arrange(desc(date)) %>% view()
+
+
 msoa_cases_raw <- as.data.frame(read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=msoa&metric=newCasesBySpecimenDateRollingSum&metric=newCasesBySpecimenDateRollingRate&format=csv') %>% 
                                   select(areaCode, areaName, date, newCasesBySpecimenDateRollingSum, newCasesBySpecimenDateRollingRate) %>% 
+                                  filter(date %in% c(max(date), max(date) - 7)) %>% 
                                   # filter(areaCode %in% msoa_lookup$MSOA11CD) %>% 
                                   group_by(areaCode, areaName) %>% 
                                   arrange(areaCode, areaName, date) %>% 
-                                  filter(date %in% c(max(date), max(date) - 7)) %>% 
                                   select(areaCode, areaName, date, newCasesBySpecimenDateRollingSum) %>% 
                                   mutate(date = ifelse(date == max(date), 'This_week', ifelse(date == max(date)-7, 'Last_week', NA))) %>% 
                                   pivot_wider(names_from = 'date', values_from = 'newCasesBySpecimenDateRollingSum') %>% 
@@ -2571,8 +2577,6 @@ bed_used_df <- trust_c19_patients_occupying_ga_beds %>%
   mutate(Total_open_beds = sum(Beds),
          Proportion = Beds/sum(Beds)) %>% 
   mutate(Bed_status = factor(ifelse(Bed_status == 'c19_patients_occupying_ga_beds', 'COVID-19 + patients', ifelse(Bed_status == 'other_patients_occupying_ga_beds', 'Other patients', ifelse(Bed_status == 'vacant_ga_beds', 'Vacant (open) beds', NA))), levels = c('COVID-19 + patients', 'Other patients', 'Vacant (open) beds')))
-
-unique(bed_used_df$Name)
 
 # trust_admissions_metadata <- read_excel( paste0(github_repo_dir,'/Source_files/trust_admissions.xlsx'),
 #                                          sheet = 'All beds COVID',
