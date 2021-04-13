@@ -1,12 +1,11 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","2,879","4,477.4","262nd","Decile 9","10","15.6","196th","Decile 7","seven days to 07 April"
-"Arun","8,200","5,100.8","224th","Decile 8","40","24.9","122nd","Decile 4","seven days to 07 April"
-"Chichester","4,854","4,007.3","276th","Decile 9","20","16.5","184th","Decile 6","seven days to 07 April"
-"Crawley","7,899","7,027.0","112th","Decile 4","16","14.2","216th","Decile 7","seven days to 07 April"
-"Horsham","5,645","3,925.8","281st","Decile 9","16","11.1","253rd","Decile 9","seven days to 07 April"
-"Mid Sussex","6,778","4,488.1","261st","Decile 9","12","7.9","294th","10% of authorities
-with lowest rate","seven days to 07 April"
-"Worthing","5,294","4,787.9","243rd","Decile 8","15","13.6","221st","Decile 8","seven days to 07 April"
-"West Sussex","41,549","4,809.0","-","-",NA,NA,NA,NA,NA
+"Adur","2,879","4,477.4","262nd","Decile 9","10","15.6","193rd","Decile 7","seven days to 08 April"
+"Arun","8,200","5,100.8","224th","Decile 8","39","24.3","115th","Decile 4","seven days to 08 April"
+"Chichester","4,854","4,007.3","276th","Decile 9","17","14.0","215th","Decile 7","seven days to 08 April"
+"Crawley","7,899","7,027.0","112th","Decile 4","16","14.2","213th","Decile 7","seven days to 08 April"
+"Horsham","5,645","3,925.8","281st","Decile 9","15","10.4","263rd","Decile 9","seven days to 08 April"
+"Mid Sussex","6,778","4,488.1","261st","Decile 9","14","9.3","276th","Decile 9","seven days to 08 April"
+"Worthing","5,294","4,787.9","243rd","Decile 8","15","13.6","220th","Decile 8","seven days to 08 April"
+"West Sussex","41,565","4,810.9","-","-",NA,NA,NA,NA,NA
 "South East region","535,660","5,835.0","-","-",NA,NA,NA,NA,NA
-"England","3,822,371","6,790.9","-","-",NA,NA,NA,NA,NA
+"England","3,824,441","6,794.5","-","-",NA,NA,NA,NA,NA

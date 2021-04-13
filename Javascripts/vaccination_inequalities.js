@@ -1255,7 +1255,7 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 
 key_msoa_imd_national();
 
-// Scatter plot
+// ! Scatter plot
 var height_scatter = 400;
 
 d3.select("#msoa_vaccine_scatter_deprivation_title").html(function (d) {
@@ -1264,7 +1264,8 @@ d3.select("#msoa_vaccine_scatter_deprivation_title").html(function (d) {
 
 d3.select("#select_scatter_measure_button")
   .selectAll("myOptions")
-  .data(["Proportion over 50", "Proportion over 65", "Proportion aged 50-64"])
+  // .data(["Proportion over 50", "Proportion over 65", "Proportion aged 50-64"])
+  .data(["Proportion over 50"])
   .enter()
   .append("option")
   .text(function (d) {
@@ -1283,8 +1284,6 @@ var svg_scatter = d3
   .append("g")
   .attr("transform", "translate(" + 60 + "," + 10 + ")");
 
-console.log(vaccine_msoa_data);
-
 // Add X axis
 var x_dep_vs_uptake = d3
   .scaleLinear()
@@ -1294,7 +1293,8 @@ var x_dep_vs_uptake = d3
       return +d.Pop_weighted_imd_score;
     }),
   ])
-  .range([0, width_hm - 10]);
+  .range([0, width_hm - 100])
+  .nice();
 
 xAxis_dep_vs_uptake = svg_scatter
   .append("g")
@@ -1307,7 +1307,7 @@ xAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
 var y_dep_vs_uptake = d3
   .scaleLinear()
   .domain([
-    0,
+    0.5,
     // d3.max(vaccine_msoa_data, function (d) {
     //   return +d.Proportion_50_plus;
     // }),
@@ -1318,7 +1318,7 @@ var y_dep_vs_uptake = d3
 var yAxis_dep_vs_uptake = svg_scatter
   .append("g")
   .attr("transform", "translate(0,-30)")
-  .call(d3.axisLeft(y_dep_vs_uptake).tickFormat(d3.format(".1%")));
+  .call(d3.axisLeft(y_dep_vs_uptake).tickFormat(d3.format(".0%")));
 
 yAxis_dep_vs_uptake
   .selectAll("text")
@@ -1339,5 +1339,41 @@ svg_scatter_plot_1 = svg_scatter
   .attr("cy", function (d) {
     return y_dep_vs_uptake(d.Proportion_50_plus);
   })
-  .attr("r", 3)
+  .attr("r", 4)
   .style("fill", "#69b3a2");
+
+svg_scatter
+  .append("text")
+  .attr("x", function (d) {
+    return x_dep_vs_uptake(2);
+  })
+  .attr("y", function (d) {
+    return y_dep_vs_uptake(0.55);
+  })
+  .text("Less deprived")
+  .attr("text-anchor", "start")
+  .style("font-weight", "bold")
+  .style("font-size", ".8rem");
+
+svg_scatter
+  .append("text")
+  .attr("x", function (d) {
+    return x_dep_vs_uptake(
+      d3.max(vaccine_msoa_data, function (d) {
+        return +d.Pop_weighted_imd_score;
+      })
+    );
+  })
+  .attr("y", function (d) {
+    return y_dep_vs_uptake(0.55);
+  })
+  .text("More deprived")
+  .attr("text-anchor", "end")
+  .style("font-weight", "bold")
+  .style("font-size", ".8rem");
+
+console.log(
+  d3.max(vaccine_msoa_data, function (d) {
+    return +d.Pop_weighted_imd_score;
+  })
+);
