@@ -251,15 +251,7 @@ var tooltip_growth_utla_ts = d3
 var showTooltip_growth_ts = function (d) {
   tooltip_growth_utla_ts
     .html(
-      "<h5>" +
-        d.Name +
-        "</h5><p>" +
-        d.Label_2 +
-        "</p><p>" +
-        d.Label_1 +
-        "</p><p>" +
-        d.Label_3 +
-        "</p>"
+      "<h5>" + d.Name + "</h5><p>" + d.Label_2 + "</p><p>" + d.Label_1 + "</p>"
     )
     .style("opacity", 1)
     .style("top", event.pageY - 10 + "px")
