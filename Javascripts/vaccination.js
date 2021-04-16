@@ -319,7 +319,7 @@ d3.select("#ltla_age_selected_bars_title").html(function (d) {
   return (
     "Number of individuals receiving at least one dose by age group; " +
     selected_vaccine_ltla_area +
-    " residents; vaccinations as at " +
+    " residents; vaccinations reported as at " +
     vaccine_update_date
   );
 });
@@ -328,7 +328,7 @@ d3.select("#ltla_age_selected_bars_title_2").html(function (d) {
   return (
     "Proportion of individuals receiving at least one dose by age group; " +
     selected_vaccine_ltla_area +
-    " residents; vaccinations as at " +
+    " residents; vaccinations reported as at " +
     vaccine_update_date
   );
 });
@@ -1382,7 +1382,10 @@ function key_msoa_vaccines() {
   $(".key_list_vaccine_all").remove();
 
   d3.select("#msoa_map_vaccine_all_title").html(function (d) {
-    return "Cumulative number of individuals receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+    return (
+      "Cumulative number of individuals receiving at least one Covid-19 vaccination dose; Sussex MSOAs; vaccinations reported as at " +
+      vaccine_update_date
+    );
   });
 
   d3.select("#all_age_msoa_map_key_title").html(function (d) {

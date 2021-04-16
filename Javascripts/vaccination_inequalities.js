@@ -1,3 +1,13 @@
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/vaccine_update_date.json", false);
+request.send(null);
+var vaccine_update_date = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/vaccine_administered_date.json", false);
+request.send(null);
+var vaccine_administered_date = JSON.parse(request.responseText);
+
 column_names = [
   "Local Authority",
   "MSOA name",
@@ -859,7 +869,7 @@ request.open(
 request.send(null);
 var vaccine_sites_at_a_glance = JSON.parse(request.responseText);
 
-console.log(vaccine_sites_at_a_glance);
+// console.log(vaccine_sites_at_a_glance);
 
 window.onload = () => {
   loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance);
@@ -1256,10 +1266,48 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 key_msoa_imd_national();
 
 // ! Scatter plot
-var height_scatter = 400;
+var height_scatter = 500;
+
+var ltla_area_scatter_comp = [
+  "Adur",
+  "Arun",
+  "Chichester",
+  "Crawley",
+  "Horsham",
+  "Mid_Sussex",
+  "Worthing",
+  "Brighton_and_Hove",
+  "Eastbourne",
+  "Hastings",
+  "Lewes",
+  "Rother",
+  "Wealden",
+];
+
+var ltla_scatter_colour_func = d3
+  .scaleOrdinal()
+  .domain(ltla_area_scatter_comp)
+  .range([
+    "#0E2F6A",
+    "#490B2F",
+    "#880D2A",
+    "#B02C1A",
+    "#FD7726",
+    "#FDD147",
+    "#8CC216",
+    "#0000cc",
+    "black",
+    "blue",
+    "red",
+    "green",
+    "yellow",
+  ]);
 
 d3.select("#msoa_vaccine_scatter_deprivation_title").html(function (d) {
-  return "Proportion of individuals (aged 50+) receiving at least one Covid-19 vaccination dose by deprivation score; Sussex MSOAs;";
+  return (
+    "Proportion of individuals (aged 50+) receiving at least one Covid-19 vaccination dose by deprivation score; Sussex MSOAs; vaccinations administered from " +
+    vaccine_administered_date
+  );
 });
 
 d3.select("#select_scatter_measure_button")
@@ -1275,6 +1323,10 @@ d3.select("#select_scatter_measure_button")
     return d;
   });
 
+var selected_vaccine_scatter_choice = d3
+  .select("#select_scatter_measure_button")
+  .property("value");
+
 // Daily admissions bar chart
 var svg_scatter = d3
   .select("#msoa_vaccine_scatter_deprivation")
@@ -1282,23 +1334,102 @@ var svg_scatter = d3
   .attr("width", width_hm)
   .attr("height", height_scatter)
   .append("g")
-  .attr("transform", "translate(" + 60 + "," + 10 + ")");
+  .attr("transform", "translate(" + 60 + "," + 30 + ")");
+
+var tooltip_scatter_dep_uptake = d3
+  .select("#msoa_vaccine_scatter_deprivation")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px");
+
+var showTooltip_scatter_dep_uptake = function (d) {
+  tooltip_scatter_dep_uptake
+    .html(
+      "<p><b>" +
+        d.MSOA_name +
+        " in  " +
+        d.LTLA_name +
+        "</b></p><p> A total of <b> " +
+        d3.format(",.0f")(d.Age_50_and_over) +
+        "</b> people aged 50+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+        d3.format(".1%")(d.Proportion_50_plus) +
+        " </b>of the estimated population in this age group in this area.</p>" +
+        // "<p>Based on these estimates, there are <b>" +
+        // d3.format(",.0f")(d.Estimated_left_to_vaccinate_50_plus) +
+        // "</b> over 50s left to receive their first dose.</p>" +
+        // "<p>Overall, a total of <b>" +
+        // d3.format(",.0f")(d.Total_where_age_known) +
+        // " </b>people aged 16+ have received at least one dose (<b>" +
+        // d3.format(".1%")(d.Proportion_age_known) +
+        // "</b>) to date.</p>" +
+        "<p>This MSOA has a population weighted deprivation score of <b>" +
+        d3.format(",.1f")(d.Pop_weighted_imd_score) +
+        "</b> and a rank of <b>" +
+        d3.format(",.0f")(d.National_pop_weighted_rank) +
+        "</b> out of 6,790 neighbourhoods nationally, and <b>" +
+        d.Rank_in_Sussex +
+        "</b> out of 202 neighbourhood areas in Sussex, with 1 being most deprived.</p> "
+    )
+    .style("opacity", 1)
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("opacity", 1)
+    .style("visibility", "visible");
+
+  selected_MSOA_scatter = d.LTLA_name_ns;
+
+  d3.selectAll(".dot." + selected_MSOA_scatter)
+    .transition()
+    .duration(200)
+    .style("fill", "maroon")
+    .attr("r", 9);
+};
+
+var Mouseleave_scatter_dep_uptake = function (d) {
+  tooltip_scatter_dep_uptake.style("opacity", 0).style("visibility", "hidden");
+
+  d3.selectAll(".dot." + selected_MSOA_scatter)
+    .transition()
+    .duration(200)
+    .style("fill", "#2e84d5")
+    .attr("r", 6);
+};
+
+// Tell me which check boxes are checked
+var choices = [];
+d3.selectAll(".my_scatter_Checkbox_1").each(function (d) {
+  cb = d3.select(this);
+  if (cb.property("checked")) {
+    choices.push(cb.property("value"));
+  }
+});
+
+included_vaccine_msoa_data = vaccine_msoa_data.filter(function (d, i) {
+  return choices.indexOf(d.UTLA) >= 0;
+});
 
 // Add X axis
 var x_dep_vs_uptake = d3
   .scaleLinear()
   .domain([
     0,
-    d3.max(vaccine_msoa_data, function (d) {
+    d3.max(included_vaccine_msoa_data, function (d) {
       return +d.Pop_weighted_imd_score;
     }),
   ])
-  .range([0, width_hm - 100])
+  .range([0, width_hm - 120]) // We move 0 over 60 pixels when we created the svg so to get this symetrical we need to minues 60 * 2
   .nice();
 
 xAxis_dep_vs_uptake = svg_scatter
   .append("g")
-  .attr("transform", "translate(0," + (height_scatter - 60) + ")")
+  .attr("transform", "translate(0," + (height_scatter - 60) + ")") // Again, we moved the 0 up 30
   .call(d3.axisBottom(x_dep_vs_uptake).tickFormat(d3.format(",.0f")));
 
 xAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
@@ -1307,17 +1438,17 @@ xAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
 var y_dep_vs_uptake = d3
   .scaleLinear()
   .domain([
-    0.5,
-    // d3.max(vaccine_msoa_data, function (d) {
-    //   return +d.Proportion_50_plus;
-    // }),
+    d3.min(included_vaccine_msoa_data, function (d) {
+      return +d.Proportion_50_plus;
+    }),
     1,
   ])
-  .range([height_scatter - 30, 30]);
+  .range([height_scatter - 60, 0])
+  .nice();
 
 var yAxis_dep_vs_uptake = svg_scatter
   .append("g")
-  .attr("transform", "translate(0,-30)")
+  .attr("transform", "translate(0,0)")
   .call(d3.axisLeft(y_dep_vs_uptake).tickFormat(d3.format(".0%")));
 
 yAxis_dep_vs_uptake
@@ -1327,29 +1458,58 @@ yAxis_dep_vs_uptake
   .style("font-size", ".8rem");
 
 // Add dots
-svg_scatter_plot_1 = svg_scatter
-  .append("g")
-  .selectAll("dot")
-  .data(vaccine_msoa_data)
-  .enter()
-  .append("circle")
-  .attr("cx", function (d) {
-    return x_dep_vs_uptake(d.Pop_weighted_imd_score);
-  })
-  .attr("cy", function (d) {
-    return y_dep_vs_uptake(d.Proportion_50_plus);
-  })
-  .attr("r", 4)
-  .style("fill", "#69b3a2");
+// svg_scatter_plot_1 = svg_scatter
+//   .append("g")
+//   .selectAll("dot")
+//   .data(included_vaccine_msoa_data)
+//   .enter()
+//   .append("circle")
+//   .attr("class", function (d) {
+//     return "dot " + d.LTLA_name_ns;
+//   })
+//   .attr("cx", function (d) {
+//     return x_dep_vs_uptake(d.Pop_weighted_imd_score);
+//   })
+//   .attr("cy", function (d) {
+//     return y_dep_vs_uptake(d.Proportion_50_plus);
+//   })
+//   .attr("r", 6)
+//   .attr("fill", "#2e84d5")
+//   .style("stroke", "#ffffff")
+//   .on("mousemove", showTooltip_scatter_dep_uptake)
+//   .on("mouseout", Mouseleave_scatter_dep_uptake);
+
+// markers = svg_scatter.selectAll("dot").data(included_vaccine_msoa_data);
+
+// markers
+//   .enter()
+//   .append("circle")
+//   .attr("class", function (d) {
+//     return "dot " + d.LTLA_name_ns;
+//   })
+//   .attr("cx", function (d) {
+//     return x_dep_vs_uptake(d.Pop_weighted_imd_score);
+//   })
+//   .attr("cy", function (d) {
+//     return y_dep_vs_uptake(d.Proportion_50_plus);
+//   })
+//   .attr("r", 6)
+//   .attr("fill", "#2e84d5")
+//   .style("stroke", "#ffffff")
+//   .on("mousemove", showTooltip_scatter_dep_uptake)
+//   .on("mouseout", Mouseleave_scatter_dep_uptake);
+
+// markers.exit().remove();
+
+// ! Some annotations
 
 svg_scatter
   .append("text")
   .attr("x", function (d) {
     return x_dep_vs_uptake(2);
   })
-  .attr("y", function (d) {
-    return y_dep_vs_uptake(0.55);
-  })
+  .attr("y", height_scatter - 90)
+  .attr("id", "less_deprived_label")
   .text("Less deprived")
   .attr("text-anchor", "start")
   .style("font-weight", "bold")
@@ -1359,21 +1519,163 @@ svg_scatter
   .append("text")
   .attr("x", function (d) {
     return x_dep_vs_uptake(
-      d3.max(vaccine_msoa_data, function (d) {
+      d3.max(included_vaccine_msoa_data, function (d) {
         return +d.Pop_weighted_imd_score;
       })
     );
   })
-  .attr("y", function (d) {
-    return y_dep_vs_uptake(0.55);
-  })
+  .attr("y", height_scatter - 90)
+  .attr("id", "more_deprived_label")
   .text("More deprived")
   .attr("text-anchor", "end")
   .style("font-weight", "bold")
   .style("font-size", ".8rem");
 
-console.log(
-  d3.max(vaccine_msoa_data, function (d) {
-    return +d.Pop_weighted_imd_score;
+svg_scatter
+  .append("text")
+  .attr("x", function (d) {
+    return x_dep_vs_uptake(
+      d3.max(included_vaccine_msoa_data, function (d) {
+        return +d.Pop_weighted_imd_score;
+      })
+    );
   })
-);
+  .attr("y", 10)
+  .attr("id", "hover_label_1")
+  .text("Hover over a dot")
+  .attr("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+svg_scatter
+  .append("text")
+  .attr("x", function (d) {
+    return x_dep_vs_uptake(
+      d3.max(included_vaccine_msoa_data, function (d) {
+        return +d.Pop_weighted_imd_score;
+      })
+    );
+  })
+  .attr("y", 25)
+  .attr("id", "hover_label_2")
+  .text("to highlight other")
+  .attr("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+svg_scatter
+  .append("text")
+  .attr("x", function (d) {
+    return x_dep_vs_uptake(
+      d3.max(included_vaccine_msoa_data, function (d) {
+        return +d.Pop_weighted_imd_score;
+      })
+    );
+  })
+  .attr("y", 40)
+  .attr("id", "hover_label_3")
+  .text("neighbhourhoods in")
+  .attr("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+svg_scatter
+  .append("text")
+  .attr("x", function (d) {
+    return x_dep_vs_uptake(
+      d3.max(included_vaccine_msoa_data, function (d) {
+        return +d.Pop_weighted_imd_score;
+      })
+    );
+  })
+  .attr("y", 55)
+  .attr("id", "hover_label_4")
+  .text("the same local authority")
+  .attr("text-anchor", "end")
+  .style("font-size", ".8rem");
+
+function update_scatter_dep() {
+  var choices = [];
+  d3.selectAll(".my_scatter_Checkbox_1").each(function (d) {
+    cb = d3.select(this);
+    if (cb.property("checked")) {
+      choices.push(cb.property("value"));
+    }
+  });
+
+  included_vaccine_msoa_data = vaccine_msoa_data.filter(function (d, i) {
+    return choices.indexOf(d.UTLA) >= 0;
+  });
+
+  // console.log(included_vaccine_msoa_data);
+
+  x_dep_vs_uptake
+    .domain([
+      0,
+      d3.max(included_vaccine_msoa_data, function (d) {
+        return +d.Pop_weighted_imd_score;
+      }),
+    ])
+    .nice();
+
+  xAxis_dep_vs_uptake
+    .transition()
+    // .delay(1500)
+    .duration(750)
+    .call(d3.axisBottom(x_dep_vs_uptake));
+
+  xAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
+
+  y_dep_vs_uptake
+    .domain([
+      d3.min(included_vaccine_msoa_data, function (d) {
+        return +d.Proportion_50_plus;
+      }),
+      1,
+    ])
+    .nice();
+
+  yAxis_dep_vs_uptake
+    .transition()
+    // .delay(1500)
+    .duration(750)
+    .call(d3.axisLeft(y_dep_vs_uptake).tickFormat(d3.format(".0%")));
+
+  yAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
+
+  var dep_uptake_points = svg_scatter
+    .selectAll("circle")
+    .data(included_vaccine_msoa_data);
+
+  dep_uptake_points
+    .enter()
+    .append("circle")
+    .merge(dep_uptake_points)
+    .attr("class", function (d) {
+      return "dot " + d.LTLA_name_ns;
+    })
+    .attr("cx", function (d) {
+      return x_dep_vs_uptake(d.Pop_weighted_imd_score);
+    })
+    .attr("cy", function (d) {
+      return y_dep_vs_uptake(d.Proportion_50_plus);
+    })
+    .attr("r", 6)
+    .attr("fill", "#2e84d5")
+    .style("stroke", "#ffffff")
+    .on("mousemove", showTooltip_scatter_dep_uptake)
+    .on("mouseout", Mouseleave_scatter_dep_uptake);
+
+  // dep_uptake_points
+  //   .transition()
+  //   .duration(1500)
+  //   .attr("cx", function (d) {
+  //     return x_dep_vs_uptake(d.Pop_weighted_imd_score);
+  //   })
+  //   .attr("cy", function (d) {
+  //     return y_dep_vs_uptake(d.Proportion_50_plus);
+  //   });
+
+  dep_uptake_points.exit().remove();
+}
+
+d3.selectAll(".my_scatter_Checkbox_1").on("change", update_scatter_dep);
+
+update_scatter_dep();

@@ -304,13 +304,6 @@ as.character(vaccine_meta %>%
   toJSON() %>% 
   write_lines(paste0(mobile_output_directory_x, '/vaccine_administered_date.json'))
 
-# ICS/STP Ethnicity data
-ics_ethnicity <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
-           sheet = 'Ethnicity & ICS STP',
-           skip = 15,
-           col_names = c('Region_code', 'Null_1', 'Region_name', 'A: White British', 'B: White Irish', 'C: White Any other White background', 'D: Mixed White and Black Caribbean', 'E: Mixed White and Black African', 'F: Mixed White and Asian', 'G: Mixed Any other Mixed background' , 'H: Asian or Asian British Indian', 'J: Asian or Asian British Pakistani', 'K: Asian or Asian British Bangladeshi', 'L: Asian or Asian British Any other Asian background', 'M: Black or Black British Caribbean', 'N: Black or Black British African', 'P: Black or Black British Any other Black background', 'R: Other ethnic groups Chinese', 'S: Other ethnic groups Any other ethnic group', 'Not stated/Unknown', 'Null_2', 'Cumulative_total_second', 'Null_3', 'Cumulative_doses_1_and_2')) %>% 
-  select(!c(Null_1, Null_2, Null_3))
-
 County_boundary <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
   filter(ctyua19nm %in% c('West Sussex', 'East Sussex', 'Brighton and Hove')) %>%
   spTransform(CRS("+init=epsg:4326"))
@@ -360,8 +353,12 @@ vaccine_df_msoa %>%
   mutate(Proportion_rank_65_plus_within_LTLA = rank(desc(Proportion_65_plus))) %>% 
   mutate(Proportion_rank_50_64_within_LTLA = rank(desc(Proportion_50_64))) %>% 
   mutate(MSOA_name = paste0(msoa11hclnm, ' (', msoa11cd, ')')) %>% 
-  select(LTLA_name, MSOA_name, Total_where_age_known, Age_50_and_over, Proportion_rank_50_plus_within_LTLA, Proportion_50_plus, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_rank_65_plus_within_LTLA,Proportion_65_plus, Estimated_left_to_vaccinate_65_plus, Pop_weighted_imd_score) %>% 
+  select(LTLA_name, MSOA_name, Total_where_age_known, Age_50_and_over, Proportion_rank_50_plus_within_LTLA, Proportion_50_plus, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_rank_65_plus_within_LTLA,Proportion_65_plus, Estimated_left_to_vaccinate_65_plus, Pop_weighted_imd_score, National_pop_weighted_decile, Decile_in_Sussex, National_pop_weighted_rank, Rank_in_Sussex, msoa11cd, Proportion_age_known) %>% 
+  mutate(LTLA_name_ns = gsub(' ', '_', LTLA_name)) %>% 
+  mutate(National_pop_weighted_decile = factor(ifelse(National_pop_weighted_decile == 1, '10% most deprived',  ifelse(National_pop_weighted_decile == 2, 'Decile 2',  ifelse(National_pop_weighted_decile == 3, 'Decile 3',  ifelse(National_pop_weighted_decile == 4, 'Decile 4',  ifelse(National_pop_weighted_decile == 5, 'Decile 5',  ifelse(National_pop_weighted_decile == 6, 'Decile 6',  ifelse(National_pop_weighted_decile == 7, 'Decile 7',  ifelse(National_pop_weighted_decile == 8, 'Decile 8',  ifelse(National_pop_weighted_decile == 9, 'Decile 9',  ifelse(National_pop_weighted_decile == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>% 
+  mutate(Decile_in_Sussex = factor(ifelse(Decile_in_Sussex == 1, '10% most deprived',  ifelse(Decile_in_Sussex == 2, 'Decile 2',  ifelse(Decile_in_Sussex == 3, 'Decile 3',  ifelse(Decile_in_Sussex == 4, 'Decile 4',  ifelse(Decile_in_Sussex == 5, 'Decile 5',  ifelse(Decile_in_Sussex == 6, 'Decile 6',  ifelse(Decile_in_Sussex == 7, 'Decile 7',  ifelse(Decile_in_Sussex == 8, 'Decile 8',  ifelse(Decile_in_Sussex == 9, 'Decile 9',  ifelse(Decile_in_Sussex == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>% 
   # select(LTLA_name, MSOA_name, Total_where_age_known, Age_50_and_over, Proportion_rank_50_plus_within_LTLA, Proportion_50_plus, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_rank_65_plus_within_LTLA,Proportion_65_plus, Estimated_left_to_vaccinate_65_plus, Age_50_64, Proportion_rank_50_64_within_LTLA,Proportion_50_64_plus, Estimated_left_to_vaccinate_50_64,Pop_weighted_imd_score) %>% 
+  mutate(UTLA = ifelse(LTLA_name %in% c('Eastbourne', 'Hastings', 'Lewes','Rother','Wealden') , 'East Sussex', ifelse(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing'), 'West Sussex', LTLA_name))) %>% 
   arrange(LTLA_name, Proportion_rank_50_plus_within_LTLA) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_explore_data.json'))

@@ -4,7 +4,6 @@ library(easypackages)
 
 libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR')
 
-
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
                           {s = substring(s, 2); if(strict) tolower(s) else s},sep = "", collapse = " " )
@@ -99,8 +98,6 @@ daily_cases <- daily_cases_ltla %>%
   left_join(mye_total, by = 'Code') %>% 
   ungroup()
 
-# remotes::install_github("publichealthengland/coronavirus-dashboard-api-R-sdk")
-# install.packages("ukcovid19")
 library(ukcovid19)
 
 query_filters <- c(
