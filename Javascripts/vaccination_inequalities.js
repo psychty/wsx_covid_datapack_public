@@ -1365,16 +1365,17 @@ var svg_scatter = d3
   .attr("transform", "translate(" + 60 + "," + 30 + ")");
 
 var tooltip_scatter_dep_uptake = d3
-  .select("#msoa_vaccine_scatter_deprivation")
+  .select("#msoa_vaccine_scatter_dep_tt")
   .append("div")
   .style("opacity", 0)
-  .attr("class", "tooltip_class")
+  .attr("class", "tooltip_outside_box")
   .style("position", "absolute")
   .style("z-index", "10")
   .style("background-color", "white")
   .style("border", "solid")
   .style("border-width", "1px")
   .style("border-radius", "5px")
+  .style("font-size", ".6rem")
   .style("padding", "10px");
 
 var showTooltip_scatter_dep_uptake = function (d) {
@@ -1404,9 +1405,10 @@ var showTooltip_scatter_dep_uptake = function (d) {
         "</b> out of 202 neighbourhood areas in Sussex, with 1 being most deprived.</p> "
     )
     .style("opacity", 1)
-    .style("top", event.pageY - 10 + "px")
-    .style("left", event.pageX + 10 + "px")
+    // .style("top", event.pageY - 10 + "px")
+    // .style("left", event.pageX + 10 + "px")
     .style("opacity", 1)
+    .style("font-size", ".6rem")
     .style("visibility", "visible");
 
   selected_MSOA_scatter = d.LTLA_name_ns;
@@ -1624,8 +1626,8 @@ function update_scatter_dep() {
           "</b> out of 202 neighbourhood areas in Sussex, with 1 being most deprived.</p> "
       )
       .style("opacity", 1)
-      .style("top", event.pageY - 10 + "px")
-      .style("left", event.pageX + 10 + "px")
+      // .style("top", event.pageY - 10 + "px")
+      // .style("left", event.pageX + 10 + "px")
       .style("opacity", 1)
       .style("visibility", "visible");
 
