@@ -114,6 +114,8 @@ query_structure <- list(
 )
 
 last_date <- as.Date(last_update(filters = query_filters, structure = query_structure))
+#last_date <- as.Date('2021-04-19')
+
 # daily_cases <- get_data(filters = query_filters, structure = query_structure)
 # last_date <- as.Date('2020-08-26')
 # PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
@@ -1992,7 +1994,6 @@ msoa_cases_raw <- msoa_cases_dummy %>%
   rename(areaName = msoa11hclnm) %>% 
   select(areaCode, areaName, date, newCasesBySpecimenDateRollingSum, newCasesBySpecimenDateRollingRate)
              
-
 msoa_cases_1 <- msoa_cases_raw %>% 
   select(areaCode, areaName, date, newCasesBySpecimenDateRollingSum, newCasesBySpecimenDateRollingRate) %>% 
   # filter(areaCode %in% msoa_lookup$MSOA11CD) %>% 
