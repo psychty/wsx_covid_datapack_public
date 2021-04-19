@@ -19,7 +19,7 @@ column_names = [
   "Number aged 65+ receiving at least one dose",
   "Rank of uptake (%) aged 65+ within Local Authority area",
   "Proportion aged 65+ receiving at least one dose",
-  "Estimated number of people aged 50+ still to receive their first dose",
+  "Estimated number of people aged 65+ still to receive their first dose",
 ];
 
 var clicks = {
@@ -1303,17 +1303,16 @@ var ltla_scatter_colour_func = d3
     "yellow",
   ]);
 
-d3.select("#msoa_vaccine_scatter_deprivation_title").html(function (d) {
-  return (
-    "Proportion of individuals (aged 50+) receiving at least one Covid-19 vaccination dose by deprivation score; Sussex MSOAs; vaccinations administered from " +
-    vaccine_administered_date
-  );
-});
+var scatter_options = [
+  "Proportion over 50",
+  "Proportion over 65",
+  "Proportion aged 50-64",
+  "Proportion aged 16+",
+];
 
 d3.select("#select_scatter_measure_button")
   .selectAll("myOptions")
-  // .data(["Proportion over 50", "Proportion over 65", "Proportion aged 50-64"])
-  .data(["Proportion over 50"])
+  .data(scatter_options)
   .enter()
   .append("option")
   .text(function (d) {
@@ -1327,7 +1326,36 @@ var selected_vaccine_scatter_choice = d3
   .select("#select_scatter_measure_button")
   .property("value");
 
-// Daily admissions bar chart
+var column_to_select_scatter = d3
+  .scaleOrdinal()
+  .domain(scatter_options)
+  .range([
+    "Proportion_50_plus",
+    "Proportion_65_plus",
+    "Proportion_50_64",
+    "Proportion_age_known",
+  ]);
+
+var column_to_select_scatter_count = d3
+  .scaleOrdinal()
+  .domain(scatter_options)
+  .range([
+    "Age_50_and_over",
+    "Age_65_and_over",
+    "Age_50_64",
+    "Total_where_age_known",
+  ]);
+
+var column_to_select_scatter_text_1 = d3
+  .scaleOrdinal()
+  .domain(scatter_options)
+  .range([
+    "people aged 50+ years",
+    "people aged 65+ years",
+    "people aged 50-64 years",
+    "people aged 16+",
+  ]);
+
 var svg_scatter = d3
   .select("#msoa_vaccine_scatter_deprivation")
   .append("svg")
@@ -1357,18 +1385,16 @@ var showTooltip_scatter_dep_uptake = function (d) {
         " in  " +
         d.LTLA_name +
         "</b></p><p> A total of <b> " +
-        d3.format(",.0f")(d.Age_50_and_over) +
-        "</b> people aged 50+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-        d3.format(".1%")(d.Proportion_50_plus) +
+        d3.format(",.0f")(
+          d[column_to_select_scatter_count(selected_vaccine_scatter_choice)]
+        ) +
+        "</b> " +
+        column_to_select_scatter_text_1(selected_vaccine_scatter_choice) +
+        " have received at least one dose of a COVID - 19 vaccine.This is <b> " +
+        d3.format(".1%")(
+          d[column_to_select_scatter(selected_vaccine_scatter_choice)]
+        ) +
         " </b>of the estimated population in this age group in this area.</p>" +
-        // "<p>Based on these estimates, there are <b>" +
-        // d3.format(",.0f")(d.Estimated_left_to_vaccinate_50_plus) +
-        // "</b> over 50s left to receive their first dose.</p>" +
-        // "<p>Overall, a total of <b>" +
-        // d3.format(",.0f")(d.Total_where_age_known) +
-        // " </b>people aged 16+ have received at least one dose (<b>" +
-        // d3.format(".1%")(d.Proportion_age_known) +
-        // "</b>) to date.</p>" +
         "<p>This MSOA has a population weighted deprivation score of <b>" +
         d3.format(",.1f")(d.Pop_weighted_imd_score) +
         "</b> and a rank of <b>" +
@@ -1456,50 +1482,6 @@ yAxis_dep_vs_uptake
   .attr("transform", "translate(0,0)")
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
-
-// Add dots
-// svg_scatter_plot_1 = svg_scatter
-//   .append("g")
-//   .selectAll("dot")
-//   .data(included_vaccine_msoa_data)
-//   .enter()
-//   .append("circle")
-//   .attr("class", function (d) {
-//     return "dot " + d.LTLA_name_ns;
-//   })
-//   .attr("cx", function (d) {
-//     return x_dep_vs_uptake(d.Pop_weighted_imd_score);
-//   })
-//   .attr("cy", function (d) {
-//     return y_dep_vs_uptake(d.Proportion_50_plus);
-//   })
-//   .attr("r", 6)
-//   .attr("fill", "#2e84d5")
-//   .style("stroke", "#ffffff")
-//   .on("mousemove", showTooltip_scatter_dep_uptake)
-//   .on("mouseout", Mouseleave_scatter_dep_uptake);
-
-// markers = svg_scatter.selectAll("dot").data(included_vaccine_msoa_data);
-
-// markers
-//   .enter()
-//   .append("circle")
-//   .attr("class", function (d) {
-//     return "dot " + d.LTLA_name_ns;
-//   })
-//   .attr("cx", function (d) {
-//     return x_dep_vs_uptake(d.Pop_weighted_imd_score);
-//   })
-//   .attr("cy", function (d) {
-//     return y_dep_vs_uptake(d.Proportion_50_plus);
-//   })
-//   .attr("r", 6)
-//   .attr("fill", "#2e84d5")
-//   .style("stroke", "#ffffff")
-//   .on("mousemove", showTooltip_scatter_dep_uptake)
-//   .on("mouseout", Mouseleave_scatter_dep_uptake);
-
-// markers.exit().remove();
 
 // ! Some annotations
 
@@ -1592,6 +1574,12 @@ svg_scatter
   .style("font-size", ".8rem");
 
 function update_scatter_dep() {
+  var selected_vaccine_scatter_choice = d3
+    .select("#select_scatter_measure_button")
+    .property("value");
+
+  console.log(column_to_select_scatter(selected_vaccine_scatter_choice));
+
   var choices = [];
   d3.selectAll(".my_scatter_Checkbox_1").each(function (d) {
     cb = d3.select(this);
@@ -1600,11 +1588,71 @@ function update_scatter_dep() {
     }
   });
 
+  d3.select("#msoa_vaccine_scatter_deprivation_title").html(function (d) {
+    return (
+      "Proportion of individuals (" +
+      column_to_select_scatter_text_1(selected_vaccine_scatter_choice) +
+      ") receiving at least one Covid-19 vaccination dose by deprivation score; Sussex MSOAs; vaccinations administered from " +
+      vaccine_administered_date
+    );
+  });
+
+  var showTooltip_scatter_dep_uptake = function (d) {
+    tooltip_scatter_dep_uptake
+      .html(
+        "<p><b>" +
+          d.MSOA_name +
+          " in  " +
+          d.LTLA_name +
+          "</b></p><p> A total of <b> " +
+          d3.format(",.0f")(
+            d[column_to_select_scatter_count(selected_vaccine_scatter_choice)]
+          ) +
+          "</b> " +
+          column_to_select_scatter_text_1(selected_vaccine_scatter_choice) +
+          " have received at least one dose of a COVID - 19 vaccine.This is <b> " +
+          d3.format(".1%")(
+            d[column_to_select_scatter(selected_vaccine_scatter_choice)]
+          ) +
+          " </b>of the estimated population in this age group in this area.</p>" +
+          "<p>This MSOA has a population weighted deprivation score of <b>" +
+          d3.format(",.1f")(d.Pop_weighted_imd_score) +
+          "</b> and a rank of <b>" +
+          d3.format(",.0f")(d.National_pop_weighted_rank) +
+          "</b> out of 6,790 neighbourhoods nationally, and <b>" +
+          d.Rank_in_Sussex +
+          "</b> out of 202 neighbourhood areas in Sussex, with 1 being most deprived.</p> "
+      )
+      .style("opacity", 1)
+      .style("top", event.pageY - 10 + "px")
+      .style("left", event.pageX + 10 + "px")
+      .style("opacity", 1)
+      .style("visibility", "visible");
+
+    selected_MSOA_scatter = d.LTLA_name_ns;
+
+    d3.selectAll(".dot." + selected_MSOA_scatter)
+      .transition()
+      .duration(200)
+      .style("fill", "maroon")
+      .attr("r", 9);
+  };
+
+  var Mouseleave_scatter_dep_uptake = function (d) {
+    tooltip_scatter_dep_uptake
+      .style("opacity", 0)
+      .style("visibility", "hidden");
+
+    d3.selectAll(".dot." + selected_MSOA_scatter)
+      .transition()
+      .duration(200)
+      .style("fill", "#2e84d5")
+      .attr("r", 6);
+  };
+
   included_vaccine_msoa_data = vaccine_msoa_data.filter(function (d, i) {
     return choices.indexOf(d.UTLA) >= 0;
   });
-
-  // console.log(included_vaccine_msoa_data);
 
   x_dep_vs_uptake
     .domain([
@@ -1618,7 +1666,7 @@ function update_scatter_dep() {
   xAxis_dep_vs_uptake
     .transition()
     // .delay(1500)
-    .duration(750)
+    .duration(1250)
     .call(d3.axisBottom(x_dep_vs_uptake));
 
   xAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
@@ -1626,7 +1674,7 @@ function update_scatter_dep() {
   y_dep_vs_uptake
     .domain([
       d3.min(included_vaccine_msoa_data, function (d) {
-        return +d.Proportion_50_plus;
+        return +d[column_to_select_scatter(selected_vaccine_scatter_choice)];
       }),
       1,
     ])
@@ -1635,7 +1683,7 @@ function update_scatter_dep() {
   yAxis_dep_vs_uptake
     .transition()
     // .delay(1500)
-    .duration(750)
+    .duration(1250)
     .call(d3.axisLeft(y_dep_vs_uptake).tickFormat(d3.format(".0%")));
 
   yAxis_dep_vs_uptake.selectAll("text").style("font-size", ".8rem");
@@ -1655,7 +1703,9 @@ function update_scatter_dep() {
       return x_dep_vs_uptake(d.Pop_weighted_imd_score);
     })
     .attr("cy", function (d) {
-      return y_dep_vs_uptake(d.Proportion_50_plus);
+      return y_dep_vs_uptake(
+        d[column_to_select_scatter(selected_vaccine_scatter_choice)]
+      );
     })
     .attr("r", 6)
     .attr("fill", "#2e84d5")
@@ -1663,19 +1713,10 @@ function update_scatter_dep() {
     .on("mousemove", showTooltip_scatter_dep_uptake)
     .on("mouseout", Mouseleave_scatter_dep_uptake);
 
-  // dep_uptake_points
-  //   .transition()
-  //   .duration(1500)
-  //   .attr("cx", function (d) {
-  //     return x_dep_vs_uptake(d.Pop_weighted_imd_score);
-  //   })
-  //   .attr("cy", function (d) {
-  //     return y_dep_vs_uptake(d.Proportion_50_plus);
-  //   });
-
   dep_uptake_points.exit().remove();
 }
 
 d3.selectAll(".my_scatter_Checkbox_1").on("change", update_scatter_dep);
+d3.selectAll("#select_scatter_measure_button").on("change", update_scatter_dep);
 
 update_scatter_dep();
