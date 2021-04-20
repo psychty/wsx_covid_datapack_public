@@ -43,7 +43,6 @@ output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
 # 2019 MYE
-
 mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=1816133633...1816133848,1820327937...1820328318,2092957697...2092957703,2013265921...2013265932&date=latest&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
   rename(Population = OBS_VALUE,
          Code = GEOGRAPHY_CODE,
@@ -60,7 +59,6 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
 
 # mye_total %>% 
 #   write.csv(., paste0(github_repo_dir,'/Source files/mye2019_ltla.csv'), row.names = FALSE)
-
 if(exists('mye_total') == FALSE) {
   mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2019_ltla.csv')) %>%
     rename(Type = Geography1)
@@ -98,26 +96,30 @@ daily_cases <- daily_cases_ltla %>%
   left_join(mye_total, by = 'Code') %>% 
   ungroup()
 
-library(ukcovid19)
-
-query_filters <- c(
-  # "areaType=utla"
-  'areaName=West Sussex'
-)
-
-query_structure <- list(
-  date = "date", 
-  name = "areaName", 
-  code = "areaCode", 
-  daily = "newCasesBySpecimenDate",
-  cumulative = "cumCasesBySpecimenDate"
-)
-
-last_date <- as.Date(last_update(filters = query_filters, structure = query_structure))
+# library(ukcovid19)
+# 
+# query_filters <- c(
+#   # "areaType=utla"
+#   'areaName=West Sussex'
+# )
+# 
+# query_structure <- list(
+#   date = "date", 
+#   name = "areaName", 
+#   code = "areaCode", 
+#   daily = "newCasesBySpecimenDate",
+#   cumulative = "cumCasesBySpecimenDate"
+# )
+# 
+# last_date <- as.Date(last_update(filters = query_filters, structure = query_structure))
 #last_date <- as.Date('2021-04-19')
 
 # daily_cases <- get_data(filters = query_filters, structure = query_structure)
 # last_date <- as.Date('2020-08-26')
+
+last_date <- max(daily_cases$Date) +1
+
+
 # PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
 complete_date <- last_date - 5
 
@@ -1163,9 +1165,9 @@ week_ending <- week_ending_a %>%
 
 rm(week_ending_a, week_ending_b)
 
-download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk132021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
+download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk142021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week13.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week14.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
