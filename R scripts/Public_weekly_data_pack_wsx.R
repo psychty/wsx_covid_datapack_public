@@ -119,10 +119,8 @@ daily_cases <- daily_cases_ltla %>%
 
 last_date <- max(daily_cases$Date) +1
 
-
 # PHE say the last four data points are incomplete (perhaps they should not publish them). Instead, we need to make sure we account for this so that it is not misinterpreted.
 complete_date <- last_date - 5
-
 
 # If no specimens are taken on a day, there is no row for it, and it would be missing data. Indeed, the only zeros are on the latest day. We need to therefore backfill and say if no date exists where it should, then add it, with the cumulative total and zero for new cases.
 
