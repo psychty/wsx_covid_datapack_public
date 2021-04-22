@@ -309,57 +309,56 @@ County_boundary <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4
   spTransform(CRS("+init=epsg:4326"))
 
 # MSOA vaccine data ####
-
 mye_nims_msoa <- read_csv(paste0(github_repo_dir, '/Source files/msoa_nims_pop_estimates.csv')) %>% 
   mutate(Population = `Under_16` + `Age_16_and_over`) %>% 
-  mutate(Population_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Population_45_and_over = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Population_50_64 = Age_50_54 + Age_55_59 + Age_60_64)
+  mutate(Population_45_64 = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64)
 
 vaccine_df_msoa <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                               sheet = 'MSOA',
                               skip = 15,
-                              col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'Under_50', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
+                              col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'Under_45', 'Age_45_49', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
   filter(!is.na(Region_name)) %>% 
-  mutate(Total_where_age_known = Under_50 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Total_where_age_known = Under_45 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Age_45_and_over = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Age_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_50_64 = Age_50_54 + Age_55_59 + Age_60_64) %>% 
+  mutate(Age_45_64 = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
   left_join(imd_msoa, by = c('msoa11cd' = 'MSOA11CD')) %>% 
   select(!c(Region_code, Region_name, LTLA_code, msoa11nm, RUC11CD)) %>% 
   filter(LTLA_name %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing')) %>% 
   mutate(Total_banded = factor(ifelse(Total_where_age_known < 1000, 'Up to 999', ifelse(Total_where_age_known < 2000, '1,000-1,999', ifelse(Total_where_age_known < 3000, '2,000-2,999', ifelse(Total_where_age_known < 4000, '3,000-3,999', ifelse(Total_where_age_known < 5000, '4,000-4,999',  ifelse(Total_where_age_known < 6000, '5,000-5,999',  ifelse(Total_where_age_known < 7000, '6,000-6,999', '7,000+'))))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000-5,999', '6,000-6,999', '7,000+'))) %>% 
-  mutate(Total_age_50_banded = factor(ifelse(Age_50_and_over < 1000, 'Up to 999', ifelse(Age_50_and_over < 2000, '1,000-1,999', ifelse(Age_50_and_over < 3000, '2,000-2,999', ifelse(Age_50_and_over < 4000, '3,000-3,999', ifelse(Age_50_and_over < 5000, '4,000-4,999',  '5,000+'))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000+'))) %>%
+  mutate(Total_age_45_banded = factor(ifelse(Age_45_and_over < 1000, 'Up to 999', ifelse(Age_45_and_over < 2000, '1,000-1,999', ifelse(Age_45_and_over < 3000, '2,000-2,999', ifelse(Age_45_and_over < 4000, '3,000-3,999', ifelse(Age_45_and_over < 5000, '4,000-4,999',  '5,000+'))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000+'))) %>%
   mutate(Total_age_65_banded = factor(ifelse(Age_65_and_over < 1000, 'Up to 999', ifelse(Age_65_and_over < 2000, '1,000-1,999', ifelse(Age_65_and_over < 3000, '2,000-2,999', ifelse(Age_65_and_over < 4000, '3,000-3,999', ifelse(Age_65_and_over < 5000, '4,000-4,999',  '5,000+'))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000+'))) %>%
-  mutate(Total_age_50_64_banded = factor(ifelse(Age_50_64 < 1000, 'Up to 999', ifelse(Age_50_64 < 2000, '1,000-1,999', ifelse(Age_50_64 < 3000, '2,000-2,999', ifelse(Age_50_64 < 4000, '3,000-3,999', ifelse(Age_50_64 < 5000, '4,000-4,999',  '5,000+'))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000+'))) %>%
+  mutate(Total_age_45_64_banded = factor(ifelse(Age_45_64 < 1000, 'Up to 999', ifelse(Age_45_64 < 2000, '1,000-1,999', ifelse(Age_45_64 < 3000, '2,000-2,999', ifelse(Age_45_64 < 4000, '3,000-3,999', ifelse(Age_45_64 < 5000, '4,000-4,999',  '5,000+'))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000+'))) %>%
   arrange(msoa11cd) %>% 
-  left_join(mye_nims_msoa[c('msoa11cd', 'Age_16_and_over', 'Population_50_and_over', 'Population_65_and_over', 'Population_50_64')], by = 'msoa11cd') %>% 
+  left_join(mye_nims_msoa[c('msoa11cd', 'Age_16_and_over', 'Population_45_and_over', 'Population_65_and_over', 'Population_45_64')], by = 'msoa11cd') %>% 
   mutate(Proportion_age_known = Total_where_age_known/ Age_16_and_over) %>% 
-  mutate(Proportion_50_plus = Age_50_and_over/Population_50_and_over) %>% 
+  mutate(Proportion_45_plus = Age_45_and_over/Population_45_and_over) %>% 
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>% 
-  mutate(Proportion_50_64 = Age_50_64/Population_50_64) %>% 
+  mutate(Proportion_45_64 = Age_45_64/Population_45_64) %>% 
   mutate(Proportion_age_known_banded = factor(ifelse(Proportion_age_known < .1, 'Less than 10%', ifelse(Proportion_age_known < .2, '10-19%',ifelse(Proportion_age_known < .3, '20-29%', ifelse(Proportion_age_known < .4, '30-39%', ifelse(Proportion_age_known < .5, '40-49%', ifelse(Proportion_age_known < .6, '50-59%', ifelse(Proportion_age_known < .7, '60-69%', ifelse(Proportion_age_known < .8, '70-79%', ifelse(Proportion_age_known < .9, '80-89%', ifelse(Proportion_age_known < 1, '90-99%', '100% of estimated population')))))))))), levels = c('Less than 10%', '10-19%', '20-29%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population'))) %>% 
-  mutate(Proportion_50_plus_banded = factor(ifelse(Proportion_50_plus < .7, 'Less than 70%', ifelse(Proportion_50_plus < .75, '70-74%', ifelse(Proportion_50_plus < .8, '75-79%',ifelse(Proportion_50_plus < .85, '80-84%', ifelse(Proportion_50_plus < .9, '85-89%', ifelse(Proportion_50_plus < .95, '90-94%', ifelse(Proportion_50_plus < 1, '95-99%', '100% of estimated population'))))))), levels = c('Less than 70%', '70-74%', '75-79%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
+  mutate(Proportion_45_plus_banded = factor(ifelse(Proportion_45_plus < .7, 'Less than 70%', ifelse(Proportion_45_plus < .75, '70-74%', ifelse(Proportion_45_plus < .8, '75-79%',ifelse(Proportion_45_plus < .85, '80-84%', ifelse(Proportion_45_plus < .9, '85-89%', ifelse(Proportion_45_plus < .95, '90-94%', ifelse(Proportion_45_plus < 1, '95-99%', '100% of estimated population'))))))), levels = c('Less than 70%', '70-74%', '75-79%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
   mutate(Proportion_65_plus_banded = factor(ifelse(Proportion_65_plus < .7, 'Less than 70%', ifelse(Proportion_65_plus < .75, '70-74%', ifelse(Proportion_65_plus < .8, '75-79%',ifelse(Proportion_65_plus < .85, '80-84%', ifelse(Proportion_65_plus < .9, '85-89%', ifelse(Proportion_65_plus < .95, '90-94%', ifelse(Proportion_65_plus < 1, '95-99%', '100% of estimated population'))))))), levels = c('Less than 70%', '70-74%', '75-79%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>%
-  mutate(Proportion_50_64_banded = factor(ifelse(Proportion_50_64 < .7, 'Less than 70%', ifelse(Proportion_50_64 < .75, '70-74%', ifelse(Proportion_50_64 < .8, '75-79%',ifelse(Proportion_50_64 < .85, '80-84%', ifelse(Proportion_50_64 < .9, '85-89%', ifelse(Proportion_50_64 < .95, '90-94%', ifelse(Proportion_50_64 < 1, '95-99%', '100% of estimated population'))))))), levels = c('Less than 70%', '70-74%', '75-79%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
-  mutate(Estimated_left_to_vaccinate_50_plus = Population_50_and_over - Age_50_and_over,
+  mutate(Proportion_45_64_banded = factor(ifelse(Proportion_45_64 < .7, 'Less than 70%', ifelse(Proportion_45_64 < .75, '70-74%', ifelse(Proportion_45_64 < .8, '75-79%',ifelse(Proportion_45_64 < .85, '80-84%', ifelse(Proportion_45_64 < .9, '85-89%', ifelse(Proportion_45_64 < .95, '90-94%', ifelse(Proportion_45_64 < 1, '95-99%', '100% of estimated population'))))))), levels = c('Less than 70%', '70-74%', '75-79%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
+  mutate(Estimated_left_to_vaccinate_45_plus = Population_45_and_over - Age_45_and_over,
          Estimated_left_to_vaccinate_65_plus = Population_65_and_over - Age_65_and_over,
-         Estimated_left_to_vaccinate_50_64 = Population_50_64 - Age_50_64) %>%
-  select(msoa11cd, msoa11hclnm, LTLA_name, Total_where_age_known, Proportion_age_known, Total_banded, Proportion_age_known_banded, Age_50_and_over, Proportion_50_plus, Total_age_50_banded, Proportion_50_plus_banded, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_65_plus, Total_age_65_banded, Proportion_65_plus_banded, Estimated_left_to_vaccinate_65_plus, Age_50_64, Proportion_50_64, Total_age_50_64_banded, Proportion_50_64_banded, Estimated_left_to_vaccinate_50_64, Pop_weighted_imd_score, National_pop_weighted_rank, National_pop_weighted_decile, Rank_in_Sussex, Decile_in_Sussex, RUC11) 
+         Estimated_left_to_vaccinate_45_64 = Population_45_64 - Age_45_64) %>%
+  select(msoa11cd, msoa11hclnm, LTLA_name, Total_where_age_known, Proportion_age_known, Total_banded, Proportion_age_known_banded, Age_45_and_over, Proportion_45_plus, Total_age_45_banded, Proportion_45_plus_banded, Estimated_left_to_vaccinate_45_plus, Age_65_and_over, Proportion_65_plus, Total_age_65_banded, Proportion_65_plus_banded, Estimated_left_to_vaccinate_65_plus, Age_45_64, Proportion_45_64, Total_age_45_64_banded, Proportion_45_64_banded, Estimated_left_to_vaccinate_45_64, Pop_weighted_imd_score, National_pop_weighted_rank, National_pop_weighted_decile, Rank_in_Sussex, Decile_in_Sussex, RUC11) 
 
 vaccine_df_msoa %>% 
   group_by(LTLA_name) %>% 
-  mutate(Proportion_rank_50_plus_within_LTLA = rank(desc(Proportion_50_plus))) %>% 
+  mutate(Proportion_rank_45_plus_within_LTLA = rank(desc(Proportion_45_plus))) %>% 
   mutate(Proportion_rank_65_plus_within_LTLA = rank(desc(Proportion_65_plus))) %>% 
-  mutate(Proportion_rank_50_64_within_LTLA = rank(desc(Proportion_50_64))) %>% 
+  mutate(Proportion_rank_45_64_within_LTLA = rank(desc(Proportion_45_64))) %>% 
   mutate(MSOA_name = paste0(msoa11hclnm, ' (', msoa11cd, ')')) %>% 
-  select(LTLA_name, MSOA_name, Total_where_age_known, Age_50_and_over, Proportion_rank_50_plus_within_LTLA, Proportion_50_plus, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_rank_65_plus_within_LTLA,Proportion_65_plus, Estimated_left_to_vaccinate_65_plus, Pop_weighted_imd_score, National_pop_weighted_decile, Decile_in_Sussex, National_pop_weighted_rank, Rank_in_Sussex, msoa11cd, Proportion_age_known, Proportion_50_64, Age_50_64) %>% 
+  select(LTLA_name, MSOA_name, Total_where_age_known, Age_45_and_over, Proportion_rank_45_plus_within_LTLA, Proportion_45_plus, Estimated_left_to_vaccinate_45_plus, Age_65_and_over, Proportion_rank_65_plus_within_LTLA,Proportion_65_plus, Estimated_left_to_vaccinate_65_plus, Pop_weighted_imd_score, National_pop_weighted_decile, Decile_in_Sussex, National_pop_weighted_rank, Rank_in_Sussex, msoa11cd, Proportion_age_known, Proportion_45_64, Age_45_64) %>% 
   mutate(LTLA_name_ns = gsub(' ', '_', LTLA_name)) %>% 
   mutate(National_pop_weighted_decile = factor(ifelse(National_pop_weighted_decile == 1, '10% most deprived',  ifelse(National_pop_weighted_decile == 2, 'Decile 2',  ifelse(National_pop_weighted_decile == 3, 'Decile 3',  ifelse(National_pop_weighted_decile == 4, 'Decile 4',  ifelse(National_pop_weighted_decile == 5, 'Decile 5',  ifelse(National_pop_weighted_decile == 6, 'Decile 6',  ifelse(National_pop_weighted_decile == 7, 'Decile 7',  ifelse(National_pop_weighted_decile == 8, 'Decile 8',  ifelse(National_pop_weighted_decile == 9, 'Decile 9',  ifelse(National_pop_weighted_decile == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>% 
   mutate(Decile_in_Sussex = factor(ifelse(Decile_in_Sussex == 1, '10% most deprived',  ifelse(Decile_in_Sussex == 2, 'Decile 2',  ifelse(Decile_in_Sussex == 3, 'Decile 3',  ifelse(Decile_in_Sussex == 4, 'Decile 4',  ifelse(Decile_in_Sussex == 5, 'Decile 5',  ifelse(Decile_in_Sussex == 6, 'Decile 6',  ifelse(Decile_in_Sussex == 7, 'Decile 7',  ifelse(Decile_in_Sussex == 8, 'Decile 8',  ifelse(Decile_in_Sussex == 9, 'Decile 9',  ifelse(Decile_in_Sussex == 10, '10% least deprived', NA)))))))))), levels = c('10% most deprived', 'Decile 2', 'Decile 3', 'Decile 4', 'Decile 5', 'Decile 6', 'Decile 7', 'Decile 8', 'Decile 9', '10% least deprived'))) %>% 
   # select(LTLA_name, MSOA_name, Total_where_age_known, Age_50_and_over, Proportion_rank_50_plus_within_LTLA, Proportion_50_plus, Estimated_left_to_vaccinate_50_plus, Age_65_and_over, Proportion_rank_65_plus_within_LTLA,Proportion_65_plus, Estimated_left_to_vaccinate_65_plus, Age_50_64, Proportion_rank_50_64_within_LTLA,Proportion_50_64_plus, Estimated_left_to_vaccinate_50_64,Pop_weighted_imd_score) %>% 
   mutate(UTLA = ifelse(LTLA_name %in% c('Eastbourne', 'Hastings', 'Lewes','Rother','Wealden') , 'East Sussex', ifelse(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing'), 'West Sussex', LTLA_name))) %>% 
-  arrange(LTLA_name, Proportion_rank_50_plus_within_LTLA) %>% 
+  arrange(LTLA_name, Proportion_rank_45_plus_within_LTLA) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_explore_data.json'))
 
@@ -465,19 +464,19 @@ png(paste0(output_directory_x, '/Proportion_at_least_one_dose_vaccination_msoa_l
 print(msoa_all_age_proportion)
 dev.off()
 
-msoa_total_age_50_plus_so_far <- ggplot() +
+msoa_total_age_45_plus_so_far <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
   geom_polygon(data = MSOA_boundary_gg,
                aes(x=long,
                    y=lat,
                    group = MSOA11CD,
-                   fill = Total_age_50_banded),
+                   fill = Total_age_45_banded),
                color="#000000",
                size = .1,
                alpha = 1,
                show.legend = TRUE) +
-  scale_fill_manual(name = 'Number of individuals aged 50 and over\nreceiving at least one dose',
+  scale_fill_manual(name = 'Number of individuals aged 45 and over\nreceiving at least one dose',
                     values = c('#ffffb2','#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026'),
                     drop = FALSE) +
   geom_polygon(data = County_boundary,
@@ -487,37 +486,37 @@ msoa_total_age_50_plus_so_far <- ggplot() +
                colour = '#630436',
                fill = NA,
                size = 1) +
-  labs(title = paste0('Cumulative number of individuals aged 50 and over receiving at least Covid-19 vaccination dose;\nData as at ', vaccine_published_date),
+  labs(title = paste0('Cumulative number of individuals aged 45 and over receiving at least Covid-19 vaccination dose;\nData as at ', vaccine_published_date),
        subtitle = paste0('Sussex Middle layer Super Output Areas (MSOAs)'),
-       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\n for those aged 50 and over.') +
+       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\n for those aged 45 and over.') +
   guides(fill = guide_legend(nrow = 3, byrow = TRUE)) +
   theme(legend.position = c(.85,.1))
 
-png(paste0(output_directory_x, '/Number_at_least_one_dose_vaccination_50_plus_msoa_latest.png'),
+png(paste0(output_directory_x, '/Number_at_least_one_dose_vaccination_45_plus_msoa_latest.png'),
     width = 1280,
     height = 640,
     res = 100)
-print(msoa_total_age_50_plus_so_far)
+print(msoa_total_age_45_plus_so_far)
 dev.off()
 
-age_50_prop_colours <- c("#0D0887", "#5402A3", "#8B0AA5", "#B93289", "#DB5C68", "#F48849", "#FEBC2A", "#F0F921")
+age_45_prop_colours <- c("#0D0887", "#5402A3", "#8B0AA5", "#B93289", "#DB5C68", "#F48849", "#FEBC2A", "#F0F921")
 
-msoa_age_50_proportion <- ggplot() +
+msoa_age_45_proportion <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
   geom_polygon(data = MSOA_boundary_gg,
                aes(x=long,
                    y=lat,
                    group = group,
-                   fill = Proportion_50_plus_banded),
+                   fill = Proportion_45_plus_banded),
                color="#000000",
                size = .1,
                alpha = 1,
                show.legend = TRUE) +
-  scale_fill_manual(values = age_50_prop_colours,
-                    breaks = rev(levels(MSOA_boundary_gg$Proportion_50_plus_banded)),
+  scale_fill_manual(values = age_45_prop_colours,
+                    breaks = rev(levels(MSOA_boundary_gg$Proportion_45_plus_banded)),
                     drop = FALSE,
-                    name = 'Proportion of population\n(aged 50+)') +
+                    name = 'Proportion of population\n(aged 45+)') +
   geom_polygon(data = County_boundary,
                aes(x = long,
                    y = lat,
@@ -525,31 +524,31 @@ msoa_age_50_proportion <- ggplot() +
                colour = '#000000',
                fill = NA,
                size = 1) +
-  labs(title = paste0('Proportion of individuals aged 50 and over receiving at least one dose of a COVID-19 vaccine;\nData as at ', vaccine_published_date),
+  labs(title = paste0('Proportion of individuals aged 45 and over receiving at least one dose of a COVID-19 vaccine;\nData as at ', vaccine_published_date),
        subtitle = paste0('Sussex Middle layer Super Output Areas (MSOAs)'),
-       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\nfor those aged 50 and over.')  +
+       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\nfor those aged 45 and over.')  +
   guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
   theme(legend.position = 'bottom')
 
-png(paste0(output_directory_x, '/Proportion_at_least_one_dose_vaccination_aged_50_plus_msoa_latest.png'),
+png(paste0(output_directory_x, '/Proportion_at_least_one_dose_vaccination_aged_45_plus_msoa_latest.png'),
     width = 1280,
     height = 640,
     res = 100)
-print(msoa_age_50_proportion)
+print(msoa_age_45_proportion)
 dev.off()
 
 png(paste0(output_directory_x, '/Number_vaccination_msoa_latest.png'),
     width = 1280,
     height = 1080,
     res = 140)
-(msoa_total_so_far + theme(legend.position = 'right')) / (msoa_total_age_50_plus_so_far + theme(legend.position = 'right'))
+(msoa_total_so_far + theme(legend.position = 'right')) / (msoa_total_age_45_plus_so_far + theme(legend.position = 'right'))
 dev.off()
 
 png(paste0(output_directory_x, '/Proportion_vaccination_msoa_latest.png'),
     width = 1280,
     height = 1080,
     res = 140)
-(msoa_all_age_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right')) / (msoa_age_50_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))
+(msoa_all_age_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right')) / (msoa_age_45_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))
 dev.off()
 
 png(paste0(output_directory_x, '/Vaccination_msoa_latest.png'),
@@ -559,14 +558,14 @@ png(paste0(output_directory_x, '/Vaccination_msoa_latest.png'),
 (msoa_total_so_far +  scale_fill_manual(name = 'Number of individuals\nreceiving at least\none dose (where age known)', values = rev(c('#f7fcf0','#e0f3db','#ccebc5','#a8ddb5','#7bccc4','#4eb3d3','#2b8cbe','#08589e')), breaks = rev(levels(MSOA_boundary_gg$Total_banded)), drop = FALSE) + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))/(msoa_all_age_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))
 dev.off()
 
-png(paste0(output_directory_x, '/Vaccination_msoa_50_plus_latest.png'),
+png(paste0(output_directory_x, '/Vaccination_msoa_45_plus_latest.png'),
     width = 1280,
     height = 1080,
     res = 140)
-(msoa_total_age_50_plus_so_far +  scale_fill_manual(name = 'Number of individuals\naged 50 and over\nreceiving at least one dose', values = rev(c('#ffffb2','#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026')), breaks = rev(levels(MSOA_boundary_gg$Total_age_50_banded)), drop = FALSE) + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))/(msoa_age_50_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))
+(msoa_total_age_45_plus_so_far +  scale_fill_manual(name = 'Number of individuals\naged 45 and over\nreceiving at least one dose', values = rev(c('#ffffb2','#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026')), breaks = rev(levels(MSOA_boundary_gg$Total_age_45_banded)), drop = FALSE) + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))/(msoa_age_45_proportion + guides(fill = guide_legend(ncol = 1, byrow = TRUE)) + theme(legend.position = 'right'))
 dev.off()
 
-fifty_sixtyfour_prop_colours <- rev(c('#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177'))
+fourtyfive_sixtyfour_prop_colours <- rev(c('#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177'))
 
 ggplot() +
   coord_fixed(1.5) +
@@ -575,15 +574,15 @@ ggplot() +
                aes(x=long,
                    y=lat,
                    group = group,
-                   fill = Proportion_50_64_banded),
+                   fill = Proportion_45_64_banded),
                color="#000000",
                size = .1,
                alpha = 1,
                show.legend = TRUE) +
-  scale_fill_manual(values = fifty_sixtyfour_prop_colours,
-                    breaks = rev(levels(MSOA_boundary_gg$Proportion_50_64_banded)),
+  scale_fill_manual(values = fourtyfive_sixtyfour_prop_colours,
+                    breaks = rev(levels(MSOA_boundary_gg$Proportion_45_64_banded)),
                     drop = FALSE,
-                    name = 'Proportion of population\n(aged 50-64 years)') +
+                    name = 'Proportion of population\n(aged 45-64 years)') +
   geom_polygon(data = County_boundary,
                aes(x = long,
                    y = lat,
@@ -591,85 +590,84 @@ ggplot() +
                colour = '#000000',
                fill = NA,
                size = 1) +
-  labs(title = paste0('Proportion of individuals aged 50 to 64 years receiving at least one dose of a COVID-19 vaccine;\nData as at ', vaccine_published_date),
+  labs(title = paste0('Proportion of individuals aged 45 to 64 years receiving at least one dose of a COVID-19 vaccine;\nData as at ', vaccine_published_date),
        subtitle = paste0('Sussex Middle layer Super Output Areas (MSOAs)'),
-       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\nfor those aged 50-64 years.')  +
+       caption = 'Note: This excludes a small number of individuals where the age was not known.\nWe have used the population estimates provided by National Immunisation Management Service (NIMS)\nfor those aged 45-64 years.')  +
   guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
   theme(legend.position = 'bottom')
 
-summary(MSOA_boundary_gg$Proportion_50_64)
-
+summary(MSOA_boundary_gg$Proportion_45_64)
 
 # LTLA vaccine data ####
 
 mye_nims_ltla <- read_csv(paste0(github_repo_dir, '/Source files/ltla_nims_pop_estimates.csv')) %>% 
   mutate(Population = Under_16 + Age_16_and_over) %>% 
-  mutate(Population_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Population_45_and_over = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Population_50_64 = Age_50_54 + Age_55_59 + Age_60_64)
+  mutate(Population_45_64 = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64)
 
 vaccine_df_ltla <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                               sheet = 'LTLA',
                               skip = 15,
-                              col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'Under_50', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
+                              col_names = c('Region_code', 'Region_name', 'UTLA_code', 'UTLA_name', 'LTLA_code', 'LTLA_name', 'Under_45', 'Age_45_49', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
   filter(!is.na(Region_name)) %>% 
-  mutate(Total_where_age_known = Under_50 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Total_where_age_known = Under_45 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Age_45_and_over = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Age_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_50_64 = Age_50_54 + Age_55_59 + Age_60_64) %>% 
-  left_join(mye_nims_ltla[c('LTLA_code', 'Age_16_and_over', 'Population_50_and_over', 'Population_65_and_over', 'Population_50_64')], by = 'LTLA_code') %>% 
+  mutate(Age_45_64 = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
+  left_join(mye_nims_ltla[c('LTLA_code', 'Age_16_and_over', 'Population_45_and_over', 'Population_65_and_over', 'Population_45_64')], by = 'LTLA_code') %>% 
   mutate(Proportion_age_known = Total_where_age_known/ Age_16_and_over) %>% 
-  mutate(Proportion_50_plus = Age_50_and_over/Population_50_and_over) %>% 
+  mutate(Proportion_45_plus = Age_45_and_over/Population_45_and_over) %>% 
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>% 
-  mutate(Proportion_50_64 = Age_50_64/Population_50_64) %>% 
-  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Age_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_50_64, Proportion_50_64, Population_50_64) %>% 
+  mutate(Proportion_45_64 = Age_45_64/Population_45_64) %>% 
+  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_45_and_over, Proportion_45_plus, Age_16_and_over, Population_45_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_45_64, Proportion_45_64, Population_45_64) %>% 
   rename(Population_16_and_over = Age_16_and_over)
 
 vaccine_df_wsx <- vaccine_df_ltla %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
   summarise(Total_where_age_known = sum(Total_where_age_known),
-            Age_50_and_over = sum(Age_50_and_over),
+            Age_45_and_over = sum(Age_45_and_over),
             Age_65_and_over = sum(Age_65_and_over),
-            Age_50_64 = sum(Age_50_64),
+            Age_45_64 = sum(Age_45_64),
             Population_16_and_over = sum(Population_16_and_over),
-            Population_50_and_over = sum(Population_50_and_over),
+            Population_45_and_over = sum(Population_45_and_over),
             Population_65_and_over = sum(Population_65_and_over),
-            Population_50_64 = sum(Population_50_64)) %>% 
+            Population_45_64 = sum(Population_45_64)) %>% 
   mutate(LTLA_name = 'West Sussex',
          LTLA_code = 'E10000032') %>%
   mutate(Proportion_age_known = Total_where_age_known/ Population_16_and_over) %>% 
-  mutate(Proportion_50_plus = Age_50_and_over/Population_50_and_over) %>%
+  mutate(Proportion_45_plus = Age_45_and_over/Population_45_and_over) %>%
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>%
-  mutate(Proportion_50_64 = Age_50_64/Population_50_64) %>% 
-  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_50_64, Proportion_50_64, Population_50_64) 
+  mutate(Proportion_45_64 = Age_45_64/Population_45_64) %>% 
+  select(LTLA_code, LTLA_name, Total_where_age_known, Proportion_age_known, Age_45_and_over, Proportion_45_plus, Population_16_and_over, Population_45_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_45_64, Proportion_45_64, Population_45_64) 
 
 # Add SE and England
 
 mye_ons_region <- read_csv(paste0(github_repo_dir, '/Source files/region_ons_pop_estimates.csv')) %>% 
   mutate(Population = Under_16 + Age_16_and_over) %>% 
-  mutate(Population_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Population_45_and_over = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Population_50_64 = Age_50_54 + Age_55_59 + Age_60_64) %>% 
+  mutate(Population_45_64 = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
   rename(Region_name = Area) %>% 
   mutate(Region_name = ifelse(Region_name == 'England', 'England', paste0(Region_name, ' region')))
 
 vaccine_df_region <- read_excel("GitHub/wsx_covid_datapack_public/Source files/nhs_e_vaccines.xlsx", 
                                 sheet = "NHS Region", 
-                                range = "B14:K22",
-                                col_names = c('Region_name', 'Null_1','Under_50', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>%
+                                range = "B14:L22",
+                                col_names = c('Region_name', 'Null_1','Under_45', 'Age_45_49', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>%
   select(!Null_1) %>% 
   filter(!is.na(Region_name)) %>%
   mutate(Region_name = ifelse(Region_name == 'Total', 'England', paste0(Region_name, ' region'))) %>% 
-  mutate(Total_where_age_known = Under_50 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_50_and_over = Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Total_where_age_known = Under_45 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+  mutate(Age_45_and_over = Age_45_49  + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Age_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_50_64 = Age_50_54 + Age_55_59 + Age_60_64) %>% 
-  left_join(mye_ons_region[c('Region_name', 'Age_16_and_over', 'Population_50_and_over', 'Population_65_and_over', 'Population_50_64')], by = 'Region_name') %>% 
+  mutate(Age_45_64 = Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
+  left_join(mye_ons_region[c('Region_name', 'Age_16_and_over', 'Population_45_and_over', 'Population_65_and_over', 'Population_45_64')], by = 'Region_name') %>% 
   mutate(Proportion_age_known = Total_where_age_known/ Age_16_and_over) %>% 
-  mutate(Proportion_50_plus = Age_50_and_over/Population_50_and_over) %>% 
+  mutate(Proportion_45_plus = Age_45_and_over/Population_45_and_over) %>% 
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>% 
-  mutate(Proportion_50_64 = Age_50_64/Population_50_64) %>% 
-  select(Region_name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Age_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_50_64, Proportion_50_64, Population_50_64) %>% 
+  mutate(Proportion_45_64 = Age_45_64/Population_45_64) %>% 
+  select(Region_name, Total_where_age_known, Proportion_age_known, Age_45_and_over, Proportion_45_plus, Age_16_and_over, Population_45_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_45_64, Proportion_45_64, Population_45_64) %>% 
   rename(Population_16_and_over = Age_16_and_over) %>% 
   filter(Region_name %in% c('South East region', 'England')) %>% 
   rename(Name = Region_name) %>% 
@@ -681,7 +679,7 @@ vaccine_df_ltla %>%
   bind_rows(vaccine_df_wsx) %>% 
   rename(Name = 'LTLA_name') %>% 
   bind_rows(vaccine_df_region) %>% 
-  select(Name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_50_64, Proportion_50_64, Population_50_64) %>% 
+  select(Name, Total_where_age_known, Proportion_age_known, Age_45_and_over, Proportion_45_plus, Population_16_and_over, Population_45_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_45_64, Proportion_45_64, Population_45_64) %>% 
   toJSON() %>% 
   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
 
@@ -690,7 +688,7 @@ vaccine_df_ltla %>%
   bind_rows(vaccine_df_wsx) %>% 
   rename(Name = 'LTLA_name') %>% 
  # bind_rows(vaccine_df_region) %>% 
-  select(Name, Total_where_age_known, Proportion_age_known, Age_50_and_over, Proportion_50_plus, Population_16_and_over, Population_50_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_50_64, Proportion_50_64, Population_50_64) %>% 
+  select(Name, Total_where_age_known, Proportion_age_known, Age_45_and_over, Proportion_45_plus, Population_16_and_over, Population_45_and_over, Age_65_and_over, Proportion_65_plus, Population_65_and_over, Age_45_64, Proportion_45_64, Population_45_64) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
 
@@ -701,8 +699,8 @@ lad_boundary <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664
   filter(substr(LAD19CD, 1,1 ) == 'E') %>% 
   left_join(vaccine_df_ltla, by = c('LAD19CD' = 'LTLA_code')) %>% 
   mutate(Proportion_age_known_banded = factor(ifelse(Proportion_age_known < .3, 'Less than 30%', ifelse(Proportion_age_known < .4, '30-39%', ifelse(Proportion_age_known < .5, '40-49%', ifelse(Proportion_age_known < .6, '50-59%', ifelse(Proportion_age_known < .7, '60-69%', ifelse(Proportion_age_known < .8, '70-79%', ifelse(Proportion_age_known < .9, '80-89%', ifelse(Proportion_age_known < 1, '90-99%', '100% of estimated population')))))))), levels = c('Less than 30%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population'))) %>% 
-  mutate(Proportion_50_plus_banded = factor(ifelse(Proportion_50_plus < .8, 'Less than 80%', ifelse(Proportion_50_plus < .85, '80-84%', ifelse(Proportion_50_plus < .9, '85-89%', ifelse(Proportion_50_plus < .95, '90-94%', ifelse(Proportion_50_plus < 1, '95-99%', '100% of estimated population'))))), levels = c('Less than 80%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
-  mutate(Proportion_50_64_banded = factor(ifelse(Proportion_50_64 < .1, 'Less than 10%', ifelse(Proportion_50_64 < .2, '10-19%',ifelse(Proportion_50_64 < .3, '20-29%', ifelse(Proportion_50_64 < .4, '30-39%', ifelse(Proportion_50_64 < .5, '40-49%', ifelse(Proportion_50_64 < .6, '50-59%', ifelse(Proportion_50_64 < .7, '60-69%', ifelse(Proportion_50_64 < .8, '70-79%', ifelse(Proportion_50_64 < .9, '80-89%', ifelse(Proportion_50_64 < 1, '90-99%', '100% of estimated population')))))))))), levels = c('Less than 10%', '10-19%', '20-29%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population')))
+  mutate(Proportion_45_plus_banded = factor(ifelse(Proportion_45_plus < .8, 'Less than 80%', ifelse(Proportion_45_plus < .85, '80-84%', ifelse(Proportion_45_plus < .9, '85-89%', ifelse(Proportion_45_plus < .95, '90-94%', ifelse(Proportion_45_plus < 1, '95-99%', '100% of estimated population'))))), levels = c('Less than 80%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
+  mutate(Proportion_45_64_banded = factor(ifelse(Proportion_45_64 < .1, 'Less than 10%', ifelse(Proportion_45_64 < .2, '10-19%',ifelse(Proportion_45_64 < .3, '20-29%', ifelse(Proportion_45_64 < .4, '30-39%', ifelse(Proportion_45_64 < .5, '40-49%', ifelse(Proportion_45_64 < .6, '50-59%', ifelse(Proportion_45_64 < .7, '60-69%', ifelse(Proportion_45_64 < .8, '70-79%', ifelse(Proportion_45_64 < .9, '80-89%', ifelse(Proportion_45_64 < 1, '90-99%', '100% of estimated population')))))))))), levels = c('Less than 10%', '10-19%', '20-29%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population')))
 
 lad_boundary_export <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
   filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing'))
@@ -749,27 +747,27 @@ png(paste0(output_directory_x, '/Proportion_all_age_vaccination_ltla_latest.png'
 print(ltla_all_age_proportion + theme(plot.caption = element_text(hjust = 0)))
 dev.off()
 
-vac_llim_prop_50_plus <- round_any(min(lad_boundary$Proportion_50_plus, na.rm = TRUE), .05, floor)
-vac_ulim_prop_50_plus <- round_any(max(lad_boundary$Proportion_50_plus, na.rm = TRUE), .05, ceiling)
+vac_llim_prop_45_plus <- round_any(min(lad_boundary$Proportion_45_plus, na.rm = TRUE), .05, floor)
+vac_ulim_prop_45_plus <- round_any(max(lad_boundary$Proportion_45_plus, na.rm = TRUE), .05, ceiling)
 
-ltla_50_plus_age_proportion <- ggplot() +
+ltla_45_plus_age_proportion <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
   geom_polygon(data = lad_boundary,
                aes(x=long,
                    y=lat,
                    group = group,
-                   fill = Proportion_50_plus),
+                   fill = Proportion_45_plus),
                color="#ffffff",
                size = .1,
                alpha = 1,
                show.legend = TRUE) +
   scale_fill_viridis_c(option = "plasma",
                        direction = -1,
-                       breaks = seq(vac_llim_prop_50_plus, vac_ulim_prop_50_plus, .025),
-                       limits = c(vac_llim_prop_50_plus, vac_ulim_prop_50_plus),
+                       breaks = seq(vac_llim_prop_45_plus, vac_ulim_prop_45_plus, .025),
+                       limits = c(vac_llim_prop_45_plus, vac_ulim_prop_45_plus),
                        label = percent,
-                       name = 'Proportion of those aged\n50 years and over\n(where age known)') +
+                       name = 'Proportion of those aged\n45 years and over\n(where age known)') +
   geom_polygon(data = County_boundary,
                aes(x = long,
                    y = lat,
@@ -777,44 +775,45 @@ ltla_50_plus_age_proportion <- ggplot() +
                colour = '#630436',
                fill = NA,
                size = 1) +
-  labs(title = paste0('Proportion of individuals aged 50+ receiving at least one dose of a COVID-19 vaccine per 100,000 population (aged 50+);\nData as at ', vaccine_published_date),
+  labs(title = paste0('Proportion of individuals aged 45+ receiving at least one dose of a COVID-19 vaccine per 100,000 population (aged 45+);\nData as at ', vaccine_published_date),
        subtitle = paste0('Sussex Lower Tier Local and Unitary Authorities'),
        caption = paste0('Note: This excludes a smaller number of individuals where the age was not known.'))  +
   # guides(fill = guide_legend(nrow = 1, byrow = TRUE)) +
   theme(legend.position = c(.9, .1))
 
-png(paste0(output_directory_x, '/Proportion_age_50_plus_vaccination_ltla_latest.png'),
+png(paste0(output_directory_x, '/Proportion_age_45_plus_vaccination_ltla_latest.png'),
     width = 1280,
     height = 640,
     res = 110)
-print(ltla_50_plus_age_proportion + theme(plot.caption = element_text(hjust = 0)))
+print(ltla_45_plus_age_proportion + theme(plot.caption = element_text(hjust = 0)))
 dev.off()
 
 png(paste0(output_directory_x, '/Proportion_vaccination_ltla_latest.png'),
     width = 1280,
     height = 1080,
     res = 140)
-(ltla_all_age_proportion + theme(legend.position = 'right')) / (ltla_50_plus_age_proportion + theme(legend.position = 'right'))
+(ltla_all_age_proportion + theme(legend.position = 'right')) / (ltla_45_plus_age_proportion + theme(legend.position = 'right'))
 dev.off()
 
 # What about age groups ####
 
 mye_nims_ltla_age <- mye_nims_ltla %>% 
-  select(!c('Population', 'Age_16_and_over', 'Population_50_and_over')) %>% 
+  select(!c('Population', 'Age_16_and_over', 'Population_45_and_over')) %>% 
   pivot_longer(cols = !c('LTLA_code', 'LTLA_name'), values_to = 'NIMS_population') %>% 
   rename(Age_group = 'name') %>% 
-  mutate(Age_group = ifelse(Age_group == 'Age_16_49', 'Under_50', Age_group)) %>% 
+  mutate(Age_group = ifelse(Age_group == 'Age_16_44', 'Under_45', Age_group)) %>% 
   filter(Age_group != 'Under_16')
 
 vaccine_df_ltla_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                               sheet = 'LTLA',
                               skip = 15,
-                              col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'Under_50', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
+                              col_names = c('Region_code', 'Region_name','UTLA_code', 'UTLA_name', 'LTLA_code', 'LTLA_name', 'Under_45', 'Age_45_49', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
   filter(!is.na(Region_name)) %>% 
-  pivot_longer(cols = !c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name'), values_to = 'At_least_one_dose') %>% 
+  select(!c('UTLA_code', 'UTLA_name')) %>% 
+  pivot_longer(cols = !c('Region_code', 'Region_name',  'LTLA_code', 'LTLA_name'), values_to = 'At_least_one_dose') %>% 
   rename(Age_group = name) %>% 
   left_join(mye_nims_ltla_age, by = c('LTLA_code', 'LTLA_name', 'Age_group')) %>% 
-  mutate(Age_group = factor(ifelse(Age_group == 'Under_50', 'Age under 50*', ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group)))))))), levels = c('Age under 50*', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>% 
+  mutate(Age_group = factor(ifelse(Age_group == 'Under_45', 'Age under 45*', ifelse(Age_group == 'Age_45_49', 'Age 45-49',  ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group))))))))), levels = c('Age under 45*', 'Age 45-49', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>% 
   mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose)
 
 vaccine_df_wsx_age <- vaccine_df_ltla_age %>% 
@@ -894,22 +893,22 @@ vaccine_df_wsx_age_wide %>%
 
 # MSOA by age ####
 mye_nims_msoa_age <- mye_nims_msoa %>% 
-  select(!c('Population', 'Age_16_and_over', 'Population_50_and_over')) %>% 
+  select(!c('Population', 'Age_16_and_over', 'Population_45_and_over')) %>% 
   pivot_longer(cols = !c('msoa11cd', 'msoa11nm'), values_to = 'NIMS_population') %>% 
   rename(Age_group = 'name') %>% 
-  mutate(Age_group = ifelse(Age_group == 'Age_16_49', 'Under_50', Age_group)) %>% 
+  mutate(Age_group = ifelse(Age_group == 'Age_16_44', 'Under_45', Age_group)) %>% 
   filter(Age_group != 'Under_16')
 
 vaccine_df_msoa_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                                   sheet = 'MSOA',
                                   skip = 15,
-                                  col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'Under_50', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
+                                  col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'Under_45', 'Age_45_49', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over')) %>% 
   filter(!is.na(Region_name)) %>% 
   pivot_longer(cols = !c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm'), values_to = 'At_least_one_dose') %>% 
   rename(Age_group = name) %>% 
   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
   left_join(mye_nims_msoa_age, by = c('msoa11cd', 'msoa11nm', 'Age_group')) %>%
-  mutate(Age_group = factor(ifelse(Age_group == 'Under_50', 'Age under 50*', ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group)))))))), levels = c('Age under 50*', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>%
+  mutate(Age_group = factor(ifelse(Age_group == 'Under_45', 'Age under 45*', ifelse(Age_group == 'Age_45_49', 'Age 45-49', ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group))))))))), levels = c('Age under 45*', 'Age_45_49', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>%
   mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose)
 
 vaccine_df_wsx_age_msoa_wide <- vaccine_df_msoa_age %>% 
