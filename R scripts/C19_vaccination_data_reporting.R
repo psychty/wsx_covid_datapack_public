@@ -884,10 +884,14 @@ vaccine_df_wsx_age_wide <- vaccine_df_ltla_age %>%
   rename(Name = LTLA_name)
 
 vaccine_df_wsx_age_wide %>% 
+  mutate(At_least_one_dose_prop = At_least_one_dose / NIMS_population,
+         Individuals_not_vaccinated_prop = Individuals_not_vaccinated / NIMS_population) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_ltla_age.json'))
 
 vaccine_df_wsx_age_wide %>% 
+  mutate(At_least_one_dose_prop = At_least_one_dose / NIMS_population,
+         Individuals_not_vaccinated_prop = Individuals_not_vaccinated / NIMS_population) %>% 
   toJSON() %>% 
   write_lines(paste0(mobile_output_directory_x, '/vaccine_ltla_age.json'))
 
