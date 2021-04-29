@@ -35,12 +35,14 @@ function loadTable_ltla_vaccine(vaccine_at_a_glance) {
 
   for (let item of vaccine_at_a_glance) {
     dataHTML += `<tr><td>${item.Name}</td><td>${d3.format(",.0f")(
-      item.Total_where_age_known
+      item.Total_first_dose_where_age_known
     )}</td><td>${d3.format(".1%")(
-      item.Proportion_age_known
-    )}</td><td>${d3.format(",.0f")(item.Age_45_and_over)}</td><td>${d3.format(
-      ".1%"
-    )(item.Proportion_45_plus)}</td></tr>`;
+      item.First_dose_proportion_age_known
+    )}</td><td>${d3.format(",.0f")(
+      item.First_dose_age_45_and_over
+    )}</td><td>${d3.format(".1%")(
+      item.First_dose_proportion_45_plus
+    )}</td></tr>`;
   }
 
   tableBody.innerHTML = dataHTML;
@@ -50,8 +52,10 @@ wsx_overall_cumulative = vaccine_at_a_glance.filter(function (d) {
   return d.Name === "West Sussex";
 });
 
-wsx_number_vaccinated = wsx_overall_cumulative[0].Total_where_age_known;
-wsx_proportion_vaccinated = wsx_overall_cumulative[0].Proportion_age_known;
+wsx_number_vaccinated =
+  wsx_overall_cumulative[0].Total_first_dose_where_age_known;
+wsx_proportion_vaccinated =
+  wsx_overall_cumulative[0].First_dose_proportion_age_known;
 wsx_estimated_population = wsx_overall_cumulative[0].Population_16_and_over;
 
 d3.select("#wsx_so_far").html(function (d) {
@@ -447,6 +451,12 @@ var showTooltip_vaccine_age_2 = function (d, i) {
     .style("left", event.pageX + 10 + "px")
     .style("visibility", "visible");
 };
+
+width_hm = width_hm * 0.5;
+
+if (width_hm < 600) {
+  width_hm = window.innerWidth - 50;
+}
 
 // append the svg objects to the body of the page
 var svg_vaccine_age_1 = d3
