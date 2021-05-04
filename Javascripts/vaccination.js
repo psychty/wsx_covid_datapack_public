@@ -10,11 +10,11 @@ var vaccine_administered_date = JSON.parse(request.responseText);
 
 d3.select("#latest_vaccine_publication_date").html(function (d) {
   return (
-    "The vaccination data for local areas was last updated on " +
+    "The vaccination data for local areas was last updated on <b>" +
     vaccine_update_date +
     " and includes vaccines administered from " +
     vaccine_administered_date +
-    "."
+    "</b>."
   );
 });
 
