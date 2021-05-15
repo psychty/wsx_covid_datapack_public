@@ -2280,149 +2280,149 @@ print(positivity_worked_plotted)
 dev.off() 
 
 # Hospital admissions ####
-
-if(!file.exists(paste0(github_repo_dir, '/Source files/etr.csv'))){
-  download.file('https://files.digital.nhs.uk/assets/ods/current/etr.zip', paste0(github_repo_dir, '/Source files/etr.zip'), mode = 'wb')
-  unzip(paste0(github_repo_dir, '/Source files/etr.zip'), exdir = github_repo_dir)
-  file.remove(paste0(github_repo_dir, '/Source files/etr.zip'), paste0(github_repo_dir, '/Source files/etr.pdf'))
-}
-
-calls_hosp_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/') %>%
-  html_nodes("a") %>%
-  html_attr("href")
-
-download.file(grep('Weekly-covid', calls_hosp_webpage, value = T), paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'), mode = 'wb')
-
-trust_admission_date <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-                                    sheet = 'All beds COVID',
-                                    skip = 2, 
-                                    col_names = FALSE, 
-                                    n_max = 5) %>% 
-  rename(Item = ...1,
-         Description = ...2) %>%
-  filter(Item == 'Published:') %>% 
-  mutate(Description  = as.Date(as.numeric(Description), origin = "1899-12-30"))
-
-admissions_df_trust <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsTrust&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
-
-admissions_df_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsRegion&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
-
-admissions_df_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
-
-# We need to use data.gov to get cumulative admissions because the NHS digital data only starts on August 1st
-admissions_df <- admissions_df_trust %>%
-  bind_rows(admissions_df_region) %>% 
-  bind_rows(admissions_df_nation) %>% 
-  rename(Name = areaName,
-         Admissions_or_new_cases_in_last_24hrs = newAdmissions,
-         Patients_occupying_beds = hospitalCases,
-         Patients_occupying_mv_beds = covidOccupiedMVBeds,
-         Date = date) %>% 
-  mutate(Admissions_or_new_cases_in_last_24hrs = replace_na(Admissions_or_new_cases_in_last_24hrs, 0),
-         Patients_occupying_beds = replace_na(Patients_occupying_beds, 0),
-         Patients_occupying_mv_beds = replace_na(Patients_occupying_mv_beds, 0)) %>% 
-  mutate(Patients_occupying_non_mv_beds = Patients_occupying_beds - Patients_occupying_mv_beds) %>% 
-  select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
-  group_by(Name) %>%
-  arrange(Name, Date) %>%
-  mutate(Rolling_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, sum, align = 'right', fill = NA),
-         Rolling_average_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, mean, align = 'right', fill = NA),
-         Total_admissions = cumsum(Admissions_or_new_cases_in_last_24hrs)) %>%
-  filter(Name %in%  c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England')) %>% 
-  mutate(Name = factor(Name, levels = c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust','Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England'))) %>%
-  arrange(Name) %>%
-  ungroup() %>% 
-  add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-19'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) %>% 
-  add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-20'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) 
-
-# patients occupying beds as at 8am
-admissions_date <- admissions_df_trust %>% 
-  filter(!is.na(newAdmissions)) %>% 
-  filter(date == max(date, na.rm = TRUE)) %>% 
-  select(date) %>% 
-  unique() %>% 
-  mutate(item = 'Admissions')
-
-occupied_date <- admissions_df_trust %>% 
-  filter(!is.na(hospitalCases)) %>% 
-  filter(date == max(date, na.rm = TRUE)) %>% 
-  select(date) %>% 
-  unique() %>% 
-  mutate(item = 'Patients in hospital')
-
-publish_date <- data.frame(date = trust_admission_date$Description,
-                           item = 'Publish date')
-
-admissions_date %>% 
-  bind_rows(occupied_date) %>% 
-  bind_rows(publish_date) %>% 
-  mutate(Date_label = format(date, '%A %d %B %Y')) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/hospital_meta.json'))
-
-data.frame(Date = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7)) %>% 
-  filter(Date >= min(admissions_df$Date)) %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/admission_date_labels.json'))
-
-hospital_table_a <- admissions_df %>% 
-  filter(Date == admissions_date$date) %>%
-  select(Name, Admissions_or_new_cases_in_last_24hrs, Rolling_7_day_admissions, Total_admissions)
-
-hospital_table_b <- admissions_df %>% 
-  filter(Date == occupied_date$date) %>%
-  select(Name, Patients_occupying_beds, Patients_occupying_mv_beds)
-
-hospital_table <- hospital_table_a %>% 
-  left_join(hospital_table_b, by = 'Name')
-
-hospital_table %>% 
-  select(!Admissions_or_new_cases_in_last_24hrs) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/latest_hospital_summary.json'))
-
-admissions_export_df <- admissions_df %>% 
-  filter(Date <= admissions_date$date) %>% 
-  select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Rolling_average_7_day_admissions, Rolling_7_day_admissions, Total_admissions) %>% 
-  group_by(Name) %>% 
-  arrange(Name, Date) %>% 
-  mutate(Previous_Rolling_7_day_admissions = lag(Rolling_7_day_admissions, 7)) %>% 
-  mutate(Perc_change_rolling_7_day_admissions = (Rolling_7_day_admissions - lag(Rolling_7_day_admissions, 7))/ lag(Admissions_or_new_cases_in_last_24hrs, 7)) %>% 
-  mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions == Inf, 1,Perc_change_rolling_7_day_admissions)) %>% 
-  mutate(Perc_change_rolling_7_day_admissions = replace_na(Perc_change_rolling_7_day_admissions, 0)) %>% 
-  mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions <0, 'Down', ifelse(Perc_change_rolling_7_day_admissions == 0, 'Same', ifelse(Perc_change_rolling_7_day_admissions > 0, 'Up', NA)))) %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  select(!Date)
-
-admissions_export_df %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/admissions_export_df.json'))
-
-# admissions_export_df %>% view()
-
-beds_occupied_export_df <- admissions_df %>% 
-  select(Name, Date, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
-  group_by(Name) %>% 
-  arrange(Name, Date) %>% 
-  mutate(Previous_occupying_beds = lag(Patients_occupying_beds, 7)) %>% 
-  mutate(Perc_change_on_beds_occupied = (Patients_occupying_beds - lag(Patients_occupying_beds, 7))/ lag(Patients_occupying_beds, 7)) %>% 
-  mutate(Perc_change_on_beds_occupied = ifelse(Perc_change_on_beds_occupied == Inf, 1, Perc_change_on_beds_occupied)) %>% 
-  mutate(Perc_change_on_beds_occupied = replace_na(Perc_change_on_beds_occupied, 0)) %>% 
-  mutate(Change_direction = ifelse(Perc_change_on_beds_occupied <0, 'decreased', ifelse(Perc_change_on_beds_occupied == 0, 'stayed the same', ifelse(Perc_change_on_beds_occupied > 0, 'increased', NA)))) %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  filter(Date <= occupied_date$date) %>% 
-  select(!c(Date))
-
-data.frame(Date = seq.Date(occupied_date$date -(52*7), occupied_date$date, by = 7)) %>% 
-  filter(Date >= min(admissions_df$Date)) %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/occupied_date_labels.json'))
-
-beds_occupied_export_df %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/beds_occupied_export_df.json'))
+# 
+# if(!file.exists(paste0(github_repo_dir, '/Source files/etr.csv'))){
+#   download.file('https://files.digital.nhs.uk/assets/ods/current/etr.zip', paste0(github_repo_dir, '/Source files/etr.zip'), mode = 'wb')
+#   unzip(paste0(github_repo_dir, '/Source files/etr.zip'), exdir = github_repo_dir)
+#   file.remove(paste0(github_repo_dir, '/Source files/etr.zip'), paste0(github_repo_dir, '/Source files/etr.pdf'))
+# }
+# 
+# calls_hosp_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/') %>%
+#   html_nodes("a") %>%
+#   html_attr("href")
+# 
+# download.file(grep('Weekly-covid', calls_hosp_webpage, value = T), paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'), mode = 'wb')
+# 
+# trust_admission_date <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+#                                     sheet = 'All beds COVID',
+#                                     skip = 2, 
+#                                     col_names = FALSE, 
+#                                     n_max = 5) %>% 
+#   rename(Item = ...1,
+#          Description = ...2) %>%
+#   filter(Item == 'Published:') %>% 
+#   mutate(Description  = as.Date(as.numeric(Description), origin = "1899-12-30"))
+# 
+# admissions_df_trust <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsTrust&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
+# 
+# admissions_df_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsRegion&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
+# 
+# admissions_df_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
+# 
+# # We need to use data.gov to get cumulative admissions because the NHS digital data only starts on August 1st
+# admissions_df <- admissions_df_trust %>%
+#   bind_rows(admissions_df_region) %>% 
+#   bind_rows(admissions_df_nation) %>% 
+#   rename(Name = areaName,
+#          Admissions_or_new_cases_in_last_24hrs = newAdmissions,
+#          Patients_occupying_beds = hospitalCases,
+#          Patients_occupying_mv_beds = covidOccupiedMVBeds,
+#          Date = date) %>% 
+#   mutate(Admissions_or_new_cases_in_last_24hrs = replace_na(Admissions_or_new_cases_in_last_24hrs, 0),
+#          Patients_occupying_beds = replace_na(Patients_occupying_beds, 0),
+#          Patients_occupying_mv_beds = replace_na(Patients_occupying_mv_beds, 0)) %>% 
+#   mutate(Patients_occupying_non_mv_beds = Patients_occupying_beds - Patients_occupying_mv_beds) %>% 
+#   select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
+#   group_by(Name) %>%
+#   arrange(Name, Date) %>%
+#   mutate(Rolling_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, sum, align = 'right', fill = NA),
+#          Rolling_average_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, mean, align = 'right', fill = NA),
+#          Total_admissions = cumsum(Admissions_or_new_cases_in_last_24hrs)) %>%
+#   filter(Name %in%  c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England')) %>% 
+#   mutate(Name = factor(Name, levels = c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust','Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England'))) %>%
+#   arrange(Name) %>%
+#   ungroup() %>% 
+#   add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-19'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) %>% 
+#   add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-20'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) 
+# 
+# # patients occupying beds as at 8am
+# admissions_date <- admissions_df_trust %>% 
+#   filter(!is.na(newAdmissions)) %>% 
+#   filter(date == max(date, na.rm = TRUE)) %>% 
+#   select(date) %>% 
+#   unique() %>% 
+#   mutate(item = 'Admissions')
+# 
+# occupied_date <- admissions_df_trust %>% 
+#   filter(!is.na(hospitalCases)) %>% 
+#   filter(date == max(date, na.rm = TRUE)) %>% 
+#   select(date) %>% 
+#   unique() %>% 
+#   mutate(item = 'Patients in hospital')
+# 
+# publish_date <- data.frame(date = trust_admission_date$Description,
+#                            item = 'Publish date')
+# 
+# admissions_date %>% 
+#   bind_rows(occupied_date) %>% 
+#   bind_rows(publish_date) %>% 
+#   mutate(Date_label = format(date, '%A %d %B %Y')) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/hospital_meta.json'))
+# 
+# data.frame(Date = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7)) %>% 
+#   filter(Date >= min(admissions_df$Date)) %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/admission_date_labels.json'))
+# 
+# hospital_table_a <- admissions_df %>% 
+#   filter(Date == admissions_date$date) %>%
+#   select(Name, Admissions_or_new_cases_in_last_24hrs, Rolling_7_day_admissions, Total_admissions)
+# 
+# hospital_table_b <- admissions_df %>% 
+#   filter(Date == occupied_date$date) %>%
+#   select(Name, Patients_occupying_beds, Patients_occupying_mv_beds)
+# 
+# hospital_table <- hospital_table_a %>% 
+#   left_join(hospital_table_b, by = 'Name')
+# 
+# hospital_table %>% 
+#   select(!Admissions_or_new_cases_in_last_24hrs) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/latest_hospital_summary.json'))
+# 
+# admissions_export_df <- admissions_df %>% 
+#   filter(Date <= admissions_date$date) %>% 
+#   select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Rolling_average_7_day_admissions, Rolling_7_day_admissions, Total_admissions) %>% 
+#   group_by(Name) %>% 
+#   arrange(Name, Date) %>% 
+#   mutate(Previous_Rolling_7_day_admissions = lag(Rolling_7_day_admissions, 7)) %>% 
+#   mutate(Perc_change_rolling_7_day_admissions = (Rolling_7_day_admissions - lag(Rolling_7_day_admissions, 7))/ lag(Admissions_or_new_cases_in_last_24hrs, 7)) %>% 
+#   mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions == Inf, 1,Perc_change_rolling_7_day_admissions)) %>% 
+#   mutate(Perc_change_rolling_7_day_admissions = replace_na(Perc_change_rolling_7_day_admissions, 0)) %>% 
+#   mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions <0, 'Down', ifelse(Perc_change_rolling_7_day_admissions == 0, 'Same', ifelse(Perc_change_rolling_7_day_admissions > 0, 'Up', NA)))) %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   select(!Date)
+# 
+# admissions_export_df %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/admissions_export_df.json'))
+# 
+# # admissions_export_df %>% view()
+# 
+# beds_occupied_export_df <- admissions_df %>% 
+#   select(Name, Date, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
+#   group_by(Name) %>% 
+#   arrange(Name, Date) %>% 
+#   mutate(Previous_occupying_beds = lag(Patients_occupying_beds, 7)) %>% 
+#   mutate(Perc_change_on_beds_occupied = (Patients_occupying_beds - lag(Patients_occupying_beds, 7))/ lag(Patients_occupying_beds, 7)) %>% 
+#   mutate(Perc_change_on_beds_occupied = ifelse(Perc_change_on_beds_occupied == Inf, 1, Perc_change_on_beds_occupied)) %>% 
+#   mutate(Perc_change_on_beds_occupied = replace_na(Perc_change_on_beds_occupied, 0)) %>% 
+#   mutate(Change_direction = ifelse(Perc_change_on_beds_occupied <0, 'decreased', ifelse(Perc_change_on_beds_occupied == 0, 'stayed the same', ifelse(Perc_change_on_beds_occupied > 0, 'increased', NA)))) %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   filter(Date <= occupied_date$date) %>% 
+#   select(!c(Date))
+# 
+# data.frame(Date = seq.Date(occupied_date$date -(52*7), occupied_date$date, by = 7)) %>% 
+#   filter(Date >= min(admissions_df$Date)) %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/occupied_date_labels.json'))
+# 
+# beds_occupied_export_df %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/beds_occupied_export_df.json'))
 
 # trust_admissions_1 <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
 #                                   sheet = 'Hosp ads & diag',
@@ -2539,56 +2539,56 @@ beds_occupied_export_df %>%
 
 # Share of inpatient beds occupied ####
 
-trust_c19_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-                                                    sheet = 'Adult G&A Beds Occupied COVID',
-                                                    skip = 13) %>% 
-  filter(!is.na(Name)) %>% 
-  mutate(Name = capwords(Name, strict = TRUE)) %>% 
-  mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-  mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-  mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-  mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-  pivot_longer(names_to = 'Date', values_to = 'c19_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
-  mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
-  filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
-  select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
-
-trust_other_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-                                                      sheet = 'Adult G&A Bed Occupied NonCOVID',
-                                                      skip = 13) %>% 
-  filter(!is.na(Name)) %>% 
-  mutate(Name = capwords(Name, strict = TRUE)) %>% 
-  mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-  mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-  mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-  mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-  pivot_longer(names_to = 'Date', values_to = 'other_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
-  mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
-  filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust',  'Sussex Partnership NHS Foundation Trust','Brighton and Sussex University Hospitals NHS Trust')) %>% 
-  select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
-
-trust_vacant_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-                                    sheet = 'Adult G&A Beds Unoccupied',
-                                    skip = 13) %>% 
-  filter(!is.na(Name)) %>% 
-  mutate(Name = capwords(Name, strict = TRUE)) %>% 
-  mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-  mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-  mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-  mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-  pivot_longer(names_to = 'Date', values_to = 'vacant_ga_beds', cols = 5:ncol(.)) %>% 
-  mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
-  filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
-  select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
-
-bed_used_df <- trust_c19_patients_occupying_ga_beds %>% 
-  left_join(trust_other_patients_occupying_ga_beds, by = c('Name', 'Date')) %>% 
-  left_join(trust_vacant_ga_beds, by = c('Name', 'Date')) %>%
-  pivot_longer(cols = c(c19_patients_occupying_ga_beds, other_patients_occupying_ga_beds, vacant_ga_beds), names_to = 'Bed_status', values_to = 'Beds') %>% 
-  group_by(Name, Date) %>% 
-  mutate(Total_open_beds = sum(Beds),
-         Proportion = Beds/sum(Beds)) %>% 
-  mutate(Bed_status = factor(ifelse(Bed_status == 'c19_patients_occupying_ga_beds', 'COVID-19 + patients', ifelse(Bed_status == 'other_patients_occupying_ga_beds', 'Other patients', ifelse(Bed_status == 'vacant_ga_beds', 'Vacant (open) beds', NA))), levels = c('COVID-19 + patients', 'Other patients', 'Vacant (open) beds')))
+# trust_c19_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+#                                                     sheet = 'Adult G&A Beds Occupied COVID',
+#                                                     skip = 13) %>% 
+#   filter(!is.na(Name)) %>% 
+#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
+#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+#   pivot_longer(names_to = 'Date', values_to = 'c19_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
+#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
+#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
+#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
+# 
+# trust_other_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+#                                                       sheet = 'Adult G&A Bed Occupied NonCOVID',
+#                                                       skip = 13) %>% 
+#   filter(!is.na(Name)) %>% 
+#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
+#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+#   pivot_longer(names_to = 'Date', values_to = 'other_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
+#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
+#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust',  'Sussex Partnership NHS Foundation Trust','Brighton and Sussex University Hospitals NHS Trust')) %>% 
+#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
+# 
+# trust_vacant_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
+#                                     sheet = 'Adult G&A Beds Unoccupied',
+#                                     skip = 13) %>% 
+#   filter(!is.na(Name)) %>% 
+#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
+#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
+#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
+#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
+#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
+#   pivot_longer(names_to = 'Date', values_to = 'vacant_ga_beds', cols = 5:ncol(.)) %>% 
+#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
+#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
+#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
+# 
+# bed_used_df <- trust_c19_patients_occupying_ga_beds %>% 
+#   left_join(trust_other_patients_occupying_ga_beds, by = c('Name', 'Date')) %>% 
+#   left_join(trust_vacant_ga_beds, by = c('Name', 'Date')) %>%
+#   pivot_longer(cols = c(c19_patients_occupying_ga_beds, other_patients_occupying_ga_beds, vacant_ga_beds), names_to = 'Bed_status', values_to = 'Beds') %>% 
+#   group_by(Name, Date) %>% 
+#   mutate(Total_open_beds = sum(Beds),
+#          Proportion = Beds/sum(Beds)) %>% 
+#   mutate(Bed_status = factor(ifelse(Bed_status == 'c19_patients_occupying_ga_beds', 'COVID-19 + patients', ifelse(Bed_status == 'other_patients_occupying_ga_beds', 'Other patients', ifelse(Bed_status == 'vacant_ga_beds', 'Vacant (open) beds', NA))), levels = c('COVID-19 + patients', 'Other patients', 'Vacant (open) beds')))
 
 # trust_admissions_metadata <- read_excel( paste0(github_repo_dir,'/Source_files/trust_admissions.xlsx'),
 #                                          sheet = 'All beds COVID',
@@ -2624,31 +2624,31 @@ bed_used_df <- trust_c19_patients_occupying_ga_beds %>%
 #   ph_theme() +
 #   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
 
-bed_used_df_export_1 <- bed_used_df %>%
-  mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
-  select(!c(Proportion, Total_open_beds)) %>% 
-  pivot_wider(names_from = 'Bed_status', values_from = 'Beds') %>% 
-  mutate(Total_open_beds = covid_19_patients + other + vacant) %>% 
-  mutate(Label = paste0('As at 8:00am on ', ordinal(as.numeric(format(Date, '%d'))), format(Date, ' %B %Y'), ' there were ', format(covid_19_patients, big.mark = ','), ' patients in adult General and Acute inpatient beds, this is ', round((covid_19_patients / Total_open_beds)*100, 1), '% of the total number of open beds on this day.')) 
+# bed_used_df_export_1 <- bed_used_df %>%
+#   mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
+#   select(!c(Proportion, Total_open_beds)) %>% 
+#   pivot_wider(names_from = 'Bed_status', values_from = 'Beds') %>% 
+#   mutate(Total_open_beds = covid_19_patients + other + vacant) %>% 
+#   mutate(Label = paste0('As at 8:00am on ', ordinal(as.numeric(format(Date, '%d'))), format(Date, ' %B %Y'), ' there were ', format(covid_19_patients, big.mark = ','), ' patients in adult General and Acute inpatient beds, this is ', round((covid_19_patients / Total_open_beds)*100, 1), '% of the total number of open beds on this day.')) 
 
-bed_used_df_export <- bed_used_df %>%
-  mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
-  select(!c(Beds, Total_open_beds)) %>% 
-  pivot_wider(names_from = 'Bed_status', values_from = 'Proportion') %>% 
-  left_join(bed_used_df_export_1[c('Name', 'Date', 'Label')], by = c('Name', 'Date')) %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  ungroup()
-
-bed_used_df_export %>%
-  select(!Date) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/patient_share_occupied_beds.json'))
-
-data.frame(Date = seq.Date(max(bed_used_df_export$Date) -(52*7), max(bed_used_df_export$Date), by = 7)) %>% 
-  filter(Date >= min(bed_used_df_export$Date)) %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/bed_share_ga_date_labels.json'))
+# bed_used_df_export <- bed_used_df %>%
+#   mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
+#   select(!c(Beds, Total_open_beds)) %>% 
+#   pivot_wider(names_from = 'Bed_status', values_from = 'Proportion') %>% 
+#   left_join(bed_used_df_export_1[c('Name', 'Date', 'Label')], by = c('Name', 'Date')) %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   ungroup()
+# 
+# bed_used_df_export %>%
+#   select(!Date) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/patient_share_occupied_beds.json'))
+# 
+# data.frame(Date = seq.Date(max(bed_used_df_export$Date) -(52*7), max(bed_used_df_export$Date), by = 7)) %>% 
+#   filter(Date >= min(bed_used_df_export$Date)) %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/bed_share_ga_date_labels.json'))
 
 # ggplot(beds_used_df_x,
 #        aes(x = Date,
