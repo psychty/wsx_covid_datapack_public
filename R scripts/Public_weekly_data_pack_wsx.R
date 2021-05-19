@@ -702,8 +702,24 @@ ft_utla_rolling_rate_wsx <- flextable(rolling_utla_rate_wsx) %>%
   hline_bottom(border = bord_style ) %>% 
   hline_top(border = bord_style, part = "all" )
 
+# Attempt to get utla boundaries ####
 utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>%
-  filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
+  filter(substr(ctyua19cd, 1,1 ) == 'E') 
+
+utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp")
+
+# download.file('https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson', paste0(output_directory_x, '/failsafe_utla_boundary.geojson'), mode = 'wb')
+
+if(exists('utla_ua_boundaries_json') == FALSE) {
+  utla_ua_boundaries_json <- geojson_read(paste0(output_directory_x, '/failsafe_utla_boundary.geojson'),  what = "sp")  %>%
+    filter(substr(ctyua19cd, 1,1 ) == 'E') 
+}
+
+if(exists('utla_ua_boundaries') == FALSE) {
+  utla_ua_boundaries <- geojson_read(paste0(output_directory_x, '/failsafe_utla_boundary.geojson'),  what = "sp")  
+}
+
+utla_ua_boundaries_json <- utla_ua_boundaries_json %>% 
   mutate(ctyua19nm = ifelse(ctyua19nm %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
   mutate(ctyua19cd = ifelse(ctyua19cd %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(ctyua19cd %in% c('E09000001', 'E09000012'), 'E09000012', ctyua19cd))) %>% 
   group_by(ctyua19cd, ctyua19nm) %>% 
@@ -711,7 +727,7 @@ utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b2
   arrange(ctyua19cd) %>% 
   left_join(utla_rate, by = c('ctyua19cd' = 'Code')) 
 
-utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
+utla_ua_boundaries <- utla_ua_boundaries %>% 
   fortify(region = "ctyua19cd") %>% 
   rename(ctyua19cd = id) %>% 
   filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
