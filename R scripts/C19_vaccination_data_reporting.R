@@ -318,12 +318,12 @@ mye_nims_msoa <- read_csv(paste0(github_repo_dir, '/Source files/msoa_nims_pop_e
 vaccine_df_msoa <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                               sheet = 'MSOA',
                               skip = 15,
-                              col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'Under_40', 'Age_40_44', 'Age_45_49', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over', 'Null_1', 'Total_second_doses', 'Null_2', 'Total_doses_delivered')) %>% 
+                              col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'First_dose_under_40', 'First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over', 'Null_1', 'Second_dose_under_40', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
   filter(!is.na(Region_name)) %>% 
-  mutate(Total_where_age_known = Under_40 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_40_and_over = Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Age_40_64 = Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
+  mutate(Total_where_age_known = First_dose_under_40 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+  mutate(Age_40_and_over = First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+  mutate(Age_65_and_over = First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+  mutate(Age_40_64 = First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64) %>% 
   left_join(imd_msoa, by = c('msoa11cd' = 'MSOA11CD')) %>% 
   select(!c(Region_code, Region_name, LTLA_code, msoa11nm, RUC11CD)) %>% 
   filter(LTLA_name %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing')) %>% 
@@ -344,7 +344,7 @@ vaccine_df_msoa <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccin
   mutate(Estimated_left_to_vaccinate_40_plus = Population_40_and_over - Age_40_and_over,
          Estimated_left_to_vaccinate_65_plus = Population_65_and_over - Age_65_and_over,
          Estimated_left_to_vaccinate_40_64 = Population_40_64 - Age_40_64) %>%
-  select(msoa11cd, msoa11hclnm, LTLA_name, Total_where_age_known, Proportion_age_known, Total_banded, Proportion_age_known_banded, Age_40_and_over, Proportion_40_plus, Total_age_40_banded, Proportion_40_plus_banded, Estimated_left_to_vaccinate_40_plus, Age_65_and_over, Proportion_65_plus, Total_age_65_banded, Proportion_65_plus_banded, Estimated_left_to_vaccinate_65_plus, Age_40_64, Proportion_40_64, Total_age_40_64_banded, Proportion_40_64_banded, Estimated_left_to_vaccinate_40_64, Pop_weighted_imd_score, National_pop_weighted_rank, National_pop_weighted_decile, Rank_in_Sussex, Decile_in_Sussex, RUC11, Total_second_doses, Total_doses_delivered) 
+  select(msoa11cd, msoa11hclnm, LTLA_name, Total_where_age_known, Proportion_age_known, Total_banded, Proportion_age_known_banded, Age_40_and_over, Proportion_40_plus, Total_age_40_banded, Proportion_40_plus_banded, Estimated_left_to_vaccinate_40_plus, Age_65_and_over, Proportion_65_plus, Total_age_65_banded, Proportion_65_plus_banded, Estimated_left_to_vaccinate_65_plus, Age_40_64, Proportion_40_64, Total_age_40_64_banded, Proportion_40_64_banded, Estimated_left_to_vaccinate_40_64, Pop_weighted_imd_score, National_pop_weighted_rank, National_pop_weighted_decile, Rank_in_Sussex, Decile_in_Sussex, RUC11, Total_doses) 
 
 vaccine_df_msoa %>% 
   group_by(LTLA_name) %>% 
@@ -906,9 +906,9 @@ mye_nims_msoa_age <- mye_nims_msoa %>%
 vaccine_df_msoa_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                                   sheet = 'MSOA',
                                   skip = 15,
-                                  col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'Under_40', 'Age_40_44', 'Age_45_49', 'Age_50_54', 'Age_55_59', 'Age_60_64', 'Age_65_69', 'Age_70_74', 'Age_75_79', 'Age_80_and_over', 'Null_1', 'Total_second_doses', 'Null_2', 'Total_doses_delivered')) %>% 
+                                  col_names = c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm', 'First_dose_under_40', 'First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over', 'Null_1', 'Second_dose_under_40', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
   filter(!is.na(Region_name)) %>% 
-  select(!c('Null_1', 'Total_second_doses', 'Null_2', 'Total_doses_delivered')) %>% 
+  select(!c( 'Null_1', 'Second_dose_under_40', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
   pivot_longer(cols = !c('Region_code', 'Region_name', 'LTLA_code', 'LTLA_name', 'msoa11cd', 'msoa11nm'), values_to = 'At_least_one_dose') %>% 
   rename(Age_group = name) %>% 
   
