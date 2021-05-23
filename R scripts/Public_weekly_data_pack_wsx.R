@@ -60,8 +60,7 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
 # mye_total %>% 
 #   write.csv(., paste0(github_repo_dir,'/Source files/mye2019_ltla.csv'), row.names = FALSE)
 if(exists('mye_total') == FALSE) {
-  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2019_ltla.csv')) %>%
-    rename(Type = Geography1)
+  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2019_ltla.csv'))
 }
 
 area_code_names <- mye_total %>% 
