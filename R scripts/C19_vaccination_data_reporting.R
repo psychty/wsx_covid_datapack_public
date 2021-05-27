@@ -106,17 +106,17 @@ nhs_vaccine_sites_hospital_hub <- read_excel(paste0(github_repo_dir,'/Source fil
 nhs_vaccine_sites_gp_led <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
                                              sheet = 'GP-led vaccination services') %>% 
   mutate(Type = 'GP led service') %>% 
-  rename(Site = 'Site name')
+  rename(Site = 'Site Name')
 
 nhs_vaccine_sites_pharm <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
                                        sheet = 'Pharmacies') %>% 
   mutate(Type = 'Pharmacies') %>% 
-  rename(Site = 'Site name')
+  rename(Site = 'Site Name')
 
 nhs_vaccine_sites_centre <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
                                        sheet = 'Vaccination centres') %>% 
   mutate(Type = 'Vaccination centre') %>% 
-  rename(Site = Centre)
+  rename(Site = 'Site Name')
 
 vaccine_sites <- nhs_vaccine_sites_hospital_hub %>% 
   bind_rows(nhs_vaccine_sites_gp_led) %>% 
