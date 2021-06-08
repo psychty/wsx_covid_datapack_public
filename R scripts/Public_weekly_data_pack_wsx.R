@@ -1178,7 +1178,7 @@ week_ending <- week_ending_a %>%
 
 rm(week_ending_a, week_ending_b)
 
-download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk202021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
+download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk212021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week201.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
@@ -2884,9 +2884,14 @@ vaccine_ts_df <- vaccine_age_df %>%
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) 
 
-# vaccine_ts_df %>% 
-#   filter(Date == max(Date)) %>% 
-#   view()
+vaccine_ts_df %>%
+  ungroup() %>% 
+  filter(Date == max(Date)) %>% 
+  select(Date) %>% 
+  unique() %>% 
+  mutate(Date = paste0(format(Date, '%A '), ordinal(as.numeric(format(Date, '%d'))), format(Date, ' %B'))) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccine_latest_dose_date.json'))
 
 vaccination_area_ts_df_long <- vaccine_ts_df %>% 
   select(Name, Date, Seven_day_sum_dose_1, Seven_day_sum_dose_2) %>% 
@@ -2956,7 +2961,7 @@ ggplot(data = vaccine_ts_df_x,
        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
   theme(axis.text.x = element_text(size = 8))
 
-vaccine_age_df %>% view()
+# vaccine_age_df %>% view()
 
 vaccination_area_ts_df_long %>% 
   ungroup() %>% 
@@ -2974,10 +2979,25 @@ vaccination_area_ts_df_long %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_overall.json'))
 
+vaccine_age_df %>% 
+  mutate(Date_label = format(Date, '%d %b %y')) %>% 
+  select(Name, Age_group, Date_label, Seven_day_sum_dose_1, Rolling_age_specific_first_dose_rate_per_100000, Seven_day_sum_dose_2, Rolling_age_specific_second_dose_rate_per_100000) %>%
+  mutate(Rolling_age_specific_first_dose_rate_per_100000 = replace_na(Rolling_age_specific_first_dose_rate_per_100000, 0)) %>% 
+  mutate(Rolling_age_specific_second_dose_rate_per_100000 = replace_na(Rolling_age_specific_second_dose_rate_per_100000, 0)) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccination_timeseries_age.json'))
+
+# 
+# vaccine_age_df %>% 
+#   group_by(Name) %>% 
+#   summarise(Seven_day_sum_dose_1 = su)
+
 vaccine_ts_age_df_x <- vaccine_age_df %>% 
   filter(Name == 'West Sussex')
 
 library(ggiraph)
+
+viridis::inferno(15, direction = -1)
 
 ggplot(data = vaccine_ts_age_df_x,
        aes(x = Date,
