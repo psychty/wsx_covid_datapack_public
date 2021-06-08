@@ -50,14 +50,16 @@ function loadTable_ltla_vaccine(vaccine_at_a_glance) {
 
   for (let item of vaccine_at_a_glance) {
     dataHTML += `<tr><td>${item.Name}</td><td>${d3.format(",.0f")(
-      item.Total_first_dose_where_age_known
+      item["Number of individuals aged 18 and over"]
     )}</td><td>${d3.format(".1%")(
-      item.First_dose_proportion_age_known
+      item["Proportion (18 and over)"]
     )}</td><td>${d3.format(",.0f")(
-      item.First_dose_age_30_and_over
+      item["Number of individuals aged 18-64 years"]
     )}</td><td>${d3.format(".1%")(
-      item.First_dose_proportion_30_plus
-    )}</td></tr>`;
+      item["Proportion (18-64 years)"]
+    )}</td><td>${d3.format(",.0f")(
+      item["Number of individuals aged 65 and over"]
+    )}</td><td>${d3.format(".1%")(item["Proportion (65 and over)"])}</td></tr>`;
   }
 
   tableBody.innerHTML = dataHTML;
