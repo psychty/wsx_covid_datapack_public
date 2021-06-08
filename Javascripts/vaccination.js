@@ -87,17 +87,17 @@ d3.select("#wsx_so_far").html(function (d) {
 
 // ! Over time
 
-var type_vac_ts_scale = document.getElementsByName("toggle_vac_ts_rate");
+// var type_vac_ts_scale = document.getElementsByName("toggle_vac_ts_rate");
 
-console.log(type_vac_ts_scale);
+// console.log(type_vac_ts_scale);
 
-if (type_vac_ts_scale[0].checked) {
-  console.log("User selected actual dose numbers");
-}
+// if (type_vac_ts_scale[0].checked) {
+//   console.log("User selected actual dose numbers");
+// }
 
-if (type_vac_ts_scale[1].checked) {
-  console.log("User selected rates of doses");
-}
+// if (type_vac_ts_scale[1].checked) {
+//   console.log("User selected rates of doses");
+// }
 
 var svg_vaccine_uptake_by_dose_timeseries = d3
   .select("#vaccine_uptake_by_dose_timeseries")
