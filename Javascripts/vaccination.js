@@ -87,18 +87,6 @@ d3.select("#wsx_so_far").html(function (d) {
 
 // ! Over time
 
-// var type_vac_ts_scale = document.getElementsByName("toggle_vac_ts_rate");
-
-// console.log(type_vac_ts_scale);
-
-// if (type_vac_ts_scale[0].checked) {
-//   console.log("User selected actual dose numbers");
-// }
-
-// if (type_vac_ts_scale[1].checked) {
-//   console.log("User selected rates of doses");
-// }
-
 var svg_vaccine_uptake_by_dose_timeseries = d3
   .select("#vaccine_uptake_by_dose_timeseries")
   .append("svg")
@@ -144,6 +132,9 @@ request.open("GET", "./Outputs/vaccination_timeseries_overall.json", false);
 request.send(null);
 var vaccination_timeseries_data = JSON.parse(request.responseText);
 
+// get the button
+var type_vac_ts_scale = document.getElementsByName("toggle_vac_ts_rate");
+
 // Retrieve the selected area name
 var vaccine_uptake_by_dose_timeseries_area_option = d3
   .select("#vaccine_uptake_by_dose_timeseries_area_select")
@@ -154,16 +145,6 @@ var vaccination_timeseries_dates = d3
     return d.Date_label;
   })
   .keys();
-
-// Update text based on selected area
-d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
-  return (
-    "Rolling 7 day number of Covid-19 vaccinations received; by pillar; " +
-    vaccine_uptake_by_dose_timeseries_area_option +
-    "; as at " +
-    data_refreshed_date
-  );
-});
 
 var vaccine_timeseries_chosen = vaccination_timeseries_data.filter(function (
   d
@@ -199,24 +180,6 @@ xAxis_vaccine_ts_1
   )
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
-
-y_vaccine_ts_1 = d3
-  .scaleLinear()
-  .domain([
-    0,
-    d3.max(vaccine_timeseries_chosen, function (d) {
-      return +d.Seven_day_rolling_vaccinations;
-    }),
-  ])
-  .range([height_line - 80, 0])
-  .nice();
-
-var y_vaccine_ts_1_axis = svg_vaccine_uptake_by_dose_timeseries
-  .append("g")
-  .attr("transform", "translate(0,0)")
-  .call(d3.axisLeft(y_vaccine_ts_1).tickFormat(d3.format(",.0f")));
-
-y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
 
 var tooltip_vaccine_ts_1 = d3
   .select("#vaccine_uptake_by_dose_timeseries")
@@ -391,118 +354,50 @@ var mouseleave_vaccine_ts_1 = function (d) {
     .style("visibility", "visible");
 };
 
-var lines_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
-  .selectAll(".line")
-  .data(vaccine_timeseries_chosen_group)
-  .enter()
-  .append("path")
-  .attr("id", "c3_lines")
-  .attr("class", "c3_all_lines")
-  .attr("stroke", function (d) {
-    return dose_number_colours(d.key);
-  })
-  .attr("d", function (d) {
-    return d3
-      .line()
-      .x(function (d) {
-        return x_vaccine_ts_1(d.Date_label);
-      })
-      .y(function (d) {
-        return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
-      })(d.values);
-  })
-  .style("stroke-width", 2)
-  .on("mouseover", hover_vaccine_ts_1_lines)
-  .on("mouseout", mouseleave_vaccine_ts_1);
-
-var dots_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
-  .selectAll("circles")
-  .data(vaccine_timeseries_chosen)
-  .enter()
-  // .append("g")
-  // .selectAll("Indpoints")
-  // .data(function (d) {
-  //   return d.values;
-  // })
-  // .enter()
-  .append("circle")
-  .attr("cx", function (d) {
-    return x_vaccine_ts_1(d.Date_label);
-  })
-  .attr("cy", function (d) {
-    return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
-  })
-  .style("fill", function (d) {
-    return dose_number_colours(d.Dose_number);
-  })
-  .attr("stroke", function (d) {
-    return dose_number_colours(d.Dose_number);
-  })
-  .attr("r", 2)
-  .on("mousemove", hover_vaccine_ts_1_dots)
-  .on("mouseout", mouseleave_vaccine_ts_1);
-
-function update_vaccine_ts_1() {
-  // Retrieve the selected area name
-  var vaccine_uptake_by_dose_timeseries_area_option = d3
-    .select("#vaccine_uptake_by_dose_timeseries_area_select")
-    .property("value");
+// Things specific to doses
+if (type_vac_ts_scale[0].checked) {
+  console.log("User selected actual dose numbers");
 
   // Update text based on selected area
   d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
     return (
-      "Rolling 7 day number of Covid-19 vaccinations received; by pillar; " +
+      "Rolling 7 day number of Covid-19 vaccinations received; " +
       vaccine_uptake_by_dose_timeseries_area_option +
       "; as at " +
       data_refreshed_date
     );
   });
 
-  var vaccine_timeseries_chosen = vaccination_timeseries_data.filter(function (
-    d
-  ) {
-    return d.Name === vaccine_uptake_by_dose_timeseries_area_option;
-  });
-
-  // Group the new data
-  var vaccine_timeseries_chosen_group = d3
-    .nest() // nest function allows to group the calculation per level of a factor
-    .key(function (d) {
-      return d.Dose_number;
-    })
-    .entries(vaccine_timeseries_chosen);
-
-  y_vaccine_ts_1
+  // y scale for doses
+  y_vaccine_ts_1 = d3
+    .scaleLinear()
     .domain([
       0,
       d3.max(vaccine_timeseries_chosen, function (d) {
         return +d.Seven_day_rolling_vaccinations;
       }),
     ])
+    .range([height_line - 80, 0])
     .nice();
 
-  y_vaccine_ts_1_axis
-    .transition()
-    .duration(1000)
-    .call(d3.axisLeft(y_vaccine_ts_1));
+  var y_vaccine_ts_1_axis = svg_vaccine_uptake_by_dose_timeseries
+    .append("g")
+    .attr("transform", "translate(0,0)")
+    .call(d3.axisLeft(y_vaccine_ts_1).tickFormat(d3.format(",.0f")));
 
   y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
 
-  dots_vaccine_ts_1
-    .data(vaccine_timeseries_chosen)
-    .transition()
-    .duration(1000)
-    .attr("cx", function (d) {
-      return x_vaccine_ts_1(d.Date_label);
-    })
-    .attr("cy", function (d) {
-      return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
-    });
-
-  lines_vaccine_ts_1
+  // Lines
+  var lines_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
+    .selectAll(".line")
     .data(vaccine_timeseries_chosen_group)
-    .transition()
-    .duration(1000)
+    .enter()
+    .append("path")
+    .attr("id", "c3_lines")
+    .attr("class", "c3_all_lines")
+    .attr("stroke", function (d) {
+      return dose_number_colours(d.key);
+    })
     .attr("d", function (d) {
       return d3
         .line()
@@ -512,7 +407,255 @@ function update_vaccine_ts_1() {
         .y(function (d) {
           return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
         })(d.values);
+    })
+    .style("stroke-width", 2)
+    .on("mouseover", hover_vaccine_ts_1_lines)
+    .on("mouseout", mouseleave_vaccine_ts_1);
+
+  // Points
+  var dots_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
+    .selectAll("circles")
+    .data(vaccine_timeseries_chosen)
+    .enter()
+    .append("circle")
+    .attr("cx", function (d) {
+      return x_vaccine_ts_1(d.Date_label);
+    })
+    .attr("cy", function (d) {
+      return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
+    })
+    .style("fill", function (d) {
+      return dose_number_colours(d.Dose_number);
+    })
+    .attr("stroke", function (d) {
+      return dose_number_colours(d.Dose_number);
+    })
+    .attr("r", 2)
+    .on("mousemove", hover_vaccine_ts_1_dots)
+    .on("mouseout", mouseleave_vaccine_ts_1);
+}
+
+// Things specific to rates
+if (type_vac_ts_scale[1].checked) {
+  console.log("User selected rates of doses");
+
+  // Update text based on selected area
+  d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
+    return (
+      "Rolling 7 day rate per 100,000 population Covid-19 vaccinations received; " +
+      vaccine_uptake_by_dose_timeseries_area_option +
+      "; as at " +
+      data_refreshed_date
+    );
+  });
+
+  // y scale for dose rates
+  y_vaccine_ts_1 = d3
+    .scaleLinear()
+    .domain([
+      0,
+      d3.max(vaccine_timeseries_chosen, function (d) {
+        return +d.Seven_day_rolling_rate_vaccinations;
+      }),
+    ])
+    .range([height_line - 80, 0])
+    .nice();
+
+  var y_vaccine_ts_1_axis = svg_vaccine_uptake_by_dose_timeseries
+    .append("g")
+    .attr("transform", "translate(0,0)")
+    .call(d3.axisLeft(y_vaccine_ts_1).tickFormat(d3.format(",.0f")));
+
+  y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
+
+  // Lines
+  var lines_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
+    .selectAll(".line")
+    .data(vaccine_timeseries_chosen_group)
+    .enter()
+    .append("path")
+    .attr("id", "c3_lines")
+    .attr("class", "c3_all_lines")
+    .attr("stroke", function (d) {
+      return dose_number_colours(d.key);
+    })
+    .attr("d", function (d) {
+      return d3
+        .line()
+        .x(function (d) {
+          return x_vaccine_ts_1(d.Date_label);
+        })
+        .y(function (d) {
+          return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
+        })(d.values);
+    })
+    .style("stroke-width", 2)
+    .on("mouseover", hover_vaccine_ts_1_lines)
+    .on("mouseout", mouseleave_vaccine_ts_1);
+
+  var dots_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
+    .selectAll("circles")
+    .data(vaccine_timeseries_chosen)
+    .enter()
+    .append("circle")
+    .attr("cx", function (d) {
+      return x_vaccine_ts_1(d.Date_label);
+    })
+    .attr("cy", function (d) {
+      return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
+    })
+    .style("fill", function (d) {
+      return dose_number_colours(d.Dose_number);
+    })
+    .attr("stroke", function (d) {
+      return dose_number_colours(d.Dose_number);
+    })
+    .attr("r", 2)
+    .on("mousemove", hover_vaccine_ts_1_dots)
+    .on("mouseout", mouseleave_vaccine_ts_1);
+}
+
+function update_vaccine_ts_1() {
+  // Retrieve the selected area name
+  var vaccine_uptake_by_dose_timeseries_area_option = d3
+    .select("#vaccine_uptake_by_dose_timeseries_area_select")
+    .property("value");
+
+  if (type_vac_ts_scale[0].checked) {
+    // Update text based on selected area
+    d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
+      return (
+        "Rolling 7 day number of Covid-19 vaccinations received; " +
+        vaccine_uptake_by_dose_timeseries_area_option +
+        "; as at " +
+        data_refreshed_date
+      );
     });
+
+    var vaccine_timeseries_chosen = vaccination_timeseries_data.filter(
+      function (d) {
+        return d.Name === vaccine_uptake_by_dose_timeseries_area_option;
+      }
+    );
+
+    // Group the new data
+    var vaccine_timeseries_chosen_group = d3
+      .nest() // nest function allows to group the calculation per level of a factor
+      .key(function (d) {
+        return d.Dose_number;
+      })
+      .entries(vaccine_timeseries_chosen);
+
+    y_vaccine_ts_1
+      .domain([
+        0,
+        d3.max(vaccine_timeseries_chosen, function (d) {
+          return +d.Seven_day_rolling_vaccinations;
+        }),
+      ])
+      .nice();
+
+    y_vaccine_ts_1_axis
+      .transition()
+      .duration(1000)
+      .call(d3.axisLeft(y_vaccine_ts_1));
+
+    y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
+
+    dots_vaccine_ts_1
+      .data(vaccine_timeseries_chosen)
+      .transition()
+      .duration(1000)
+      .attr("cx", function (d) {
+        return x_vaccine_ts_1(d.Date_label);
+      })
+      .attr("cy", function (d) {
+        return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
+      });
+
+    lines_vaccine_ts_1
+      .data(vaccine_timeseries_chosen_group)
+      .transition()
+      .duration(1000)
+      .attr("d", function (d) {
+        return d3
+          .line()
+          .x(function (d) {
+            return x_vaccine_ts_1(d.Date_label);
+          })
+          .y(function (d) {
+            return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
+          })(d.values);
+      });
+  }
+
+  if (type_vac_ts_scale[1].checked) {
+    // Update text based on selected area
+    d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
+      return (
+        "Rolling 7 day rate per 100,000 population Covid-19 vaccinations received; " +
+        vaccine_uptake_by_dose_timeseries_area_option +
+        "; as at " +
+        data_refreshed_date
+      );
+    });
+
+    var vaccine_timeseries_chosen = vaccination_timeseries_data.filter(
+      function (d) {
+        return d.Name === vaccine_uptake_by_dose_timeseries_area_option;
+      }
+    );
+
+    // Group the new data
+    var vaccine_timeseries_chosen_group = d3
+      .nest() // nest function allows to group the calculation per level of a factor
+      .key(function (d) {
+        return d.Dose_number;
+      })
+      .entries(vaccine_timeseries_chosen);
+
+    y_vaccine_ts_1
+      .domain([
+        0,
+        d3.max(vaccine_timeseries_chosen, function (d) {
+          return +d.Seven_day_rolling_rate_vaccinations;
+        }),
+      ])
+      .nice();
+
+    y_vaccine_ts_1_axis
+      .transition()
+      .duration(1000)
+      .call(d3.axisLeft(y_vaccine_ts_1));
+
+    y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
+
+    dots_vaccine_ts_1
+      .data(vaccine_timeseries_chosen)
+      .transition()
+      .duration(1000)
+      .attr("cx", function (d) {
+        return x_vaccine_ts_1(d.Date_label);
+      })
+      .attr("cy", function (d) {
+        return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
+      });
+
+    lines_vaccine_ts_1
+      .data(vaccine_timeseries_chosen_group)
+      .transition()
+      .duration(1000)
+      .attr("d", function (d) {
+        return d3
+          .line()
+          .x(function (d) {
+            return x_vaccine_ts_1(d.Date_label);
+          })
+          .y(function (d) {
+            return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
+          })(d.values);
+      });
+  }
 }
 
 d3.select("#vaccine_uptake_by_dose_timeseries_area_select").on(
@@ -524,6 +667,11 @@ d3.select("#vaccine_uptake_by_dose_timeseries_area_select").on(
     update_vaccine_ts_1();
   }
 );
+
+var toggle_vac_ts_rate_func = function (d) {
+  console.log("ooooo yur, all this gets done for whatever is toggled");
+  update_vaccine_ts_1();
+};
 
 dose_number.forEach(function (d, i) {
   var list = document.createElement("li");
@@ -537,6 +685,130 @@ dose_number.forEach(function (d, i) {
   tt_h3_asr.innerHTML = d;
   tt.appendChild(tt_h3_asr);
   var div = document.getElementById("dose_number_key_figure");
+  div.appendChild(list);
+});
+
+// ! vaccine ts 2 - age stacked
+
+var svg_first_dose_vaccine_uptake_by_dose_timeseries = d3
+  .select("#first_dose_vaccine_uptake_by_dose_timeseries")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_line + 30)
+  .append("g")
+  .attr("transform", "translate(" + 120 + "," + 30 + ")");
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/vaccination_timeseries_age.json", false);
+request.send(null);
+var vaccination_timeseries_age_data = JSON.parse(request.responseText);
+
+var vaccine_ages_public = d3
+  .map(vaccination_timeseries_age_data, function (d) {
+    return d.Age_group;
+  })
+  .keys();
+
+var vaccine_ages_public_colour_vaccinated = d3
+  .scaleOrdinal()
+  .domain(vaccine_ages_public)
+  .range([
+    "#FCFFA4",
+    "#F3E55C",
+    "#FAC127",
+    "#FB9E07",
+    "#F57D15",
+    "#E8602D",
+    "#D44842",
+    "#BB3754",
+    "#9F2A63",
+    "#82206C",
+    "#65156E",
+    "#480B6A",
+    "#280B54",
+    "#0D082A",
+    "#000004",
+  ]);
+
+d3.select("#first_dose_vaccine_uptake_by_age_timeseries_area_select")
+  .selectAll("myOptions")
+  .data([
+    "West Sussex",
+    "Adur",
+    "Arun",
+    "Chichester",
+    "Crawley",
+    "Horsham",
+    "Mid Sussex",
+    "Worthing",
+    "South East",
+    "England",
+  ])
+  .enter()
+  .append("option")
+  .text(function (d) {
+    return d;
+  })
+  .attr("value", function (d) {
+    return d;
+  });
+
+var first_dose_vaccine_uptake_by_age_timeseries_area_option = d3
+  .select("#first_dose_vaccine_uptake_by_age_timeseries_area_select")
+  .property("value");
+
+d3.select("#first_dose_vaccine_uptake_by_age_timeseries_title").html(function (
+  d
+) {
+  return (
+    "Rolling 7 day Covid-19 vaccinations received by age; " +
+    first_dose_vaccine_uptake_by_age_timeseries_area_option +
+    "; as at " +
+    data_refreshed_date
+  );
+});
+
+d3.select("#first_dose_vaccine_uptake_by_age_timeseries_area_select").on(
+  "change",
+  function (d) {
+    update_vaccine_ts_2();
+  }
+);
+
+var toggle_vac_ts_2_age_rate_func = function (d) {
+  console.log("ooooo yur, all this gets done for whatever is toggled");
+  // update_vaccine_ts_2();
+};
+
+var update_vaccine_ts_2 = function (d) {
+  var first_dose_vaccine_uptake_by_age_timeseries_area_option = d3
+    .select("#first_dose_vaccine_uptake_by_age_timeseries_area_select")
+    .property("value");
+
+  d3.select("#first_dose_vaccine_uptake_by_age_timeseries_title").html(
+    function (d) {
+      return (
+        "Rolling 7 day Covid-19 vaccinations received by age; " +
+        first_dose_vaccine_uptake_by_age_timeseries_area_option +
+        "; as at " +
+        data_refreshed_date
+      );
+    }
+  );
+};
+
+vaccine_ages_public.forEach(function (d, i) {
+  var list = document.createElement("li");
+  list.innerHTML = d;
+  list.className = "key_list";
+  list.style.borderColor = vaccine_ages_public_colour_vaccinated(i);
+  var tt = document.createElement("div");
+  tt.className = "side_tt";
+  tt.style.borderColor = vaccine_ages_public_colour_vaccinated(i);
+  var tt_h3_asr = document.createElement("h3");
+  tt_h3_asr.innerHTML = d;
+  tt.appendChild(tt_h3_asr);
+  var div = document.getElementById("age_group_vaccine_key_figure");
   div.appendChild(list);
 });
 

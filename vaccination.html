@@ -218,7 +218,7 @@
       </div>
     </section>
 
-    <section class="vaccine_timeseries" id="vaccine_timeseries">
+    < class="vaccine_timeseries" id="vaccine_timeseries">
       <h4 class="content_top">Vaccinations over time</h4>
 
       <div class="content">
@@ -228,9 +228,18 @@
           but you can change the area using the drop down menu. Hover over a dot
           to see more.
         </p>
+        <p>
+          You can also choose whether to look at actual doses, or the crude rate
+          of doses per 100,000 population. This helps to compare areas as if
+          they had the same population size.
+        </p>
+      </div>
 
+      <div class="right-sidebar"></div>
+
+      <div class="content">
         <select id="vaccine_uptake_by_dose_timeseries_area_select"></select>
-        <!-- <div class="drop">
+        <div class="drop">
           <form
             class="btn-group btn-group-toggle stay-left-classy"
             data-toggle="buttons"
@@ -253,7 +262,7 @@
               />rate per 100,000<br />
             </label>
           </form>
-        </div> -->
+        </div>
         <h4 id="vaccine_uptake_by_dose_timeseries_title"></h4>
         <div id="vaccine_uptake_by_dose_timeseries"></div>
         <p>
@@ -275,19 +284,68 @@
       <div class="right-sidebar">
         <h4>Dose</h4>
         <p id="dose_number_key_figure"></p>
+      </div>
+
+      <div class="content">
         <p>
-          Note: there are different population demographics/structures in each
-          area. Some areas have more people in the age groups that were invited
-          first to have the vaccine. As such, some areas may appear to ramp up
+          There are different population demographics/structures in each area.
+          Some areas have more people in the age groups that were invited first
+          to have the vaccine. As such, some areas may appear to ramp up
           vaccinations at different points in time, and this may in part be due
           to the people in the area eligible for vaccinating.
         </p>
+        <p>The next figure shows first doses by age group.</p>
+      </div>
+
+      <div class="right-sidebar"></div>
+
+      <div class="content">
+
+        <select
+          id="first_dose_vaccine_uptake_by_age_timeseries_area_select"
+        ></select>
+        <div class="drop">
+          <form
+            class="btn-group btn-group-toggle stay-left-classy"
+            data-toggle="buttons"
+          >
+            <label class="btn btn-secondary active">
+              <input
+                type="radio"
+                name="toggle_vac_ts_2_age_rate"
+                value="raw"
+                checked="checked"
+                onchange="toggle_vac_ts_2_age_rate_func();"
+              />actual doses<br />
+            </label>
+            <label class="btn btn-secondary">
+              <input
+                type="radio"
+                name="toggle_vac_ts_2_age_rate"
+                value="rate"
+                onchange="toggle_vac_ts_2_age_rate_func();"
+              />rate per 100,000<br />
+            </label>
+          </form>
+        </div>
+        <h4 id="first_dose_vaccine_uptake_by_age_timeseries_title"></h4>
+        <div id="first_dose_vaccine_uptake_by_dose_timeseries"></div>
         <p>
-          Of course, this is just one of several factors impacting vaccination
-          uptake.
+          Data source:
+          <a
+            class="highlight_dl_link"
+            href="https://coronavirus-staging.data.gov.uk"
+            >https://coronavirus-staging.data.gov.uk</a
+          >
         </p>
       </div>
-    </section>
+
+      <div class="right-sidebar">
+        <h4>Age group</h4>
+        <p id="age_group_vaccine_key_figure"></p>
+      </div>
+
+        </section>
 
     <section class="vaccine_inequalities" id="vaccine_inequalities">
       <h4 class="content_top">A deeper look at vaccination uptake</h4>
