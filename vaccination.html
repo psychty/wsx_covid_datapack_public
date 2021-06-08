@@ -110,19 +110,11 @@
 
         <p>
           The data in this section come from NHS England and are collected
-          through the National Immunisation Management Service (NIMS). The data
-          at small area (Middle Super Output Area) is updated every week, on a
-          Thursday, with data up to the previous Sunday. Currently, all adults
-          aged 30 and over are eligible for their first vaccination appointment.
-        </p>
-        <p>
-          As more age groups become eligibe for receiving the vaccine, NHS
-          England will provide more information on vaccine uptake among younger
-          age groups. Currently though, data is only broken down into smaller
-          age groups for those aged 30 and over.
+          through the National Immunisation Management Service (NIMS). Data at
+          lower tier local authority level are updated every day.
         </p>
         <p id="latest_vaccine_publication_date"></p>
-
+        <p id="latest_local_vaccine_publication_date"></p>
         <p>
           The table shows the number of people who have received at least one
           dose of a COVID-19 vaccine in West Sussex districts.
@@ -226,29 +218,76 @@
       </div>
     </section>
 
-    <!-- <section class="vaccine_timeseries" id="vaccine_timeseries">
+    <section class="vaccine_timeseries" id="vaccine_timeseries">
       <h4 class="content_top">Vaccinations over time</h4>
+
       <div class="content">
         <p>
           The figure below shows how vaccinations have taken place. It shows the
           first doses and second doses. By default, it shows West Sussex overall
-          but you can change the area using the drop down menu.
+          but you can change the area using the drop down menu. Hover over a dot
+          to see more.
         </p>
 
         <select id="vaccine_uptake_by_dose_timeseries_area_select"></select>
+        <div class="drop">
+          <form
+            class="btn-group btn-group-toggle stay-left-classy"
+            data-toggle="buttons"
+          >
+            <label class="btn btn-secondary active">
+              <input
+                type="radio"
+                name="toggle_vac_ts_rate"
+                value="raw"
+                checked="checked"
+                onchange="toggle_vac_ts_rate_func();"
+              />actual doses<br />
+            </label>
+            <label class="btn btn-secondary">
+              <input
+                type="radio"
+                name="toggle_vac_ts_rate"
+                value="rate"
+                onchange="toggle_vac_ts_rate_func();"
+              />rate per 100,000<br />
+            </label>
+          </form>
+        </div>
         <h4 id="vaccine_uptake_by_dose_timeseries_title"></h4>
         <div id="vaccine_uptake_by_dose_timeseries"></div>
-
         <p>
-          The figures for most areas show that second doses ramped up in late
-          February 2021 and overtook first doses throughout April, although in
-          some areas first doses have now increased again as younger cohorts
-          have openned up.
+          Data source:
+          <a
+            class="highlight_dl_link"
+            href="https://coronavirus-staging.data.gov.uk"
+            >https://coronavirus-staging.data.gov.uk</a
+          >
+        </p>
+        <p>
+          The charts for most areas show that second doses ramped up in March
+          2021 and overtook first doses throughout April, although in some areas
+          first doses have now increased again as younger cohorts have openned
+          up.
         </p>
       </div>
 
-      <div class="right-sidebar"></div>
-    </section> -->
+      <div class="right-sidebar">
+        <h4>Dose</h4>
+        <p id="dose_number_key_figure"></p>
+        <p>
+          Note: there are different population demographics/structures in each
+          area. Some areas have more people in the age groups that were invited
+          first to have the vaccine. As such, some areas may appear to ramp up
+          vaccinations at different points in time, and this may in part be due
+          to the people in the area eligible for vaccinating.
+        </p>
+        <p>
+          Of course, this is just one of several factors impacting vaccination
+          uptake.
+        </p>
+      </div>
+    </section>
 
     <section class="vaccine_inequalities" id="vaccine_inequalities">
       <h4 class="content_top">A deeper look at vaccination uptake</h4>
