@@ -25,7 +25,7 @@ d3.select("#latest_vaccine_publication_date").html(function (d) {
 
 d3.select("#latest_local_vaccine_publication_date").html(function (d) {
   return (
-    "However, data at small area level (Middle Super Output Area) is updated every week, on a Thursday, with data up to the previous Sunday with data broken down for all adults aged 30 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
+    "Data at district and borough level are updated every day. However, data at small area level (Middle Super Output Area) are currently updated once per week, on a Thursday, with data up to the previous Sunday. The data are broken down for all adults aged 30 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
     vaccine_update_date +
     " and includes vaccines administered from " +
     vaccine_administered_date +
