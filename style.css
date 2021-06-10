@@ -859,6 +859,76 @@ section {
   font-weight: normal;
 }
 
+.wk_wk_table th:first-child {
+  text-align: left;
+}
+
+.wk_wk_table td:nth-child(2) {
+  text-align: left;
+}
+
+.wk_wk_table th:nth-child(2) {
+  text-align: left;
+}
+
+.wk_wk_table table {
+  margin-bottom: 25px;
+}
+
+.wk_wk_table tr:nth-child(even) {
+  background-color: #dddddd;
+}
+
+.wk_wk_table th:nth-child(6) {
+  background-color: #fbe5d6;
+  text-align: right;
+}
+
+.wk_wk_table tr:nth-child(odd) > td:nth-child(6) {
+  background: #fff;
+}
+.wk_wk_table tr:nth-child(even) > td:nth-child(6) {
+  background: #fbe5d6;
+}
+
+.wk_wk_table th:nth-child(7) {
+  background-color: #fbe5d6;
+  text-align: right;
+}
+
+.wk_wk_table tr:nth-child(odd) > td:nth-child(7) {
+  background: #fff;
+}
+.wk_wk_table tr:nth-child(even) > td:nth-child(7) {
+  background: #fbe5d6;
+}
+
+.wk_wk_table th:nth-child(8) {
+  background-color: #fbe5d6;
+  text-align: right;
+}
+
+.wk_wk_table tr:nth-child(odd) > td:nth-child(8) {
+  background: #fff;
+}
+.wk_wk_table tr:nth-child(even) > td:nth-child(8) {
+  background: #fbe5d6;
+}
+
+.wk_wk_table td:nth-child(6) {
+  background-color: #fbe5d6;
+}
+
+.wk_wk_table tr:nth-child(8) {
+  border-top: 0px;
+  border-bottom: 0px;
+}
+
+.wk_wk_table td:first-child {
+  text-align: left;
+  width: 110px;
+}
+
 .msoa_table th :first-child {
   text-align: right;
 }

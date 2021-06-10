@@ -601,115 +601,115 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 
 # LTLA vaccine data ####
 
-mye_nims_ltla <- read_csv(paste0(github_repo_dir, '/Source files/ltla_nims_pop_estimates.csv')) %>% 
-  mutate(Population = Under_16 + Age_16_and_over) %>% 
-  mutate(Population_30_and_over = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Population_30_64 = Age_30_34 + Age_35_39 +Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64)
+# mye_nims_ltla <- read_csv(paste0(github_repo_dir, '/Source files/ltla_nims_pop_estimates.csv')) %>% 
+#   mutate(Population = Under_16 + Age_16_and_over) %>% 
+#   mutate(Population_30_and_over = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+#   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+#   mutate(Population_30_64 = Age_30_34 + Age_35_39 +Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64)
+# 
+# vaccine_df_ltla <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+#                               sheet = 'LTLA',
+#                               skip = 15,
+#                               col_names = c('Region_code', 'Region_name', 'UTLA_code', 'UTLA_name', 'LTLA_code', 'LTLA_name', 'First_dose_under_30', 'First_dose_age_30_34', 'First_dose_age_35_39','First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over', 'Null_1', 'Second_dose_under_30', 'Second_dose_age_30_34', 'Second_dose_age_35_39', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
+#   filter(!is.na(Region_name)) %>% 
+#   mutate(Total_first_dose_where_age_known = First_dose_under_30 + First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+#   mutate(First_dose_age_30_and_over = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+#   mutate(First_dose_age_65_and_over = First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+#   mutate(First_dose_age_30_64 = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64) %>% 
+#   left_join(mye_nims_ltla[c('LTLA_code', 'Age_16_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'LTLA_code') %>% 
+#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_16_and_over) %>% 
+#   mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>% 
+#   mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>% 
+#   mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
+#   select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   rename(Population_16_and_over = Age_16_and_over)
+# 
+# vaccine_df_wsx <- vaccine_df_ltla %>% 
+#   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
+#   summarise(Total_first_dose_where_age_known = sum(Total_first_dose_where_age_known),
+#             First_dose_age_30_and_over = sum(First_dose_age_30_and_over),
+#             First_dose_age_65_and_over = sum(First_dose_age_65_and_over),
+#             First_dose_age_30_64 = sum(First_dose_age_30_64),
+#             Population_16_and_over = sum(Population_16_and_over),
+#             Population_30_and_over = sum(Population_30_and_over),
+#             Population_65_and_over = sum(Population_65_and_over),
+#             Population_30_64 = sum(Population_30_64)) %>% 
+#   mutate(LTLA_name = 'West Sussex',
+#          LTLA_code = 'E10000032') %>%
+#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Population_16_and_over) %>% 
+#   mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>%
+#   mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>%
+#   mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
+#   select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) 
+# 
+# # Add SE and England
+# 
+# mye_ons_region <- read_csv(paste0(github_repo_dir, '/Source files/region_ons_pop_estimates.csv')) %>% 
+#   mutate(Population = Under_16 + Age_16_and_over) %>% 
+#   mutate(Population_30_and_over = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+#   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
+#   mutate(Population_30_64 = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
+#   rename(Region_name = Area) %>% 
+#   mutate(Region_name = ifelse(Region_name == 'England', 'England', paste0(Region_name, ' region')))
+# 
+# vaccine_df_region <- read_excel("GitHub/wsx_covid_datapack_public/Source files/nhs_e_vaccines.xlsx", 
+#                                 sheet = "NHS Region", 
+#                                 range = "B14:O22",
+#                                 col_names = c('Region_name', 'Null_1','First_dose_under_30', 'First_dose_age_30_34', 'First_dose_age_35_39','First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over')) %>%
+#   select(!Null_1) %>% 
+#   filter(!is.na(Region_name)) %>%
+#   mutate(Region_name = ifelse(Region_name == 'Total4', 'England', paste0(Region_name, ' region'))) %>% 
+#   mutate(Total_first_dose_where_age_known = First_dose_under_30 + First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+#   mutate(First_dose_age_30_and_over = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49  + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+#   mutate(First_dose_age_65_and_over = First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
+#   mutate(First_dose_age_30_64 = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64) %>% 
+#   left_join(mye_ons_region[c('Region_name', 'Age_16_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'Region_name') %>% 
+#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_16_and_over) %>% 
+#   mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>% 
+#   mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>% 
+#   mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
+#   select(Region_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   rename(Population_16_and_over = Age_16_and_over) %>% 
+#   filter(Region_name %in% c('South East region', 'England')) %>% 
+#   rename(Name = Region_name) %>% 
+#   mutate(Name = factor(Name, levels = c('South East region', 'England'))) %>% 
+#   arrange(Name)
+# 
+# vaccine_df_ltla %>% 
+#   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+#   bind_rows(vaccine_df_wsx) %>% 
+#   rename(Name = 'LTLA_name') %>% 
+#   bind_rows(vaccine_df_region) %>% 
+#   select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
+# 
+# vaccine_df_ltla %>% 
+#   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+#   bind_rows(vaccine_df_wsx) %>% 
+#   rename(Name = 'LTLA_name') %>% 
+#  # bind_rows(vaccine_df_region) %>% 
+#   select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
 
-vaccine_df_ltla <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
-                              sheet = 'LTLA',
-                              skip = 15,
-                              col_names = c('Region_code', 'Region_name', 'UTLA_code', 'UTLA_name', 'LTLA_code', 'LTLA_name', 'First_dose_under_30', 'First_dose_age_30_34', 'First_dose_age_35_39','First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over', 'Null_1', 'Second_dose_under_30', 'Second_dose_age_30_34', 'Second_dose_age_35_39', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
-  filter(!is.na(Region_name)) %>% 
-  mutate(Total_first_dose_where_age_known = First_dose_under_30 + First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
-  mutate(First_dose_age_30_and_over = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
-  mutate(First_dose_age_65_and_over = First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
-  mutate(First_dose_age_30_64 = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64) %>% 
-  left_join(mye_nims_ltla[c('LTLA_code', 'Age_16_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'LTLA_code') %>% 
-  mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_16_and_over) %>% 
-  mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>% 
-  mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>% 
-  mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
-  select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
-  rename(Population_16_and_over = Age_16_and_over)
-
-vaccine_df_wsx <- vaccine_df_ltla %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
-  summarise(Total_first_dose_where_age_known = sum(Total_first_dose_where_age_known),
-            First_dose_age_30_and_over = sum(First_dose_age_30_and_over),
-            First_dose_age_65_and_over = sum(First_dose_age_65_and_over),
-            First_dose_age_30_64 = sum(First_dose_age_30_64),
-            Population_16_and_over = sum(Population_16_and_over),
-            Population_30_and_over = sum(Population_30_and_over),
-            Population_65_and_over = sum(Population_65_and_over),
-            Population_30_64 = sum(Population_30_64)) %>% 
-  mutate(LTLA_name = 'West Sussex',
-         LTLA_code = 'E10000032') %>%
-  mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Population_16_and_over) %>% 
-  mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>%
-  mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>%
-  mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
-  select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) 
-
-# Add SE and England
-
-mye_ons_region <- read_csv(paste0(github_repo_dir, '/Source files/region_ons_pop_estimates.csv')) %>% 
-  mutate(Population = Under_16 + Age_16_and_over) %>% 
-  mutate(Population_30_and_over = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
-  mutate(Population_30_64 = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
-  rename(Region_name = Area) %>% 
-  mutate(Region_name = ifelse(Region_name == 'England', 'England', paste0(Region_name, ' region')))
-
-vaccine_df_region <- read_excel("GitHub/wsx_covid_datapack_public/Source files/nhs_e_vaccines.xlsx", 
-                                sheet = "NHS Region", 
-                                range = "B14:O22",
-                                col_names = c('Region_name', 'Null_1','First_dose_under_30', 'First_dose_age_30_34', 'First_dose_age_35_39','First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over')) %>%
-  select(!Null_1) %>% 
-  filter(!is.na(Region_name)) %>%
-  mutate(Region_name = ifelse(Region_name == 'Total4', 'England', paste0(Region_name, ' region'))) %>% 
-  mutate(Total_first_dose_where_age_known = First_dose_under_30 + First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
-  mutate(First_dose_age_30_and_over = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49  + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
-  mutate(First_dose_age_65_and_over = First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
-  mutate(First_dose_age_30_64 = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64) %>% 
-  left_join(mye_ons_region[c('Region_name', 'Age_16_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'Region_name') %>% 
-  mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_16_and_over) %>% 
-  mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>% 
-  mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>% 
-  mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
-  select(Region_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
-  rename(Population_16_and_over = Age_16_and_over) %>% 
-  filter(Region_name %in% c('South East region', 'England')) %>% 
-  rename(Name = Region_name) %>% 
-  mutate(Name = factor(Name, levels = c('South East region', 'England'))) %>% 
-  arrange(Name)
-
-vaccine_df_ltla %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
-  bind_rows(vaccine_df_wsx) %>% 
-  rename(Name = 'LTLA_name') %>% 
-  bind_rows(vaccine_df_region) %>% 
-  select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
-  toJSON() %>% 
-  write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
-
-vaccine_df_ltla %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
-  bind_rows(vaccine_df_wsx) %>% 
-  rename(Name = 'LTLA_name') %>% 
- # bind_rows(vaccine_df_region) %>% 
-  select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
-
-lad_boundary <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
-  filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing')) %>% 
-  fortify(region = "LAD19CD") %>%
-  rename(LAD19CD = id) %>%
-  filter(substr(LAD19CD, 1,1 ) == 'E') %>% 
-  left_join(vaccine_df_ltla, by = c('LAD19CD' = 'LTLA_code')) %>% 
-  mutate(First_dose_proportion_age_known_banded = factor(ifelse(First_dose_proportion_age_known < .3, 'Less than 30%', ifelse(First_dose_proportion_age_known < .4, '30-39%', ifelse(First_dose_proportion_age_known < .5, '40-49%', ifelse(First_dose_proportion_age_known < .6, '50-59%', ifelse(First_dose_proportion_age_known < .7, '60-69%', ifelse(First_dose_proportion_age_known < .8, '70-79%', ifelse(First_dose_proportion_age_known < .9, '80-89%', ifelse(First_dose_proportion_age_known < 1, '90-99%', '100% of estimated population')))))))), levels = c('Less than 30%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population'))) %>% 
-  mutate(First_dose_proportion_30_plus_banded = factor(ifelse(First_dose_proportion_30_plus < .8, 'Less than 80%', ifelse(First_dose_proportion_30_plus < .85, '80-84%', ifelse(First_dose_proportion_30_plus < .9, '85-89%', ifelse(First_dose_proportion_30_plus < .95, '90-94%', ifelse(First_dose_proportion_30_plus < 1, '95-99%', '100% of estimated population'))))), levels = c('Less than 80%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
-  mutate(First_dose_proportion_30_64_banded = factor(ifelse(First_dose_proportion_30_64 < .1, 'Less than 10%', ifelse(First_dose_proportion_30_64 < .2, '10-19%', ifelse(First_dose_proportion_30_64 < .3, '20-29%', ifelse(First_dose_proportion_30_64 < .4, '30-39%', ifelse(First_dose_proportion_30_64 < .5, '40-49%', ifelse(First_dose_proportion_30_64 < .6, '50-59%', ifelse(First_dose_proportion_30_64 < .7, '60-69%', ifelse(First_dose_proportion_30_64 < .8, '70-79%', ifelse(First_dose_proportion_30_64 < .9, '80-89%', ifelse(First_dose_proportion_30_64 < 1, '90-99%', '100% of estimated population')))))))))), levels = c('Less than 10%', '10-19%', '20-29%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population')))
-
-lad_boundary_export <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
-  filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing'))
-
-geojson_write(ms_simplify(geojson_json(lad_boundary_export), keep = 1), file = paste0(output_directory_x, '/lad_boundary_export.geojson'))
-
-vac_llim_prop_all_age <- round_any(min(lad_boundary$First_dose_proportion_age_known, na.rm = TRUE), .05, floor)
-vac_ulim_prop_all_age <- round_any(max(lad_boundary$First_dose_proportion_age_known, na.rm = TRUE), .05, ceiling)
+# lad_boundary <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
+#   filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing')) %>% 
+#   fortify(region = "LAD19CD") %>%
+#   rename(LAD19CD = id) %>%
+#   filter(substr(LAD19CD, 1,1 ) == 'E') %>% 
+#   left_join(vaccine_df_ltla, by = c('LAD19CD' = 'LTLA_code')) %>% 
+#   mutate(First_dose_proportion_age_known_banded = factor(ifelse(First_dose_proportion_age_known < .3, 'Less than 30%', ifelse(First_dose_proportion_age_known < .4, '30-39%', ifelse(First_dose_proportion_age_known < .5, '40-49%', ifelse(First_dose_proportion_age_known < .6, '50-59%', ifelse(First_dose_proportion_age_known < .7, '60-69%', ifelse(First_dose_proportion_age_known < .8, '70-79%', ifelse(First_dose_proportion_age_known < .9, '80-89%', ifelse(First_dose_proportion_age_known < 1, '90-99%', '100% of estimated population')))))))), levels = c('Less than 30%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population'))) %>% 
+#   mutate(First_dose_proportion_30_plus_banded = factor(ifelse(First_dose_proportion_30_plus < .8, 'Less than 80%', ifelse(First_dose_proportion_30_plus < .85, '80-84%', ifelse(First_dose_proportion_30_plus < .9, '85-89%', ifelse(First_dose_proportion_30_plus < .95, '90-94%', ifelse(First_dose_proportion_30_plus < 1, '95-99%', '100% of estimated population'))))), levels = c('Less than 80%', '80-84%', '85-89%', '90-94%', '95-99%', '100% of estimated population'))) %>% 
+#   mutate(First_dose_proportion_30_64_banded = factor(ifelse(First_dose_proportion_30_64 < .1, 'Less than 10%', ifelse(First_dose_proportion_30_64 < .2, '10-19%', ifelse(First_dose_proportion_30_64 < .3, '20-29%', ifelse(First_dose_proportion_30_64 < .4, '30-39%', ifelse(First_dose_proportion_30_64 < .5, '40-49%', ifelse(First_dose_proportion_30_64 < .6, '50-59%', ifelse(First_dose_proportion_30_64 < .7, '60-69%', ifelse(First_dose_proportion_30_64 < .8, '70-79%', ifelse(First_dose_proportion_30_64 < .9, '80-89%', ifelse(First_dose_proportion_30_64 < 1, '90-99%', '100% of estimated population')))))))))), levels = c('Less than 10%', '10-19%', '20-29%', '30-39%', '40-49%', '50-59%', '60-69%', '70-79%', '80-89%', '90-99%', '100% of estimated population')))
+# 
+# lad_boundary_export <- geojson_read('https://opendata.arcgis.com/datasets/69cd46d7d2664e02b30c2f8dcc2bfaf7_0.geojson', what = 'sp') %>% 
+#   filter(LAD19NM %in% c('Brighton and Hove','Eastbourne', 'Hastings', 'Lewes','Rother','Wealden','Adur', 'Arun', 'Chichester', 'Crawley','Horsham','Mid Sussex', 'Worthing'))
+# 
+# geojson_write(ms_simplify(geojson_json(lad_boundary_export), keep = 1), file = paste0(output_directory_x, '/lad_boundary_export.geojson'))
+# 
+# vac_llim_prop_all_age <- round_any(min(lad_boundary$First_dose_proportion_age_known, na.rm = TRUE), .05, floor)
+# vac_ulim_prop_all_age <- round_any(max(lad_boundary$First_dose_proportion_age_known, na.rm = TRUE), .05, ceiling)
 
 # ltla_all_age_proportion <- ggplot() +
 #   coord_fixed(1.5) +

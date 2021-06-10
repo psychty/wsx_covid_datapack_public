@@ -3155,8 +3155,20 @@ wsx_wk_by_wk <- wsx_wk_by_wk_1 %>%
   arrange(Name, desc(Age_group))
 
 wsx_wk_by_wk %>% 
+  names() %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccine_wk_by_wk_age_headings.json'))
+
+wsx_wk_by_wk %>% 
+  rename(First_dose_week_minus_3 = 3) %>% 
+  rename(First_dose_week_minus_2 = 4) %>%
+  rename(First_dose_week_minus_1 = 5) %>%
+  rename(Second_dose_week_minus_3 = 6) %>%
+  rename(Second_dose_week_minus_2 = 7) %>%
+  rename(Second_dose_week_minus_1 = 8) %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_wk_by_wk_age.json'))
+
 
 # recreating vaccine at a glance LTLA ####
 
@@ -3251,4 +3263,12 @@ vaccine_df_ltla_pt_1 %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
+
+# vaccine_df_ltla_pt_1 %>% 
+#   left_join(vaccine_df_ltla_pt_2, by = 'Name') %>% 
+#   select(Name, `Number of individuals aged 18 and over`, `Proportion (18 and over)`, `Number of individuals aged 18-64 years`, `Proportion (18-64 years)`, `Number of individuals aged 65 and over`, `Proportion (65 and over)`) %>% 
+#   mutate(Name = factor(Name, levels = c('Adur' ,'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England'))) %>% 
+#   arrange(Name) %>% 
+#   toJSON() %>%
+#   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
   

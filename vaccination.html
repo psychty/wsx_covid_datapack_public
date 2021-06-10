@@ -209,7 +209,7 @@
       </div>
     </section>
 
-    < class="vaccine_timeseries" id="vaccine_timeseries">
+    <section class="vaccine_timeseries" id="vaccine_timeseries">
       <h4 class="content_top">Vaccinations over time</h4>
 
       <div class="content">
@@ -340,7 +340,109 @@
         <p id="age_group_vaccine_key_figure"></p>
       </div>
 
-        </section>
+      <div class="content">
+        <h4>Change in vaccinations by week and age</h4>
+        <p>
+          The table below shows the number of first and second doses in the last three full weeks (Monday - Sunday) by age group.
+        </p>
+        <p>
+          By default, it shows West Sussex overall but you can
+          search for a local authority area in West Sussex, or South East region and England. <b>As well as searching for all age groups in one area, you can use the second search bar to search for a specific age group in all areas.</b></p>
+          <p>Lastly, you can also sort the table by by clicking on any of the headers. Click
+          the header again to change the direction of the sort (e.g. from
+          ascending to descending order, and vice versa).
+        </p>
+        <div class="give_me_space_to_search">
+          <div id="container_area_search_wk_wk"></div>
+          <div id="container_search_age_wk_wk"></div>
+        </div>
+      </div>
+      <div class="content">
+        <div id="wk_wk_table_vaccines" style="margin-bottom: 20px"></div>
+      </div>
+
+      <div class="right-sidebar">
+        <p>Click on the headers in the table to sort the columns.</p>
+      </div>
+      </div>
+      <div class="right-sidebar"></div>
+      </section>
+           
+        <h4 class="content_top">Local vaccine uptake</h4>
+        <div class="content">
+          <p id="latest_local_vaccine_publication_date"></p>
+          <p>
+            The map below shows the variation at a very localised area called an
+            output area (Middle Layer Super Output Area, or MSOA for short) in the
+            number of people aged 16+ having the vaccine across Sussex. This is a
+            running total of people so far.
+          </p>
+          <p>
+            <b
+              >Remember, there will be more people currently eligible in different
+              areas (particularly neighbourhoods with more older people or care
+              homes).</b
+            >
+            We will add more detail as it becomes available in the near future as
+            soon as possible.
+          </p>
+          <p>
+            You can click on an area to find out more, and use your mouse or
+            pointer to zoom in and out.
+          </p>
+        </div>
+  
+        <div class="content">
+          <h4 id="msoa_map_vaccine_all_title"></h4>
+          <div id="msoa_map_vaccine"></div>
+          <p>
+            Data source:
+            <a
+              class="highlight_dl_link"
+              href="https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/"
+              >NHS England</a
+            >
+          </p>
+          <p>
+            <b
+              >Remember, not all residents are currently eligible for receiving
+              the COVID-19 vaccination.</b
+            >
+            It may be that those areas with a lower proportion of uptake, simply
+            have more individuals who are not yet eligible.
+          </p>
+        </div>
+        <div class="right-sidebar">
+          <h5 id="all_age_msoa_map_key_title"></h5>
+          <p id="msoa_vaccine_key"></p>
+        </div>
+  
+        <div class="content">
+          <p>
+            The map below shows the proportion of adults aged 30 and over who have
+            had at least one dose of a COVID-19 vaccination. This may be more
+            useful to understand inequalities in uptake across areas because all
+            of those aged 30+ should receive an offer of an appointment to be
+            vaccinated in the coming weeks.
+          </p>
+          <h4 id="msoa_map_vaccine_ages_currently_eligible_title"></h4>
+          <div id="msoa_map_vaccine_ages_currently_eligible"></div>
+          <p>
+            Data source:
+            <a
+              class="highlight_dl_link"
+              href="https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/"
+              >NHS England</a
+            >
+          </p>
+        </div>
+        <div class="right-sidebar">
+          <h5 id="ages_currently_eligible_msoa_map_key_title"></h5>
+          <p id="msoa_vaccine_ages_currently_eligible_key"></p>
+        </div>    
+
+      </section>
+
 
     <section class="vaccine_inequalities" id="vaccine_inequalities">
       <h4 class="content_top">A deeper look at vaccination uptake</h4>
@@ -371,7 +473,7 @@
       </div>
       <div class="right-sidebar"></div>
 
-      <div class="content">
+      <!-- <div class="content"> -->
         <!-- <p id="wsx_so_far"></p>
         <p>
           The figure below shows the proportion of adults aged 16+ who have
@@ -381,9 +483,9 @@
         </p>
         <select id="select_guage_area_button"></select>
         <div id="overall_guage_1"></div> -->
-      </div>
+      <!-- </div> -->
 
-      <h4 class="content_top">Vaccine uptake by age group</h4>
+      <!-- <h4 class="content_top">Vaccine uptake by age group</h4>
 
       <div class="content">
         <p>
@@ -423,90 +525,13 @@
             >NHS England</a
           >
         </p>
-        <p>
-          * The data provided by NHS England specify the number of individuals
-          under the age of 30 who have been vaccinated, it is assumed that this
-          figure does not include any individuals under the age of 16, as they
-          are not currently eligible for vaccination. As such, the population
-          denominator used excludes those aged 0-15.
-        </p>
+
       </div>
       <div class="right-sidebar">
         <p id="vaccine_status_key"></p>
-      </div>
+      </div> -->
 
-      <h4 class="content_top">Local vaccine uptake</h4>
-      <div class="content">
-        <p id="latest_local_vaccine_publication_date"></p>
-        <p>
-          The map below shows the variation at a very localised area called an
-          output area (Middle Layer Super Output Area, or MSOA for short) in the
-          number of people aged 16+ having the vaccine across Sussex. This is a
-          running total of people so far.
-        </p>
-        <p>
-          <b
-            >Remember, there will be more people currently eligible in different
-            areas (particularly neighbourhoods with more older people or care
-            homes).</b
-          >
-          We will add more detail as it becomes available in the near future as
-          soon as possible.
-        </p>
-        <p>
-          You can click on an area to find out more, and use your mouse or
-          pointer to zoom in and out.
-        </p>
-      </div>
-
-      <div class="content">
-        <h4 id="msoa_map_vaccine_all_title"></h4>
-        <div id="msoa_map_vaccine"></div>
-        <p>
-          Data source:
-          <a
-            class="highlight_dl_link"
-            href="https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/"
-            >NHS England</a
-          >
-        </p>
-        <p>
-          <b
-            >Remember, not all residents are currently eligible for receiving
-            the COVID-19 vaccination.</b
-          >
-          It may be that those areas with a lower proportion of uptake, simply
-          have more individuals who are not yet eligible.
-        </p>
-      </div>
-      <div class="right-sidebar">
-        <h5 id="all_age_msoa_map_key_title"></h5>
-        <p id="msoa_vaccine_key"></p>
-      </div>
-
-      <div class="content">
-        <p>
-          The map below shows the proportion of adults aged 30 and over who have
-          had at least one dose of a COVID-19 vaccination. This may be more
-          useful to understand inequalities in uptake across areas because all
-          of those aged 30+ should receive an offer of an appointment to be
-          vaccinated in the coming weeks.
-        </p>
-        <h4 id="msoa_map_vaccine_ages_currently_eligible_title"></h4>
-        <div id="msoa_map_vaccine_ages_currently_eligible"></div>
-        <p>
-          Data source:
-          <a
-            class="highlight_dl_link"
-            href="https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-vaccinations/"
-            >NHS England</a
-          >
-        </p>
-      </div>
-      <div class="right-sidebar">
-        <h5 id="ages_currently_eligible_msoa_map_key_title"></h5>
-        <p id="msoa_vaccine_ages_currently_eligible_key"></p>
-      </div>
+   
     </section>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
