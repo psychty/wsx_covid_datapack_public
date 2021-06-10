@@ -2980,11 +2980,15 @@ vaccination_area_ts_df_long %>%
 
 vaccine_age_df %>% 
   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  select(Name, Age_group, Date_label, Seven_day_sum_dose_1, Rolling_age_specific_first_dose_rate_per_100000, Seven_day_sum_dose_2, Rolling_age_specific_second_dose_rate_per_100000) %>%
+  select(Name, Age_group, Date_label, Seven_day_sum_dose_1, Rolling_age_specific_first_dose_rate_per_100000, Seven_day_sum_dose_2, Rolling_age_specific_second_dose_rate_per_100000, Cumulative_dose_1, Cumulative_age_specific_first_dose_rate_per_100000, Cumulative_dose_2, Cumulative_age_specific_second_dose_rate_per_100000) %>%
   mutate(Rolling_age_specific_first_dose_rate_per_100000 = replace_na(Rolling_age_specific_first_dose_rate_per_100000, 0)) %>% 
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = replace_na(Rolling_age_specific_second_dose_rate_per_100000, 0)) %>% 
+  mutate(Cumulative_age_specific_first_dose_rate_per_100000 = replace_na(Cumulative_age_specific_first_dose_rate_per_100000, 0)) %>% 
+  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = replace_na(Cumulative_age_specific_second_dose_rate_per_100000, 0)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_age.json'))
+
+vaccine_age_df %>% names()
 
 # 
 # vaccine_age_df %>% 
@@ -3160,12 +3164,14 @@ wsx_wk_by_wk %>%
   write_lines(paste0(output_directory_x, '/vaccine_wk_by_wk_age_headings.json'))
 
 wsx_wk_by_wk %>% 
+  rename(Age_group = 2) %>% 
   rename(First_dose_week_minus_3 = 3) %>% 
   rename(First_dose_week_minus_2 = 4) %>%
   rename(First_dose_week_minus_1 = 5) %>%
   rename(Second_dose_week_minus_3 = 6) %>%
   rename(Second_dose_week_minus_2 = 7) %>%
   rename(Second_dose_week_minus_1 = 8) %>%
+  mutate(Label = paste0(Name, Age_group)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_wk_by_wk_age.json'))
 

@@ -797,104 +797,104 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 # dev.off()
 
 # What about age groups ####
-mye_nims_ltla_age <- mye_nims_ltla %>% 
-  select(!c('Population', 'Age_16_and_over', 'Population_30_and_over')) %>% 
-  pivot_longer(cols = !c('LTLA_code', 'LTLA_name'), values_to = 'NIMS_population') %>% 
-  rename(Age_group = 'name') %>% 
-  mutate(Age_group = ifelse(Age_group == 'Age_16_29', 'Under_30', Age_group)) %>% 
-  filter(Age_group != 'Under_16')
-
-vaccine_df_ltla_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
-                              sheet = 'LTLA',
-                              skip = 15,
-                              col_names = c('Region_code', 'Region_name', 'UTLA_code', 'UTLA_name', 'LTLA_code', 'LTLA_name', 'First_dose_under_30', 'First_dose_age_30_34', 'First_dose_age_35_39','First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over', 'Null_1', 'Second_dose_under_30', 'Second_dose_age_30_34', 'Second_dose_age_35_39', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
-  filter(!is.na(Region_name)) %>% 
-  select(!c('UTLA_code', 'UTLA_name', 'Null_1', 'Second_dose_under_30', 'Second_dose_age_30_34', 'Second_dose_age_35_39', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
-  pivot_longer(cols = !c('Region_code', 'Region_name',  'LTLA_code', 'LTLA_name'), values_to = 'At_least_one_dose') %>% 
-  rename(Age_group = name) %>% 
-  mutate(Age_group = gsub('First_dose_u', 'U', gsub('First_dose_a', 'A', Age_group))) %>%  
-  left_join(mye_nims_ltla_age, by = c('LTLA_code', 'LTLA_name', 'Age_group')) %>% 
-  mutate(Age_group = factor(ifelse(Age_group == 'Under_30', 'Age under 30*', ifelse(Age_group == 'Age_30_34', 'Age 30-34', ifelse(Age_group == 'Age_35_39', 'Age 35-39',  ifelse(Age_group == 'Age_40_44', 'Age 40-44', ifelse(Age_group == 'Age_45_49', 'Age 45-49',  ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group)))))))))))), levels = c('Age under 30*', 'Age 30-34', 'Age 35-39', 'Age 40-44','Age 45-49', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>% 
-  mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose)
-
-vaccine_df_wsx_age <- vaccine_df_ltla_age %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
-  group_by(Age_group) %>% 
-  summarise(At_least_one_dose = sum(At_least_one_dose, na.rm = TRUE),
-            NIMS_population = sum(NIMS_population, na.rm = TRUE)) %>% 
-  mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose) %>% 
-  ungroup() %>% 
-  mutate(LTLA_name = 'West Sussex',
-         LTLA_code = 'E10000032') %>% 
-  bind_rows(vaccine_df_ltla_age) %>% 
-  select('LTLA_name', 'LTLA_code', 'Age_group', 'At_least_one_dose', 'Individuals_not_vaccinated', 'NIMS_population') %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex')) %>% 
-  mutate(LTLA_name = factor(LTLA_name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex'))) %>% 
-  pivot_longer(cols = !c('LTLA_code', 'LTLA_name', 'Age_group', 'NIMS_population'), values_to = 'Individuals', names_to = 'Type') %>% 
-  rename(Name = LTLA_name) %>% 
-  mutate(Type = factor(Type, levels = rev(c('At_least_one_dose', 'Individuals_not_vaccinated')))) %>% 
-  arrange(Type)
-
-ggplot(data = subset(vaccine_df_wsx_age, Name != 'West Sussex'),
-       aes(x = Age_group,
-           y = Individuals,
-           fill = Type)) +
-  geom_bar(position = 'stack', 
-           stat = 'identity') +
-  scale_fill_manual(values = c('#ff4f03', '#8b9dc3'),
-                    breaks = rev(levels(vaccine_df_wsx_age$Type)),
-                    labels = c('At least one dose', 'Not vaccinated')) +
-  ph_theme() +
-  theme(axis.text.x = element_text(size = 8, hjust = 0.5),
-        panel.grid.major.x = element_line(colour = "#E7E7E7", size = .3),
-        panel.grid.major.y = element_blank()) +
-  facet_rep_wrap(. ~ Name, ncol = 4, repeat.tick.labels = TRUE) +
-  coord_flip() 
-
-ggplot(data = subset(vaccine_df_wsx_age, Name != 'West Sussex'),
-       aes(x = Age_group,
-           y = Individuals,
-           fill = Type)) +
-  geom_bar(position = 'fill', 
-           stat = 'identity') +
-  scale_y_continuous(labels = percent,
-                     breaks = seq(0,1,.2)) +
-  scale_fill_manual(values = c('#ff4f03', '#8b9dc3'),
-                    breaks = rev(levels(vaccine_df_wsx_age$Type)),
-                    labels = c('At least one dose', 'Not vaccinated')) +
-  ph_theme() +
-  theme(axis.text.x = element_text(size = 8, hjust = 0.5),
-        panel.grid.major.x = element_line(colour = "#E7E7E7", size = .3),
-        panel.grid.major.y = element_blank()) +
-  facet_rep_wrap(. ~ Name, ncol = 4, repeat.tick.labels = TRUE) +
-  coord_flip() 
-
-vaccine_df_wsx_age_wide <- vaccine_df_ltla_age %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
-  group_by(Age_group) %>% 
-  summarise(At_least_one_dose = sum(At_least_one_dose, na.rm = TRUE),
-            NIMS_population = sum(NIMS_population, na.rm = TRUE)) %>% 
-  mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose) %>% 
-  ungroup() %>% 
-  mutate(LTLA_name = 'West Sussex',
-         LTLA_code = 'E10000032') %>% 
-  bind_rows(vaccine_df_ltla_age) %>% 
-  select('LTLA_name', 'LTLA_code', 'Age_group', 'At_least_one_dose', 'Individuals_not_vaccinated', 'NIMS_population') %>% 
-  filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex')) %>% 
-  mutate(LTLA_name = factor(LTLA_name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex'))) %>% 
-  rename(Name = LTLA_name)
-
-vaccine_df_wsx_age_wide %>% 
-  mutate(At_least_one_dose_prop = At_least_one_dose / NIMS_population,
-         Individuals_not_vaccinated_prop = Individuals_not_vaccinated / NIMS_population) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/vaccine_ltla_age.json'))
-
-vaccine_df_wsx_age_wide %>% 
-  mutate(At_least_one_dose_prop = At_least_one_dose / NIMS_population,
-         Individuals_not_vaccinated_prop = Individuals_not_vaccinated / NIMS_population) %>% 
-  toJSON() %>% 
-  write_lines(paste0(mobile_output_directory_x, '/vaccine_ltla_age.json'))
+# mye_nims_ltla_age <- mye_nims_ltla %>% 
+#   select(!c('Population', 'Age_16_and_over', 'Population_30_and_over')) %>% 
+#   pivot_longer(cols = !c('LTLA_code', 'LTLA_name'), values_to = 'NIMS_population') %>% 
+#   rename(Age_group = 'name') %>% 
+#   mutate(Age_group = ifelse(Age_group == 'Age_16_29', 'Under_30', Age_group)) %>% 
+#   filter(Age_group != 'Under_16')
+# 
+# vaccine_df_ltla_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
+#                               sheet = 'LTLA',
+#                               skip = 15,
+#                               col_names = c('Region_code', 'Region_name', 'UTLA_code', 'UTLA_name', 'LTLA_code', 'LTLA_name', 'First_dose_under_30', 'First_dose_age_30_34', 'First_dose_age_35_39','First_dose_age_40_44', 'First_dose_age_45_49', 'First_dose_age_50_54', 'First_dose_age_55_59', 'First_dose_age_60_64', 'First_dose_age_65_69', 'First_dose_age_70_74', 'First_dose_age_75_79', 'First_dose_age_80_and_over', 'Null_1', 'Second_dose_under_30', 'Second_dose_age_30_34', 'Second_dose_age_35_39', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
+#   filter(!is.na(Region_name)) %>% 
+#   select(!c('UTLA_code', 'UTLA_name', 'Null_1', 'Second_dose_under_30', 'Second_dose_age_30_34', 'Second_dose_age_35_39', 'Second_dose_age_40_44', 'Second_dose_age_45_49', 'Second_dose_age_50_54', 'Second_dose_age_55_59', 'Second_dose_age_60_64', 'Second_dose_age_65_69', 'Second_dose_age_70_74', 'Second_dose_age_75_79', 'Second_dose_age_80_and_over', 'Null_2', 'Total_doses')) %>% 
+#   pivot_longer(cols = !c('Region_code', 'Region_name',  'LTLA_code', 'LTLA_name'), values_to = 'At_least_one_dose') %>% 
+#   rename(Age_group = name) %>% 
+#   mutate(Age_group = gsub('First_dose_u', 'U', gsub('First_dose_a', 'A', Age_group))) %>%  
+#   left_join(mye_nims_ltla_age, by = c('LTLA_code', 'LTLA_name', 'Age_group')) %>% 
+#   mutate(Age_group = factor(ifelse(Age_group == 'Under_30', 'Age under 30*', ifelse(Age_group == 'Age_30_34', 'Age 30-34', ifelse(Age_group == 'Age_35_39', 'Age 35-39',  ifelse(Age_group == 'Age_40_44', 'Age 40-44', ifelse(Age_group == 'Age_45_49', 'Age 45-49',  ifelse(Age_group == 'Age_50_54', 'Age 50-54', ifelse(Age_group == 'Age_55_59', 'Age 55-59', ifelse(Age_group == 'Age_60_64', 'Age 60-64', ifelse(Age_group == 'Age_65_69', 'Age 65-69', ifelse(Age_group == 'Age_70_74', 'Age 70-74', ifelse(Age_group == 'Age_75_79', 'Age 75-79', ifelse(Age_group == 'Age_80_and_over', 'Age 80 and over', Age_group)))))))))))), levels = c('Age under 30*', 'Age 30-34', 'Age 35-39', 'Age 40-44','Age 45-49', 'Age 50-54', 'Age 55-59', 'Age 60-64', 'Age 65-69', 'Age 70-74', 'Age 75-79', 'Age 80 and over'))) %>% 
+#   mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose)
+# 
+# vaccine_df_wsx_age <- vaccine_df_ltla_age %>% 
+#   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+#   group_by(Age_group) %>% 
+#   summarise(At_least_one_dose = sum(At_least_one_dose, na.rm = TRUE),
+#             NIMS_population = sum(NIMS_population, na.rm = TRUE)) %>% 
+#   mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose) %>% 
+#   ungroup() %>% 
+#   mutate(LTLA_name = 'West Sussex',
+#          LTLA_code = 'E10000032') %>% 
+#   bind_rows(vaccine_df_ltla_age) %>% 
+#   select('LTLA_name', 'LTLA_code', 'Age_group', 'At_least_one_dose', 'Individuals_not_vaccinated', 'NIMS_population') %>% 
+#   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex')) %>% 
+#   mutate(LTLA_name = factor(LTLA_name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex'))) %>% 
+#   pivot_longer(cols = !c('LTLA_code', 'LTLA_name', 'Age_group', 'NIMS_population'), values_to = 'Individuals', names_to = 'Type') %>% 
+#   rename(Name = LTLA_name) %>% 
+#   mutate(Type = factor(Type, levels = rev(c('At_least_one_dose', 'Individuals_not_vaccinated')))) %>% 
+#   arrange(Type)
+# 
+# ggplot(data = subset(vaccine_df_wsx_age, Name != 'West Sussex'),
+#        aes(x = Age_group,
+#            y = Individuals,
+#            fill = Type)) +
+#   geom_bar(position = 'stack', 
+#            stat = 'identity') +
+#   scale_fill_manual(values = c('#ff4f03', '#8b9dc3'),
+#                     breaks = rev(levels(vaccine_df_wsx_age$Type)),
+#                     labels = c('At least one dose', 'Not vaccinated')) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(size = 8, hjust = 0.5),
+#         panel.grid.major.x = element_line(colour = "#E7E7E7", size = .3),
+#         panel.grid.major.y = element_blank()) +
+#   facet_rep_wrap(. ~ Name, ncol = 4, repeat.tick.labels = TRUE) +
+#   coord_flip() 
+# 
+# ggplot(data = subset(vaccine_df_wsx_age, Name != 'West Sussex'),
+#        aes(x = Age_group,
+#            y = Individuals,
+#            fill = Type)) +
+#   geom_bar(position = 'fill', 
+#            stat = 'identity') +
+#   scale_y_continuous(labels = percent,
+#                      breaks = seq(0,1,.2)) +
+#   scale_fill_manual(values = c('#ff4f03', '#8b9dc3'),
+#                     breaks = rev(levels(vaccine_df_wsx_age$Type)),
+#                     labels = c('At least one dose', 'Not vaccinated')) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(size = 8, hjust = 0.5),
+#         panel.grid.major.x = element_line(colour = "#E7E7E7", size = .3),
+#         panel.grid.major.y = element_blank()) +
+#   facet_rep_wrap(. ~ Name, ncol = 4, repeat.tick.labels = TRUE) +
+#   coord_flip() 
+# 
+# vaccine_df_wsx_age_wide <- vaccine_df_ltla_age %>% 
+#   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
+#   group_by(Age_group) %>% 
+#   summarise(At_least_one_dose = sum(At_least_one_dose, na.rm = TRUE),
+#             NIMS_population = sum(NIMS_population, na.rm = TRUE)) %>% 
+#   mutate(Individuals_not_vaccinated = NIMS_population - At_least_one_dose) %>% 
+#   ungroup() %>% 
+#   mutate(LTLA_name = 'West Sussex',
+#          LTLA_code = 'E10000032') %>% 
+#   bind_rows(vaccine_df_ltla_age) %>% 
+#   select('LTLA_name', 'LTLA_code', 'Age_group', 'At_least_one_dose', 'Individuals_not_vaccinated', 'NIMS_population') %>% 
+#   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex')) %>% 
+#   mutate(LTLA_name = factor(LTLA_name, levels = c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex'))) %>% 
+#   rename(Name = LTLA_name)
+# 
+# vaccine_df_wsx_age_wide %>% 
+#   mutate(At_least_one_dose_prop = At_least_one_dose / NIMS_population,
+#          Individuals_not_vaccinated_prop = Individuals_not_vaccinated / NIMS_population) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/vaccine_ltla_age.json'))
+# 
+# vaccine_df_wsx_age_wide %>% 
+#   mutate(At_least_one_dose_prop = At_least_one_dose / NIMS_population,
+#          Individuals_not_vaccinated_prop = Individuals_not_vaccinated / NIMS_population) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(mobile_output_directory_x, '/vaccine_ltla_age.json'))
 
 # MSOA by age ####
 mye_nims_msoa_age <- mye_nims_msoa %>% 
