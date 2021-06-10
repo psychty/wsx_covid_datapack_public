@@ -2764,9 +2764,17 @@ var vaccination_wk_wk_heading_4 = JSON.parse(request.responseText)[5];
 var vaccination_wk_wk_heading_5 = JSON.parse(request.responseText)[6];
 var vaccination_wk_wk_heading_6 = JSON.parse(request.responseText)[7];
 
+// Update text based on selected area
+d3.select("#wk_wk_table_vaccines_title").html(function (d) {
+  return (
+    "Covid-19 vaccinations received in the last three complete weeks (Monday-Sunday) by area and age group; as at " +
+    data_refreshed_date
+  );
+});
+
 // ! Week by week table
 column_names = [
-  "Local Authority",
+  "Area",
   "Age group",
   vaccination_wk_wk_heading_1,
   vaccination_wk_wk_heading_2,

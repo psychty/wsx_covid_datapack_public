@@ -861,6 +861,7 @@ section {
 
 .wk_wk_table th:first-child {
   text-align: left;
+  width: 140px;
 }
 
 .wk_wk_table td:nth-child(2) {
