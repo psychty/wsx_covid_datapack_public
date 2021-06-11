@@ -3270,6 +3270,9 @@ vaccine_df_ltla_pt_1 %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
 
+# 
+# vaccine_df_ltla %>%  toJSON() %>% 
+#   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))  
 # vaccine_df_ltla_pt_1 %>% 
 #   left_join(vaccine_df_ltla_pt_2, by = 'Name') %>% 
 #   select(Name, `Number of individuals aged 18 and over`, `Proportion (18 and over)`, `Number of individuals aged 18-64 years`, `Proportion (18-64 years)`, `Number of individuals aged 65 and over`, `Proportion (65 and over)`) %>% 

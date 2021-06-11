@@ -1,11 +1,11 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","2,945","4,580.0","263rd","Decile 9","9","14.0","247th","Decile 8","seven days to 05 June"
-"Arun","8,378","5,211.6","226th","Decile 8","23","14.3","246th","Decile 8","seven days to 05 June"
-"Chichester","4,989","4,118.7","277th","Decile 9","15","12.4","259th","Decile 9","seven days to 05 June"
-"Crawley","8,068","7,177.4","118th","Decile 4","35","31.1","138th","Decile 5","seven days to 05 June"
-"Horsham","5,803","4,035.7","280th","Decile 9","44","30.6","144th","Decile 5","seven days to 05 June"
-"Mid Sussex","6,986","4,625.8","261st","Decile 9","72","47.7","88th","Decile 3","seven days to 05 June"
-"Worthing","5,414","4,896.4","244th","Decile 8","29","26.2","161st","Decile 6","seven days to 05 June"
-"West Sussex","42,583","4,928.7","-","-",NA,NA,NA,NA,NA
-"South East region","550,325","5,994.7","-","-",NA,NA,NA,NA,NA
-"England","3,962,371","7,039.6","-","-",NA,NA,NA,NA,NA
+"Adur","2,947","4,583.1","263rd","Decile 9","9","14.0","259th","Decile 9","seven days to 06 June"
+"Arun","8,384","5,215.3","226th","Decile 8","24","14.9","251st","Decile 8","seven days to 06 June"
+"Chichester","4,998","4,126.2","277th","Decile 9","18","14.9","252nd","Decile 9","seven days to 06 June"
+"Crawley","8,075","7,183.6","118th","Decile 4","38","33.8","142nd","Decile 5","seven days to 06 June"
+"Horsham","5,808","4,039.2","280th","Decile 9","46","32.0","149th","Decile 5","seven days to 06 June"
+"Mid Sussex","6,994","4,631.1","261st","Decile 9","87","57.6","69th","Decile 3","seven days to 06 June"
+"Worthing","5,417","4,899.2","245th","Decile 8","30","27.1","171st","Decile 6","seven days to 06 June"
+"West Sussex","42,623","4,933.3","-","-",NA,NA,NA,NA,NA
+"South East region","550,910","6,001.1","-","-",NA,NA,NA,NA,NA
+"England","3,968,986","7,051.3","-","-",NA,NA,NA,NA,NA
