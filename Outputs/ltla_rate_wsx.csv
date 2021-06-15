@@ -1,11 +1,12 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","2,951","4,589.4","263rd","Decile 9","10","15.6","278th","Decile 9","seven days to 09 June"
-"Arun","8,404","5,227.7","226th","Decile 8","24","14.9","282nd","Decile 9","seven days to 09 June"
-"Chichester","5,031","4,153.4","277th","Decile 9","30","24.8","227th","Decile 8","seven days to 09 June"
-"Crawley","8,094","7,200.5","118th","Decile 4","45","40.0","147th","Decile 5","seven days to 09 June"
-"Horsham","5,816","4,044.8","280th","Decile 9","41","28.5","205th","Decile 7","seven days to 09 June"
-"Mid Sussex","7,023","4,650.3","260th","Decile 9","79","52.3","112th","Decile 4","seven days to 09 June"
-"Worthing","5,439","4,919.1","245th","Decile 8","30","27.1","215th","Decile 7","seven days to 09 June"
-"West Sussex","42,758","4,949.0","-","-",NA,NA,NA,NA,NA
-"South East region","552,673","6,020.3","-","-",NA,NA,NA,NA,NA
-"England","3,988,008","7,085.1","-","-",NA,NA,NA,NA,NA
+"Adur","2,955","4,595.6","263rd","Decile 9","10","15.6","285th","10% of authorities
+with lowest rate","seven days to 10 June"
+"Arun","8,411","5,232.1","226th","Decile 8","30","18.7","272nd","Decile 9","seven days to 10 June"
+"Chichester","5,042","4,162.5","277th","Decile 9","43","35.5","176th","Decile 6","seven days to 10 June"
+"Crawley","8,103","7,208.5","118th","Decile 4","50","44.5","137th","Decile 5","seven days to 10 June"
+"Horsham","5,826","4,051.7","280th","Decile 9","35","24.3","238th","Decile 8","seven days to 10 June"
+"Mid Sussex","7,033","4,656.9","260th","Decile 9","78","51.6","118th","Decile 4","seven days to 10 June"
+"Worthing","5,439","4,919.1","245th","Decile 8","31","28.0","216th","Decile 7","seven days to 10 June"
+"West Sussex","42,809","4,954.9","-","-",NA,NA,NA,NA,NA
+"South East region","553,258","6,026.7","-","-",NA,NA,NA,NA,NA
+"England","3,994,408","7,096.5","-","-",NA,NA,NA,NA,NA
