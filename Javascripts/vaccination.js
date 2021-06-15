@@ -1338,6 +1338,170 @@ vaccine_ages_public.forEach(function (d, i) {
   div.appendChild(list);
 });
 
+// jcvi dates  timelines
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/jcvi_cohort_key_dates.json", false);
+request.send(null);
+var jcvi_cohort_key_dates = JSON.parse(request.responseText);
+
+jcvi_cohort_ages = [
+  "Care home residents",
+  "80-84 year olds",
+  "75-79 year olds",
+  "70-74 year olds",
+  "65-69 year olds",
+  "16-64 year olds*",
+  "64 year olds",
+  "60-64 year olds",
+  "55-59 year olds",
+  "50-54 year olds",
+  "45-49 year olds",
+  "40-44 year olds",
+  "38-39 year olds",
+  "36-37 year olds",
+  "34-35 year olds",
+  "32-33 year olds",
+  "30-31 year olds",
+  "25-29 year olds",
+  "18-24 year olds",
+];
+
+var vaccine_jcvi_ages_public_colour = d3
+  .scaleOrdinal()
+  .domain(jcvi_cohort_ages)
+  .range([
+    "#857e7e",
+    "#857e7e",
+    "#857e7e",
+    "#65156E",
+    "#82206C",
+    "#89dbfb",
+    "#9F2A63",
+    "#9F2A63",
+    "#BB3754",
+    "#D44842",
+    "#E8602D",
+    "#F57D15",
+    "#FB9E07",
+    "#FB9E07",
+    "#FAC127",
+    "#FAC127",
+    "#FAC127",
+    "#F3E55C",
+    "#FCFFA4",
+  ]);
+
+var tooltip_jcvi_key_dates = d3
+  .select("#first_dose_vaccine_uptake_by_dose_timeseries")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("font-size", ".7rem")
+  .style("padding", ".10px");
+
+var showTooltip_jcvi_key_dates = function (d) {
+  tooltip_jcvi_key_dates
+    .html(
+      "<h4>" +
+        d.Date_label +
+        "</h4><p><b>Adding " +
+        d.Age_group +
+        "</b></p><p class = 'tt_class'>From this date it was announced that those who were " +
+        d.Cohort_name +
+        " would now be eligible to book a COVID-19 vaccine appointment.</p>"
+    )
+    .style("opacity", 1)
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("opacity", 1)
+    .style("visibility", "visible");
+};
+
+var mouseleave_jcvi_key_dates = function (d) {
+  tooltip_jcvi_key_dates.style("opacity", 0).style("visibility", "hidden");
+};
+
+// We can treat this as a set of thin bars. With tooltips (maybe adding a dot or symbol at the top of each line as a easier thing to mouseover)
+svg_first_dose_vaccine_uptake_by_dose_timeseries
+  .selectAll("jcvi_timeline")
+  .data(jcvi_cohort_key_dates)
+  .enter()
+  .append("rect")
+  .attr("class", "jcvi_notes")
+  .attr("x", function (d) {
+    return (
+      x_vaccine_age_ts_2(d.Date_label) + x_vaccine_age_ts_2.bandwidth() / 2
+    );
+  })
+  .attr("y", 0)
+  .attr("width", 1)
+  .attr("height", function (d) {
+    return height_line - 80;
+  })
+  .style("fill", function (d) {
+    return vaccine_jcvi_ages_public_colour(d.Age_group);
+  });
+
+// We can treat this like a set of thin bars. With tooltips (maybe adding a dot or symbol at the top of each line as a easier thing to mouseover)
+svg_first_dose_vaccine_uptake_by_dose_timeseries
+  .selectAll("jcvi_timeline")
+  .data(jcvi_cohort_key_dates)
+  .enter()
+  .append("circle")
+  .attr("class", "jcvi_notes")
+  .attr("cx", function (d) {
+    return (
+      x_vaccine_age_ts_2(d.Date_label) + x_vaccine_age_ts_2.bandwidth() / 2
+    );
+  })
+  .attr("y", 0)
+  .attr("r", 6)
+  .style("fill", function (d) {
+    return vaccine_jcvi_ages_public_colour(d.Age_group);
+  })
+  .on("mousemove", showTooltip_jcvi_key_dates)
+  .on("mouseout", mouseleave_jcvi_key_dates);
+
+// This function is gonna change the opacity and size of selected and unselected circles
+function update_annotations_vac_f2() {
+  // For each check box:
+  d3.selectAll(".checkbox").each(function (d) {
+    cb = d3.select(this);
+    grp = cb.property("value");
+
+    console.log(grp);
+
+    // If the box is check, show the notes
+    if (cb.property("checked")) {
+      console.log("it is checked");
+      svg_first_dose_vaccine_uptake_by_dose_timeseries
+        .selectAll(".jcvi_notes")
+        .transition()
+        .duration(1000)
+        .style("opacity", 1);
+    } else {
+      console.log("it is not checked");
+
+      svg_first_dose_vaccine_uptake_by_dose_timeseries
+        .selectAll(".jcvi_notes")
+        .transition()
+        .duration(1000)
+        .style("opacity", 0);
+    }
+  });
+}
+
+// When a button change, I run the update function
+d3.selectAll(".checkbox").on("change", update_annotations_vac_f2);
+
+update_annotations_vac_f2();
+
 // ! vaccine timeseries 3 - cumulative uptake
 
 // cumulative_doses_vaccine_uptake_by_dose_timeseries

@@ -345,6 +345,8 @@ test_timeline <- data.frame(Date_label_2 = c('27 Mar 20', '15 Apr 20','17 Apr 20
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/uk_testing_key_dates.json'))
 
+jcvi_cohort_dates <- read_csv(paste0(github_repo_dir, '/Source'))
+
 # easing_timeline <- data.frame(Date_label_2 = c('23 Mar 20', '13 May 20', '01 Jun 20', '15 Jun 20', '04 Jul 20', '13 Jul 20', '24 Jul 20', '25 Jul 20', '30 Jul 20', '01 Aug 20', '03 Aug 20', '15 Aug 20', '26 Aug 20', '14 Sep 20', '21 Sep 20', '24 Sep 20', '14 Oct 20', '05 Nov 20', '02 Dec 20', '04 Jan 21'), Change = c('Lockdown starts, schools were closed to all but a few children and people are asked to stay at home.', 'Some people began returning to work if they were unable to work from home.', 'Schools reopened for more pupils in early years, reception, and years 1 and 6.<br>People were allowed to meet outdoors and those who were shielding advised that they could now go outdoors with people in their household.', 'Non-essential shops were allowed to reopen if safe, more year groups back to school, and face coverings became mandatory on public transport.', 'Change to social distancing advice from 2m to 1m+, some hospitality and leisure businesses allow to reopen, and two households allowed to meet inside whilst up to six people from different households allowed to meet outside.', 'Beauty salons, nail bars, tattoo studios allowed to reopen but cannot offer treatments or services which involve work directly in front of the face.', 'Face coverings became mandatory in many enclosed public spaces such as shops and banks.', 'Indoor gyms, swimming pools, and leisure centres reopen.', 'Self-isolation period for those with COVID-19 symptoms or a positive test increases from 7 to 10 days.', 'Shielding for clinically extremely vulnerable paused.<br>The government no longer recommends working from home if it is safe to go to work.', 'People encouraged to go to restaurants through the Eat Out to Help Out scheme offering discounted food from Monday-Wednesdays in August.', 'Casinos, indoor play and soft play centres, skating rinks, and bowling alleys reopen.<br>Beauty salons, spas, tattoo studios, and barbers now able to offer close contact services.', 'Schools and colleges have discretion to require face coverings in indoor communal areas where social distancing cannot be safely managed.', 'People can no longer meet with other households socially in groups of more than six people (including children). This includes private homes and gardens.', 'Childcare and unpaid care exempted from any interhousehold mixing restrictions in local areas.', 'Restaurants and bars must close at 10pm.<br>Those who can work from home now encouraged to do so by the government.', 'A three tiered set of restrictions for local areas in England began, mostly in northern England','A new national lockdown was announced, with education remaining open and no official shielding return', 'A return to a tier system for local authority areas', 'A third national lockdown was announced, with on-site education restricted to vulnerable children and children of key workers. Clinically vulnerable asked to shield')) %>%
 #   toJSON() %>%
 #   write_lines(paste0(output_directory_x,'/uk_restrictions_key_dates.json'))
@@ -1178,9 +1180,9 @@ week_ending <- week_ending_a %>%
 
 rm(week_ending_a, week_ending_b)
 
-download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk212021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
+download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk222021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week21.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week221.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -2988,15 +2990,6 @@ vaccine_age_df %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_age.json'))
 
-vaccine_age_df %>% names()
-
-# 
-# vaccine_age_df %>% 
-#   group_by(Name) %>% 
-#   summarise(Seven_day_sum_dose_1 = su)
-
-
-
 vaccine_ts_age_df_x <- vaccine_age_df %>% 
   filter(Name == 'West Sussex')
 
@@ -3004,97 +2997,104 @@ library(ggiraph)
 
 viridis::inferno(15, direction = -1)
 
-ggplot(data = vaccine_ts_age_df_x,
-       aes(x = Date,
-           y = Seven_day_sum_dose_1,
-           group = Age_group,
-           colour = Age_group)) +
-  geom_line_interactive(aes(tooltip = paste0(Age_group),
-                            data_id = paste0(Age_group)),
-                        size = .9) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, size = 6)) +
-  scale_y_continuous(labels = label_comma(accuracy = 1)) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-               limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-               expand = c(0.01,1)) +
-  # scale_colour_manual(values = age_colours,
-  #                     name = 'Age') +
-  labs(x = 'Date of administration',
-       y = 'Number of first dose\nvaccinations in previous 7 days',
-       title = paste0('Rolling 7 day sum of first dose Covid-19 vaccinations; ', 'West Sussex'),
-       subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-  theme(axis.text.x = element_text(size = 8))
+# ggplot(data = vaccine_ts_age_df_x,
+#        aes(x = Date,
+#            y = Seven_day_sum_dose_1,
+#            group = Age_group,
+#            colour = Age_group)) +
+#   geom_line_interactive(aes(tooltip = paste0(Age_group),
+#                             data_id = paste0(Age_group)),
+#                         size = .9) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
+#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
+#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
+#                expand = c(0.01,1)) +
+#   # scale_colour_manual(values = age_colours,
+#   #                     name = 'Age') +
+#   labs(x = 'Date of administration',
+#        y = 'Number of first dose\nvaccinations in previous 7 days',
+#        title = paste0('Rolling 7 day sum of first dose Covid-19 vaccinations; ', 'West Sussex'),
+#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
+#   theme(axis.text.x = element_text(size = 8))
+# 
+# ggplot(data = vaccine_ts_age_df_x,
+#        aes(x = Date,
+#            y = Rolling_age_specific_first_dose_rate_per_100000,
+#            group = Age_group,
+#            colour = Age_group)) +
+#   geom_line_interactive(aes(tooltip = paste0(Age_group),
+#                             data_id = paste0(Age_group)),
+#                         size = .9) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
+#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
+#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
+#                expand = c(0.01,1)) +
+#   # scale_colour_manual(values = age_colours,
+#   #                     name = 'Age') +
+#   labs(x = 'Date of administration',
+#        y = 'Rate of first dose\nvaccinations per 100,000 population\nin previous 7 days',
+#        title = paste0('Rolling 7 day rate per 100,000 population of first dose Covid-19 vaccinations; ', 'West Sussex'),
+#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
+#   theme(axis.text.x = element_text(size = 8))
+# 
+# ggplot(data = vaccine_ts_age_df_x,
+#        aes(x = Date,
+#            y = Seven_day_sum_dose_2,
+#            group = Age_group,
+#            colour = Age_group)) +
+#   geom_line_interactive(aes(tooltip = paste0(Age_group),
+#                             data_id = paste0(Age_group)),
+#                         size = .9) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
+#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
+#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
+#                expand = c(0.01,1)) +
+#   # scale_colour_manual(values = age_colours,
+#   #                     name = 'Age') +
+#   labs(x = 'Date of administration',
+#        y = 'Number of first dose\nvaccinations in previous 7 days',
+#        title = paste0('Rolling 7 day sum of first dose Covid-19 vaccinations; ', 'West Sussex'),
+#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
+#   theme(axis.text.x = element_text(size = 8))
+# 
+# ggplot(data = vaccine_ts_age_df_x,
+#        aes(x = Date,
+#            y = Rolling_age_specific_second_dose_rate_per_100000,
+#            group = Age_group,
+#            colour = Age_group)) +
+#   geom_line_interactive(aes(tooltip = paste0(Age_group),
+#                             data_id = paste0(Age_group)),
+#                         size = .9) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
+#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
+#   scale_x_date(date_labels = "%b %d",
+#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
+#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
+#                expand = c(0.01,1)) +
+#   # scale_colour_manual(values = age_colours,
+#   #                     name = 'Age') +
+#   labs(x = 'Date of administration',
+#        y = 'Rate of first dose\nvaccinations per 100,000 population\nin previous 7 days',
+#        title = paste0('Rolling 7 day rate per 100,000 population of first dose Covid-19 vaccinations; ', 'West Sussex'),
+#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
+#   theme(axis.text.x = element_text(size = 8))
 
-ggplot(data = vaccine_ts_age_df_x,
-       aes(x = Date,
-           y = Rolling_age_specific_first_dose_rate_per_100000,
-           group = Age_group,
-           colour = Age_group)) +
-  geom_line_interactive(aes(tooltip = paste0(Age_group),
-                            data_id = paste0(Age_group)),
-                        size = .9) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, size = 6)) +
-  scale_y_continuous(labels = label_comma(accuracy = 1)) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-               limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-               expand = c(0.01,1)) +
-  # scale_colour_manual(values = age_colours,
-  #                     name = 'Age') +
-  labs(x = 'Date of administration',
-       y = 'Rate of first dose\nvaccinations per 100,000 population\nin previous 7 days',
-       title = paste0('Rolling 7 day rate per 100,000 population of first dose Covid-19 vaccinations; ', 'West Sussex'),
-       subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-  theme(axis.text.x = element_text(size = 8))
-
-ggplot(data = vaccine_ts_age_df_x,
-       aes(x = Date,
-           y = Seven_day_sum_dose_2,
-           group = Age_group,
-           colour = Age_group)) +
-  geom_line_interactive(aes(tooltip = paste0(Age_group),
-                            data_id = paste0(Age_group)),
-                        size = .9) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, size = 6)) +
-  scale_y_continuous(labels = label_comma(accuracy = 1)) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-               limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-               expand = c(0.01,1)) +
-  # scale_colour_manual(values = age_colours,
-  #                     name = 'Age') +
-  labs(x = 'Date of administration',
-       y = 'Number of first dose\nvaccinations in previous 7 days',
-       title = paste0('Rolling 7 day sum of first dose Covid-19 vaccinations; ', 'West Sussex'),
-       subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-  theme(axis.text.x = element_text(size = 8))
-
-ggplot(data = vaccine_ts_age_df_x,
-       aes(x = Date,
-           y = Rolling_age_specific_second_dose_rate_per_100000,
-           group = Age_group,
-           colour = Age_group)) +
-  geom_line_interactive(aes(tooltip = paste0(Age_group),
-                            data_id = paste0(Age_group)),
-                        size = .9) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, size = 6)) +
-  scale_y_continuous(labels = label_comma(accuracy = 1)) +
-  scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-               limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-               expand = c(0.01,1)) +
-  # scale_colour_manual(values = age_colours,
-  #                     name = 'Age') +
-  labs(x = 'Date of administration',
-       y = 'Rate of first dose\nvaccinations per 100,000 population\nin previous 7 days',
-       title = paste0('Rolling 7 day rate per 100,000 population of first dose Covid-19 vaccinations; ', 'West Sussex'),
-       subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-  theme(axis.text.x = element_text(size = 8))
+read_csv(paste0(github_repo_dir, '/Source files/jcvi_dates.csv'),
+                              col_types = cols(Opening_date = col_date(format = "%d/%m/%Y"))) %>% 
+  mutate(Date_label = format(Opening_date, '%d %b %y')) %>% 
+  filter(!is.na(Date_label)) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/jcvi_cohort_key_dates.json'))
 
 # Week by week change ####
 
