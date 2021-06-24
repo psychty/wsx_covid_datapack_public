@@ -172,7 +172,7 @@ function new_date_growth_utla() {
 // UTLA slider
 // This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
 var dataTime = d3.range(0, utla_growth_ts_dates.length).map(function (d) {
-  return new Date(2021, 0, 01 + d);
+  return new Date(2021, 3, 01 + d);
 });
 
 var sliderTime = d3
@@ -182,7 +182,7 @@ var sliderTime = d3
   .width(300)
   .tickFormat(d3.timeFormat(""))
   .tickValues(dataTime)
-  .default(new Date(2021, 0, 01 + utla_growth_ts_dates.length))
+  .default(new Date(2021, 3, 01 + utla_growth_ts_dates.length))
   .on("onchange", new_date_growth_utla);
 
 var utla_growth_slider_svg = d3
@@ -561,7 +561,7 @@ function new_date_growth_ltla() {
 // LTLA date slider
 // This is not great, but it takes the number of unique dates and recreates an array of dates from November 01
 var dataTime_ltla = d3.range(0, ltla_growth_ts_dates.length).map(function (d) {
-  return new Date(2021, 0, 01 + d);
+  return new Date(2021, 3, 01 + d);
 });
 
 var sliderTime_ltla = d3
@@ -571,7 +571,7 @@ var sliderTime_ltla = d3
   .width(300)
   .tickFormat(d3.timeFormat(""))
   .tickValues(dataTime_ltla)
-  .default(new Date(2021, 0, 1 + ltla_growth_ts_dates.length))
+  .default(new Date(2021, 3, 1 + ltla_growth_ts_dates.length))
   .on("onchange", new_date_growth_ltla);
 
 var ltla_growth_slider_svg = d3

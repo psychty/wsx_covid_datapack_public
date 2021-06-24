@@ -1723,7 +1723,7 @@ wkly_template %>%
 
 growth_rate <- p12_test_df %>% 
   filter(Data_completeness == 'Complete') %>% 
-  filter(Date >= '2020-11-01') %>% 
+  filter(Date >= '2021-04-01') %>% 
   select(Name, Code, Type, Date, Rolling_7_day_new_cases, Perc_change_on_rolling_7_days_actual, Perc_change_on_rolling_7_days_tidy, Cumulative_cases, Cumulative_per_100000, Population, Label_3) %>%
   mutate(Rolling_7_day_new_cases = replace_na(Rolling_7_day_new_cases, 0)) %>% 
   mutate(Rolling_7_day_rate = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000) %>% 
@@ -1751,7 +1751,7 @@ growth_rate_ltla <- growth_rate %>%
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_ltla %>%
-  filter(Date >= '2021-01-01') %>%
+  filter(Date >= '2021-04-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_ltla$Name), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')))) %>% 
   arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
@@ -1766,7 +1766,7 @@ growth_rate_utla <- growth_rate %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_utla %>% 
-  filter(Date >= '2021-01-01') %>%
+  filter(Date >= '2021-04-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_utla$Name), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')))) %>% 
   arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
@@ -1781,7 +1781,7 @@ growth_rate_utla %>%
   write_lines(paste0(output_directory_x,'/wsx_eng_rate_change.json'))
 
 growth_rate_utla %>% 
-  filter(Date >= '2021-01-01') %>%
+  filter(Date >= '2021-04-01') %>%
   select(Date) %>% 
   unique() %>% 
   arrange(Date) %>% 
@@ -1812,7 +1812,6 @@ mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   summarise(Population = sum(Population, na.rm = TRUE)) %>% 
   ungroup()
 
-# Start ####
 # 
 # asr_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=newCasesBySpecimenDateAgeDemographics&format=csv') %>% 
 #   filter(substr(areaCode, 1,1) == 'E') %>%
