@@ -720,7 +720,7 @@ var vaccine_ages_public_colour_vaccinated = d3
   .scaleOrdinal()
   .domain(vaccine_ages_public)
   .range([
-    "#FCFFA4",
+    "#f4dbb0",
     "#F3E55C",
     "#FAC127",
     "#FB9E07",

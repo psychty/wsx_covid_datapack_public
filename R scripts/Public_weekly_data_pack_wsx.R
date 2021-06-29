@@ -1,6 +1,6 @@
 # Public facing data pack - West Sussex and LTLAs
 
-library(easypackages)
+ibrary(easypackages)
 
 libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "reshape2", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR', 'showtext', 'httr')
 
@@ -1180,9 +1180,9 @@ week_ending <- week_ending_a %>%
 
 rm(week_ending_a, week_ending_b)
 
-download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
+download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week23.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week24.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
