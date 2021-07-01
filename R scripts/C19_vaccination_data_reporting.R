@@ -311,7 +311,7 @@ County_boundary <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4
 
 # MSOA vaccine data ####
 mye_nims_msoa <- read_csv(paste0(github_repo_dir, '/Source files/msoa_nims_pop_estimates.csv')) %>% 
-  mutate(Population = `Under_16` + `Age_16_and_over`) %>% 
+  mutate(Population = `Under_18` + `Age_18_and_over`) %>% 
   mutate(Population_25_and_over = Age_25_29 + Age_30_34 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
   mutate(Population_25_64 = Age_25_29 + Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64)
@@ -333,8 +333,8 @@ vaccine_df_msoa <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccin
   mutate(Total_age_65_banded = factor(ifelse(Age_65_and_over < 1000, 'Up to 999', ifelse(Age_65_and_over < 2000, '1,000-1,999', ifelse(Age_65_and_over < 3000, '2,000-2,999', ifelse(Age_65_and_over < 4000, '3,000-3,999', ifelse(Age_65_and_over < 5000, '4,000-4,999',  '5,000+'))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000+'))) %>%
   mutate(Total_age_25_64_banded = factor(ifelse(Age_25_64 < 1000, 'Up to 999', ifelse(Age_25_64 < 2000, '1,000-1,999', ifelse(Age_25_64 < 3000, '2,000-2,999', ifelse(Age_25_64 < 4000, '3,000-3,999', ifelse(Age_25_64 < 5000, '4,000-4,999',  '5,000+'))))), levels = c('Up to 999', '1,000-1,999', '2,000-2,999', '3,000-3,999', '4,000-4,999', '5,000+'))) %>%
   arrange(msoa11cd) %>% 
-  left_join(mye_nims_msoa[c('msoa11cd', 'Age_16_and_over', 'Population_25_and_over', 'Population_65_and_over', 'Population_25_64')], by = 'msoa11cd') %>% 
-  mutate(Proportion_age_known = Total_where_age_known/ Age_16_and_over) %>% 
+  left_join(mye_nims_msoa[c('msoa11cd', 'Age_18_and_over', 'Population_25_and_over', 'Population_65_and_over', 'Population_25_64')], by = 'msoa11cd') %>% 
+  mutate(Proportion_age_known = Total_where_age_known/ Age_18_and_over) %>% 
   mutate(Proportion_25_plus = Age_25_and_over/Population_25_and_over) %>% 
   mutate(Proportion_65_plus = Age_65_and_over/Population_65_and_over) %>% 
   mutate(Proportion_25_64 = Age_25_64/Population_25_64) %>% 
@@ -602,7 +602,7 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 # LTLA vaccine data ####
 
 # mye_nims_ltla <- read_csv(paste0(github_repo_dir, '/Source files/ltla_nims_pop_estimates.csv')) %>% 
-#   mutate(Population = Under_16 + Age_16_and_over) %>% 
+#   mutate(Population = Under_18 + Age_18_and_over) %>% 
 #   mutate(Population_30_and_over = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
 #   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
 #   mutate(Population_30_64 = Age_30_34 + Age_35_39 +Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64)
@@ -616,13 +616,13 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 #   mutate(First_dose_age_30_and_over = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
 #   mutate(First_dose_age_65_and_over = First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
 #   mutate(First_dose_age_30_64 = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64) %>% 
-#   left_join(mye_nims_ltla[c('LTLA_code', 'Age_16_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'LTLA_code') %>% 
-#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_16_and_over) %>% 
+#   left_join(mye_nims_ltla[c('LTLA_code', 'Age_18_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'LTLA_code') %>% 
+#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_18_and_over) %>% 
 #   mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>% 
 #   mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>% 
 #   mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
-#   select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
-#   rename(Population_16_and_over = Age_16_and_over)
+#   select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_18_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   rename(Population_18_and_over = Age_18_and_over)
 # 
 # vaccine_df_wsx <- vaccine_df_ltla %>% 
 #   filter(LTLA_name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>%
@@ -630,22 +630,22 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 #             First_dose_age_30_and_over = sum(First_dose_age_30_and_over),
 #             First_dose_age_65_and_over = sum(First_dose_age_65_and_over),
 #             First_dose_age_30_64 = sum(First_dose_age_30_64),
-#             Population_16_and_over = sum(Population_16_and_over),
+#             Population_18_and_over = sum(Population_18_and_over),
 #             Population_30_and_over = sum(Population_30_and_over),
 #             Population_65_and_over = sum(Population_65_and_over),
 #             Population_30_64 = sum(Population_30_64)) %>% 
 #   mutate(LTLA_name = 'West Sussex',
 #          LTLA_code = 'E10000032') %>%
-#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Population_16_and_over) %>% 
+#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Population_18_and_over) %>% 
 #   mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>%
 #   mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>%
 #   mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
-#   select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) 
+#   select(LTLA_code, LTLA_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_18_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) 
 # 
 # # Add SE and England
 # 
 # mye_ons_region <- read_csv(paste0(github_repo_dir, '/Source files/region_ons_pop_estimates.csv')) %>% 
-#   mutate(Population = Under_16 + Age_16_and_over) %>% 
+#   mutate(Population = Under_18 + Age_18_and_over) %>% 
 #   mutate(Population_30_and_over = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64 + Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
 #   mutate(Population_65_and_over = Age_65_69 + Age_70_74 + Age_75_79 + Age_80_and_over) %>% 
 #   mutate(Population_30_64 = Age_30_34 + Age_35_39 + Age_40_44 + Age_45_49 + Age_50_54 + Age_55_59 + Age_60_64) %>% 
@@ -663,13 +663,13 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 #   mutate(First_dose_age_30_and_over = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49  + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64 + First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
 #   mutate(First_dose_age_65_and_over = First_dose_age_65_69 + First_dose_age_70_74 + First_dose_age_75_79 + First_dose_age_80_and_over) %>% 
 #   mutate(First_dose_age_30_64 = First_dose_age_30_34 + First_dose_age_35_39 + First_dose_age_40_44 + First_dose_age_45_49 + First_dose_age_50_54 + First_dose_age_55_59 + First_dose_age_60_64) %>% 
-#   left_join(mye_ons_region[c('Region_name', 'Age_16_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'Region_name') %>% 
-#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_16_and_over) %>% 
+#   left_join(mye_ons_region[c('Region_name', 'Age_18_and_over', 'Population_30_and_over', 'Population_65_and_over', 'Population_30_64')], by = 'Region_name') %>% 
+#   mutate(First_dose_proportion_age_known = Total_first_dose_where_age_known/ Age_18_and_over) %>% 
 #   mutate(First_dose_proportion_30_plus = First_dose_age_30_and_over/Population_30_and_over) %>% 
 #   mutate(First_dose_proportion_65_plus = First_dose_age_65_and_over/Population_65_and_over) %>% 
 #   mutate(First_dose_proportion_30_64 = First_dose_age_30_64/Population_30_64) %>% 
-#   select(Region_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
-#   rename(Population_16_and_over = Age_16_and_over) %>% 
+#   select(Region_name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Age_18_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   rename(Population_18_and_over = Age_18_and_over) %>% 
 #   filter(Region_name %in% c('South East region', 'England')) %>% 
 #   rename(Name = Region_name) %>% 
 #   mutate(Name = factor(Name, levels = c('South East region', 'England'))) %>% 
@@ -680,7 +680,7 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 #   bind_rows(vaccine_df_wsx) %>% 
 #   rename(Name = 'LTLA_name') %>% 
 #   bind_rows(vaccine_df_region) %>% 
-#   select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_18_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
 #   toJSON() %>% 
 #   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
 # 
@@ -689,7 +689,7 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 #   bind_rows(vaccine_df_wsx) %>% 
 #   rename(Name = 'LTLA_name') %>% 
 #  # bind_rows(vaccine_df_region) %>% 
-#   select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_16_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
+#   select(Name, Total_first_dose_where_age_known, First_dose_proportion_age_known, First_dose_age_30_and_over, First_dose_proportion_30_plus, Population_18_and_over, Population_30_and_over, First_dose_age_65_and_over, First_dose_proportion_65_plus, Population_65_and_over, First_dose_age_30_64, First_dose_proportion_30_64, Population_30_64) %>% 
 #   toJSON() %>% 
 #   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))
 
@@ -798,11 +798,11 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 
 # What about age groups ####
 # mye_nims_ltla_age <- mye_nims_ltla %>% 
-#   select(!c('Population', 'Age_16_and_over', 'Population_30_and_over')) %>% 
+#   select(!c('Population', 'Age_18_and_over', 'Population_30_and_over')) %>% 
 #   pivot_longer(cols = !c('LTLA_code', 'LTLA_name'), values_to = 'NIMS_population') %>% 
 #   rename(Age_group = 'name') %>% 
-#   mutate(Age_group = ifelse(Age_group == 'Age_16_29', 'Under_30', Age_group)) %>% 
-#   filter(Age_group != 'Under_16')
+#   mutate(Age_group = ifelse(Age_group == 'Age_18_29', 'Under_30', Age_group)) %>% 
+#   filter(Age_group != 'Under_18')
 # 
 # vaccine_df_ltla_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
 #                               sheet = 'LTLA',
@@ -898,11 +898,11 @@ MSOA_boundary_gg <- geojson_read('https://github.com/psychty/wsx_covid_datapack_
 
 # MSOA by age ####
 mye_nims_msoa_age <- mye_nims_msoa %>% 
-  select(!c('Population', 'Age_16_and_over', 'Population_25_and_over')) %>% 
+  select(!c('Population', 'Age_18_and_over', 'Population_25_and_over')) %>% 
   pivot_longer(cols = !c('msoa11cd', 'msoa11nm'), values_to = 'NIMS_population') %>% 
   rename(Age_group = 'name') %>% 
-  mutate(Age_group = ifelse(Age_group == 'Age_16_29', 'Under_25', Age_group)) %>% 
-  filter(Age_group != 'Under_16')
+  mutate(Age_group = ifelse(Age_group == 'Age_18_29', 'Under_25', Age_group)) %>% 
+  filter(Age_group != 'Under_18')
 
 vaccine_df_msoa_age <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccines.xlsx'),
                                   sheet = 'MSOA',
