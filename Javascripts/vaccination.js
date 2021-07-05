@@ -1769,11 +1769,11 @@ var lines_vaccine_cumulative_ts_3 =
     )
     .style("stroke-width", 2);
 
-lines_vaccine_cumulative_ts_3
+svg_cumulative_vaccine_uptake_by_dose_timeseries
   .append("text")
   .attr("x", 70)
   .attr("y", function (d) {
-    return y_vaccine_cumulative_ts_1(chosen_vaccine_age_denominator) - 10;
+    return y_vaccine_cumulative_ts_1(chosen_vaccine_age_denominator) + 10;
   })
   .attr("id", "denominator_vac_x")
   .attr("text-anchor", "start")
