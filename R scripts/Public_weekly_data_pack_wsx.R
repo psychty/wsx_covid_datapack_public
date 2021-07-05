@@ -3185,6 +3185,24 @@ age_denominators_2 <- age_denominators_1 %>%
 age_denominators <- age_denominators_1 %>% 
   bind_rows(age_denominators_2)
 
+# cumulative timeseries by age ####
+cumulative_vac <- vaccine_ts_df %>% 
+  mutate(Age_group = '18 and over') %>% 
+  bind_rows(vaccine_age_df) %>% 
+  mutate(Age_group = factor(Age_group, levels = c('18 and over',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
+  select(Name, Age_group, Denominator, Cumulative_dose_1, Cumulative_dose_2)
+
+cumulative_vac %>% 
+  select(Name, Age_group, Denominator) %>% 
+  unique() %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/vaccine_age_denominators.json'))  
+
+cumulative_vac %>% 
+  select(!Denominator) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x, '/cumulative_vaccine_age_data.json'))  
+
 # Week by week percentage
 
 weekly_prop_df <- vaccine_ts_df %>% 

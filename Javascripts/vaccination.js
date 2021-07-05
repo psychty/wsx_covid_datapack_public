@@ -1504,627 +1504,551 @@ update_annotations_vac_f2();
 
 // ! vaccine timeseries 3 - cumulative uptake
 
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/cumulative_vaccine_age_data.json", false);
+request.send(null);
+var cumulative_vaccine_age_data = JSON.parse(request.responseText);
+
+var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/vaccine_age_denominators.json", false);
+request.send(null);
+var vaccine_age_denominator_data = JSON.parse(request.responseText);
+
 // cumulative_doses_vaccine_uptake_by_dose_timeseries
 
-// // ! Percentage visual
+d3.select("#vaccine_cumulative_uptake_by_dose_timeseries_area_select")
+  .selectAll("myOptions")
+  .data([
+    "West Sussex",
+    // "Adur",
+    // "Arun",
+    // "Chichester",
+    // "Crawley",
+    // "Horsham",
+    // "Mid Sussex",
+    // "Worthing",
+    // "South East",
+    // "England",
+  ])
+  .enter()
+  .append("option")
+  .text(function (d) {
+    return d;
+  })
+  .attr("value", function (d) {
+    return d;
+  });
 
-// d3.select("#select_guage_area_button")
-//   .selectAll("myOptions")
-//   .data([
-//     "West Sussex",
-//     "Adur",
-//     "Arun",
-//     "Chichester",
-//     "Crawley",
-//     "Horsham",
-//     "Mid Sussex",
-//     "Worthing",
-//   ])
-//   .enter()
-//   .append("option")
-//   .text(function (d) {
-//     return d;
+var cumulative_vac_area_chosen = d3
+  .select("#vaccine_cumulative_uptake_by_dose_timeseries_area_select")
+  .property("value");
+
+d3.select("#vaccine_cumulative_uptake_by_dose_timeseries_age_select")
+  .selectAll("myOptions")
+  .data(["18-24 years"])
+  .enter()
+  .append("option")
+  .text(function (d) {
+    return d;
+  })
+  .attr("value", function (d) {
+    return d;
+  });
+
+var cumulative_vac_age_chosen = d3
+  .select("#vaccine_cumulative_uptake_by_dose_timeseries_age_select")
+  .property("value");
+
+d3.select("#cumulative_doses_vaccine_uptake_by_age_timeseries_title").html(
+  function (d) {
+    return (
+      "Cumulative vaccinations (first and second doses); " +
+      cumulative_vac_area_chosen +
+      "; those aged " +
+      cumulative_vac_age_chosen +
+      "; as at " +
+      data_refreshed_date
+    );
+  }
+);
+
+var svg_cumulative_vaccine_uptake_by_dose_timeseries = d3
+  .select("#vaccine_cumulative_uptake_by_dose_timeseries")
+  .append("svg")
+  .attr("width", width_hm)
+  .attr("height", height_line + 30)
+  .append("g")
+  .attr("transform", "translate(" + 120 + "," + 30 + ")");
+
+chosen_cumulative_vac_data = cumulative_vaccine_age_data.filter(function (d) {
+  return (
+    d.Name === cumulative_vac_area_chosen &&
+    d.Age_group === cumulative_vac_age_chosen
+  );
+});
+
+chosen_vaccine_age_denominator = vaccine_age_denominator_data.filter(function (
+  d
+) {
+  return (
+    d.Name === cumulative_vac_area_chosen &&
+    d.Age_group === cumulative_vac_age_chosen
+  );
+})[0]["Denominator"];
+
+// console.log(chosen_vaccine_age_denominator, chosen_cumulative_vac_data);
+
+// // Group the data
+// var vaccine_cumulative_timeseries_chosen_group = d3
+//   .nest() // nest function allows to group the calculation per level of a factor
+//   .key(function (d) {
+//     return d.Dose_number;
 //   })
-//   .attr("value", function (d) {
-//     return d;
-//   });
+//   .entries(chosen_cumulative_vac_data);
 
-// var width_guage = 250;
-// var height_guage = width_guage;
-// var innerR = width_guage * 0.3;
-// var outerR = width_guage * 0.4;
-// var twoPi = 2 * Math.PI;
+var x_vaccine_cumulative_ts_1 = d3
+  .scaleBand()
+  .domain(vaccination_timeseries_dates)
+  .range([0, width_hm - 120]);
 
-// var svg_overall_vaccinated = d3
-//   .select("#overall_guage_1")
-//   .append("svg")
-//   .attr("width", width_guage)
-//   .attr("height", height_guage)
-//   .append("g")
-//   .attr(
-//     "transform",
-//     "translate(" + width_guage / 2 + "," + height_guage / 2 + ")"
-//   )
-//   .attr("class", "percentage_guage");
+var xAxis_vaccine_cumulative_ts_1 =
+  svg_cumulative_vaccine_uptake_by_dose_timeseries
+    .append("g")
+    .attr("transform", "translate(0," + (height_line - 80) + ")")
+    .call(
+      d3
+        .axisBottom(x_vaccine_cumulative_ts_1)
+        .tickValues(vaccination_timeseries_date_labels)
+    );
 
-// // Retrieve the selected area name
-// var selected_vaccine_area = d3
-//   .select("#select_guage_area_button")
-//   .property("value");
+xAxis_vaccine_cumulative_ts_1
+  .selectAll("text")
+  .attr(
+    "transform",
+    "translate(-" +
+      (x_vaccine_cumulative_ts_1.bandwidth() + 15) +
+      ",10)rotate(-90)"
+  )
+  .style("text-anchor", "end")
+  .style("font-size", ".8rem");
 
-// overall_cumulative = vaccine_at_a_glance.filter(function (d) {
-//   return d.Name === selected_vaccine_area;
-// });
+var tooltip_vaccine_cumulative_ts_1 = d3
+  .select("#vaccine_cumulative_uptake_by_dose_timeseries")
+  .append("div")
+  .style("opacity", 0)
+  .attr("class", "tooltip_class")
+  .style("position", "absolute")
+  .style("z-index", "10")
+  .style("background-color", "white")
+  .style("border", "solid")
+  .style("border-width", "1px")
+  .style("border-radius", "5px")
+  .style("padding", "10px");
 
-// number_vaccinated = overall_cumulative[0].Total_where_age_known;
-// proportion_vaccinated = overall_cumulative[0].Proportion_age_known;
-// estimated_population = overall_cumulative[0].Population_16_and_over;
+// var dose_number = ["Dose_1", "Dose_2"];
 
-// var arc_vaccine_overall = d3
-//   .arc()
-//   .startAngle(0)
-//   .innerRadius(innerR)
-//   .outerRadius(outerR);
-
-// svg_overall_vaccinated
-//   .append("path")
-//   .attr("class", "background")
-//   .attr("d", arc_vaccine_overall.endAngle(twoPi));
-
-// var foreground_vaccinated = svg_overall_vaccinated
-//   .append("path")
-//   .attr("class", "foreground");
-
-// var Percent_vaccinated_1 = svg_overall_vaccinated
-//   .append("text")
-//   .attr("id", "vaccine_overall_perc")
-//   .attr("text-anchor", "middle")
-//   .attr("class", "percent-vaccine")
-//   .attr("dy", "-0.25em");
-
-// svg_overall_vaccinated
-//   .append("text")
-//   .attr("text-anchor", "middle")
-//   .attr("id", "vaccinated_label_1")
-//   .attr("class", "description")
-//   .attr("dy", "0.5em")
-//   .text(
-//     d3.format(",.0f")(number_vaccinated) +
-//       " / " +
-//       d3.format(",.0f")(estimated_population)
-//   );
-
-// svg_overall_vaccinated
-//   .append("text")
-//   .attr("text-anchor", "middle")
-//   .attr("id", "deaths_label_2")
-//   .attr("class", "description")
-//   .attr("dy", "1.5em")
-//   .text("aged 16+ received");
-
-// svg_overall_vaccinated
-//   .append("text")
-//   .attr("text-anchor", "middle")
-//   .attr("id", "deaths_label_3")
-//   .attr("class", "description")
-//   .attr("dy", "2.5em")
-//   .text("at least one dose");
-
-// var i_vaccinated_prop = d3.interpolate(0, proportion_vaccinated);
-
-// svg_overall_vaccinated
-//   .transition()
-//   .duration(3000)
-//   .tween("vaccinated", function () {
-//     return function (t) {
-//       vaccinated = i_vaccinated_prop(t);
-//       foreground_vaccinated
-//         .attr("d", arc_vaccine_overall.endAngle(twoPi * vaccinated))
-//         .attr("fill", "#ff4f03");
-//       Percent_vaccinated_1.text(d3.format(".1%")(vaccinated));
-//     };
-//   });
-
-// function update_vaccine_guage(selected_vaccine_area) {
-//   var old_number_vaccinated = number_vaccinated;
-
-//   if (number_vaccinated === undefined) {
-//     old_number_vaccinated = 0.001;
-//   }
-
-//   var old_vaccine_percentage = proportion_vaccinated;
-
-//   if (proportion_vaccinated === undefined) {
-//     old_vaccine_percentage = 0.001;
-//   }
-
-//   var selected_vaccine_area = d3
-//     .select("#select_guage_area_button")
-//     .property("value");
-
-//   overall_cumulative = vaccine_at_a_glance.filter(function (d) {
-//     return d.Name === selected_vaccine_area;
-//   });
-
-//   number_vaccinated = overall_cumulative[0].Total_where_age_known;
-//   proportion_vaccinated = overall_cumulative[0].Proportion_age_known;
-//   estimated_population = overall_cumulative[0].Population_16_and_over;
-
-//   var i_vaccinated_prop = d3.interpolate(
-//     old_vaccine_percentage,
-//     proportion_vaccinated
-//   );
-
-//   svg_overall_vaccinated
-//     .selectAll("#vaccinated_label_1")
-//     .transition()
-//     .duration(750)
-//     .style("opacity", 0);
-
-//   svg_overall_vaccinated
-//     .transition()
-//     .duration(3000)
-//     .tween("vaccinated", function () {
-//       return function (t) {
-//         vaccinated = i_vaccinated_prop(t);
-//         foreground_vaccinated
-//           .attr("d", arc_vaccine_overall.endAngle(twoPi * vaccinated))
-//           .attr("fill", "#ff4f03");
-//         Percent_vaccinated_1.text(d3.format(".1%")(vaccinated));
-//       };
-//     });
-
-//   svg_overall_vaccinated
-//     .append("text")
-//     .attr("text-anchor", "middle")
-//     .attr("id", "vaccinated_label_1")
-//     .attr("class", "description")
-//     .attr("dy", "0.5em")
-//     .text(
-//       d3.format(",.0f")(number_vaccinated) +
-//         " / " +
-//         d3.format(",.0f")(estimated_population)
-//     )
-//     .style("opacity", 0)
-//     .transition()
-//     .duration(500)
-//     .style("opacity", 1);
-// }
-
-// d3.select("#select_guage_area_button").on("change", function (d) {
-//   var selected_vaccine_area = d3
-//     .select("#select_guage_area_button")
-//     .property("value");
-//   update_vaccine_guage(selected_vaccine_area);
-// });
-
-// // ! LTLA Age
-// var height_bars = height_line * 1;
-
-// var request = new XMLHttpRequest();
-// request.open("GET", "./Outputs/vaccine_ltla_age.json", false);
-// request.send(null);
-// var vaccine_ltla_age = JSON.parse(request.responseText);
-
-// var vaccine_ages = d3
-//   .map(vaccine_ltla_age, function (d) {
-//     return d.Age_group;
-//   })
-//   .keys();
-
-// // Perhaps the solution is in identifying whether to include individuals not yet vaccinated [as a tick box, off by default], if the user selects it then scale and bars are redrawn
-// var vaccine_status = ["At_least_one_dose", "Individuals_not_vaccinated"];
-// // var vaccine_status = ["At_least_one_dose"];
-
-// var vaccine_status_prop = [
-//   "At_least_one_dose_prop",
-//   "Individuals_not_vaccinated_prop",
-// ];
-
-// var colour_vaccinated = d3
+// var dose_number_colours = d3
 //   .scaleOrdinal()
-//   .domain(vaccine_status)
-//   .range(["#ff4f03", "#e6e7e8"]);
+//   .domain(dose_number)
+//   .range(["#fa8800", "#00563f"]);
 
-// var vaccine_status_label = d3
+// var dose_number_label = d3
 //   .scaleOrdinal()
-//   .domain(["At_least_one_dose", "Individuals_not_vaccinated"])
-//   .range([
-//     "At least one dose",
-//     "Estimated population who have not received the vaccine",
-//   ]);
+//   .domain(dose_number)
+//   .range(["First dose", "Second dose"]);
 
-// d3.select("#select_vaccine_ltla_age_area_button")
-//   .selectAll("myOptions")
-//   .data([
-//     "West Sussex",
-//     "Adur",
-//     "Arun",
-//     "Chichester",
-//     "Crawley",
-//     "Horsham",
-//     "Mid Sussex",
-//     "Worthing",
-//   ])
-//   .enter()
-//   .append("option")
-//   .text(function (d) {
-//     return d;
-//   })
-//   .attr("value", function (d) {
-//     return d;
-//   });
+// // We need to create two different functions for when a user hovers over the dots and when they hover over the lines
+// // Lines first
+var hover_vaccine_cumulative_ts_1_lines = function (d) {
+  tooltip_vaccine_cumulative_ts_1
+    .html(
+      "<h4>" +
+        cumulative_vac_age_chosen +
+        '</h4><p class = "side">The number of first doses among those living in ' +
+        d.Name +
+        " so far as at " +
+        d.Date_label +
+        " was <b>" +
+        d3.format(",.0f")(d.Cumulative_dose_1) +
+        "</b>. This is " +
+        d3.format(".1%")(d.Cumulative_dose_1 / chosen_vaccine_age_denominator) +
+        " of the estimated population aged " +
+        cumulative_vac_age_chosen +
+        " (" +
+        d3.format(",.0f")(chosen_vaccine_age_denominator) +
+        ').</p > <p class="side">' +
+        "So far, " +
+        d3.format(",.0f")(d.Cumulative_dose_2) +
+        " individuals have received both doses.</p>"
+    )
+    .style("opacity", 1)
+    .style("top", event.pageY - 10 + "px")
+    .style("left", event.pageX + 10 + "px")
+    .style("visibility", "visible");
+};
 
-// var selected_vaccine_ltla_area = d3
-//   .select("#select_vaccine_ltla_age_area_button")
-//   .property("value");
+// No matter which function was called, on mouseleave restore everything back to the way it was.
+var mouseleave_vaccine_cumulative_ts_1 = function (d) {
+  tooltip_vaccine_cumulative_ts_1.style("visibility", "hidden");
+};
 
-// d3.select("#ltla_age_selected_bars_title").html(function (d) {
-//   return (
-//     "Number of individuals receiving at least one dose by age group; " +
-//     selected_vaccine_ltla_area +
-//     " residents; vaccinations reported as at " +
-//     vaccine_update_date
-//   );
-// });
+// y scale for doses
+y_vaccine_cumulative_ts_1 = d3
+  .scaleLinear()
+  .domain([0, chosen_vaccine_age_denominator])
+  .range([height_line - 80, 0])
+  .nice();
 
-// d3.select("#ltla_age_selected_bars_title_2").html(function (d) {
-//   return (
-//     "Proportion of individuals receiving at least one dose by age group; " +
-//     selected_vaccine_ltla_area +
-//     " residents; vaccinations reported as at " +
-//     vaccine_update_date
-//   );
-// });
+var y_vaccine_cumulative_ts_1_axis =
+  svg_cumulative_vaccine_uptake_by_dose_timeseries
+    .append("g")
+    .attr("transform", "translate(0,0)")
+    .call(d3.axisLeft(y_vaccine_cumulative_ts_1).tickFormat(d3.format(",.0f")));
 
-// var chosen_vaccine_age_area = vaccine_ltla_age.filter(function (d) {
-//   return d.Name === selected_vaccine_ltla_area;
-// });
+y_vaccine_cumulative_ts_1_axis.selectAll("text").style("font-size", ".8rem");
 
-// var stackedData_vaccine_1 = d3.stack().keys(vaccine_status)(
-//   chosen_vaccine_age_area
-// );
+// Lines
+var lines_vaccine_cumulative_ts_1 =
+  svg_cumulative_vaccine_uptake_by_dose_timeseries
+    .datum(chosen_cumulative_vac_data)
+    .append("path")
+    .attr("stroke", "#fa8800")
+    .attr("fill", "none")
+    .attr(
+      "d",
+      d3
+        .line()
+        .x(function (d) {
+          return x_vaccine_cumulative_ts_1(d.Date_label);
+        })
+        .y(function (d) {
+          return y_vaccine_cumulative_ts_1(d.Cumulative_dose_1);
+        })
+    )
+    .style("stroke-width", 2)
+    .on("mouseover", hover_vaccine_cumulative_ts_1_lines)
+    .on("mouseout", mouseleave_vaccine_cumulative_ts_1);
 
-// var stackedData_vaccine_2 = d3.stack().keys(vaccine_status_prop)(
-//   chosen_vaccine_age_area
-// );
+var lines_vaccine_cumulative_ts_2 =
+  svg_cumulative_vaccine_uptake_by_dose_timeseries
+    .datum(chosen_cumulative_vac_data)
+    .append("path")
+    .attr("stroke", "#00563f")
+    .attr("fill", "none")
+    .attr(
+      "d",
+      d3
+        .line()
+        .x(function (d) {
+          return x_vaccine_cumulative_ts_1(d.Date_label);
+        })
+        .y(function (d) {
+          return y_vaccine_cumulative_ts_1(d.Cumulative_dose_2);
+        })
+    )
+    .style("stroke-width", 2)
+    .on("mouseover", hover_vaccine_cumulative_ts_1_lines)
+    .on("mouseout", mouseleave_vaccine_cumulative_ts_1);
 
-// // Use the stacked data to find the max height (length) of the bars
-// var max_vaccine_limit = d3.max(stackedData_vaccine_1, function (d) {
-//   return d[0][1];
-// });
+var lines_vaccine_cumulative_ts_3 =
+  svg_cumulative_vaccine_uptake_by_dose_timeseries
+    .datum(chosen_cumulative_vac_data)
+    .append("path")
+    .attr("stroke", "#000000")
+    .attr("fill", "none")
+    .attr(
+      "d",
+      d3
+        .line()
+        .x(function (d) {
+          return x_vaccine_cumulative_ts_1(d.Date_label);
+        })
+        .y(function (d) {
+          return y_vaccine_cumulative_ts_1(chosen_vaccine_age_denominator);
+        })
+    )
+    .style("stroke-width", 2);
 
-// // Create a tooltip for the lines and functions for displaying the tooltips as well as highlighting certain lines.
-// var tooltip_vaccine_age = d3
-//   .select("#vaccine_uptake_by_age_1")
-//   .append("div")
-//   .style("opacity", 0)
-//   .attr("class", "tooltip_class")
-//   .style("position", "absolute")
-//   .style("z-index", "10")
-//   .style("background-color", "white")
-//   .style("border", "solid")
-//   .style("border-width", "1px")
-//   .style("border-radius", "5px")
-//   .style("padding", "10px");
+lines_vaccine_cumulative_ts_3
+  .append("text")
+  .attr("x", 70)
+  .attr("y", function (d) {
+    return y_vaccine_cumulative_ts_1(chosen_vaccine_age_denominator) - 10;
+  })
+  .attr("id", "denominator_vac_x")
+  .attr("text-anchor", "start")
+  .style("font-size", "10px")
+  .text("Estimated population");
 
-// var tooltip_vaccine_age_2 = d3
-//   .select("#vaccine_uptake_by_age_2")
-//   .append("div")
-//   .style("opacity", 0)
-//   .attr("class", "tooltip_class")
-//   .style("position", "absolute")
-//   .style("z-index", "10")
-//   .style("background-color", "white")
-//   .style("border", "solid")
-//   .style("border-width", "1px")
-//   .style("border-radius", "5px")
-//   .style("padding", "10px");
+//   // Points
+// var dots_vaccine_cumulative_ts_1 =
+//   svg_cumulative_vaccine_uptake_by_dose_timeseries
+//     .selectAll("circles")
+//     .data(chosen_cumulative_vac_data)
+//     .enter()
+//     .append("circle")
+//     .attr("cx", function (d) {
+//       return x_vaccine_cumulative_ts_1(d.Date_label);
+//     })
+//     .attr("cy", function (d) {
+//       return y_vaccine_cumulative_ts_1(+d.Cumulative_dose_1);
+//     })
+//     .style("fill", "#fa8800")
+//     .attr("stroke", "#fa8800")
+//     .attr("r", 2)
+//     // .on("mousemove", hover_vaccine_cumulative_ts_1_dots)
+//     .on("mouseout", mouseleave_vaccine_cumulative_ts_1);
 
-// var type_individual_vaccine_label = d3
-//   .scaleOrdinal()
-//   .domain(["At_least_one_dose", "Individuals_not_vaccinated"])
-//   .range([
-//     " people with at least one does of a COVID-19 vaccination.",
-//     " people who have not yet received a single dose of a COVID-19 vaccination (based on NIMS population estimates).",
-//   ]);
+// // Things specific to rates
+// if (type_vac_ts_scale[1].checked) {
+//   console.log("User selected rates of doses");
 
-// var type_individual_vaccine_label_2 = d3
-//   .scaleOrdinal()
-//   .domain(["At_least_one_dose", "Individuals_not_vaccinated"])
-//   .range([
-//     " of the estimated population have received at least one does of a COVID-19 vaccination (based on NIMS population estimates).",
-//     " of the estimated population have not yet received a single dose of a COVID-19 vaccination (based on NIMS population estimates).",
-//   ]);
-
-// var showTooltip_vaccine_age = function (d, i) {
-//   var TypeName = d3.select(this.parentNode).datum().key;
-//   var TypeValue = d.data[TypeName];
-
-//   tooltip_vaccine_age
-//     .html(
-//       "<h5>" +
-//         d.data.Name +
-//         '</h5><p class = "side"><b>' +
-//         d.data.Age_group +
-//         "</b></p><p><b>" +
-//         d3.format(",.0f")(TypeValue) +
-//         "</b>" +
-//         type_individual_vaccine_label(TypeName) +
-//         '</p><p class = "side">This excludes a small number of individuals where the age was not recorded.</p>'
-//     )
-//     .style("opacity", 1)
-//     .attr("visibility", "visible")
-//     .style("top", event.pageY - 10 + "px")
-//     .style("left", event.pageX + 10 + "px")
-//     .style("visibility", "visible");
-// };
-
-// var mouseleave_vaccine_age = function (d) {
-//   tooltip_vaccine_age.style("visibility", "hidden");
-//   tooltip_vaccine_age_2.style("visibility", "hidden");
-// };
-
-// var showTooltip_vaccine_age_2 = function (d, i) {
-//   var TypeName = d3.select(this.parentNode).datum().key;
-//   var TypeValue = d.data[TypeName];
-
-//   tooltip_vaccine_age_2
-//     .html(
-//       "<h5>" +
-//         d.data.Name +
-//         '</h5><p class = "side"><b>' +
-//         d.data.Age_group +
-//         "</b></p><p><b>" +
-//         d3.format(".1%")(TypeValue) +
-//         "</b>" +
-//         type_individual_vaccine_label_2(TypeName) +
-//         '</p><p class = "side">This excludes a small number of individuals where the age was not recorded.</p>'
-//     )
-//     .style("opacity", 1)
-//     .attr("visibility", "visible")
-//     .style("top", event.pageY - 10 + "px")
-//     .style("left", event.pageX + 10 + "px")
-//     .style("visibility", "visible");
-// };
-
-// width_hm = width_hm * 0.5;
-
-// if (width_hm < 600) {
-//   width_hm = window.innerWidth - 50;
-// }
-
-// // append the svg objects to the body of the page
-// var svg_vaccine_age_1 = d3
-//   .select("#vaccine_uptake_by_age_1")
-//   .append("svg")
-//   .attr("width", width_hm)
-//   .attr("height", height_bars + 30)
-//   .append("g")
-//   .attr("transform", "translate(" + 120 + "," + 0 + ")");
-
-// var svg_vaccine_age_2 = d3
-//   .select("#vaccine_uptake_by_age_2")
-//   .append("svg")
-//   .attr("width", width_hm)
-//   .attr("height", height_bars + 30)
-//   .append("g")
-//   .attr("transform", "translate(" + 120 + "," + 0 + ")");
-
-// // x axis
-// var x_vaccine_ages = d3
-//   .scaleLinear()
-//   .domain([max_vaccine_limit, 0])
-//   .range([width_hm - 150, 0])
-//   .nice();
-
-// var xAxis_vaccine_ages = svg_vaccine_age_1
-//   .append("g")
-//   .attr("transform", "translate(0," + (height_bars - 0) + ")")
-//   .call(d3.axisBottom(x_vaccine_ages).tickFormat(d3.format(",.0f")));
-
-// xAxis_vaccine_ages.selectAll("text").style("font-size", ".8rem");
-
-// // y axis
-// var y_vaccine_ages = d3
-//   .scaleBand()
-//   .domain(vaccine_ages)
-//   .range([height_bars, 0])
-//   .padding([0.2]);
-
-// var yAxis_vaccine_ages = svg_vaccine_age_1
-//   .append("g")
-//   .attr("transform", "translate(0,0)")
-//   .call(d3.axisLeft(y_vaccine_ages));
-
-// yAxis_vaccine_ages
-//   .selectAll("text")
-//   .attr("transform", "translate(0,0)")
-//   .style("text-anchor", "end")
-//   .style("font-size", ".8rem");
-
-// // ! Proportion
-// // x axis
-// var x_vaccine_ages_2 = d3
-//   .scaleLinear()
-//   .domain([1, 0])
-//   .range([width_hm - 150, 0])
-//   .nice();
-
-// var xAxis_vaccine_ages_2 = svg_vaccine_age_2
-//   .append("g")
-//   .attr("transform", "translate(0," + height_bars + ")")
-//   .call(d3.axisBottom(x_vaccine_ages_2).tickFormat(d3.format(",.0%")));
-
-// xAxis_vaccine_ages_2.selectAll("text").style("font-size", ".8rem");
-
-// // y axis
-// var y_vaccine_ages_2 = d3
-//   .scaleBand()
-//   .domain(vaccine_ages)
-//   .range([height_bars, 0])
-//   .padding([0.2]);
-
-// var yAxis_vaccine_ages_2 = svg_vaccine_age_2
-//   .append("g")
-//   .attr("transform", "translate(0, 0)")
-//   .call(d3.axisLeft(y_vaccine_ages_2));
-
-// yAxis_vaccine_ages_2
-//   .selectAll("text")
-//   .attr("transform", "translate(0,0)")
-//   .style("text-anchor", "end")
-//   .style("font-size", ".8rem");
-
-// // ! Update LTLA age bars
-// function update_ltla_vaccine_ages() {
-//   var selected_vaccine_ltla_area = d3
-//     .select("#select_vaccine_ltla_age_area_button")
-//     .property("value");
-
-//   d3.select("#ltla_age_selected_bars_title").html(function (d) {
+//   // Update text based on selected area
+//   d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
 //     return (
-//       "Number of individuals receiving at least one dose by age group; " +
-//       selected_vaccine_ltla_area +
-//       " residents; vaccinations as at " +
-//       vaccine_update_date
+//       "Rolling 7 day rate per 100,000 population Covid-19 vaccinations received; " +
+//       vaccine_uptake_by_dose_timeseries_area_option +
+//       "; as at " +
+//       data_refreshed_date
 //     );
 //   });
 
-//   d3.select("#ltla_age_selected_bars_title_2").html(function (d) {
-//     return (
-//       "Proportion of individuals receiving at least one dose by age group; " +
-//       selected_vaccine_ltla_area +
-//       " residents; vaccinations as at " +
-//       vaccine_update_date
-//     );
-//   });
+//   // y scale for dose rates
+//   y_vaccine_ts_1 = d3
+//     .scaleLinear()
+//     .domain([
+//       0,
+//       d3.max(vaccine_timeseries_chosen, function (d) {
+//         return +d.Seven_day_rolling_rate_vaccinations;
+//       }),
+//     ])
+//     .range([height_line - 80, 0])
+//     .nice();
 
-//   var chosen_vaccine_age_area = vaccine_ltla_age.filter(function (d) {
-//     return d.Name === selected_vaccine_ltla_area;
-//   });
-
-//   var stackedData_vaccine_1 = d3.stack().keys(vaccine_status)(
-//     chosen_vaccine_age_area
-//   );
-
-//   var stackedData_vaccine_2 = d3.stack().keys(vaccine_status_prop)(
-//     chosen_vaccine_age_area
-//   );
-
-//   var max_vaccine_limit = d3.max(stackedData_vaccine_1, function (d) {
-//     return d[0][1];
-//   });
-
-//   x_vaccine_ages.domain([max_vaccine_limit, 0]).nice();
-
-//   xAxis_vaccine_ages
-//     .transition()
-//     .duration(1500)
-//     .call(d3.axisBottom(x_vaccine_ages).tickFormat(d3.format(",.0f")));
-
-//   xAxis_vaccine_ages.selectAll("text").style("font-size", ".8rem");
-
-//   svg_vaccine_age_1.selectAll("#bars_vaccine_age").remove();
-
-//   var bars_vaccine_age_g = svg_vaccine_age_1
+//   var y_vaccine_ts_1_axis = svg_vaccine_uptake_by_dose_timeseries
 //     .append("g")
-//     .selectAll("g")
-//     .data(stackedData_vaccine_1)
+//     .attr("transform", "translate(0,0)")
+//     .call(d3.axisLeft(y_vaccine_ts_1).tickFormat(d3.format(",.0f")));
+
+//   y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
+
+//   // Lines
+//   var lines_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
+//     .selectAll(".line")
+//     .data(vaccine_timeseries_chosen_group)
 //     .enter()
-//     .append("g")
-//     .attr("fill", function (d) {
-//       return colour_vaccinated(d.key);
+//     .append("path")
+//     .attr("id", "c3_lines")
+//     .attr("class", "c3_all_lines")
+//     .attr("stroke", function (d) {
+//       return dose_number_colours(d.key);
 //     })
-//     .selectAll("rect")
-//     .data(function (d) {
-//       return d;
-//     });
+//     .attr("d", function (d) {
+//       return d3
+//         .line()
+//         .x(function (d) {
+//           return x_vaccine_ts_1(d.Date_label);
+//         })
+//         .y(function (d) {
+//           return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
+//         })(d.values);
+//     })
+//     .style("stroke-width", 2)
+//     .on("mouseover", hover_vaccine_ts_1_lines)
+//     .on("mouseout", mouseleave_vaccine_ts_1);
 
-//   bars_vaccine_age_g
+//   var dots_vaccine_ts_1 = svg_vaccine_uptake_by_dose_timeseries
+//     .selectAll("circles")
+//     .data(vaccine_timeseries_chosen)
 //     .enter()
-//     .append("rect")
-//     .merge(bars_vaccine_age_g)
-//     .attr("id", "bars_vaccine_age")
-//     .attr("x", function (d) {
-//       return x_vaccine_ages(d[0]);
+//     .append("circle")
+//     .attr("cx", function (d) {
+//       return x_vaccine_ts_1(d.Date_label);
 //     })
-//     .attr("height", y_vaccine_ages.bandwidth())
-//     .attr("y", function (d) {
-//       return y_vaccine_ages(d.data.Age_group);
+//     .attr("cy", function (d) {
+//       return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
 //     })
-//     .attr("width", function (d) {
-//       return x_vaccine_ages(d[1]) - x_vaccine_ages(d[0]);
+//     .style("fill", function (d) {
+//       return dose_number_colours(d.Dose_number);
 //     })
-
-//     .on("mousemove", showTooltip_vaccine_age)
-//     .on("mouseout", mouseleave_vaccine_age);
-
-//   bars_vaccine_age_g.exit().remove();
-
-//   // Proportion
-
-//   svg_vaccine_age_2.selectAll("#bars_prop_vaccine_age").remove();
-
-//   var bars_prop_vaccine_age_g = svg_vaccine_age_2
-//     .append("g")
-//     .selectAll("g")
-//     .data(stackedData_vaccine_2)
-//     .enter()
-//     .append("g")
-//     .attr("fill", function (d) {
-//       return colour_vaccinated(d.key);
+//     .attr("stroke", function (d) {
+//       return dose_number_colours(d.Dose_number);
 //     })
-//     .selectAll("rect")
-//     .data(function (d) {
-//       return d;
-//     });
-
-//   bars_prop_vaccine_age_g
-//     .enter()
-//     .append("rect")
-//     .merge(bars_prop_vaccine_age_g)
-//     .attr("id", "bars_prop_vaccine_age")
-//     .attr("x", function (d) {
-//       return x_vaccine_ages_2(d[0]);
-//     })
-//     .attr("height", y_vaccine_ages.bandwidth())
-//     .attr("y", function (d) {
-//       return y_vaccine_ages(d.data.Age_group);
-//     })
-//     .attr("width", function (d) {
-//       return x_vaccine_ages_2(d[1]) - x_vaccine_ages_2(d[0]);
-//     })
-
-//     .on("mousemove", showTooltip_vaccine_age_2)
-//     .on("mouseout", mouseleave_vaccine_age);
-
-//   bars_prop_vaccine_age_g.exit().remove();
+//     .attr("r", 2)
+//     .on("mousemove", hover_vaccine_ts_1_dots)
+//     .on("mouseout", mouseleave_vaccine_ts_1);
 // }
 
-// d3.select("#select_vaccine_ltla_age_area_button").on("change", function (d) {
-//   var selected_vaccine_ltla_area = d3
-//     .select("#select_vaccine_ltla_age_area_button")
+// function update_vaccine_ts_1() {
+//   // Retrieve the selected area name
+//   var vaccine_uptake_by_dose_timeseries_area_option = d3
+//     .select("#vaccine_uptake_by_dose_timeseries_area_select")
 //     .property("value");
-//   update_ltla_vaccine_ages();
-// });
 
-// update_ltla_vaccine_ages();
+//   if (type_vac_ts_scale[0].checked) {
+//     // Update text based on selected area
+//     d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
+//       return (
+//         "Rolling 7 day number of Covid-19 vaccinations received; " +
+//         vaccine_uptake_by_dose_timeseries_area_option +
+//         "; as at " +
+//         data_refreshed_date
+//       );
+//     });
 
-// // Key
-// vaccine_status.forEach(function (item, index) {
+//     var vaccine_timeseries_chosen = vaccination_timeseries_data.filter(
+//       function (d) {
+//         return d.Name === vaccine_uptake_by_dose_timeseries_area_option;
+//       }
+//     );
+
+//     // Group the new data
+//     var vaccine_timeseries_chosen_group = d3
+//       .nest() // nest function allows to group the calculation per level of a factor
+//       .key(function (d) {
+//         return d.Dose_number;
+//       })
+//       .entries(vaccine_timeseries_chosen);
+
+//     y_vaccine_ts_1
+//       .domain([
+//         0,
+//         d3.max(vaccine_timeseries_chosen, function (d) {
+//           return +d.Seven_day_rolling_vaccinations;
+//         }),
+//       ])
+//       .nice();
+
+//     y_vaccine_ts_1_axis
+//       .transition()
+//       .duration(1000)
+//       .call(d3.axisLeft(y_vaccine_ts_1));
+
+//     y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
+
+//     dots_vaccine_ts_1
+//       .data(vaccine_timeseries_chosen)
+//       .transition()
+//       .duration(1000)
+//       .attr("cx", function (d) {
+//         return x_vaccine_ts_1(d.Date_label);
+//       })
+//       .attr("cy", function (d) {
+//         return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
+//       });
+
+//     lines_vaccine_ts_1
+//       .data(vaccine_timeseries_chosen_group)
+//       .transition()
+//       .duration(1000)
+//       .attr("d", function (d) {
+//         return d3
+//           .line()
+//           .x(function (d) {
+//             return x_vaccine_ts_1(d.Date_label);
+//           })
+//           .y(function (d) {
+//             return y_vaccine_ts_1(+d.Seven_day_rolling_vaccinations);
+//           })(d.values);
+//       });
+//   }
+
+//   if (type_vac_ts_scale[1].checked) {
+//     // Update text based on selected area
+//     d3.select("#vaccine_uptake_by_dose_timeseries_title").html(function (d) {
+//       return (
+//         "Rolling 7 day rate per 100,000 population Covid-19 vaccinations received; " +
+//         vaccine_uptake_by_dose_timeseries_area_option +
+//         "; as at " +
+//         data_refreshed_date
+//       );
+//     });
+
+//     var vaccine_timeseries_chosen = vaccination_timeseries_data.filter(
+//       function (d) {
+//         return d.Name === vaccine_uptake_by_dose_timeseries_area_option;
+//       }
+//     );
+
+//     // Group the new data
+//     var vaccine_timeseries_chosen_group = d3
+//       .nest() // nest function allows to group the calculation per level of a factor
+//       .key(function (d) {
+//         return d.Dose_number;
+//       })
+//       .entries(vaccine_timeseries_chosen);
+
+//     y_vaccine_ts_1
+//       .domain([
+//         0,
+//         d3.max(vaccine_timeseries_chosen, function (d) {
+//           return +d.Seven_day_rolling_rate_vaccinations;
+//         }),
+//       ])
+//       .nice();
+
+//     y_vaccine_ts_1_axis
+//       .transition()
+//       .duration(1000)
+//       .call(d3.axisLeft(y_vaccine_ts_1));
+
+//     y_vaccine_ts_1_axis.selectAll("text").style("font-size", ".8rem");
+
+//     dots_vaccine_ts_1
+//       .data(vaccine_timeseries_chosen)
+//       .transition()
+//       .duration(1000)
+//       .attr("cx", function (d) {
+//         return x_vaccine_ts_1(d.Date_label);
+//       })
+//       .attr("cy", function (d) {
+//         return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
+//       });
+
+//     lines_vaccine_ts_1
+//       .data(vaccine_timeseries_chosen_group)
+//       .transition()
+//       .duration(1000)
+//       .attr("d", function (d) {
+//         return d3
+//           .line()
+//           .x(function (d) {
+//             return x_vaccine_ts_1(d.Date_label);
+//           })
+//           .y(function (d) {
+//             return y_vaccine_ts_1(+d.Seven_day_rolling_rate_vaccinations);
+//           })(d.values);
+//       });
+//   }
+// }
+
+// d3.select("#vaccine_uptake_by_dose_timeseries_area_select").on(
+//   "change",
+//   function (d) {
+//     var vaccine_uptake_by_dose_timeseries_area_option = d3
+//       .select("#vaccine_uptake_by_dose_timeseries_area_select")
+//       .property("value");
+//     update_vaccine_ts_1();
+//   }
+// );
+
+// var toggle_vac_ts_rate_func = function (d) {
+//   console.log("ooooo yur, all this gets done for whatever is toggled");
+//   update_vaccine_ts_1();
+// };
+
+// dose_number.forEach(function (d, i) {
 //   var list = document.createElement("li");
-//   list.innerHTML = vaccine_status_label(item);
+//   list.innerHTML = dose_number_label(d);
 //   list.className = "key_list";
-//   list.style.borderColor = colour_vaccinated(index);
+//   list.style.borderColor = dose_number_colours(i);
 //   var tt = document.createElement("div");
 //   tt.className = "side_tt";
-//   tt.style.borderColor = colour_vaccinated(index);
-//   var tt_h3_1 = document.createElement("h3");
-//   tt_h3_1.innerHTML = item;
-
-//   tt.appendChild(tt_h3_1);
-//   var div = document.getElementById("vaccine_status_key");
+//   tt.style.borderColor = dose_number_colours(i);
+//   var tt_h3_asr = document.createElement("h3");
+//   tt_h3_asr.innerHTML = d;
+//   tt.appendChild(tt_h3_asr);
+//   var div = document.getElementById("dose_number_key_figure");
 //   div.appendChild(list);
 // });
 
