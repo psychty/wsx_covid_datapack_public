@@ -217,21 +217,49 @@
 
       <div class="content">
         <p>
-          The figure below shows how vaccinations have taken place. It shows the
-          first doses and second doses. By default, it shows West Sussex overall
-          but you can change the area using the drop down menu. Hover over a dot
-          to see more.
+          The figure below shows how many vaccinations have taken place by dose. It shows the
+          cumulative number of first and second doses in each area and age group. By default it shows West Sussex overall with all those aged 18 and over but you can change the area and age group using the drop down menu.
         </p>
+        <p>The black line at the top is the latest estimated number of people on vaccine registers in the area. It is derived from primary care lists (e.g. where people are registered). As such, it may underestimate populations who are less likely to be registered to a GP practice (such as those who are homeless). For this reason, it is possible that the number of doses given can exceed the number of estimated population to vaccinate.</p>
+        <p>The number of estimated population, and the total number of first and second doses given so far are also displayed on the top left of the figure.</p>
+       </div>
+
+      <div class="right-sidebar"></div>
+
+      <div class="content">
+        <select id="vaccine_cumulative_uptake_by_dose_timeseries_area_select"></select>
+        <select id="vaccine_cumulative_uptake_by_dose_timeseries_age_select"></select>
+            <h4 id="cumulative_doses_vaccine_uptake_by_age_timeseries_title"></h4>
+            <div id="vaccine_cumulative_uptake_by_dose_timeseries"></div>
+      
+            <p>
+              Data source:
+              <a
+                class="highlight_dl_link"
+                href="https://coronavirus-staging.data.gov.uk"
+                >https://coronavirus-staging.data.gov.uk</a
+              >
+            </p>
+            <p>You can get an idea of how much further the vaccination programme needs to go, by seeing how far the yellow line (representing first doses) and importantly the green line (representing the second dose) are away from the black line on the right hand side of the figure. The closer the lines, the more of a population has received the vaccination.</p>
+            <p>Younger age groups will likely have a bigger gap, but this will become smaller as the programme continues into the summer months.</p>
+          </div>
+
+<div class="right-sidebar">
+          <h4>Dose</h4>
+          <p id="dose_number_key_figure"></p>
+</div>
+
+      <div class="content">
+        <p>The next figure shows the change in rolling number of vaccinations over time as new cohorts open up.</p>
         <p>
           You can also choose whether to look at actual doses, or the crude rate
           of doses per 100,000 population. This helps to compare areas as if
           they had the same population size.
         </p>
-      </div>
+      </div>  
 
-      <div class="right-sidebar"></div>
-
-      <div class="content">
+<div class="content">
+       
         <select id="vaccine_uptake_by_dose_timeseries_area_select"></select>
         <div class="drop">
           <form
@@ -277,7 +305,7 @@
 
       <div class="right-sidebar">
         <h4>Dose</h4>
-        <p id="dose_number_key_figure"></p>
+        <p id="dose_number_key_figure_2"></p>
       </div>
 
       <div class="content">
@@ -346,21 +374,7 @@
         <p class = 'side'>The grey lines with circles at the top show dates on which the Covid-19 vaccine was opened to new age cohorts. <font style = 'color: red; font-weight:bold; font-size: 0.8rem;'>Note: some people in the age group will have been invited earlier through other routes and it may take a few days or weeks between booking and vaccination.</font> Hover over each point to see more.</p>
       </div>
 
-<div class="content">
-  <select id="vaccine_cumulative_uptake_by_dose_timeseries_area_select"></select>
-  <select id="vaccine_cumulative_uptake_by_dose_timeseries_age_select"></select>
-      <h4 id="cumulative_doses_vaccine_uptake_by_age_timeseries_title"></h4>
-      <div id="vaccine_cumulative_uptake_by_dose_timeseries"></div>
 
-      <p>
-        Data source:
-        <a
-          class="highlight_dl_link"
-          href="https://coronavirus-staging.data.gov.uk"
-          >https://coronavirus-staging.data.gov.uk</a
-        >
-      </p>
-    </div>
       <div class="content">
         <h4>Change in vaccinations by week and age</h4>
         <p>
