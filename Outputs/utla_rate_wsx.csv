@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
 "West Sussex","46,305","5,359.5","130th","Decile 9","1,431","165.6","112th","Decile 8","seven days to 02 July"
 "England","4,334,634","7,701.0","-","-","141,819","252.0","-","-","seven days to 02 July"
 "South East region","590,284","6,430.0","-","-","16,164","176.1","-","-","seven days to 02 July"
+=======
+"Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 149) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 149) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
+"West Sussex","45,969","5,320.6","130th","Decile 9","1,334","154.4","110th","Decile 8","seven days to 01 July"
+"England","4,307,618","7,653.0","-","-","134,680","239.3","-","-","seven days to 01 July"
+"South East region","587,209","6,396.5","-","-","15,221","165.8","-","-","seven days to 01 July"
+>>>>>>> 2778554716cd9475dd50bb59602034fbb1deffbc
