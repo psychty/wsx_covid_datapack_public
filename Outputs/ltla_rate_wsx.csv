@@ -1,8 +1,11 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","3,252","5,057.5","256th","Decile 9","140","217.7","112th","Decile 4","seven days to 01 July"
-"Arun","8,920","5,548.7","234th","Decile 8","213","132.5","242nd","Decile 8","seven days to 01 July"
-"Chichester","5,455","4,503.5","277th","Decile 9","162","133.7","241st","Decile 8","seven days to 01 July"
-"Crawley","8,587","7,639.1","127th","Decile 5","220","195.7","140th","Decile 5","seven days to 01 July"
-"Horsham","6,297","4,379.3","280th","Decile 9","212","147.4","207th","Decile 7","seven days to 01 July"
-"Mid Sussex","7,720","5,111.8","253rd","Decile 9","283","187.4","148th","Decile 5","seven days to 01 July"
-"Worthing","5,738","5,189.5","247th","Decile 8","104","94.1","280th","Decile 9","seven days to 01 July"
+"Adur","3,283","5,105.7","255th","Decile 9","134","208.4","134th","Decile 5","seven days to 02 July"
+"Arun","8,994","5,594.7","234th","Decile 8","236","146.8","235th","Decile 8","seven days to 02 July"
+"Chichester","5,499","4,539.8","277th","Decile 9","178","147.0","234th","Decile 8","seven days to 02 July"
+"Crawley","8,626","7,673.8","128th","Decile 5","228","202.8","142nd","Decile 5","seven days to 02 July"
+"Horsham","6,344","4,412.0","280th","Decile 9","244","169.7","188th","Decile 7","seven days to 02 July"
+"Mid Sussex","7,775","5,148.3","253rd","Decile 9","299","198.0","153rd","Decile 5","seven days to 02 July"
+"Worthing","5,784","5,231.1","247th","Decile 8","112","101.3","281st","Decile 9","seven days to 02 July"
+"West Sussex","46,305","5,359.5","-","-",NA,NA,NA,NA,NA
+"South East region","590,284","6,430.0","-","-",NA,NA,NA,NA,NA
+"England","4,334,634","7,701.0","-","-",NA,NA,NA,NA,NA
