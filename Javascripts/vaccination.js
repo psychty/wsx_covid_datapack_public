@@ -25,7 +25,7 @@ d3.select("#latest_vaccine_publication_date").html(function (d) {
 
 d3.select("#latest_local_vaccine_publication_date").html(function (d) {
   return (
-    "Data at district and borough level are updated every day. However, data at small area level (Middle Super Output Area) are currently updated once per week, on a Thursday, with data up to the previous Sunday. The data are broken down for all adults aged 25 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
+    "Data at district and borough level are updated every day. However, data at small area level (Middle Super Output Area) are currently updated once per week, on a Thursday, with data up to the previous Sunday. The data are broken down for all adults aged 18 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
     vaccine_update_date +
     " and includes vaccines administered from " +
     vaccine_administered_date +
@@ -2255,7 +2255,7 @@ function vaccine_msoa_colour_ages_currently_eligible_count(d) {
 function style_msoa_vaccine_count_ages_currently_eligible(feature) {
   return {
     fillColor: vaccine_msoa_colour_ages_currently_eligible_count(
-      feature.properties.Total_age_25_banded
+      feature.properties.Total_age_18_banded
     ),
     weight: 0.5,
     opacity: 1,
@@ -2289,7 +2289,7 @@ function vaccine_msoa_colour_ages_currently_eligible_proportion(d) {
 function style_msoa_vaccine_ages_currently_eligible_proportion(feature) {
   return {
     fillColor: vaccine_msoa_colour_ages_currently_eligible_proportion(
-      feature.properties.Proportion_25_plus_banded
+      feature.properties.Proportion_18_plus_banded
     ),
     weight: 0.5,
     opacity: 1,
@@ -2319,9 +2319,9 @@ $.when(msoa_vaccine_total).done(function () {
       "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
       d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
       " </b>of the estimated population in this area.</p><p>A total of <b>" +
-      d3.format(",.0f")(layer.feature.properties.Age_25_and_over) +
-      " </b>people aged 25+ have received at least one dose (<b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_25_plus) +
+      d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
+      " </b>people aged 18+ have received at least one dose (<b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
       "</b>).</p><p>Data correct as at " +
       vaccine_update_date +
       ".</p>"
@@ -2346,9 +2346,9 @@ $.when(msoa_vaccine_total).done(function () {
         "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
         d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
         " </b>of the estimated population in this area.</p><p>A total of <b>" +
-        d3.format(",.0f")(layer.feature.properties.Age_25_and_over) +
-        " </b>people aged 25+ have received at least one dose (<b>" +
-        d3.format(".1%")(layer.feature.properties.Proportion_25_plus) +
+        d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
+        " </b>people aged 18+ have received at least one dose (<b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
         "</b>).</p><p>Data correct as at " +
         vaccine_update_date +
         ".</p>"
@@ -2385,7 +2385,7 @@ $.when(msoa_vaccine_total).done(function () {
     }
   });
 
-  // ! Over 25s
+  // ! Over 18s
 
   var msoa_map_ages_currently_eligible_vaccine_leaf = L.map(
     "msoa_map_vaccine_ages_currently_eligible"
@@ -2403,9 +2403,9 @@ $.when(msoa_vaccine_total).done(function () {
       " (" +
       layer.feature.properties.msoa11cd +
       ")</b></p><p>A total of <b>" +
-      d3.format(",.0f")(layer.feature.properties.Age_25_and_over) +
-      "</b> people aged 25+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_25_plus) +
+      d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
+      "</b> people aged 18+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
       " </b>of the estimated population in this area.</p><p>Data correct as at " +
       vaccine_update_date +
       ".</p>"
@@ -2426,9 +2426,9 @@ $.when(msoa_vaccine_total).done(function () {
         " (" +
         layer.feature.properties.msoa11cd +
         ")</b></p><p>A total of <b>" +
-        d3.format(",.0f")(layer.feature.properties.Age_25_and_over) +
-        "</b> people aged 25+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-        d3.format(".1%")(layer.feature.properties.Proportion_25_plus) +
+        d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
+        "</b> people aged 18+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
         " </b>of the estimated population in this area.</p><p>Data correct as at " +
         vaccine_update_date +
         ".</p>"
@@ -2436,9 +2436,9 @@ $.when(msoa_vaccine_total).done(function () {
     });
 
   var baseMaps_age_currently_eligible = {
-    "Number of individuals aged 25+":
+    "Number of individuals aged 18+":
       msoa_vaccine_ages_currently_eligible_1_count_map_layer,
-    "Proportion of estimated population aged 25+":
+    "Proportion of estimated population aged 18+":
       msoa_vaccine_older_age_2_proportion_map_layer,
   };
 
@@ -2463,11 +2463,11 @@ $.when(msoa_vaccine_total).done(function () {
       console.log("Base layer changes");
       var selected_base_layer = ev.name;
       if (
-        selected_base_layer === "Proportion of estimated population aged 25+"
+        selected_base_layer === "Proportion of estimated population aged 18+"
       ) {
         key_msoa_vaccines_ages_currently_eligible_proportion();
       }
-      if (selected_base_layer === "Number of individuals aged 25+") {
+      if (selected_base_layer === "Number of individuals aged 18+") {
         key_msoa_ages_currently_eligible_vaccines();
       }
     }
@@ -2644,7 +2644,7 @@ function key_msoa_vaccines() {
   });
 
   d3.select("#all_age_msoa_map_key_title").html(function (d) {
-    return "Number of people aged 25+ receiving at least one dose";
+    return "Number of people aged 18+ receiving at least one dose";
   });
 
   msoa_covid_vaccines_raw.forEach(function (item, index) {
@@ -2700,7 +2700,7 @@ function key_msoa_ages_currently_eligible_vaccines() {
   d3.select("#msoa_map_vaccine_ages_currently_eligible_title").html(function (
     d
   ) {
-    return "Cumulative number of individuals aged 25+ receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+    return "Cumulative number of individuals aged 18+ receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
   });
 
   d3.select("#ages_currently_eligible_msoa_map_key_title").html(function (d) {
@@ -2737,11 +2737,11 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
   d3.select("#msoa_map_vaccine_ages_currently_eligible_title").html(function (
     d
   ) {
-    return "Proportion of individuals (aged 25+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+    return "Proportion of individuals (aged 18+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
   });
 
   d3.select("#ages_currently_eligible_msoa_map_key_title").html(function (d) {
-    return "Proportion of people aged 25+ receiving at least one dose";
+    return "Proportion of people aged 18+ receiving at least one dose";
   });
 
   msoa_covid_vaccines_ages_currently_eligible_proportion_raw.forEach(function (
