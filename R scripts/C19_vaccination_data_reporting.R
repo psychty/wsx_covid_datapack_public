@@ -117,7 +117,7 @@ nhs_vaccine_sites_pharm <- read_excel(paste0(github_repo_dir,'/Source files/nhs_
          Address = `Address Line 1`)
 
 nhs_vaccine_sites_centre <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
-                                       sheet = 'Vaccination centres') %>% 
+                                       sheet = 'Vaccination Centres') %>% 
   mutate(Type = 'Vaccination centre') %>% 
   rename(Site = 'Site Name',
          Address = `Site Address`)
@@ -929,5 +929,4 @@ vaccine_df_wsx_age_msoa_wide <- vaccine_df_msoa_age %>%
 vaccine_df_wsx_age_msoa_wide %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_age.json'))
-
 
