@@ -101,7 +101,7 @@ download.file(calls_vaccine_sites_webpage, paste0(github_repo_dir,'/Source files
 nhs_vaccine_sites_hospital_hub <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
                                 sheet = 'Hospital Hubs') %>% 
   rename(Site = `Trust or Site Name`,
-         Address = `Site Address`) %>% 
+         Address = `Address Line 1`) %>% 
   mutate(Type = 'Hospital Hub') 
 
 nhs_vaccine_sites_gp_led <- read_excel(paste0(github_repo_dir,'/Source files/nhs_e_vaccine_sites.xlsx'),
@@ -929,4 +929,3 @@ vaccine_df_wsx_age_msoa_wide <- vaccine_df_msoa_age %>%
 vaccine_df_wsx_age_msoa_wide %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_age.json'))
-
