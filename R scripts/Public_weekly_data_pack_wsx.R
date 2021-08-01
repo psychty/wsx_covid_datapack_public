@@ -438,10 +438,11 @@ wsx_daily_cases %>%
   add_row(Date = complete_date - 7) %>% 
   add_row(Date = complete_date) %>% 
   add_row(Date = complete_date + 1) %>% 
+  add_row(Date = complete_date - 1) %>% 
   mutate(Period = format(Date, '%d %B')) %>% 
-  mutate(Date_label = format(Date, '%a %d %B')) %>% 
+  mutate(Date_label = format(Date, '%A %d %B')) %>% 
   arrange(Date) %>% 
-  add_column(Order = c('First', 'Seven_days_ago', 'Complete', 'First_incomplete', 'Last')) %>% 
+  add_column(Order = c('First', 'Seven_days_ago', 'Complete minus 1', 'Complete', 'First_incomplete', 'Last')) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/range_dates.json'))
 
@@ -2286,7 +2287,7 @@ positivity_df <- positivity_ltla %>%
   mutate(Date_label = format(Date, '%d %b %y'))
 
 positivity_df %>% 
-  filter(Date == complete_date) %>% 
+  filter(Date == complete_date -1) %>% 
   mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
   mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
   mutate(LFD_7_day_tests = format(LFD_7_day_tests, big.mark = ',')) %>% 

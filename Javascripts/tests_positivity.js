@@ -11,10 +11,20 @@ window.onload = () => {
 
 var formatPercent = d3.format(".0%");
 
+d3.select("#positivity_note").html(function (d) {
+  return (
+    "Note - test positivity and number of tests conducted are not available for the latest complete date ( " +
+    complete_date +
+    "). As such, we have rolled back the data to the previous day (" +
+    complete_date_minus_1 +
+    ") and hope to restore the usual data as soon as possible"
+  );
+});
+
 d3.select("#positivity_text_1").html(function (d) {
   return (
     "The table below shows the number of individuals tested (using PCR tests) and the PCR positivity for West Sussex districts and the regional and national comparision for the seven days to " +
-    complete_date +
+    complete_date_minus_1 +
     ". It also shows the number of LFD tests conducted in the same time period. However, it should be noted that the LFD tests are not included in the measure of individuals tested or seven day positivity."
   );
 });
@@ -22,16 +32,38 @@ d3.select("#positivity_text_1").html(function (d) {
 d3.select("#positivity_date_heading_1").html(function (d) {
   return (
     "Number of people receiving a PCR (Polymerase chain reaction) test in the seven days to " +
-    complete_date
+    complete_date_minus_1
   );
 });
 
 d3.select("#positivity_date_heading_2").html(function (d) {
   return (
     "Number of LFD (Lateral flow device) tests in the seven days to " +
-    complete_date
+    complete_date_minus_1
   );
 });
+
+// d3.select("#positivity_text_1").html(function (d) {
+//   return (
+//     "The table below shows the number of individuals tested (using PCR tests) and the PCR positivity for West Sussex districts and the regional and national comparision for the seven days to " +
+//     complete_date +
+//     ". It also shows the number of LFD tests conducted in the same time period. However, it should be noted that the LFD tests are not included in the measure of individuals tested or seven day positivity."
+//   );
+// });
+
+// d3.select("#positivity_date_heading_1").html(function (d) {
+//   return (
+//     "Number of people receiving a PCR (Polymerase chain reaction) test in the seven days to " +
+//     complete_date
+//   );
+// });
+
+// d3.select("#positivity_date_heading_2").html(function (d) {
+//   return (
+//     "Number of LFD (Lateral flow device) tests in the seven days to " +
+//     complete_date
+//   );
+// });
 
 function loadTable_positivity(p_at_a_glance_all_ages) {
   const tableBody = document.getElementById("positivity_table_1");
