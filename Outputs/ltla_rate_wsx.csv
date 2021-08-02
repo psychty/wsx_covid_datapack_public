@@ -1,12 +1,12 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","4,187","6,511.6","242nd","Decile 8","177","275.3","179th","Decile 6","seven days to 27 July"
-"Arun","11,266","7,008.0","227th","Decile 8","476","296.1","134th","Decile 5","seven days to 27 July"
-"Chichester","6,981","5,763.3","272nd","Decile 9","336","277.4","175th","Decile 6","seven days to 27 July"
-"Crawley","10,185","9,060.7","129th","Decile 5","314","279.3","172nd","Decile 6","seven days to 27 July"
-"Horsham","7,780","5,410.6","283rd","Decile 9","275","191.2","293rd","10% of authorities
-with lowest rate","seven days to 27 July"
-"Mid Sussex","9,654","6,392.4","247th","Decile 8","354","234.4","244th","Decile 8","seven days to 27 July"
-"Worthing","7,059","6,384.2","249th","Decile 8","293","265.0","197th","Decile 7","seven days to 27 July"
-"West Sussex","57,112","6,610.3","-","-",NA,NA,NA,NA,NA
-"South East region","694,419","7,564.4","-","-",NA,NA,NA,NA,NA
-"England","5,135,378","9,123.6","-","-",NA,NA,NA,NA,NA
+"Adur","4,204","6,538.0","243rd","Decile 8","165","256.6","190th","Decile 7","seven days to 28 July"
+"Arun","11,303","7,031.1","227th","Decile 8","428","266.2","174th","Decile 6","seven days to 28 July"
+"Chichester","7,028","5,802.1","272nd","Decile 9","334","275.7","150th","Decile 5","seven days to 28 July"
+"Crawley","10,238","9,107.8","129th","Decile 5","279","248.2","203rd","Decile 7","seven days to 28 July"
+"Horsham","7,823","5,440.5","283rd","Decile 9","266","185.0","295th","10% of authorities
+with lowest rate","seven days to 28 July"
+"Mid Sussex","9,705","6,426.2","247th","Decile 8","349","231.1","236th","Decile 8","seven days to 28 July"
+"Worthing","7,091","6,413.1","249th","Decile 8","287","259.6","188th","Decile 7","seven days to 28 July"
+"West Sussex","57,392","6,642.7","-","-",NA,NA,NA,NA,NA
+"South East region","696,910","7,591.5","-","-",NA,NA,NA,NA,NA
+"England","5,154,292","9,157.2","-","-",NA,NA,NA,NA,NA
