@@ -382,8 +382,10 @@ df <- data.frame(ID = character())
 
 # Get the IDs of spatial polygon
 for (i in MSOA_boundary@polygons ) { df <- rbind(df, data.frame(ID = i@ID, stringsAsFactors = FALSE))  }
+
 # and set rowname = ID
 row.names(vaccine_df_msoa) <- df$ID
+
 # Then use df as the second argument to the spatial dataframe conversion function:
 MSOA_boundary <- SpatialPolygonsDataFrame(MSOA_boundary, vaccine_df_msoa)  
 

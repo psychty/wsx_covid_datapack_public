@@ -42,8 +42,8 @@ github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
-# 2019 MYE
-mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=1816133633...1816133848,1820327937...1820328318,2092957697...2092957703,2013265921...2013265932&date=2019&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
+# 2020 MYE
+mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=1816133633...1816133848,1820327937...1820328318,2092957697...2092957703,2013265921...2013265932&date=2020&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
   rename(Population = OBS_VALUE,
          Code = GEOGRAPHY_CODE,
          Name = GEOGRAPHY_NAME,
@@ -57,11 +57,13 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   select(-Count) %>% 
   unique()
 
-# mye_total %>% 
-#   write.csv(., paste0(github_repo_dir,'/Source files/mye2019_ltla.csv'), row.names = FALSE)
+
 if(exists('mye_total') == FALSE) {
-  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2019_ltla.csv'))
+  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2020_ltla.csv'))
 }
+
+mye_total %>%
+  write.csv(., paste0(github_repo_dir,'/Source files/mye2020_ltla.csv'), row.names = FALSE)
 
 area_code_names <- mye_total %>% 
   select(Code, Name)
@@ -474,7 +476,7 @@ format(last_date, '%d %B %Y') %>%
 # Export df for KG - 7 day rolling trend ####
 per_day_trend <- p12_test_df %>% 
   select(Code, Name, Type, Date, New_cases, Cumulative_cases, Rolling_7_day_new_cases, Seven_day_average_new_cases, Population) %>% 
-  rename(MYE2019 = Population)
+  rename(MYE2020 = Population)
 
 per_day_trend %>% 
   write.csv(., paste0(output_directory_x, '/rolling_7_day_cases_all_areas.csv'), row.names = FALSE)
@@ -1790,7 +1792,7 @@ growth_rate_utla %>%
   write_lines(paste0(output_directory_x,'/growth_limits_dates.json'))
 
 # age specific rates ####
-mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=2092957699,2013265921...2013265932,1816133633...1816133848,1820327937...1820328318&date=2019&gender=0&c_age=1,3...18,210&measures=20100&select=geography_name,geography_code,c_age_name,obs_value,geography_type') %>% 
+mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=2092957699,2013265921...2013265932,1816133633...1816133848,1820327937...1820328318&date=2020&gender=0&c_age=1,3...18,210&measures=20100&select=geography_name,geography_code,c_age_name,obs_value,geography_type') %>% 
   rename(Population = OBS_VALUE,
          Code = GEOGRAPHY_CODE,
          Name = GEOGRAPHY_NAME,
