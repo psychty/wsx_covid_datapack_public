@@ -931,3 +931,4 @@ vaccine_df_wsx_age_msoa_wide <- vaccine_df_msoa_age %>%
 vaccine_df_wsx_age_msoa_wide %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_age.json'))
+
