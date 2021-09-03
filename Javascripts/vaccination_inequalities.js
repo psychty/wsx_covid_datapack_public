@@ -860,37 +860,37 @@ headers.on("click", function (d) {
 
 // ! Vaccine sites table
 
-var request = new XMLHttpRequest();
-request.open(
-  "GET",
-  "./Outputs/total_vaccination_sites_summary_table.json",
-  false
-);
-request.send(null);
-var vaccine_sites_at_a_glance = JSON.parse(request.responseText);
+// var request = new XMLHttpRequest();
+// request.open(
+//   "GET",
+//   "./Outputs/total_vaccination_sites_summary_table.json",
+//   false
+// );
+// request.send(null);
+// var vaccine_sites_at_a_glance = JSON.parse(request.responseText);
 
 // console.log(vaccine_sites_at_a_glance);
 
-window.onload = () => {
-  loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance);
-};
+// window.onload = () => {
+//   loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance);
+// };
 
-function loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance) {
-  const tableBody = document.getElementById("vaccine_sites_table_1");
-  var dataHTML = "";
+// function loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance) {
+//   const tableBody = document.getElementById("vaccine_sites_table_1");
+//   var dataHTML = "";
 
-  for (let item of vaccine_sites_at_a_glance) {
-    dataHTML += `<tr><td>${item.Area}</td><td>${d3.format(",.0f")(
-      item.Total
-    )}</td><td>${d3.format(",.0f")(item.GP_led)}</td><td>${d3.format(",.0f")(
-      item.Pharmacies
-    )}</td><td>${d3.format(",.0f")(item.Hospital_hub)}</td><td>${d3.format(
-      ",.0f"
-    )(item.Vaccination_centre)}</td></tr>`;
-  }
+//   for (let item of vaccine_sites_at_a_glance) {
+//     dataHTML += `<tr><td>${item.Area}</td><td>${d3.format(",.0f")(
+//       item.Total
+//     )}</td><td>${d3.format(",.0f")(item.GP_led)}</td><td>${d3.format(",.0f")(
+//       item.Pharmacies
+//     )}</td><td>${d3.format(",.0f")(item.Hospital_hub)}</td><td>${d3.format(
+//       ",.0f"
+//     )(item.Vaccination_centre)}</td></tr>`;
+//   }
 
-  tableBody.innerHTML = dataHTML;
-}
+//   tableBody.innerHTML = dataHTML;
+// }
 
 // ! Map
 
@@ -1146,141 +1146,141 @@ $.when(msoa_imd_map_data).done(function () {
 
   // Add sites
 
-  var myIconClass = L.Icon.extend({
-    options: {
-      shadowUrl:
-        "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    },
-  });
+  // var myIconClass = L.Icon.extend({
+  //   options: {
+  //     shadowUrl:
+  //       "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+  //     iconSize: [25, 41],
+  //     iconAnchor: [12, 41],
+  //     popupAnchor: [1, -34],
+  //     shadowSize: [41, 41],
+  //   },
+  // });
 
-  var pharm_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-    }),
-    gp_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
-    }),
-    hh_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-    }),
-    vac_site_icon = new myIconClass({
-      iconUrl:
-        "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
-    });
+  // var pharm_icon = new myIconClass({
+  //     iconUrl:
+  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+  //   }),
+  //   gp_icon = new myIconClass({
+  //     iconUrl:
+  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+  //   }),
+  //   hh_icon = new myIconClass({
+  //     iconUrl:
+  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  //   }),
+  //   vac_site_icon = new myIconClass({
+  //     iconUrl:
+  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
+  //   });
 
-  pharmacy_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "Pharmacies";
-  });
+  // pharmacy_vac_sites = sussex_vaccination_sites.filter(function (d) {
+  //   return d.Type === "Pharmacies";
+  // });
 
-  gp_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "GP led service";
-  });
+  // gp_vac_sites = sussex_vaccination_sites.filter(function (d) {
+  //   return d.Type === "GP led service";
+  // });
 
-  hh_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "Hospital Hub";
-  });
+  // hh_vac_sites = sussex_vaccination_sites.filter(function (d) {
+  //   return d.Type === "Hospital Hub";
+  // });
 
-  vaccine_centre_vac_sites = sussex_vaccination_sites.filter(function (d) {
-    return d.Type === "Vaccination centre";
-  });
+  // vaccine_centre_vac_sites = sussex_vaccination_sites.filter(function (d) {
+  //   return d.Type === "Vaccination centre";
+  // });
 
-  // If you want to create a group of markers you want to hide/show you need to add them to a layergroup inside the loop, then add the layergroup to the map
-  pharmacy_site_markers = L.layerGroup();
-  for (item of pharmacy_vac_sites) {
-    pharm_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: pharm_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a pharmacy led vaccination site.</p>"
-      )
-      .addTo(pharmacy_site_markers);
-  }
-  pharmacy_site_markers.addTo(msoa_map_vaccine_imd_leaf);
+  // // If you want to create a group of markers you want to hide/show you need to add them to a layergroup inside the loop, then add the layergroup to the map
+  // pharmacy_site_markers = L.layerGroup();
+  // for (item of pharmacy_vac_sites) {
+  //   pharm_mark_item = L.marker([item.latitude, item.longitude], {
+  //     icon: pharm_icon,
+  //   })
+  //     .bindPopup(
+  //       "<p><b>" +
+  //         item.Site +
+  //         " (" +
+  //         item.LTLA +
+  //         ")</b></p><p>Address: " +
+  //         item.Address +
+  //         " " +
+  //         item.Postcode +
+  //         "</p><p>This is a pharmacy led vaccination site.</p>"
+  //     )
+  //     .addTo(pharmacy_site_markers);
+  // }
+  // pharmacy_site_markers.addTo(msoa_map_vaccine_imd_leaf);
 
-  gp_led_markers = L.layerGroup();
-  for (item of gp_vac_sites) {
-    gp_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: gp_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a GP led vaccination site.</p>"
-      )
-      .addTo(gp_led_markers);
-  }
-  gp_led_markers.addTo(msoa_map_vaccine_imd_leaf);
+  // gp_led_markers = L.layerGroup();
+  // for (item of gp_vac_sites) {
+  //   gp_mark_item = L.marker([item.latitude, item.longitude], {
+  //     icon: gp_icon,
+  //   })
+  //     .bindPopup(
+  //       "<p><b>" +
+  //         item.Site +
+  //         " (" +
+  //         item.LTLA +
+  //         ")</b></p><p>Address: " +
+  //         item.Address +
+  //         " " +
+  //         item.Postcode +
+  //         "</p><p>This is a GP led vaccination site.</p>"
+  //     )
+  //     .addTo(gp_led_markers);
+  // }
+  // gp_led_markers.addTo(msoa_map_vaccine_imd_leaf);
 
-  hospital_hub_markers = L.layerGroup();
-  for (item of hh_vac_sites) {
-    hh_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: hh_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a hospital hub vaccination site.</p>"
-      )
-      .addTo(hospital_hub_markers);
-  }
-  hospital_hub_markers.addTo(msoa_map_vaccine_imd_leaf);
+  // hospital_hub_markers = L.layerGroup();
+  // for (item of hh_vac_sites) {
+  //   hh_mark_item = L.marker([item.latitude, item.longitude], {
+  //     icon: hh_icon,
+  //   })
+  //     .bindPopup(
+  //       "<p><b>" +
+  //         item.Site +
+  //         " (" +
+  //         item.LTLA +
+  //         ")</b></p><p>Address: " +
+  //         item.Address +
+  //         " " +
+  //         item.Postcode +
+  //         "</p><p>This is a hospital hub vaccination site.</p>"
+  //     )
+  //     .addTo(hospital_hub_markers);
+  // }
+  // hospital_hub_markers.addTo(msoa_map_vaccine_imd_leaf);
 
-  vaccination_centre_markers = L.layerGroup();
-  for (item of vaccine_centre_vac_sites) {
-    vac_centre_mark_item = L.marker([item.latitude, item.longitude], {
-      icon: vac_site_icon,
-    })
-      .bindPopup(
-        "<p><b>" +
-          item.Site +
-          " (" +
-          item.LTLA +
-          ")</b></p><p>Address: " +
-          item.Address +
-          " " +
-          item.Postcode +
-          "</p><p>This is a vaccination centre site.</p>"
-      )
-      .addTo(vaccination_centre_markers);
-  }
-  vaccination_centre_markers.addTo(msoa_map_vaccine_imd_leaf);
+  // vaccination_centre_markers = L.layerGroup();
+  // for (item of vaccine_centre_vac_sites) {
+  //   vac_centre_mark_item = L.marker([item.latitude, item.longitude], {
+  //     icon: vac_site_icon,
+  //   })
+  //     .bindPopup(
+  //       "<p><b>" +
+  //         item.Site +
+  //         " (" +
+  //         item.LTLA +
+  //         ")</b></p><p>Address: " +
+  //         item.Address +
+  //         " " +
+  //         item.Postcode +
+  //         "</p><p>This is a vaccination centre site.</p>"
+  //     )
+  //     .addTo(vaccination_centre_markers);
+  // }
+  // vaccination_centre_markers.addTo(msoa_map_vaccine_imd_leaf);
 
   var baseMaps_sites = {
     "National boundaries": msoa_imd_national_map_layer,
   };
 
-  var overlayMaps_sites = {
-    "Show GP led sites": gp_led_markers,
-    "Show Pharmacy sites": pharmacy_site_markers,
-    "Show Hospital hub sites": hospital_hub_markers,
-    "Show Vaccination centre sites": vaccination_centre_markers,
-  };
+  // var overlayMaps_sites = {
+  //   "Show GP led sites": gp_led_markers,
+  //   "Show Pharmacy sites": pharmacy_site_markers,
+  //   "Show Hospital hub sites": hospital_hub_markers,
+  //   "Show Vaccination centre sites": vaccination_centre_markers,
+  // };
 
   var basemap_msoa_imd_vaccine = L.tileLayer(tileUrl, {
     attribution,
@@ -1288,7 +1288,7 @@ $.when(msoa_imd_map_data).done(function () {
   }).addTo(msoa_map_vaccine_imd_leaf);
 
   L.control
-    .layers(baseMaps_imd, overlayMaps_sites, { collapsed: true })
+    .layers(baseMaps_imd, "", { collapsed: true })
     .addTo(msoa_map_vaccine_imd_leaf);
 
   msoa_map_vaccine_imd_leaf.fitBounds(
@@ -1408,41 +1408,41 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 
 key_msoa_imd_national();
 
-// Sites
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/Sussex_vaccination_sites.json", false);
-request.send(null);
-var sussex_vaccination_sites = JSON.parse(request.responseText);
+// // Sites
+// var request = new XMLHttpRequest();
+// request.open("GET", "./Outputs/Sussex_vaccination_sites.json", false);
+// request.send(null);
+// var sussex_vaccination_sites = JSON.parse(request.responseText);
 
-// Parameters
-site_types = [
-  "GP led service",
-  "Pharmacies",
-  "Hospital Hub",
-  "Vaccination centre",
-];
-site_type_colours = ["#2a81cb", "#2aad27", "#cb2b3e", "#9c2bcb"];
+// // Parameters
+// site_types = [
+//   "GP led service",
+//   "Pharmacies",
+//   "Hospital Hub",
+//   "Vaccination centre",
+// ];
+// site_type_colours = ["#2a81cb", "#2aad27", "#cb2b3e", "#9c2bcb"];
 
-site_type_colour_func = d3
-  .scaleOrdinal()
-  .domain(site_types)
-  .range(site_type_colours);
+// site_type_colour_func = d3
+//   .scaleOrdinal()
+//   .domain(site_types)
+//   .range(site_type_colours);
 
-site_types.forEach(function (item, index) {
-  var list = document.createElement("li");
-  list.innerHTML = item;
-  list.className = "key_list";
-  list.style.borderColor = site_type_colour_func(index);
-  var tt = document.createElement("div");
-  tt.className = "side_tt";
-  tt.style.borderColor = site_type_colour_func(index);
-  var tt_h3_1 = document.createElement("h3");
-  tt_h3_1.innerHTML = item;
+// site_types.forEach(function (item, index) {
+//   var list = document.createElement("li");
+//   list.innerHTML = item;
+//   list.className = "key_list";
+//   list.style.borderColor = site_type_colour_func(index);
+//   var tt = document.createElement("div");
+//   tt.className = "side_tt";
+//   tt.style.borderColor = site_type_colour_func(index);
+//   var tt_h3_1 = document.createElement("h3");
+//   tt_h3_1.innerHTML = item;
 
-  tt.appendChild(tt_h3_1);
-  var div = document.getElementById("vaccine_site_key");
-  div.appendChild(list);
-});
+//   tt.appendChild(tt_h3_1);
+//   var div = document.getElementById("vaccine_site_key");
+//   div.appendChild(list);
+// });
 
 // ! Scatter plot
 var height_scatter = 500;
