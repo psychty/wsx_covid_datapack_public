@@ -25,7 +25,7 @@ d3.select("#latest_vaccine_publication_date").html(function (d) {
 
 d3.select("#latest_local_vaccine_publication_date").html(function (d) {
   return (
-    "Data at district and borough level are updated every day. However, data at small area level (Middle Super Output Area) are currently updated once per week, on a Thursday, with data up to the previous Sunday. The data are broken down for all adults aged 18 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
+    "Data at district and borough level are updated every day. However, data at small area level (Middle Super Output Area) are currently updated once per week, on a Thursday, with data up to the previous Sunday. The data are broken down for all adults aged 16 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
     vaccine_update_date +
     " and includes vaccines administered from " +
     vaccine_administered_date +
@@ -50,13 +50,13 @@ function loadTable_ltla_vaccine(vaccine_at_a_glance) {
 
   for (let item of vaccine_at_a_glance) {
     dataHTML += `<tr><td>${item.Name}</td><td>${d3.format(",.0f")(
-      item["Number of individuals aged 18 and over"]
+      item["Number of individuals aged 16 and over"]
     )}</td><td>${d3.format(".1%")(
-      item["Proportion (18 and over)"]
+      item["Proportion (16 and over)"]
     )}</td><td>${d3.format(",.0f")(
-      item["Number of individuals aged 18-64 years"]
+      item["Number of individuals aged 16-64 years"]
     )}</td><td>${d3.format(".1%")(
-      item["Proportion (18-64 years)"]
+      item["Proportion (16-64 years)"]
     )}</td><td>${d3.format(",.0f")(
       item["Number of individuals aged 65 and over"]
     )}</td><td>${d3.format(".1%")(item["Proportion (65 and over)"])}</td></tr>`;
@@ -721,6 +721,7 @@ var vaccine_ages_public_colour_vaccinated = d3
   .domain(vaccine_ages_public)
   .range([
     "#f4dbb0",
+    "#f4dbb0",
     "#F3E55C",
     "#FAC127",
     "#FB9E07",
@@ -1364,6 +1365,7 @@ jcvi_cohort_ages = [
   "30-31 year olds",
   "25-29 year olds",
   "18-24 year olds",
+  "16-17 year olds",
 ];
 
 var vaccine_jcvi_ages_public_colour = d3
@@ -1388,7 +1390,8 @@ var vaccine_jcvi_ages_public_colour = d3
     "#FAC127",
     "#FAC127",
     "#F3E55C",
-    "#FCFFA4",
+    "#f4dbb0",
+    "#f4dbb0",
   ]);
 
 var tooltip_jcvi_key_dates = d3
