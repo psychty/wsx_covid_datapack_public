@@ -237,7 +237,7 @@ total_cases_reported_plot <-  ggplot(area_x_df_1,
               colour = '#000000') +
     scale_fill_manual(values = c('#071b7c'),
                       name = 'Pillar') +
-    scale_x_date(date_labels = "%b %d",
+    scale_x_date(date_labels = "%d %b %Y",
                  breaks = seq.Date((last_date - 1) -(104*7), last_date -1, by = 14),
                  limits = c(min(area_x_df_1$Date), last_date),
                  expand = c(0.01,0.01)) +
@@ -515,19 +515,22 @@ new_case_rate_plot <- ggplot(hm_df, aes(x = Date,
   scale_fill_manual(values = c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026'),
                     name = 'Tile\ncolour\nkey',
                     drop = FALSE) +
-  geom_tile(colour = "#ffffff") +
+  geom_tile() +
   labs(title = paste0('Summary of new confirmed Covid-19 cases per 100,000 population (all ages); as at ', format(last_date, '%d %B')),
        x = NULL,
        y = NULL,
        caption = 'Cases for dates after the red dashed line are not considered complete due to a lag in test result reporting.') +
-  scale_x_date(date_labels = "%b %d",
+  scale_x_date(date_labels = "%d %b %Y",
                breaks = seq.Date((last_date -1) -(104*7), last_date -1, by = 14),
                limits = c(min(hm_df$Date), max(hm_df$Date)),
                expand = c(0,0.0)) +
   hm_theme() +
-  theme(axis.text.y = element_text(colour = "#323232", 
+  theme(axis.text.x = element_text(colour = "#323232", 
+                                   hjust = 1,
+                                   size = 7),
+        axis.text.y = element_text(colour = "#323232", 
                                    #face = case_summary$highlight, 
-                                   size = 8)) +
+                                   size = 7)) +
   theme(legend.position = 'top') +
   guides(fill = guide_legend(nrow = 3, byrow = TRUE)) +
   geom_segment(x = complete_date + 1,
