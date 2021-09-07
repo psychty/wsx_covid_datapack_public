@@ -223,13 +223,12 @@ for(i in 1:length(areas_to_loop)){
   max_daily_case_break <- ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 20, 2, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 50, 5, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 100, 10, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 250, 25, ifelse(max(area_x_df_1$New_cases, na.rm = TRUE) < 500, 50, 100)))))
   
   
-  total_cases_reported_plot <- ggplot(area_x_df_1,
+total_cases_reported_plot <-  ggplot(area_x_df_1,
                                       aes(x = Date,
                                           y = New_cases,
                                           group = Test_pillar)) +
     geom_bar(stat = 'identity',
              position = 'stack',
-             colour = '#ffffff',
              aes(fill = Test_pillar)) +
     geom_line(data = area_x_df_1,
               aes(x = Date,
@@ -239,7 +238,7 @@ for(i in 1:length(areas_to_loop)){
     scale_fill_manual(values = c('#071b7c'),
                       name = 'Pillar') +
     scale_x_date(date_labels = "%b %d",
-                 breaks = seq.Date((last_date - 1) -(52*7), last_date -1, by = 7),
+                 breaks = seq.Date((last_date - 1) -(104*7), last_date -1, by = 14),
                  limits = c(min(area_x_df_1$Date), last_date),
                  expand = c(0.01,0.01)) +
     scale_y_continuous(labels = label_comma(accuracy = 1),
@@ -306,7 +305,7 @@ total_cases_reported_plot_2 <- ggplot(ltla_p12_test_df,
   scale_fill_manual(values = c('#071b7c'),
                     name = 'Pillar') +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date((last_date -1) -(52*7), last_date-1, by = 7),
+               breaks = seq.Date((last_date -1) -(104*7), last_date-1, by = 14),
                limits = c(min(ltla_p12_test_df$Date), last_date),
                expand = c(0.01,0.01)) +
   scale_y_continuous(labels = label_comma(accuracy = 1),
@@ -522,7 +521,7 @@ new_case_rate_plot <- ggplot(hm_df, aes(x = Date,
        y = NULL,
        caption = 'Cases for dates after the red dashed line are not considered complete due to a lag in test result reporting.') +
   scale_x_date(date_labels = "%b %d",
-               breaks = seq.Date((last_date -1) -(52*7), last_date -1, by = 7),
+               breaks = seq.Date((last_date -1) -(104*7), last_date -1, by = 14),
                limits = c(min(hm_df$Date), max(hm_df$Date)),
                expand = c(0,0.0)) +
   hm_theme() +
@@ -1185,7 +1184,7 @@ rm(week_ending_a, week_ending_b)
 
 download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week33.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week34.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
