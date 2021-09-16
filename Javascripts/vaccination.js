@@ -2390,91 +2390,91 @@ $.when(msoa_vaccine_total).done(function () {
 
   // ! Over 18s
 
-  var msoa_map_ages_currently_eligible_vaccine_leaf = L.map(
-    "msoa_map_vaccine_ages_currently_eligible"
-  );
+  // var msoa_map_ages_currently_eligible_vaccine_leaf = L.map(
+  //   "msoa_map_vaccine_ages_currently_eligible"
+  // );
 
-  var msoa_vaccine_older_age_2_proportion_map_layer = L.geoJSON(
-    msoa_vaccine_total.responseJSON,
-    {
-      style: style_msoa_vaccine_ages_currently_eligible_proportion,
-    }
-  ).bindPopup(function (layer) {
-    return (
-      "<p><b>" +
-      layer.feature.properties.msoa11hclnm +
-      " (" +
-      layer.feature.properties.msoa11cd +
-      ")</b></p><p>A total of <b>" +
-      d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
-      "</b> people aged 18+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
-      " </b>of the estimated population in this area.</p><p>Data correct as at " +
-      vaccine_update_date +
-      ".</p>"
-    );
-  });
+  // var msoa_vaccine_older_age_2_proportion_map_layer = L.geoJSON(
+  //   msoa_vaccine_total.responseJSON,
+  //   {
+  //     style: style_msoa_vaccine_ages_currently_eligible_proportion,
+  //   }
+  // ).bindPopup(function (layer) {
+  //   return (
+  //     "<p><b>" +
+  //     layer.feature.properties.msoa11hclnm +
+  //     " (" +
+  //     layer.feature.properties.msoa11cd +
+  //     ")</b></p><p>A total of <b>" +
+  //     d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
+  //     "</b> people aged 18+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+  //     d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
+  //     " </b>of the estimated population in this area.</p><p>Data correct as at " +
+  //     vaccine_update_date +
+  //     ".</p>"
+  //   );
+  // });
 
-  var msoa_vaccine_ages_currently_eligible_1_count_map_layer = L.geoJSON(
-    msoa_vaccine_total.responseJSON,
-    {
-      style: style_msoa_vaccine_count_ages_currently_eligible,
-    }
-  )
-    .addTo(msoa_map_ages_currently_eligible_vaccine_leaf)
-    .bindPopup(function (layer) {
-      return (
-        "<p><b>" +
-        layer.feature.properties.msoa11hclnm +
-        " (" +
-        layer.feature.properties.msoa11cd +
-        ")</b></p><p>A total of <b>" +
-        d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
-        "</b> people aged 18+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-        d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
-        " </b>of the estimated population in this area.</p><p>Data correct as at " +
-        vaccine_update_date +
-        ".</p>"
-      );
-    });
+  // var msoa_vaccine_ages_currently_eligible_1_count_map_layer = L.geoJSON(
+  //   msoa_vaccine_total.responseJSON,
+  //   {
+  //     style: style_msoa_vaccine_count_ages_currently_eligible,
+  //   }
+  // )
+  //   .addTo(msoa_map_ages_currently_eligible_vaccine_leaf)
+  //   .bindPopup(function (layer) {
+  //     return (
+  //       "<p><b>" +
+  //       layer.feature.properties.msoa11hclnm +
+  //       " (" +
+  //       layer.feature.properties.msoa11cd +
+  //       ")</b></p><p>A total of <b>" +
+  //       d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
+  //       "</b> people aged 18+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+  //       d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
+  //       " </b>of the estimated population in this area.</p><p>Data correct as at " +
+  //       vaccine_update_date +
+  //       ".</p>"
+  //     );
+  //   });
 
-  var baseMaps_age_currently_eligible = {
-    "Number of individuals aged 18+":
-      msoa_vaccine_ages_currently_eligible_1_count_map_layer,
-    "Proportion of estimated population aged 18+":
-      msoa_vaccine_older_age_2_proportion_map_layer,
-  };
+  // var baseMaps_age_currently_eligible = {
+  //   "Number of individuals aged 18+":
+  //     msoa_vaccine_ages_currently_eligible_1_count_map_layer,
+  //   "Proportion of estimated population aged 18+":
+  //     msoa_vaccine_older_age_2_proportion_map_layer,
+  // };
 
-  var basemap_msoa_ages_currently_eligible_vaccine = L.tileLayer(tileUrl, {
-    attribution,
-    minZoom: 8,
-  }).addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
+  // var basemap_msoa_ages_currently_eligible_vaccine = L.tileLayer(tileUrl, {
+  //   attribution,
+  //   minZoom: 8,
+  // }).addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
 
-  L.control
-    .layers(baseMaps_age_currently_eligible, null, {
-      collapsed: false,
-    })
-    .addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
+  // L.control
+  //   .layers(baseMaps_age_currently_eligible, null, {
+  //     collapsed: false,
+  //   })
+  //   .addTo(msoa_map_ages_currently_eligible_vaccine_leaf);
 
-  msoa_map_ages_currently_eligible_vaccine_leaf.fitBounds(
-    msoa_vaccine_ages_currently_eligible_1_count_map_layer.getBounds()
-  );
+  // msoa_map_ages_currently_eligible_vaccine_leaf.fitBounds(
+  //   msoa_vaccine_ages_currently_eligible_1_count_map_layer.getBounds()
+  // );
 
-  msoa_map_ages_currently_eligible_vaccine_leaf.on(
-    "baselayerchange",
-    function (ev) {
-      console.log("Base layer changes");
-      var selected_base_layer = ev.name;
-      if (
-        selected_base_layer === "Proportion of estimated population aged 18+"
-      ) {
-        key_msoa_vaccines_ages_currently_eligible_proportion();
-      }
-      if (selected_base_layer === "Number of individuals aged 18+") {
-        key_msoa_ages_currently_eligible_vaccines();
-      }
-    }
-  );
+  // msoa_map_ages_currently_eligible_vaccine_leaf.on(
+  //   "baselayerchange",
+  //   function (ev) {
+  //     console.log("Base layer changes");
+  //     var selected_base_layer = ev.name;
+  //     if (
+  //       selected_base_layer === "Proportion of estimated population aged 18+"
+  //     ) {
+  //       key_msoa_vaccines_ages_currently_eligible_proportion();
+  //     }
+  //     if (selected_base_layer === "Number of individuals aged 18+") {
+  //       key_msoa_ages_currently_eligible_vaccines();
+  //     }
+  //   }
+  // );
 
   //   // ! Vaccination sites
 
@@ -2697,85 +2697,85 @@ function key_msoa_vaccines_proportion() {
 
 key_msoa_vaccines();
 
-function key_msoa_ages_currently_eligible_vaccines() {
-  $(".key_list_vaccine_ages_currently_eligible").remove();
+// function key_msoa_ages_currently_eligible_vaccines() {
+//   $(".key_list_vaccine_ages_currently_eligible").remove();
 
-  d3.select("#msoa_map_vaccine_ages_currently_eligible_title").html(function (
-    d
-  ) {
-    return "Cumulative number of individuals aged 18+ receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
-  });
+//   d3.select("#msoa_map_vaccine_ages_currently_eligible_title").html(function (
+//     d
+//   ) {
+//     return "Cumulative number of individuals aged 18+ receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+//   });
 
-  d3.select("#ages_currently_eligible_msoa_map_key_title").html(function (d) {
-    return "Number of people receiving at least one dose";
-  });
+//   d3.select("#ages_currently_eligible_msoa_map_key_title").html(function (d) {
+//     return "Number of people receiving at least one dose";
+//   });
 
-  msoa_covid_vaccines_ages_currently_eligible_raw.forEach(function (
-    item,
-    index
-  ) {
-    var list = document.createElement("li");
-    list.innerHTML = item;
-    list.className = "key_list_vaccine_ages_currently_eligible";
-    list.style.borderColor =
-      msoa_covid_vaccines_colour_ages_currently_eligible_func(index);
-    var tt = document.createElement("div");
-    tt.className = "side_tt";
-    tt.style.borderColor =
-      msoa_covid_vaccines_colour_ages_currently_eligible_func(index);
-    var tt_h3_1 = document.createElement("h3");
-    tt_h3_1.innerHTML = item;
+//   msoa_covid_vaccines_ages_currently_eligible_raw.forEach(function (
+//     item,
+//     index
+//   ) {
+//     var list = document.createElement("li");
+//     list.innerHTML = item;
+//     list.className = "key_list_vaccine_ages_currently_eligible";
+//     list.style.borderColor =
+//       msoa_covid_vaccines_colour_ages_currently_eligible_func(index);
+//     var tt = document.createElement("div");
+//     tt.className = "side_tt";
+//     tt.style.borderColor =
+//       msoa_covid_vaccines_colour_ages_currently_eligible_func(index);
+//     var tt_h3_1 = document.createElement("h3");
+//     tt_h3_1.innerHTML = item;
 
-    tt.appendChild(tt_h3_1);
-    var div = document.getElementById(
-      "msoa_vaccine_ages_currently_eligible_key"
-    );
-    div.appendChild(list);
-  });
-}
+//     tt.appendChild(tt_h3_1);
+//     var div = document.getElementById(
+//       "msoa_vaccine_ages_currently_eligible_key"
+//     );
+//     div.appendChild(list);
+//   });
+// }
 
-function key_msoa_vaccines_ages_currently_eligible_proportion() {
-  $(".key_list_vaccine_ages_currently_eligible").remove();
+// function key_msoa_vaccines_ages_currently_eligible_proportion() {
+//   $(".key_list_vaccine_ages_currently_eligible").remove();
 
-  d3.select("#msoa_map_vaccine_ages_currently_eligible_title").html(function (
-    d
-  ) {
-    return "Proportion of individuals (aged 18+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
-  });
+//   d3.select("#msoa_map_vaccine_ages_currently_eligible_title").html(function (
+//     d
+//   ) {
+//     return "Proportion of individuals (aged 18+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+//   });
 
-  d3.select("#ages_currently_eligible_msoa_map_key_title").html(function (d) {
-    return "Proportion of people aged 18+ receiving at least one dose";
-  });
+//   d3.select("#ages_currently_eligible_msoa_map_key_title").html(function (d) {
+//     return "Proportion of people aged 18+ receiving at least one dose";
+//   });
 
-  msoa_covid_vaccines_ages_currently_eligible_proportion_raw.forEach(function (
-    item,
-    index
-  ) {
-    var list = document.createElement("li");
-    list.innerHTML = item;
-    list.className = "key_list_vaccine_ages_currently_eligible";
-    list.style.borderColor =
-      msoa_covid_vaccines_ages_currently_eligible_colour_proportions_func(
-        index
-      );
-    var tt = document.createElement("div");
-    tt.className = "side_tt";
-    tt.style.borderColor =
-      msoa_covid_vaccines_ages_currently_eligible_colour_proportions_func(
-        index
-      );
-    var tt_h3_1 = document.createElement("h3");
-    tt_h3_1.innerHTML = item;
+//   msoa_covid_vaccines_ages_currently_eligible_proportion_raw.forEach(function (
+//     item,
+//     index
+//   ) {
+//     var list = document.createElement("li");
+//     list.innerHTML = item;
+//     list.className = "key_list_vaccine_ages_currently_eligible";
+//     list.style.borderColor =
+//       msoa_covid_vaccines_ages_currently_eligible_colour_proportions_func(
+//         index
+//       );
+//     var tt = document.createElement("div");
+//     tt.className = "side_tt";
+//     tt.style.borderColor =
+//       msoa_covid_vaccines_ages_currently_eligible_colour_proportions_func(
+//         index
+//       );
+//     var tt_h3_1 = document.createElement("h3");
+//     tt_h3_1.innerHTML = item;
 
-    tt.appendChild(tt_h3_1);
-    var div = document.getElementById(
-      "msoa_vaccine_ages_currently_eligible_key"
-    );
-    div.appendChild(list);
-  });
-}
+//     tt.appendChild(tt_h3_1);
+//     var div = document.getElementById(
+//       "msoa_vaccine_ages_currently_eligible_key"
+//     );
+//     div.appendChild(list);
+//   });
+// }
 
-key_msoa_ages_currently_eligible_vaccines();
+// key_msoa_ages_currently_eligible_vaccines();
 
 // site_type_colour_func = d3
 //   .scaleOrdinal()
