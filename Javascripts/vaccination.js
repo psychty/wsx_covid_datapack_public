@@ -2647,7 +2647,7 @@ function key_msoa_vaccines() {
   });
 
   d3.select("#all_age_msoa_map_key_title").html(function (d) {
-    return "Number of people aged 18+ receiving at least one dose";
+    return "Number of people aged 16+ receiving at least one dose";
   });
 
   msoa_covid_vaccines_raw.forEach(function (item, index) {
