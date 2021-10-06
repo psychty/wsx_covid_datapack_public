@@ -3350,3 +3350,16 @@ vaccine_df_ltla_pt_1 %>%
 #   arrange(Name) %>% 
 #   toJSON() %>%
 #   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
+vaccine_df_ltla %>% 
+  mutate(prop_dose_2 = Dose_2 / Denominator) %>% 
+  filter(Age_group == '16 and over') %>% 
+  view()
+
+vaccine_age_df %>% 
+
+  filter(Age_group == '16-17 years') %>% 
+  filter(Date == max(Date)) %>% 
+  select(Name, Cumulative_dose_1, Cumulative_dose_2, Denominator) %>% 
+  mutate(prop_dose_1 = Cumulative_dose_1 / Denominator) %>% 
+  mutate(prop_dose_2 = Cumulative_dose_2 / Denominator) %>% 
+  view()
