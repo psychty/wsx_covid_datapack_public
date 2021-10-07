@@ -220,8 +220,6 @@ Sussex_vaccine_sites <- vaccine_sites_final %>%
   left_join(IMD_2019, by = c('lsoa_code' = 'LSOA11CD')) %>% 
   filter(LTLA %in% c('Brighton and Hove', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'Eastbourne', 'Hastings', 'Lewes', 'Rother', 'Wealden')) 
 
-# Check Appletree Centre (Hindu Temple), Crawley RH110AF - this is not appearing in the .gov list updated Friday 26th March
-
 WSx_vaccine_sites <- Sussex_vaccine_sites %>% 
   filter(LTLA %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')) %>% 
   group_by(Type) %>% 
@@ -931,4 +929,3 @@ vaccine_df_wsx_age_msoa_wide <- vaccine_df_msoa_age %>%
 vaccine_df_wsx_age_msoa_wide %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_msoa_age.json'))
-

@@ -25,7 +25,7 @@ d3.select("#latest_vaccine_publication_date").html(function (d) {
 
 d3.select("#latest_local_vaccine_publication_date").html(function (d) {
   return (
-    "Data at district and borough level are updated every day. However, data at small area level (Middle Super Output Area) are currently updated once per week, on a Thursday, with data up to the previous Sunday. The data are broken down for all adults aged 16 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
+    "Data at district and borough level are updated every day. However, data at small area level (Middle Super Output Area) are currently updated once per week, on a Thursday, with data up to the previous Sunday. The data are broken down for all adults aged 12 and over who are eligible for their first vaccination appointment. This local area data was last updated on <b>" +
     vaccine_update_date +
     " and includes vaccines administered from " +
     vaccine_administered_date +
@@ -50,9 +50,9 @@ function loadTable_ltla_vaccine(vaccine_at_a_glance) {
 
   for (let item of vaccine_at_a_glance) {
     dataHTML += `<tr><td>${item.Name}</td><td>${d3.format(",.0f")(
-      item["Number of individuals aged 16 and over"]
+      item["Number of individuals aged 12 and over"]
     )}</td><td>${d3.format(".1%")(
-      item["Proportion (16 and over)"]
+      item["Proportion (12 and over)"]
     )}</td><td>${d3.format(",.0f")(
       item["Number of individuals aged 16-64 years"]
     )}</td><td>${d3.format(".1%")(
@@ -73,7 +73,7 @@ wsx_number_vaccinated =
   wsx_overall_cumulative[0].Total_first_dose_where_age_known;
 wsx_proportion_vaccinated =
   wsx_overall_cumulative[0].First_dose_proportion_age_known;
-wsx_estimated_population = wsx_overall_cumulative[0].Population_16_and_over;
+wsx_estimated_population = wsx_overall_cumulative[0].Population_12_and_over;
 
 d3.select("#wsx_so_far").html(function (d) {
   return (
@@ -83,7 +83,7 @@ d3.select("#wsx_so_far").html(function (d) {
     d3.format(",.0f")(wsx_number_vaccinated) +
     ". This is " +
     d3.format(".1%")(wsx_proportion_vaccinated) +
-    " of the estimated population of people aged 16 and over.</b>"
+    " of the estimated population of people aged 12 and over.</b>"
   );
 });
 
@@ -1347,6 +1347,8 @@ var jcvi_cohort_key_dates = JSON.parse(request.responseText);
 
 jcvi_cohort_ages = [
   "Care home residents",
+  "90+ years",
+  "85-89 year olds",
   "80-84 year olds",
   "75-79 year olds",
   "70-74 year olds",
@@ -1366,6 +1368,7 @@ jcvi_cohort_ages = [
   "25-29 year olds",
   "18-24 year olds",
   "16-17 year olds",
+  "12-15 year olds",
 ];
 
 var vaccine_jcvi_ages_public_colour = d3
@@ -1390,6 +1393,7 @@ var vaccine_jcvi_ages_public_colour = d3
     "#FAC127",
     "#FAC127",
     "#F3E55C",
+    "#f4dbb0",
     "#f4dbb0",
     "#f4dbb0",
   ]);
@@ -2319,7 +2323,7 @@ $.when(msoa_vaccine_total).done(function () {
       layer.feature.properties.msoa11cd +
       ")</b></p><p>A total of <b>" +
       d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
-      "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+      "</b> people aged 12+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
       d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
       " </b>of the estimated population in this area.</p><p>A total of <b>" +
       d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
@@ -2346,7 +2350,7 @@ $.when(msoa_vaccine_total).done(function () {
         layer.feature.properties.msoa11cd +
         ")</b></p><p>A total of <b>" +
         d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
-        "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+        "</b> people aged 12+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
         d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
         " </b>of the estimated population in this area.</p><p>A total of <b>" +
         d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
@@ -2360,7 +2364,7 @@ $.when(msoa_vaccine_total).done(function () {
 
   var baseMaps_all_age = {
     "Number of individuals": msoa_vaccine_all_age_1_count_map_layer,
-    "Proportion of estimated population aged 16+":
+    "Proportion of estimated population aged 12+":
       msoa_vaccine_all_age_2_proportion_map_layer,
   };
 
@@ -2380,7 +2384,7 @@ $.when(msoa_vaccine_total).done(function () {
   msoa_map_vaccine_leaf.on("baselayerchange", function (ev) {
     console.log("Base layer changes");
     var selected_base_layer = ev.name;
-    if (selected_base_layer === "Proportion of estimated population aged 16+") {
+    if (selected_base_layer === "Proportion of estimated population aged 12+") {
       key_msoa_vaccines_proportion();
     }
     if (selected_base_layer === "Number of individuals") {
@@ -2647,7 +2651,7 @@ function key_msoa_vaccines() {
   });
 
   d3.select("#all_age_msoa_map_key_title").html(function (d) {
-    return "Number of people aged 16+ receiving at least one dose";
+    return "Number of people aged 12+ receiving at least one dose";
   });
 
   msoa_covid_vaccines_raw.forEach(function (item, index) {
@@ -2671,11 +2675,11 @@ function key_msoa_vaccines_proportion() {
   $(".key_list_vaccine_all").remove();
 
   d3.select("#msoa_map_vaccine_all_title").html(function (d) {
-    return "Proportion of individuals (aged 16+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+    return "Proportion of individuals (aged 12+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
   });
 
   d3.select("#all_age_msoa_map_key_title").html(function (d) {
-    return "Proportion of people aged 16+ receiving at least one dose";
+    return "Proportion of people aged 12+ receiving at least one dose";
   });
 
   msoa_covid_vaccines_all_age_proportion_raw.forEach(function (item, index) {
