@@ -65,10 +65,10 @@ var complete_date = JSON.parse(request.responseText).filter(function (d) {
   return d.Order == "Complete";
 })[0]["Date_label"];
 
-var complete_date_minus_3 = JSON.parse(request.responseText).filter(function (
+var complete_date_minus_1 = JSON.parse(request.responseText).filter(function (
   d
 ) {
-  return d.Order == "Complete minus 3";
+  return d.Order == "Complete minus 1";
 })[0]["Date_label"];
 
 var seven_days_date = JSON.parse(request.responseText).filter(function (d) {

@@ -2291,7 +2291,7 @@ positivity_df <- positivity_ltla %>%
   mutate(Date_label = format(Date, '%d %b %y'))
 
 positivity_df %>% 
-  filter(Date == complete_date -3) %>% 
+  filter(Date == complete_date -1) %>% 
   mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
   mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
   mutate(LFD_7_day_tests = format(LFD_7_day_tests, big.mark = ',')) %>% 
