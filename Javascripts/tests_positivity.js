@@ -14,7 +14,7 @@ var formatPercent = d3.format(".0%");
 d3.select("#positivity_note").html(function (d) {
   return (
     "Note - test positivity and number of tests conducted are currently available for the seven days to " +
-    complete_date_minus_1 +
+    complete_date_minus +
     "."
   );
 });
@@ -22,7 +22,7 @@ d3.select("#positivity_note").html(function (d) {
 d3.select("#positivity_text_1").html(function (d) {
   return (
     "The table below shows the number of individuals tested (using PCR tests) and the PCR positivity for West Sussex districts and the regional and national comparision for the seven days to " +
-    complete_date_minus_1 +
+    complete_date_minus +
     ". It also shows the number of LFD tests conducted in the same time period. However, it should be noted that the LFD tests are not included in the measure of individuals tested or seven day positivity."
   );
 });
@@ -30,14 +30,14 @@ d3.select("#positivity_text_1").html(function (d) {
 d3.select("#positivity_date_heading_1").html(function (d) {
   return (
     "Number of people receiving a PCR (Polymerase chain reaction) test in the seven days to " +
-    complete_date_minus_1
+    complete_date_minus
   );
 });
 
 d3.select("#positivity_date_heading_2").html(function (d) {
   return (
     "Number of LFD (Lateral flow device) tests in the seven days to " +
-    complete_date_minus_1
+    complete_date_minus
   );
 });
 
@@ -138,7 +138,7 @@ d3.select("#selected_pcr_tested_bars_1_compare_title").html(function (d) {
     "Number of people receiving a PCR (Polymerase chain reaction) test in the previous 7 days; " +
     selected_pcr_tested_area +
     "; up to " +
-    complete_date_minus_1 +
+    complete_date_minus +
     " as at " +
     data_refreshed_date
   );
@@ -282,7 +282,7 @@ d3.select("#selected_pcr_positivity_1_compare_title").html(function (d) {
     "Proportion of people receiving a positive PCR (Polymerase chain reaction) result in the previous 7 days; " +
     selected_pcr_tested_area +
     "; up to " +
-    complete_date_minus_1 +
+    complete_date_minus +
     " as at " +
     data_refreshed_date
   );
@@ -443,7 +443,7 @@ function update_pcr_tested() {
       "Number of people receiving a PCR (Polymerase chain reaction) test in the previous 7 days; " +
       selected_pcr_tested_area +
       "; up to " +
-      complete_date_minus_1 +
+      complete_date_minus +
       " as at " +
       data_refreshed_date
     );
@@ -454,7 +454,7 @@ function update_pcr_tested() {
       "Proportion of people receiving a positive PCR (Polymerase chain reaction) result in the previous 7 days; " +
       selected_pcr_tested_area +
       "; up to " +
-      complete_date_minus_1 +
+      complete_date_minus +
       " as at " +
       data_refreshed_date
     );
