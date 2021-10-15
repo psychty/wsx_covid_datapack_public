@@ -3192,7 +3192,7 @@ age_denominators <- age_denominators_1 %>%
 cumulative_vac <- vaccine_ts_df %>% 
   mutate(Age_group = '12 and over') %>% 
   bind_rows(vaccine_age_df) %>% 
-  mutate(Age_group = factor(Age_group, levels = c('12 and over','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
+  mutate(Age_group = factor(Age_group, levels = c('12 and over', '12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
   mutate(Date_label = format(Date, '%d %b %y')) 
 
 cumulative_vac %>% 

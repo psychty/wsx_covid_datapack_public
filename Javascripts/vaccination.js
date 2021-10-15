@@ -736,6 +736,7 @@ var vaccine_ages_public_colour_vaccinated = d3
     "#280B54",
     "#0D082A",
     "#000004",
+    "#000004",
   ]);
 
 d3.select("#first_dose_vaccine_uptake_by_age_timeseries_area_select")
