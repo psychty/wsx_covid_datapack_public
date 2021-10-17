@@ -54,6 +54,14 @@ var areas_1a = [
 ];
 
 var request = new XMLHttpRequest();
+request.open("GET", "./Outputs/last_positive_data_date.json", false);
+request.send(null);
+
+var complete_date_minus = JSON.parse(request.responseText)[0]["Date"];
+
+console.log(complete_date_minus);
+
+var request = new XMLHttpRequest();
 request.open("GET", "./Outputs/range_dates.json", false);
 request.send(null);
 
@@ -63,10 +71,6 @@ var first_date = JSON.parse(request.responseText).filter(function (d) {
 
 var complete_date = JSON.parse(request.responseText).filter(function (d) {
   return d.Order == "Complete";
-})[0]["Date_label"];
-
-var complete_date_minus = JSON.parse(request.responseText).filter(function (d) {
-  return d.Order == "Complete minus";
 })[0]["Date_label"];
 
 var seven_days_date = JSON.parse(request.responseText).filter(function (d) {

@@ -2290,8 +2290,15 @@ positivity_df <- positivity_ltla %>%
   mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) %>% 
   mutate(Date_label = format(Date, '%d %b %y'))
 
+last_positive_data_date <- positivity_df %>% 
+  ungroup() %>% 
+  filter(!is.na(uniqueCasePositivityBySpecimenDateRollingSum)) %>% 
+  select(Date) %>% 
+  filter(Date == max(Date)) %>% 
+  unique()
+
 positivity_df %>% 
-  filter(Date == complete_date -2) %>% 
+  filter(Date == last_positive_data_date$Date) %>% 
   mutate(uniquePeopleTestedBySpecimenDateRollingSum = format(uniquePeopleTestedBySpecimenDateRollingSum, big.mark = ',', trim = TRUE)) %>% 
   mutate(uniqueCasePositivityBySpecimenDateRollingSum = paste0(uniqueCasePositivityBySpecimenDateRollingSum, '%')) %>% 
   mutate(LFD_7_day_tests = format(LFD_7_day_tests, big.mark = ',')) %>% 
@@ -2300,6 +2307,11 @@ positivity_df %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/positivity_at_a_glance.json'))
+
+last_positive_data_date %>% 
+  mutate(Date = format(Date, '%A %d %B')) %>% 
+  toJSON() %>% 
+  write_lines(paste0(output_directory_x,'/last_positive_data_date.json'))
 
 # Polymerase chain reaction (PCR) tests are lab-based and test for the presence of SARS-CoV-2 virus. This data shows the number of people who received a PCR test in the previous 7 days, and the percentage of people who received a PCR test in the previous 7 days who had at least one positive PCR test result.
 
