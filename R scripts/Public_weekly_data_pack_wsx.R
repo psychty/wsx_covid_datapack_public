@@ -59,7 +59,7 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
 
 
 if(exists('mye_total') == FALSE) {
-  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2020_ltla.csv'))
+  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2020_ltla.csv')) 
 }
 
 mye_total %>%
@@ -1187,7 +1187,7 @@ rm(week_ending_a, week_ending_b)
 
 download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week44.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week45.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -1866,7 +1866,7 @@ lads <- c("E07000223", "E07000224","E07000225", "E07000226", "E07000227", "E0700
 ## build the required structure for the api
 # {"date":"date","areaCode":"areaCode","areaName":"areaName","newCasesBySpecimenDateRollingRate":"newCasesBySpecimenDateRollingRate","newCasesBySpecimenDateRollingSum":"newCasesBySpecimenDateRollingSum","uniqueCasePositivityBySpecimenDateRollingSum":"uniqueCasePositivityBySpecimenDateRollingSum","uniquePeopleTestedBySpecimenDateRollingSum":"uniquePeopleTestedBySpecimenDateRollingSum"}
 
-###### read the daaa
+###### read the data
 england <- 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=nation;areaName=england&structure={"date":"date","areaCode":"areaCode","areaName":"areaName","newCasesBySpecimenDateAgeDemographics":"newCasesBySpecimenDateAgeDemographics"}'
 
 westsussex <- 'https://api.coronavirus.data.gov.uk/v1/data?filters=areaType=utla;areaCode=E10000032&structure={"date":"date","areaCode":"areaCode","areaName":"areaName","newCasesBySpecimenDateAgeDemographics":"newCasesBySpecimenDateAgeDemographics"}'
@@ -2882,6 +2882,7 @@ vaccine_age_df <- bind_rows(dflist) %>%
   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) 
+
 vaccine_ts_df <- vaccine_age_df %>% 
   group_by(Date, Name) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
@@ -2899,6 +2900,7 @@ vaccine_ts_df <- vaccine_age_df %>%
   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) 
+
 vaccine_ts_df %>%
   ungroup() %>% 
   filter(Date == max(Date)) %>% 
@@ -3362,15 +3364,16 @@ vaccine_df_ltla_pt_1 %>%
 #   arrange(Name) %>% 
 #   toJSON() %>%
 #   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
-vaccine_df_ltla %>% 
-  mutate(prop_dose_2 = Dose_2 / Denominator) %>% 
-  filter(Age_group == '12 and over') %>% 
-  view()
 
-vaccine_age_df %>% 
-  filter(Age_group == '16-17 years') %>% 
-  filter(Date == max(Date)) %>% 
-  select(Name, Cumulative_dose_1, Cumulative_dose_2, Denominator) %>% 
-  mutate(prop_dose_1 = Cumulative_dose_1 / Denominator) %>% 
-  mutate(prop_dose_2 = Cumulative_dose_2 / Denominator) %>% 
-  view()
+# vaccine_df_ltla %>% 
+#   mutate(prop_dose_2 = Dose_2 / Denominator) %>% 
+#   filter(Age_group == '12 and over') %>% 
+#   view()
+# 
+# vaccine_age_df %>% 
+#   filter(Age_group == '16-17 years') %>% 
+#   filter(Date == max(Date)) %>% 
+#   select(Name, Cumulative_dose_1, Cumulative_dose_2, Denominator) %>% 
+#   mutate(prop_dose_1 = Cumulative_dose_1 / Denominator) %>% 
+#   mutate(prop_dose_2 = Cumulative_dose_2 / Denominator) %>% 
+#   view()
