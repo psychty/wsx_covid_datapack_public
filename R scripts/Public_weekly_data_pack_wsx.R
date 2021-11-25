@@ -59,11 +59,8 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
 
 
 if(exists('mye_total') == FALSE) {
-  mye_total <- read_csv(paste0(github_repo_dir,'/Source files/mye2020_ltla.csv')) 
+  mye_total <- read_csv('https://raw.githubusercontent.com/psychty/wsx_covid_datapack_public/master/Source%20files/mye2020_ltla.csv') 
 }
-
-mye_total %>%
-  write.csv(., paste0(github_repo_dir,'/Source files/mye2020_ltla.csv'), row.names = FALSE)
 
 area_code_names <- mye_total %>% 
   select(Code, Name)
