@@ -59,7 +59,7 @@ mye_total <- read_csv('http://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
 
 
 if(exists('mye_total') == FALSE) {
-  mye_total <- read_csv('https://raw.githubusercontent.com/psychty/wsx_covid_datapack_public/master/Source%20files/mye2020_ltla.csv') 
+  mye_total <- read_csv('https://raw.githubusercontent.com/psychty/wsx_covid_datapack_public/528abda9d01ad41c7975efb546e1c4f1bd300e2b/Source%20files/mye2020_ltla.csv') 
 }
 
 area_code_names <- mye_total %>% 
