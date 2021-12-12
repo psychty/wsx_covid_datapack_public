@@ -11,11 +11,14 @@ var vaccine_administered_date = JSON.parse(request.responseText);
 column_names = [
   "Local Authority",
   "MSOA name",
-  "Number of individuals receiving at least one dose",
-  "Number aged 18+ receiving at least one dose",
-  "Rank of uptake (%) aged 18+ within Local Authority area",
-  "Proportion aged 18+ receiving at least one dose",
-  "Estimated number of people aged 18+ still to receive their first dose",
+  "Number of individuals aged 12+ receiving at least one dose",
+  "Rank of uptake (%) aged 12+ within Local Authority area",
+  "Proportion aged 12+ receiving at least one dose",
+  "Estimated number of people aged 12+ still to receive their first dose",
+  "Number aged 16+ receiving at least one dose",
+  "Rank of uptake (%) aged 16+ within Local Authority area",
+  "Proportion aged 16+ receiving at least one dose",
+  "Estimated number of people aged 16+ still to receive their first dose",
   "Number aged 65+ receiving at least one dose",
   "Rank of uptake (%) aged 65+ within Local Authority area",
   "Proportion aged 65+ receiving at least one dose",
@@ -23,19 +26,21 @@ column_names = [
 ];
 
 var clicks = {
-  Total_where_age_known: 0,
-  Age_18_and_over: 0,
-  Proportion_rank_18_plus_within_LTLA: 0,
-  Proportion_18_plus: 0,
-  Estimated_left_to_vaccinate_18_plus: 0,
+  Age_12_and_over: 0,
+  Proportion_rank_12_and_over_within_LTLA: 0,
+  Proportion_12_and_over: 0,
+  Estimated_left_to_vaccinate_12_and_over: 0,
+  Age_16_and_over: 0,
+  Proportion_rank_16_and_over_within_LTLA: 0,
+  Proportion_16_and_over: 0,
+  Estimated_left_to_vaccinate_16_and_over: 0,
   Age_65_and_over: 0,
-  Proportion_rank_65_plus_within_LTLA: 0,
-  Proportion_65_plus: 0,
-  Estimated_left_to_vaccinate_65_plus: 0,
+  Proportion_rank_65_and_over_within_LTLA: 0,
+  Proportion_65_and_over: 0,
+  Estimated_left_to_vaccinate_65_and_over: 0,
 };
 
 // draw the table
-
 d3.select("#container_search")
   .append("div")
   .attr("class", "SearchBar")
@@ -66,7 +71,7 @@ d3.select(".SearchBar1")
 
 var msoa_table = d3.select("#msoa_table_vaccines").append("table");
 
-msoa_table.append("thead").append("tr");
+msoa_table.append("thead").append("tr").attr("class", "msoa_table");
 
 var headers = msoa_table
   .select("tr")
@@ -116,13 +121,16 @@ row_entries = rows
       arr[1],
       d3.format(",.0f")(arr[2]),
       d3.format(",.0f")(arr[3]),
-      arr[4],
-      d3.format(".1%")(arr[5]),
+      d3.format(".1%")(arr[4]),
+      d3.format(",.0f")(arr[5]),
       d3.format(",.0f")(arr[6]),
       d3.format(",.0f")(arr[7]),
-      arr[8],
-      d3.format(".1%")(arr[9]),
+      d3.format(".1%")(arr[8]),
+      d3.format(",.0f")(arr[9]),
       d3.format(",.0f")(arr[10]),
+      d3.format(",.0f")(arr[11]),
+      d3.format(".1%")(arr[12]),
+      d3.format(",.0f")(arr[13]),
     ];
   })
   .enter()
@@ -203,13 +211,16 @@ function initial_table_load() {
         arr[1],
         d3.format(",.0f")(arr[2]),
         d3.format(",.0f")(arr[3]),
-        arr[4],
-        d3.format(".1%")(arr[5]),
+        d3.format(".1%")(arr[4]),
+        d3.format(",.0f")(arr[5]),
         d3.format(",.0f")(arr[6]),
         d3.format(",.0f")(arr[7]),
-        arr[8],
-        d3.format(".1%")(arr[9]),
+        d3.format(".1%")(arr[8]),
+        d3.format(",.0f")(arr[9]),
         d3.format(",.0f")(arr[10]),
+        d3.format(",.0f")(arr[11]),
+        d3.format(".1%")(arr[12]),
+        d3.format(",.0f")(arr[13]),
       ];
     })
     .enter()
@@ -299,13 +310,16 @@ d3.select("#search_ltla").on("keyup", function () {
         arr[1],
         d3.format(",.0f")(arr[2]),
         d3.format(",.0f")(arr[3]),
-        arr[4],
-        d3.format(".1%")(arr[5]),
+        d3.format(".1%")(arr[4]),
+        d3.format(",.0f")(arr[5]),
         d3.format(",.0f")(arr[6]),
         d3.format(",.0f")(arr[7]),
-        arr[8],
-        d3.format(".1%")(arr[9]),
+        d3.format(".1%")(arr[8]),
+        d3.format(",.0f")(arr[9]),
         d3.format(",.0f")(arr[10]),
+        d3.format(",.0f")(arr[11]),
+        d3.format(".1%")(arr[12]),
+        d3.format(",.0f")(arr[13]),
       ];
     })
     .enter()
@@ -391,13 +405,16 @@ d3.select("#search_msoa").on("keyup", function () {
         arr[1],
         d3.format(",.0f")(arr[2]),
         d3.format(",.0f")(arr[3]),
-        arr[4],
-        d3.format(".1%")(arr[5]),
+        d3.format(".1%")(arr[4]),
+        d3.format(",.0f")(arr[5]),
         d3.format(",.0f")(arr[6]),
         d3.format(",.0f")(arr[7]),
-        arr[8],
-        d3.format(".1%")(arr[9]),
+        d3.format(".1%")(arr[8]),
+        d3.format(",.0f")(arr[9]),
         d3.format(",.0f")(arr[10]),
+        d3.format(",.0f")(arr[11]),
+        d3.format(".1%")(arr[12]),
+        d3.format(",.0f")(arr[13]),
       ];
     })
     .enter()
@@ -432,27 +449,27 @@ d3.select("#search_msoa").on("keyup", function () {
 // ! Create sort function for every column you want to be sortable - the code will depend on the type of data
 
 headers.on("click", function (d) {
-  if (d == "Number of individuals receiving at least one dose") {
-    clicks.Total_where_age_known++;
+  if (d == "Number of individuals aged 12+ receiving at least one dose") {
+    clicks.Age_12_and_over++;
     // even number of clicks
-    if (clicks.Total_where_age_known % 2 == 0) {
+    if (clicks.Age_12_and_over % 2 == 0) {
       // sort ascending: numerically
       rows.sort(function (a, b) {
-        if (+a.Total_where_age_known < +b.Total_where_age_known) {
+        if (+a.Age_12_and_over < +b.Age_12_and_over) {
           return -1;
-        } else if (+a.Total_where_age_known > +b.Total_where_age_known) {
+        } else if (+a.Age_12_and_over > +b.Age_12_and_over) {
           return 1;
         } else {
           return 0;
         }
       });
       // odd number of clicks
-    } else if (clicks.Total_where_age_known % 2 != 0) {
+    } else if (clicks.Age_12_and_over % 2 != 0) {
       // sort descending: numerically
       rows.sort(function (a, b) {
-        if (+a.Total_where_age_known < +b.Total_where_age_known) {
+        if (+a.Age_12_and_over < +b.Age_12_and_over) {
           return 1;
-        } else if (+a.Total_where_age_known > +b.Total_where_age_known) {
+        } else if (+a.Age_12_and_over > +b.Age_12_and_over) {
           return -1;
         } else {
           return 0;
@@ -460,48 +477,20 @@ headers.on("click", function (d) {
       });
     }
   }
-  if (d == "Number aged 18+ receiving at least one dose") {
-    clicks.Age_18_and_over++;
+  if (d == "Rank of uptake (%) aged 12+ within Local Authority area") {
+    clicks.Proportion_rank_12_and_over_within_LTLA++;
     // even number of clicks
-    if (clicks.Age_18_and_over % 2 == 0) {
-      // sort ascending: numerically
-      rows.sort(function (a, b) {
-        if (+a.Age_18_and_over < +b.Age_18_and_over) {
-          return -1;
-        } else if (+a.Age_18_and_over > +b.Age_18_and_over) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-      // odd number of clicks
-    } else if (clicks.Age_18_and_over % 2 != 0) {
-      // sort descending: numerically
-      rows.sort(function (a, b) {
-        if (+a.Age_18_and_over < +b.Age_18_and_over) {
-          return 1;
-        } else if (+a.Age_18_and_over > +b.Age_18_and_over) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
-    }
-  }
-  if (d == "Rank of uptake (%) aged 18+ within Local Authority area") {
-    clicks.Proportion_rank_18_plus_within_LTLA++;
-    // even number of clicks
-    if (clicks.Proportion_rank_18_plus_within_LTLA % 2 == 0) {
+    if (clicks.Proportion_rank_12_and_over_within_LTLA % 2 == 0) {
       // sort ascending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Proportion_rank_18_plus_within_LTLA <
-          +b.Proportion_rank_18_plus_within_LTLA
+          +a.Proportion_rank_12_and_over_within_LTLA <
+          +b.Proportion_rank_12_and_over_within_LTLA
         ) {
           return -1;
         } else if (
-          +a.Proportion_rank_18_plus_within_LTLA >
-          +b.Proportion_rank_18_plus_within_LTLA
+          +a.Proportion_rank_12_and_over_within_LTLA >
+          +b.Proportion_rank_12_and_over_within_LTLA
         ) {
           return 1;
         } else {
@@ -509,17 +498,17 @@ headers.on("click", function (d) {
         }
       });
       // odd number of clicks
-    } else if (clicks.Proportion_rank_18_plus_within_LTLA % 2 != 0) {
+    } else if (clicks.Proportion_rank_12_and_over_within_LTLA % 2 != 0) {
       // sort descending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Proportion_rank_18_plus_within_LTLA <
-          +b.Proportion_rank_18_plus_within_LTLA
+          +a.Proportion_rank_12_and_over_within_LTLA <
+          +b.Proportion_rank_12_and_over_within_LTLA
         ) {
           return 1;
         } else if (
-          +a.Proportion_rank_18_plus_within_LTLA >
-          +b.Proportion_rank_18_plus_within_LTLA
+          +a.Proportion_rank_12_and_over_within_LTLA >
+          +b.Proportion_rank_12_and_over_within_LTLA
         ) {
           return -1;
         } else {
@@ -528,27 +517,27 @@ headers.on("click", function (d) {
       });
     }
   }
-  if (d == "Proportion aged 18+ receiving at least one dose") {
-    clicks.Proportion_18_plus++;
+  if (d == "Proportion aged 12+ receiving at least one dose") {
+    clicks.Proportion_12_and_over++;
     // even number of clicks
-    if (clicks.Proportion_18_plus % 2 == 0) {
+    if (clicks.Proportion_12_and_over % 2 == 0) {
       // sort ascending: numerically
       rows.sort(function (a, b) {
-        if (+a.Proportion_18_plus < +b.Proportion_18_plus) {
+        if (+a.Proportion_12_and_over < +b.Proportion_12_and_over) {
           return -1;
-        } else if (+a.Proportion_18_plus > +b.Proportion_18_plus) {
+        } else if (+a.Proportion_12_and_over > +b.Proportion_12_and_over) {
           return 1;
         } else {
           return 0;
         }
       });
       // odd number of clicks
-    } else if (clicks.Proportion_18_plus % 2 != 0) {
+    } else if (clicks.Proportion_12_and_over % 2 != 0) {
       // sort descending: numerically
       rows.sort(function (a, b) {
-        if (+a.Proportion_18_plus < +b.Proportion_18_plus) {
+        if (+a.Proportion_12_and_over < +b.Proportion_12_and_over) {
           return 1;
-        } else if (+a.Proportion_18_plus > +b.Proportion_18_plus) {
+        } else if (+a.Proportion_12_and_over > +b.Proportion_12_and_over) {
           return -1;
         } else {
           return 0;
@@ -557,21 +546,21 @@ headers.on("click", function (d) {
     }
   }
   if (
-    d == "Estimated number of people aged 18+ still to receive their first dose"
+    d == "Estimated number of people aged 12+ still to receive their first dose"
   ) {
-    clicks.Estimated_left_to_vaccinate_18_plus++;
+    clicks.Estimated_left_to_vaccinate_12_and_over++;
     // even number of clicks
-    if (clicks.Estimated_left_to_vaccinate_18_plus % 2 == 0) {
+    if (clicks.Estimated_left_to_vaccinate_12_and_over % 2 == 0) {
       // sort ascending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Estimated_left_to_vaccinate_18_plus <
-          +b.Estimated_left_to_vaccinate_18_plus
+          +a.Estimated_left_to_vaccinate_12_and_over <
+          +b.Estimated_left_to_vaccinate_12_and_over
         ) {
           return -1;
         } else if (
-          +a.Estimated_left_to_vaccinate_18_plus >
-          +b.Estimated_left_to_vaccinate_18_plus
+          +a.Estimated_left_to_vaccinate_12_and_over >
+          +b.Estimated_left_to_vaccinate_12_and_over
         ) {
           return 1;
         } else {
@@ -579,17 +568,155 @@ headers.on("click", function (d) {
         }
       });
       // odd number of clicks
-    } else if (clicks.Estimated_left_to_vaccinate_18_plus % 2 != 0) {
+    } else if (clicks.Estimated_left_to_vaccinate_12_and_over % 2 != 0) {
       // sort descending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Estimated_left_to_vaccinate_18_plus <
-          +b.Estimated_left_to_vaccinate_18_plus
+          +a.Estimated_left_to_vaccinate_12_and_over <
+          +b.Estimated_left_to_vaccinate_12_and_over
         ) {
           return 1;
         } else if (
-          +a.Estimated_left_to_vaccinate_18_plus >
-          +b.Estimated_left_to_vaccinate_18_plus
+          +a.Estimated_left_to_vaccinate_12_and_over >
+          +b.Estimated_left_to_vaccinate_12_and_over
+        ) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    }
+  }
+  if (d == "Number aged 16+ receiving at least one dose") {
+    clicks.Age_16_and_over++;
+    // even number of clicks
+    if (clicks.Age_16_and_over % 2 == 0) {
+      // sort ascending: numerically
+      rows.sort(function (a, b) {
+        if (+a.Age_16_and_over < +b.Age_16_and_over) {
+          return -1;
+        } else if (+a.Age_16_and_over > +b.Age_16_and_over) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      // odd number of clicks
+    } else if (clicks.Age_16_and_over % 2 != 0) {
+      // sort descending: numerically
+      rows.sort(function (a, b) {
+        if (+a.Age_16_and_over < +b.Age_16_and_over) {
+          return 1;
+        } else if (+a.Age_16_and_over > +b.Age_16_and_over) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    }
+  }
+  if (d == "Rank of uptake (%) aged 16+ within Local Authority area") {
+    clicks.Proportion_rank_16_and_over_within_LTLA++;
+    // even number of clicks
+    if (clicks.Proportion_rank_16_and_over_within_LTLA % 2 == 0) {
+      // sort ascending: numerically
+      rows.sort(function (a, b) {
+        if (
+          +a.Proportion_rank_16_and_over_within_LTLA <
+          +b.Proportion_rank_16_and_over_within_LTLA
+        ) {
+          return -1;
+        } else if (
+          +a.Proportion_rank_16_and_over_within_LTLA >
+          +b.Proportion_rank_16_and_over_within_LTLA
+        ) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      // odd number of clicks
+    } else if (clicks.Proportion_rank_16_and_over_within_LTLA % 2 != 0) {
+      // sort descending: numerically
+      rows.sort(function (a, b) {
+        if (
+          +a.Proportion_rank_16_and_over_within_LTLA <
+          +b.Proportion_rank_16_and_over_within_LTLA
+        ) {
+          return 1;
+        } else if (
+          +a.Proportion_rank_16_and_over_within_LTLA >
+          +b.Proportion_rank_16_and_over_within_LTLA
+        ) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    }
+  }
+  if (d == "Proportion aged 16+ receiving at least one dose") {
+    clicks.Proportion_16_and_over++;
+    // even number of clicks
+    if (clicks.Proportion_16_and_over % 2 == 0) {
+      // sort ascending: numerically
+      rows.sort(function (a, b) {
+        if (+a.Proportion_16_and_over < +b.Proportion_16_and_over) {
+          return -1;
+        } else if (+a.Proportion_16_and_over > +b.Proportion_16_and_over) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      // odd number of clicks
+    } else if (clicks.Proportion_16_and_over % 2 != 0) {
+      // sort descending: numerically
+      rows.sort(function (a, b) {
+        if (+a.Proportion_16_and_over < +b.Proportion_16_and_over) {
+          return 1;
+        } else if (+a.Proportion_16_and_over > +b.Proportion_16_and_over) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    }
+  }
+  if (
+    d == "Estimated number of people aged 16+ still to receive their first dose"
+  ) {
+    clicks.Estimated_left_to_vaccinate_16_and_over++;
+    // even number of clicks
+    if (clicks.Estimated_left_to_vaccinate_16_and_over % 2 == 0) {
+      // sort ascending: numerically
+      rows.sort(function (a, b) {
+        if (
+          +a.Estimated_left_to_vaccinate_16_and_over <
+          +b.Estimated_left_to_vaccinate_16_and_over
+        ) {
+          return -1;
+        } else if (
+          +a.Estimated_left_to_vaccinate_16_and_over >
+          +b.Estimated_left_to_vaccinate_16_and_over
+        ) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+      // odd number of clicks
+    } else if (clicks.Estimated_left_to_vaccinate_16_and_over % 2 != 0) {
+      // sort descending: numerically
+      rows.sort(function (a, b) {
+        if (
+          +a.Estimated_left_to_vaccinate_16_and_over <
+          +b.Estimated_left_to_vaccinate_16_and_over
+        ) {
+          return 1;
+        } else if (
+          +a.Estimated_left_to_vaccinate_16_and_over >
+          +b.Estimated_left_to_vaccinate_16_and_over
         ) {
           return -1;
         } else {
@@ -627,19 +754,19 @@ headers.on("click", function (d) {
     }
   }
   if (d == "Rank of uptake (%) aged 65+ within Local Authority area") {
-    clicks.Proportion_rank_65_plus_within_LTLA++;
+    clicks.Proportion_rank_65_and_over_within_LTLA++;
     // even number of clicks
-    if (clicks.Proportion_rank_65_plus_within_LTLA % 2 == 0) {
+    if (clicks.Proportion_rank_65_and_over_within_LTLA % 2 == 0) {
       // sort ascending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Proportion_rank_65_plus_within_LTLA <
-          +b.Proportion_rank_65_plus_within_LTLA
+          +a.Proportion_rank_65_and_over_within_LTLA <
+          +b.Proportion_rank_65_and_over_within_LTLA
         ) {
           return -1;
         } else if (
-          +a.Proportion_rank_65_plus_within_LTLA >
-          +b.Proportion_rank_65_plus_within_LTLA
+          +a.Proportion_rank_65_and_over_within_LTLA >
+          +b.Proportion_rank_65_and_over_within_LTLA
         ) {
           return 1;
         } else {
@@ -647,17 +774,17 @@ headers.on("click", function (d) {
         }
       });
       // odd number of clicks
-    } else if (clicks.Proportion_rank_65_plus_within_LTLA % 2 != 0) {
+    } else if (clicks.Proportion_rank_65_and_over_within_LTLA % 2 != 0) {
       // sort descending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Proportion_rank_65_plus_within_LTLA <
-          +b.Proportion_rank_65_plus_within_LTLA
+          +a.Proportion_rank_65_and_over_within_LTLA <
+          +b.Proportion_rank_65_and_over_within_LTLA
         ) {
           return 1;
         } else if (
-          +a.Proportion_rank_65_plus_within_LTLA >
-          +b.Proportion_rank_65_plus_within_LTLA
+          +a.Proportion_rank_65_and_over_within_LTLA >
+          +b.Proportion_rank_65_and_over_within_LTLA
         ) {
           return -1;
         } else {
@@ -667,26 +794,26 @@ headers.on("click", function (d) {
     }
   }
   if (d == "Proportion aged 65+ receiving at least one dose") {
-    clicks.Proportion_65_plus++;
+    clicks.Proportion_65_and_over++;
     // even number of clicks
-    if (clicks.Proportion_65_plus % 2 == 0) {
+    if (clicks.Proportion_65_and_over % 2 == 0) {
       // sort ascending: numerically
       rows.sort(function (a, b) {
-        if (+a.Proportion_65_plus < +b.Proportion_65_plus) {
+        if (+a.Proportion_65_and_over < +b.Proportion_65_and_over) {
           return -1;
-        } else if (+a.Proportion_65_plus > +b.Proportion_65_plus) {
+        } else if (+a.Proportion_65_and_over > +b.Proportion_65_and_over) {
           return 1;
         } else {
           return 0;
         }
       });
       // odd number of clicks
-    } else if (clicks.Proportion_65_plus % 2 != 0) {
+    } else if (clicks.Proportion_65_and_over % 2 != 0) {
       // sort descending: numerically
       rows.sort(function (a, b) {
-        if (+a.Proportion_65_plus < +b.Proportion_65_plus) {
+        if (+a.Proportion_65_and_over < +b.Proportion_65_and_over) {
           return 1;
-        } else if (+a.Proportion_65_plus > +b.Proportion_65_plus) {
+        } else if (+a.Proportion_65_and_over > +b.Proportion_65_and_over) {
           return -1;
         } else {
           return 0;
@@ -697,19 +824,19 @@ headers.on("click", function (d) {
   if (
     d == "Estimated number of people aged 65+ still to receive their first dose"
   ) {
-    clicks.Estimated_left_to_vaccinate_65_plus++;
+    clicks.Estimated_left_to_vaccinate_65_and_over++;
     // even number of clicks
-    if (clicks.Estimated_left_to_vaccinate_65_plus % 2 == 0) {
+    if (clicks.Estimated_left_to_vaccinate_65_and_over % 2 == 0) {
       // sort ascending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Estimated_left_to_vaccinate_65_plus <
-          +b.Estimated_left_to_vaccinate_65_plus
+          +a.Estimated_left_to_vaccinate_65_and_over <
+          +b.Estimated_left_to_vaccinate_65_and_over
         ) {
           return -1;
         } else if (
-          +a.Estimated_left_to_vaccinate_65_plus >
-          +b.Estimated_left_to_vaccinate_65_plus
+          +a.Estimated_left_to_vaccinate_65_and_over >
+          +b.Estimated_left_to_vaccinate_65_and_over
         ) {
           return 1;
         } else {
@@ -717,17 +844,17 @@ headers.on("click", function (d) {
         }
       });
       // odd number of clicks
-    } else if (clicks.Estimated_left_to_vaccinate_65_plus % 2 != 0) {
+    } else if (clicks.Estimated_left_to_vaccinate_65_and_over % 2 != 0) {
       // sort descending: numerically
       rows.sort(function (a, b) {
         if (
-          +a.Estimated_left_to_vaccinate_65_plus <
-          +b.Estimated_left_to_vaccinate_65_plus
+          +a.Estimated_left_to_vaccinate_65_and_over <
+          +b.Estimated_left_to_vaccinate_65_and_over
         ) {
           return 1;
         } else if (
-          +a.Estimated_left_to_vaccinate_65_plus >
-          +b.Estimated_left_to_vaccinate_65_plus
+          +a.Estimated_left_to_vaccinate_65_and_over >
+          +b.Estimated_left_to_vaccinate_65_and_over
         ) {
           return -1;
         } else {
@@ -736,168 +863,13 @@ headers.on("click", function (d) {
       });
     }
   }
-  // ! Date
-  // if (d == "Created On") {
-  //   clicks.created_on++;
-  //   if (clicks.created_on % 2 == 0) {
-  //     // sort ascending: by date
-  //     rows.sort(function (a, b) {
-  //       // grep date and time, split them apart, make Date objects for comparing
-  //       var date = /[\d]{4}-[\d]{2}-[\d]{2}/.exec(a.created_on);
-  //       date = date[0].split("-");
-  //       var time = /[\d]{2}:[\d]{2}:[\d]{2}/.exec(a.created_on);
-  //       time = time[0].split(":");
-  //       var a_date_obj = new Date(
-  //         +date[0],
-  //         +date[1] - 1,
-  //         +date[2],
-  //         +time[0],
-  //         +time[1],
-  //         +time[2]
-  //       );
-
-  //       date = /[\d]{4}-[\d]{2}-[\d]{2}/.exec(b.created_on);
-  //       date = date[0].split("-");
-  //       time = /[\d]{2}:[\d]{2}:[\d]{2}/.exec(b.created_on);
-  //       time = time[0].split(":");
-  //       var b_date_obj = new Date(
-  //         +date[0],
-  //         +date[1] - 1,
-  //         +date[2],
-  //         +time[0],
-  //         +time[1],
-  //         +time[2]
-  //       );
-
-  //       if (a_date_obj < b_date_obj) {
-  //         return -1;
-  //       } else if (a_date_obj > b_date_obj) {
-  //         return 1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //     // odd number of clicks
-  //   } else if (clicks.created_on % 2 != 0) {
-  //     // sort descending: by date
-  //     rows.sort(function (a, b) {
-  //       // grep date and time, split them apart, make Date objects for comparing
-  //       var date = /[\d]{4}-[\d]{2}-[\d]{2}/.exec(a.created_on);
-  //       date = date[0].split("-");
-  //       var time = /[\d]{2}:[\d]{2}:[\d]{2}/.exec(a.created_on);
-  //       time = time[0].split(":");
-  //       var a_date_obj = new Date(
-  //         +date[0],
-  //         +date[1] - 1,
-  //         +date[2],
-  //         +time[0],
-  //         +time[1],
-  //         +time[2]
-  //       );
-
-  //       date = /[\d]{4}-[\d]{2}-[\d]{2}/.exec(b.created_on);
-  //       date = date[0].split("-");
-  //       time = /[\d]{2}:[\d]{2}:[\d]{2}/.exec(b.created_on);
-  //       time = time[0].split(":");
-  //       var b_date_obj = new Date(
-  //         +date[0],
-  //         +date[1] - 1,
-  //         +date[2],
-  //         +time[0],
-  //         +time[1],
-  //         +time[2]
-  //       );
-
-  //       if (a_date_obj < b_date_obj) {
-  //         return 1;
-  //       } else if (a_date_obj > b_date_obj) {
-  //         return -1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //   }
-  // }
-
-  //  ! URL
-  // if (d == "URL") {
-  //   clicks.url++;
-  //   // even number of clicks
-  //   if (clicks.url % 2 == 0) {
-  //     // sort ascending: alphabetically
-  //     rows.sort(function (a, b) {
-  //       if (
-  //         a.thumb_url_default.toUpperCase() < b.thumb_url_default.toUpperCase()
-  //       ) {
-  //         return -1;
-  //       } else if (
-  //         a.thumb_url_default.toUpperCase() > b.thumb_url_default.toUpperCase()
-  //       ) {
-  //         return 1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //     // odd number of clicks
-  //   } else if (clicks.url % 2 != 0) {
-  //     // sort descending: alphabetically
-  //     rows.sort(function (a, b) {
-  //       if (
-  //         a.thumb_url_default.toUpperCase() < b.thumb_url_default.toUpperCase()
-  //       ) {
-  //         return 1;
-  //       } else if (
-  //         a.thumb_url_default.toUpperCase() > b.thumb_url_default.toUpperCase()
-  //       ) {
-  //         return -1;
-  //       } else {
-  //         return 0;
-  //       }
-  //     });
-  //   }
-  // }
-}); // end of click listeners
-
-// ! Vaccine sites table
-
-// var request = new XMLHttpRequest();
-// request.open(
-//   "GET",
-//   "./Outputs/total_vaccination_sites_summary_table.json",
-//   false
-// );
-// request.send(null);
-// var vaccine_sites_at_a_glance = JSON.parse(request.responseText);
-
-// console.log(vaccine_sites_at_a_glance);
-
-// window.onload = () => {
-//   loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance);
-// };
-
-// function loadTable_ltla_vaccine_sites(vaccine_sites_at_a_glance) {
-//   const tableBody = document.getElementById("vaccine_sites_table_1");
-//   var dataHTML = "";
-
-//   for (let item of vaccine_sites_at_a_glance) {
-//     dataHTML += `<tr><td>${item.Area}</td><td>${d3.format(",.0f")(
-//       item.Total
-//     )}</td><td>${d3.format(",.0f")(item.GP_led)}</td><td>${d3.format(",.0f")(
-//       item.Pharmacies
-//     )}</td><td>${d3.format(",.0f")(item.Hospital_hub)}</td><td>${d3.format(
-//       ",.0f"
-//     )(item.Vaccination_centre)}</td></tr>`;
-//   }
-
-//   tableBody.innerHTML = dataHTML;
-// }
+});
 
 // ! Map
-
-var request = new XMLHttpRequest();
-request.open("GET", "./Outputs/Sussex_vaccination_sites.json", false);
-request.send(null);
-var sussex_vaccination_sites = JSON.parse(request.responseText);
+// var request = new XMLHttpRequest();
+// request.open("GET", "./Outputs/Sussex_vaccination_sites.json", false);
+// request.send(null);
+// var sussex_vaccination_sites = JSON.parse(request.responseText);
 
 // Parameters
 
@@ -933,24 +905,30 @@ var msoa_covid_imd_colour_func = d3
   .range(deprivation_colours);
 
 var msoa_covid_vaccines_ages_currently_eligible_proportion_raw = [
-  "Less than 70%",
-  "70-74%",
-  "75-79%",
-  "80-84%",
-  "85-89%",
-  "90-94%",
-  "95-99%",
+  "Less than 10%",
+  "10-19%",
+  "20-29%",
+  "30-39%",
+  "40-49%",
+  "50-59%",
+  "60-69%",
+  "70-79%",
+  "80-89%",
+  "90-99%",
   "100% of estimated population",
 ];
 
 var msoa_covid_vaccines_ages_currently_eligible_proportion_colours = [
   "#F0F921",
-  "#FEBC2A",
-  "#F48849",
-  "#DB5C68",
-  "#B93289",
-  "#8B0AA5",
-  "#5402A3",
+  "#FCCE25",
+  "#FCA636",
+  "#F1844B",
+  "#E16462",
+  "#CC4678",
+  "#B12A90",
+  "#900DA4",
+  "#6A00A8",
+  "#42049E",
   "#0D0887",
 ];
 
@@ -971,7 +949,7 @@ var msoa_imd_map_data = $.ajax({
 
 var tileUrl = "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
 var attribution =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a><br> Contains Ordnance Survey data © Crown copyright and database right 2020.<br>Zoom in/out using your mouse wheel or the plus (+) and minus (-) buttons. Click on an area to find out more';
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a><br> Contains Ordnance Survey data © Crown copyright and database right 2020.<br>Zoom in/out using your mouse wheel or the and_over (+) and minus (-) buttons. Click on an area to find out more';
 
 // IMD style
 
@@ -1043,13 +1021,21 @@ function vaccine_msoa_colour_ages_currently_eligible_proportion(d) {
     ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[6]
     : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[7]
     ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[7]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[8]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[8]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[9]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[9]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[10]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[10]
+    : d === msoa_covid_vaccines_ages_currently_eligible_proportion_raw[11]
+    ? msoa_covid_vaccines_ages_currently_eligible_proportion_colours[11]
     : "#feebe2";
 }
 
 function style_msoa_vaccine_ages_currently_eligible_proportion(feature) {
   return {
     fillColor: vaccine_msoa_colour_ages_currently_eligible_proportion(
-      feature.properties.Proportion_18_plus_banded
+      feature.properties.Proportion_12_and_over_banded
     ),
     weight: 0.5,
     opacity: 1,
@@ -1075,13 +1061,13 @@ $.when(msoa_imd_map_data).done(function () {
         ")</b></p>This MSOA is ranked in <b>" +
         layer.feature.properties.National_pop_weighted_decile +
         "</b> with 1 being the most deprived 10% of neighbourhoods nationally and 10 being the least deprived 10% of neighbourhoods.</p><p> A total of <b> " +
-        d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
-        "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-        d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+        d3.format(",.0f")(layer.feature.properties.Age_12_and_over) +
+        "</b> people aged 12+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_12_and_over) +
         " </b>of the estimated population in this area.</p><p>A total of <b>" +
-        d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
-        " </b>people aged 18+ have received at least one dose (<b>" +
-        d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
+        d3.format(",.0f")(layer.feature.properties.Age_16_and_over) +
+        " </b>people aged 16+ have received at least one dose (<b>" +
+        d3.format(".1%")(layer.feature.properties.Proportion_16_and_over) +
         "</b>).</p>"
       );
     });
@@ -1099,18 +1085,18 @@ $.when(msoa_imd_map_data).done(function () {
       ")</b></p>This MSOA is ranked in <b>" +
       layer.feature.properties.Decile_in_Sussex +
       "</b> with 1 being the most deprived 10% of neighbourhoods in Sussex and 10 being the least deprived 10% of neighbourhoods.</p><p> A total of <b> " +
-      d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
-      "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+      d3.format(",.0f")(layer.feature.properties.Age_12_and_over) +
+      "</b> people aged 12+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_12_and_over) +
       " </b>of the estimated population in this area.</p><p>A total of <b>" +
-      d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
-      " </b>people aged 18+ have received at least one dose (<b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
+      d3.format(",.0f")(layer.feature.properties.Age_16_and_over) +
+      " </b>people aged 16+ have received at least one dose (<b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_16_and_over) +
       "</b>).</p>"
     );
   });
 
-  var msoa_vaccine_18_plus_proportion_map_layer = L.geoJSON(
+  var msoa_vaccine_12_and_over_proportion_map_layer = L.geoJSON(
     msoa_imd_map_data.responseJSON,
     {
       style: style_msoa_vaccine_ages_currently_eligible_proportion,
@@ -1126,13 +1112,13 @@ $.when(msoa_imd_map_data).done(function () {
       "</b> with 1 being the most deprived 10% of neighbourhoods in Sussex and <b>" +
       layer.feature.properties.National_pop_weighted_decile +
       "</b> nationallly, with 10 being the least deprived 10 % of neighbourhoods.</p ><p> A total of <b> " +
-      d3.format(",.0f")(layer.feature.properties.Total_where_age_known) +
-      "</b> people aged 16+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_age_known) +
+      d3.format(",.0f")(layer.feature.properties.Age_12_and_over) +
+      "</b> people aged 12+ have received at least one dose of a COVID-19 vaccine. This is <b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_12_and_over) +
       " </b>of the estimated population in this area.</p><p>A total of <b>" +
-      d3.format(",.0f")(layer.feature.properties.Age_18_and_over) +
-      " </b>people aged 18+ have received at least one dose (<b>" +
-      d3.format(".1%")(layer.feature.properties.Proportion_18_plus) +
+      d3.format(",.0f")(layer.feature.properties.Age_16_and_over) +
+      " </b>people aged 16+ have received at least one dose (<b>" +
+      d3.format(".1%")(layer.feature.properties.Proportion_16_and_over) +
       "</b>).</p>"
     );
   });
@@ -1140,147 +1126,12 @@ $.when(msoa_imd_map_data).done(function () {
   var baseMaps_imd = {
     "Deprivation deciles (national ranks)": msoa_imd_national_map_layer,
     "Deprivation deciles (ranks within Sussex)": msoa_imd_sussex_map_layer,
-    "Proportion of those aged 18+ receiving first dose":
-      msoa_vaccine_18_plus_proportion_map_layer,
+    "Proportion of those aged 12+ receiving first dose":
+      msoa_vaccine_12_and_over_proportion_map_layer,
   };
-
-  // Add sites
-
-  // var myIconClass = L.Icon.extend({
-  //   options: {
-  //     shadowUrl:
-  //       "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  //     iconSize: [25, 41],
-  //     iconAnchor: [12, 41],
-  //     popupAnchor: [1, -34],
-  //     shadowSize: [41, 41],
-  //   },
-  // });
-
-  // var pharm_icon = new myIconClass({
-  //     iconUrl:
-  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
-  //   }),
-  //   gp_icon = new myIconClass({
-  //     iconUrl:
-  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
-  //   }),
-  //   hh_icon = new myIconClass({
-  //     iconUrl:
-  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-  //   }),
-  //   vac_site_icon = new myIconClass({
-  //     iconUrl:
-  //       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
-  //   });
-
-  // pharmacy_vac_sites = sussex_vaccination_sites.filter(function (d) {
-  //   return d.Type === "Pharmacies";
-  // });
-
-  // gp_vac_sites = sussex_vaccination_sites.filter(function (d) {
-  //   return d.Type === "GP led service";
-  // });
-
-  // hh_vac_sites = sussex_vaccination_sites.filter(function (d) {
-  //   return d.Type === "Hospital Hub";
-  // });
-
-  // vaccine_centre_vac_sites = sussex_vaccination_sites.filter(function (d) {
-  //   return d.Type === "Vaccination centre";
-  // });
-
-  // // If you want to create a group of markers you want to hide/show you need to add them to a layergroup inside the loop, then add the layergroup to the map
-  // pharmacy_site_markers = L.layerGroup();
-  // for (item of pharmacy_vac_sites) {
-  //   pharm_mark_item = L.marker([item.latitude, item.longitude], {
-  //     icon: pharm_icon,
-  //   })
-  //     .bindPopup(
-  //       "<p><b>" +
-  //         item.Site +
-  //         " (" +
-  //         item.LTLA +
-  //         ")</b></p><p>Address: " +
-  //         item.Address +
-  //         " " +
-  //         item.Postcode +
-  //         "</p><p>This is a pharmacy led vaccination site.</p>"
-  //     )
-  //     .addTo(pharmacy_site_markers);
-  // }
-  // pharmacy_site_markers.addTo(msoa_map_vaccine_imd_leaf);
-
-  // gp_led_markers = L.layerGroup();
-  // for (item of gp_vac_sites) {
-  //   gp_mark_item = L.marker([item.latitude, item.longitude], {
-  //     icon: gp_icon,
-  //   })
-  //     .bindPopup(
-  //       "<p><b>" +
-  //         item.Site +
-  //         " (" +
-  //         item.LTLA +
-  //         ")</b></p><p>Address: " +
-  //         item.Address +
-  //         " " +
-  //         item.Postcode +
-  //         "</p><p>This is a GP led vaccination site.</p>"
-  //     )
-  //     .addTo(gp_led_markers);
-  // }
-  // gp_led_markers.addTo(msoa_map_vaccine_imd_leaf);
-
-  // hospital_hub_markers = L.layerGroup();
-  // for (item of hh_vac_sites) {
-  //   hh_mark_item = L.marker([item.latitude, item.longitude], {
-  //     icon: hh_icon,
-  //   })
-  //     .bindPopup(
-  //       "<p><b>" +
-  //         item.Site +
-  //         " (" +
-  //         item.LTLA +
-  //         ")</b></p><p>Address: " +
-  //         item.Address +
-  //         " " +
-  //         item.Postcode +
-  //         "</p><p>This is a hospital hub vaccination site.</p>"
-  //     )
-  //     .addTo(hospital_hub_markers);
-  // }
-  // hospital_hub_markers.addTo(msoa_map_vaccine_imd_leaf);
-
-  // vaccination_centre_markers = L.layerGroup();
-  // for (item of vaccine_centre_vac_sites) {
-  //   vac_centre_mark_item = L.marker([item.latitude, item.longitude], {
-  //     icon: vac_site_icon,
-  //   })
-  //     .bindPopup(
-  //       "<p><b>" +
-  //         item.Site +
-  //         " (" +
-  //         item.LTLA +
-  //         ")</b></p><p>Address: " +
-  //         item.Address +
-  //         " " +
-  //         item.Postcode +
-  //         "</p><p>This is a vaccination centre site.</p>"
-  //     )
-  //     .addTo(vaccination_centre_markers);
-  // }
-  // vaccination_centre_markers.addTo(msoa_map_vaccine_imd_leaf);
-
   var baseMaps_sites = {
     "National boundaries": msoa_imd_national_map_layer,
   };
-
-  // var overlayMaps_sites = {
-  //   "Show GP led sites": gp_led_markers,
-  //   "Show Pharmacy sites": pharmacy_site_markers,
-  //   "Show Hospital hub sites": hospital_hub_markers,
-  //   "Show Vaccination centre sites": vaccination_centre_markers,
-  // };
 
   var basemap_msoa_imd_vaccine = L.tileLayer(tileUrl, {
     attribution,
@@ -1292,7 +1143,7 @@ $.when(msoa_imd_map_data).done(function () {
     .addTo(msoa_map_vaccine_imd_leaf);
 
   msoa_map_vaccine_imd_leaf.fitBounds(
-    msoa_vaccine_18_plus_proportion_map_layer.getBounds()
+    msoa_vaccine_12_and_over_proportion_map_layer.getBounds()
   );
 
   msoa_map_vaccine_imd_leaf.on("baselayerchange", function (ev) {
@@ -1306,7 +1157,7 @@ $.when(msoa_imd_map_data).done(function () {
     }
     if (
       selected_base_layer ===
-      "Proportion of those aged 18+ receiving first dose"
+      "Proportion of those aged 12+ receiving first dose"
     ) {
       key_msoa_vaccines_ages_currently_eligible_proportion();
     }
@@ -1373,11 +1224,11 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
   $(".key_list_vaccine_all").remove();
 
   d3.select("#msoa_map_vaccine_deprivation_title").html(function (d) {
-    return "Proportion of individuals (aged 18+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
+    return "Proportion of individuals (aged 12+) receiving at least one Covid-19 vaccination dose; Sussex MSOAs;";
   });
 
   d3.select("#imd_msoa_map_key_title").html(function (d) {
-    return "Proportion of people aged 18+ receiving at least one dose";
+    return "Proportion of people aged 12+ receiving at least one dose";
   });
 
   msoa_covid_vaccines_ages_currently_eligible_proportion_raw.forEach(function (
@@ -1408,43 +1259,10 @@ function key_msoa_vaccines_ages_currently_eligible_proportion() {
 
 key_msoa_imd_national();
 
-// // Sites
-// var request = new XMLHttpRequest();
-// request.open("GET", "./Outputs/Sussex_vaccination_sites.json", false);
-// request.send(null);
-// var sussex_vaccination_sites = JSON.parse(request.responseText);
-
-// // Parameters
-// site_types = [
-//   "GP led service",
-//   "Pharmacies",
-//   "Hospital Hub",
-//   "Vaccination centre",
-// ];
-// site_type_colours = ["#2a81cb", "#2aad27", "#cb2b3e", "#9c2bcb"];
-
-// site_type_colour_func = d3
-//   .scaleOrdinal()
-//   .domain(site_types)
-//   .range(site_type_colours);
-
-// site_types.forEach(function (item, index) {
-//   var list = document.createElement("li");
-//   list.innerHTML = item;
-//   list.className = "key_list";
-//   list.style.borderColor = site_type_colour_func(index);
-//   var tt = document.createElement("div");
-//   tt.className = "side_tt";
-//   tt.style.borderColor = site_type_colour_func(index);
-//   var tt_h3_1 = document.createElement("h3");
-//   tt_h3_1.innerHTML = item;
-
-//   tt.appendChild(tt_h3_1);
-//   var div = document.getElementById("vaccine_site_key");
-//   div.appendChild(list);
-// });
-
 // ! Scatter plot
+
+console.log(vaccine_msoa_data);
+
 var height_scatter = 500;
 
 var ltla_area_scatter_comp = [
@@ -1483,10 +1301,10 @@ var ltla_scatter_colour_func = d3
   ]);
 
 var scatter_options = [
-  "Proportion over 18",
-  "Proportion over 65",
+  "Proportion over 12",
+  "Proportion over 16",
   "Proportion aged 18-64",
-  "Proportion aged 16+",
+  "Proportion over 65",
 ];
 
 d3.select("#select_scatter_measure_button")
@@ -1509,30 +1327,30 @@ var column_to_select_scatter = d3
   .scaleOrdinal()
   .domain(scatter_options)
   .range([
-    "Proportion_18_plus",
-    "Proportion_65_plus",
+    "Proportion_12_and_over",
+    "Proportion_16_and_over",
     "Proportion_18_64",
-    "Proportion_age_known",
+    "Proportion_65_and_over",
   ]);
 
 var column_to_select_scatter_count = d3
   .scaleOrdinal()
   .domain(scatter_options)
   .range([
-    "Age_18_and_over",
-    "Age_65_and_over",
+    "Age_12_and_over",
+    "Age_16_and_over",
     "Age_18_64",
-    "Total_where_age_known",
+    "Age_65_and_over",
   ]);
 
 var column_to_select_scatter_text_1 = d3
   .scaleOrdinal()
   .domain(scatter_options)
   .range([
-    "people aged 18+ years",
-    "people aged 65+ years",
+    "people aged 12+ years",
+    "people aged 16+ years",
     "people aged 18-64 years",
-    "people aged 16+",
+    "people aged 65+ years",
   ]);
 
 var svg_scatter = d3
@@ -1646,7 +1464,7 @@ var y_dep_vs_uptake = d3
   .scaleLinear()
   .domain([
     d3.min(included_vaccine_msoa_data, function (d) {
-      return +d.Proportion_30_plus;
+      return +d.Proportion_30_and_over;
     }),
     1,
   ])

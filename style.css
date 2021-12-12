@@ -930,6 +930,10 @@ section {
   text-align: right;
 }
 
+.msoa_table th {
+  text-align: right;
+}
+
 .msoa_table table {
   margin-bottom: 25px;
 }
