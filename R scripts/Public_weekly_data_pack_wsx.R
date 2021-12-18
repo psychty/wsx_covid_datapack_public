@@ -2854,6 +2854,8 @@ for(i in urls) {
   dflist[[i]] <- df
 }
 
+names(vaccine_age_df)
+
 # bind together (unnest)
 vaccine_age_df <- bind_rows(dflist) %>%
   unnest(vaccinationsAgeDemographics) %>% 
@@ -2862,12 +2864,12 @@ vaccine_age_df <- bind_rows(dflist) %>%
          Name = areaName,
          Age_group = age,
          Denominator = VaccineRegisterPopulationByVaccinationDate,
-         Cumulative_complete = cumPeopleVaccinatedCompleteByVaccinationDate,
-         Complete_dose = newPeopleVaccinatedCompleteByVaccinationDate,
          Cumulative_dose_1 = cumPeopleVaccinatedFirstDoseByVaccinationDate,
          Dose_1 = newPeopleVaccinatedFirstDoseByVaccinationDate, 
          Cumulative_dose_2 = cumPeopleVaccinatedSecondDoseByVaccinationDate,
-         Dose_2 = newPeopleVaccinatedSecondDoseByVaccinationDate) %>% 
+         Dose_2 = newPeopleVaccinatedSecondDoseByVaccinationDate,
+         Cumulative_dose_3_or_booster = cumPeopleVaccinatedThirdInjectionByVaccinationDate,
+         Dose_3_or_booster = newPeopleVaccinatedThirdInjectionByVaccinationDate) %>% 
   select(!c(apisource, Code)) %>% 
   mutate(Date = as.Date(Date)) %>% 
   mutate(Age_group = factor(paste0(gsub('_', '-', Age_group), ' years'), levels = c('12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
@@ -2875,28 +2877,92 @@ vaccine_age_df <- bind_rows(dflist) %>%
   arrange(Date) %>% 
   mutate(Seven_day_sum_dose_1 = round(rollapplyr(Dose_1, 7, sum, align = 'right', partial = TRUE),0)) %>%  
   mutate(Seven_day_sum_dose_2 = round(rollapplyr(Dose_2, 7, sum, align = 'right', partial = TRUE),0))  %>% 
-  mutate(Rolling_age_specific_first_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_1, Denominator)[[3]]*100000) %>% 
+  mutate(Seven_day_sum_dose_3_or_booster = round(rollapplyr(Dose_3_or_booster, 7, sum, align = 'right', partial = TRUE),0)) %>% 
+  select(Date, Name, Age_group, Denominator, Dose_1, Seven_day_sum_dose_1, Cumulative_dose_1, Dose_2, Seven_day_sum_dose_2, Cumulative_dose_2, Dose_3_or_booster, Seven_day_sum_dose_3_or_booster, Cumulative_dose_3_or_booster)
+
+# Currently routinely, 12-15 year olds have one dose, 16-17 year olds will be offered two doses, and 18+ will get three
+vaccine_age_df_1 <- vaccine_age_df %>% 
+    mutate(Rolling_age_specific_first_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_1, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
-  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) 
+  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) %>% 
+  mutate(Rolling_age_specific_second_dose_rate_per_100000 = ifelse(Age_group == '12-15 years', NA, Rolling_age_specific_second_dose_rate_per_100000)) %>% 
+  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = ifelse(Age_group == '12-15 years', NA, Cumulative_age_specific_second_dose_rate_per_100000))
 
-vaccine_ts_df <- vaccine_age_df %>% 
+vaccine_age_df_2 <- vaccine_age_df %>% 
+  filter(!Age_group %in% c('12-15 years', '16-17 years')) %>% 
+  mutate(Rolling_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_3_or_booster, Denominator)[[3]]*100000) %>% 
+  mutate(Cumulative_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Cumulative_dose_3_or_booster, Denominator)[[3]]*100000)
+
+vaccine_age_df_final <- vaccine_age_df_1 %>% 
+  left_join(vaccine_age_df_2[c('Date', 'Name', 'Age_group', 'Rolling_age_specific_third_or_booster_dose_rate_per_100000', 'Cumulative_age_specific_third_or_booster_dose_rate_per_100000')], by = c('Date', 'Name', 'Age_group'))
+
+vaccine_ts_12_plus_df <- vaccine_age_df_final %>% 
   group_by(Date, Name) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
             Dose_2 = sum(Dose_2, na.rm = TRUE),
-            Denominator = sum(Denominator, na.rm = TRUE),
-            Complete_dose = sum(Complete_dose, na.rm = TRUE)) %>%
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE),
+            Denominator = sum(Denominator, na.rm = TRUE)) %>%
   group_by(Name) %>% 
   arrange(Date) %>% 
   mutate(Cumulative_dose_1 = cumsum(Dose_1),
          Cumulative_dose_2 = cumsum(Dose_2),
-         Cumulative_complete = cumsum(Complete_dose)) %>% 
+         Cumulative_dose_3_or_booster = cumsum(Dose_3_or_booster)) %>% 
   mutate(Seven_day_sum_dose_1 = round(rollapplyr(Dose_1, 7, sum, align = 'right', partial = TRUE),0)) %>%  
   mutate(Seven_day_sum_dose_2 = round(rollapplyr(Dose_2, 7, sum, align = 'right', partial = TRUE),0)) %>% 
+  mutate(Seven_day_sum_dose_3_or_booster = round(rollapplyr(Dose_3_or_booster, 7, sum, align = 'right', partial = TRUE),0)) %>% 
+  mutate(Rolling_age_specific_first_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_1, Denominator)[[3]]*100000) %>% 
+  mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
+  mutate(Age_group = '12 and over')
+
+vaccine_ts_16_plus_df <- vaccine_age_df_final %>% 
+  filter(!Age_group %in% c('12-15 years')) %>% 
+  group_by(Date, Name) %>% 
+  summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
+            Dose_2 = sum(Dose_2, na.rm = TRUE),
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE),
+            Denominator = sum(Denominator, na.rm = TRUE)) %>%
+  group_by(Name) %>% 
+  arrange(Date) %>% 
+  mutate(Cumulative_dose_1 = cumsum(Dose_1),
+         Cumulative_dose_2 = cumsum(Dose_2),
+         Cumulative_dose_3_or_booster = cumsum(Dose_3_or_booster)) %>% 
+  mutate(Seven_day_sum_dose_1 = round(rollapplyr(Dose_1, 7, sum, align = 'right', partial = TRUE),0)) %>%  
+  mutate(Seven_day_sum_dose_2 = round(rollapplyr(Dose_2, 7, sum, align = 'right', partial = TRUE),0)) %>% 
+  mutate(Seven_day_sum_dose_3_or_booster = round(rollapplyr(Dose_3_or_booster, 7, sum, align = 'right', partial = TRUE),0)) %>% 
   mutate(Rolling_age_specific_first_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_1, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
-  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) 
+  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000)  %>% 
+  mutate(Age_group = '16 and over')
+
+vaccine_ts_18_plus_df <- vaccine_age_df_final %>% 
+  filter(!Age_group %in% c('12-15 years', '16-17 years')) %>% 
+  group_by(Date, Name) %>% 
+  summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
+            Dose_2 = sum(Dose_2, na.rm = TRUE),
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE),
+            Denominator = sum(Denominator, na.rm = TRUE)) %>%
+  group_by(Name) %>% 
+  arrange(Date) %>% 
+  mutate(Cumulative_dose_1 = cumsum(Dose_1),
+         Cumulative_dose_2 = cumsum(Dose_2),
+         Cumulative_dose_3_or_booster = cumsum(Dose_3_or_booster)) %>% 
+  mutate(Seven_day_sum_dose_1 = round(rollapplyr(Dose_1, 7, sum, align = 'right', partial = TRUE),0)) %>%  
+  mutate(Seven_day_sum_dose_2 = round(rollapplyr(Dose_2, 7, sum, align = 'right', partial = TRUE),0)) %>% 
+  mutate(Seven_day_sum_dose_3_or_booster = round(rollapplyr(Dose_3_or_booster, 7, sum, align = 'right', partial = TRUE),0)) %>% 
+  mutate(Rolling_age_specific_first_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_1, Denominator)[[3]]*100000) %>% 
+  mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
+  mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
+  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) %>% 
+  mutate(Rolling_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_3_or_booster, Denominator)[[3]]*100000) %>% 
+  mutate(Cumulative_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Cumulative_dose_3_or_booster, Denominator)[[3]]*100000)  %>% 
+  mutate(Age_group = '18 and over')
+
+vaccine_ts_df <- vaccine_age_df_final %>%
+  bind_rows(vaccine_ts_12_plus_df) %>% 
+  bind_rows(vaccine_ts_16_plus_df) %>% 
+  bind_rows(vaccine_ts_18_plus_df)
 
 vaccine_ts_df %>%
   ungroup() %>% 
@@ -2907,21 +2973,21 @@ vaccine_ts_df %>%
   write_lines(paste0(output_directory_x, '/vaccine_latest_dose_date.json'))
 
 vaccination_area_ts_df_long <- vaccine_ts_df %>% 
-  select(Name, Date, Seven_day_sum_dose_1, Seven_day_sum_dose_2) %>% 
-  pivot_longer(cols = c('Seven_day_sum_dose_1', 'Seven_day_sum_dose_2'),
+  select(Name, Date, Seven_day_sum_dose_1, Seven_day_sum_dose_2, Seven_day_sum_dose_3_or_booster) %>% 
+  pivot_longer(cols = c('Seven_day_sum_dose_1', 'Seven_day_sum_dose_2', 'Seven_day_sum_dose_3_or_booster'),
                names_to = 'Dose_number',
                values_to = 'Seven_day_rolling_vaccinations') %>% 
-  mutate(Dose_number = ifelse(Dose_number == 'Seven_day_sum_dose_1', 'Dose_1', ifelse(Dose_number == 'Seven_day_sum_dose_2', 'Dose_2', NA)))
+  mutate(Dose_number = ifelse(Dose_number == 'Seven_day_sum_dose_1', 'Dose_1', ifelse(Dose_number == 'Seven_day_sum_dose_2', 'Dose_2', ifelse(Dose_number == 'Seven_day_sum_dose_3_or_booster', 'Dose_3_or_booster', NA))))
 
 vaccination_area_ts_rate_df_long <- vaccine_ts_df %>% 
-  select(Name, Date, Rolling_age_specific_first_dose_rate_per_100000, Rolling_age_specific_second_dose_rate_per_100000) %>% 
-  pivot_longer(cols = c('Rolling_age_specific_first_dose_rate_per_100000', 'Rolling_age_specific_second_dose_rate_per_100000'),
+  select(Name, Date, Rolling_age_specific_first_dose_rate_per_100000, Rolling_age_specific_second_dose_rate_per_100000, Rolling_age_specific_third_or_booster_dose_rate_per_100000) %>% 
+  pivot_longer(cols = c('Rolling_age_specific_first_dose_rate_per_100000', 'Rolling_age_specific_second_dose_rate_per_100000', 'Rolling_age_specific_third_or_booster_dose_rate_per_100000'),
                names_to = 'Dose_number',
                values_to = 'Seven_day_rolling_rate_vaccinations') %>% 
-  mutate(Dose_number = ifelse(Dose_number == 'Rolling_age_specific_first_dose_rate_per_100000', 'Dose_1', ifelse(Dose_number == 'Rolling_age_specific_second_dose_rate_per_100000', 'Dose_2', NA)))
+  mutate(Dose_number = ifelse(Dose_number == 'Rolling_age_specific_first_dose_rate_per_100000', 'Dose_1', ifelse(Dose_number == 'Rolling_age_specific_second_dose_rate_per_100000', 'Dose_2', ifelse(Dose_number == 'Rolling_age_specific_third_or_booster_dose_rate_per_100000', 'Dose_3_or_booster', NA))))
 
 vaccination_area_ts_df_long <- vaccination_area_ts_df_long %>% 
-  left_join(vaccination_area_ts_rate_df_long, by = c('Name', 'Date', 'Dose_number'))
+  left_join(vaccination_area_ts_rate_df_long, by = c('Name', 'Date', 'Dose_number', 'Age_group'))
 
 vaccine_ts_df_x <- vaccination_area_ts_df_long %>% 
   filter(Name == 'West Sussex')
@@ -2987,25 +3053,26 @@ vaccination_area_ts_df_long %>%
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_date_labels.json'))
 
 vaccination_area_ts_df_long %>%
+  filter(Age_group == '18 and over') %>% 
   mutate(Date_label = format(Date, '%d %b %y')) %>% 
   select(!Date) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_overall.json'))
 
-vaccine_age_df %>% 
-  mutate(Date_label = format(Date, '%d %b %y')) %>% 
-  select(Name, Age_group, Date_label, Seven_day_sum_dose_1, Rolling_age_specific_first_dose_rate_per_100000, Seven_day_sum_dose_2, Rolling_age_specific_second_dose_rate_per_100000, Cumulative_dose_1, Cumulative_age_specific_first_dose_rate_per_100000, Cumulative_dose_2, Cumulative_age_specific_second_dose_rate_per_100000) %>%
-  mutate(Rolling_age_specific_first_dose_rate_per_100000 = replace_na(Rolling_age_specific_first_dose_rate_per_100000, 0)) %>% 
-  mutate(Rolling_age_specific_second_dose_rate_per_100000 = replace_na(Rolling_age_specific_second_dose_rate_per_100000, 0)) %>% 
-  mutate(Cumulative_age_specific_first_dose_rate_per_100000 = replace_na(Cumulative_age_specific_first_dose_rate_per_100000, 0)) %>% 
-  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = replace_na(Cumulative_age_specific_second_dose_rate_per_100000, 0)) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x, '/vaccination_timeseries_age.json'))
+# vaccine_age_df_final %>% 
+#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
+#   select(Name, Age_group, Date_label, Seven_day_sum_dose_1, Rolling_age_specific_first_dose_rate_per_100000, Seven_day_sum_dose_2, Rolling_age_specific_second_dose_rate_per_100000, Cumulative_dose_1, Cumulative_age_specific_first_dose_rate_per_100000, Cumulative_dose_2, Cumulative_age_specific_second_dose_rate_per_100000) %>%
+#   mutate(Rolling_age_specific_first_dose_rate_per_100000 = replace_na(Rolling_age_specific_first_dose_rate_per_100000, 0)) %>%
+#   mutate(Rolling_age_specific_second_dose_rate_per_100000 = replace_na(Rolling_age_specific_second_dose_rate_per_100000, 0)) %>%
+#   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = replace_na(Cumulative_age_specific_first_dose_rate_per_100000, 0)) %>%
+#   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = replace_na(Cumulative_age_specific_second_dose_rate_per_100000, 0)) %>%
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x, '/vaccination_timeseries_age.json'))
 
-vaccine_ts_age_df_x <- vaccine_age_df %>% 
-  filter(Name == 'West Sussex')
+# vaccine_ts_age_df_x <- vaccine_age_df %>% 
+#   filter(Name == 'West Sussex')
 
-library(ggiraph)
+# library(ggiraph)
 
 # viridis::inferno(15, direction = -1)
 
@@ -3101,12 +3168,12 @@ library(ggiraph)
 #        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
 #   theme(axis.text.x = element_text(size = 8))
 
-read_csv(paste0(github_repo_dir, '/Source files/jcvi_dates.csv'),
-         col_types = cols(Opening_date = col_date(format = "%d/%m/%Y"))) %>% 
-  mutate(Date_label = format(Opening_date, '%d %b %y')) %>% 
-  filter(!is.na(Date_label)) %>% 
-  toJSON() %>% 
-  write_lines(paste0(output_directory_x,'/jcvi_cohort_key_dates.json'))
+# read_csv(paste0(github_repo_dir, '/Source files/jcvi_dates.csv'),
+#          col_types = cols(Opening_date = col_date(format = "%d/%m/%Y"))) %>% 
+#   mutate(Date_label = format(Opening_date, '%d %b %y')) %>% 
+#   filter(!is.na(Date_label)) %>% 
+#   toJSON() %>% 
+#   write_lines(paste0(output_directory_x,'/jcvi_cohort_key_dates.json'))
 
 # Week by week change ####
 
@@ -3127,17 +3194,20 @@ week_start_vac <- week_starting_a %>%
 
 rm(week_starting_a, week_starting_b)
 
+vaccine_ts_df %>% 
+  ungroup() %>% 
+  select(Age_group) %>% 
+  unique()
+
 all_age_vac <- vaccine_ts_df %>% 
-  mutate(Age_group = '12 and over') %>% 
-  bind_rows(vaccine_age_df) %>% 
-  select(!c(cumVaccinationFirstDoseUptakeByVaccinationDatePercentage,cumVaccinationCompleteCoverageByVaccinationDatePercentage,cumVaccinationSecondDoseUptakeByVaccinationDatePercentage)) %>% 
   mutate(Week_number = paste0(date2week(Date, numeric = TRUE), ifelse(Date < '2021-01-04', ' - 2020', ' - 2021' ))) %>% 
   left_join(week_start_vac, by = 'Week_number') %>% 
   mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021"))) %>% 
   mutate(Age_group = ifelse(Age_group %in% c('60-64 years','65-69 years','70-74 years','75-79 years','80-84 years','85-89 years','90+ years'), '60+ years', Age_group)) %>% 
   group_by(Name, Age_group, Week_number, Week_start, Week_range_label) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
-            Dose_2 = sum(Dose_2, na.rm = TRUE)) %>% 
+            Dose_2 = sum(Dose_2, na.rm = TRUE),
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE)) %>% 
   ungroup()
 
 week_x <- ifelse(paste0(date2week(last_date, numeric = TRUE)-1, ifelse(last_date < '2021-01-04', ' - 2020', ' - 2021')) == '0 - 2021', '53 - 2020', paste0(date2week(last_date, numeric = TRUE)-1, ifelse(last_date < '2021-01-04', ' - 2020', ' - 2021')))
@@ -3165,9 +3235,17 @@ wsx_wk_by_wk_2 <- all_age_vac %>%
   pivot_wider(names_from = Week_range_label,
               values_from = Dose_2) 
 
+wsx_wk_by_wk_3 <- all_age_vac %>% 
+  filter(Week_number %in% weeks_to_keep$Week_number) %>% 
+  select(Name, Age_group, Week_range_label, Dose_3_or_booster) %>% 
+  mutate(Week_range_label = paste0('3rd or booster doses ', Week_range_label)) %>% 
+  pivot_wider(names_from = Week_range_label,
+              values_from = Dose_3_or_booster) 
+
 wsx_wk_by_wk <- wsx_wk_by_wk_1 %>% 
   left_join(wsx_wk_by_wk_2,  by = c('Name', 'Age_group')) %>% 
-  mutate(Age_group = factor(Age_group, levels = c('12 and over','12-15 years','16-17 years','18-24 years','25-29 years','30-34 years','35-39 years','40-44 years','45-49 years','50-54 years','55-59 years','60+ years'))) %>% 
+  left_join(wsx_wk_by_wk_3,  by = c('Name', 'Age_group')) %>% 
+  mutate(Age_group = factor(Age_group, levels = c('12 and over','16 and over', '18 and over','12-15 years','16-17 years','18-24 years','25-29 years','30-34 years','35-39 years','40-44 years','45-49 years','50-54 years','55-59 years','60+ years'))) %>% 
   arrange(Name, desc(Age_group))
 
 wsx_wk_by_wk %>% 
@@ -3183,27 +3261,21 @@ wsx_wk_by_wk %>%
   rename(Second_dose_week_minus_3 = 6) %>%
   rename(Second_dose_week_minus_2 = 7) %>%
   rename(Second_dose_week_minus_1 = 8) %>%
+  rename(Third_booster_dose_week_minus_3 = 9) %>%
+  rename(Third_booster_dose_week_minus_2 = 10) %>%
+  rename(Third_booster_dose_week_minus_1 = 11) %>%
   mutate(Label = paste0(Name, Age_group)) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_wk_by_wk_age.json'))
 
-age_denominators_1 <- vaccine_age_df %>% 
+
+age_denominators <- vaccine_ts_df %>% 
   filter(Date == max(Date)) %>%
   select(Name, Age_group, Denominator)
 
-age_denominators_2 <- age_denominators_1 %>% 
-  group_by(Name) %>% 
-  summarise(Denominator = sum(Denominator, na.rm = TRUE)) %>% 
-  mutate(Age_group = '12 and over')
-
-age_denominators <- age_denominators_1 %>% 
-  bind_rows(age_denominators_2)
-
 # cumulative timeseries by age ####
 cumulative_vac <- vaccine_ts_df %>% 
-  mutate(Age_group = '12 and over') %>% 
-  bind_rows(vaccine_age_df) %>% 
-  mutate(Age_group = factor(Age_group, levels = c('12 and over', '12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
+  mutate(Age_group = factor(Age_group, levels = c('12 and over', '16 and over', '18 and over', '12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
   mutate(Date_label = format(Date, '%d %b %y')) 
 
 cumulative_vac %>% 
@@ -3214,27 +3286,26 @@ cumulative_vac %>%
   write_lines(paste0(output_directory_x, '/vaccine_age_denominators.json'))  
 
 cumulative_vac %>% 
-  select(Name, Age_group, Date_label, Cumulative_dose_1, Cumulative_dose_2) %>% 
+  select(Name, Age_group, Date_label, Cumulative_dose_1, Cumulative_dose_2, Cumulative_dose_3_or_booster) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/cumulative_vaccine_age_data.json'))   
 
 # Week by week percentage
 
 weekly_prop_df <- vaccine_ts_df %>% 
-  mutate(Age_group = '12 and over') %>% 
-  bind_rows(vaccine_age_df) %>% 
-  select(!c(cumVaccinationFirstDoseUptakeByVaccinationDatePercentage,cumVaccinationCompleteCoverageByVaccinationDatePercentage,cumVaccinationSecondDoseUptakeByVaccinationDatePercentage)) %>% 
   mutate(Week_number = paste0(date2week(Date, numeric = TRUE), ifelse(Date < '2021-01-04', ' - 2020', ' - 2021' ))) %>% 
   left_join(week_start_vac, by = 'Week_number') %>% 
   mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021"))) %>% 
   # mutate(Age_group = ifelse(Age_group %in% c('60-64 years','65-69 years','70-74 years','75-79 years','80-84 years','85-89 years','90+ years'), '60+ years', Age_group)) %>% 
   group_by(Name, Age_group, Week_number, Week_start, Week_range_label) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
-            Dose_2 = sum(Dose_2, na.rm = TRUE)) %>% 
+            Dose_2 = sum(Dose_2, na.rm = TRUE),
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE)) %>% 
   ungroup() %>% 
   left_join(age_denominators, by = c('Name', 'Age_group')) %>% 
   mutate(Proportion_dose_1 = Dose_1 / Denominator) %>% 
-  mutate(Proportion_dose_2 = Dose_2 / Denominator) 
+  mutate(Proportion_dose_2 = Dose_2 / Denominator) %>% 
+  mutate(Proportion_dose_3_or_booster = Dose_3_or_booster / Denominator)
 
 weekly_prop_1 <- weekly_prop_df %>% 
   mutate(Week_range_label = paste0('1st doses ', Week_range_label)) %>%
@@ -3250,8 +3321,16 @@ weekly_prop_2 <- weekly_prop_df %>%
               values_from = Proportion_dose_2) %>% 
   mutate(Dose = 'Dose 2')
 
+weekly_prop_3 <- weekly_prop_df %>% 
+  select(Name, Age_group, Week_range_label, Proportion_dose_3_or_booster) %>% 
+  mutate(Week_range_label = paste0('3rd or booster doses ', Week_range_label)) %>% 
+  pivot_wider(names_from = Week_range_label,
+              values_from = Proportion_dose_3_or_booster) %>% 
+  mutate(Dose = 'Dose 3 or booster')
+
 wsx_wk_by_wk_prop <- weekly_prop_1 %>% 
-  bind_rows(weekly_prop_2) %>% 
+  bind_rows(weekly_prop_2) %>%
+  bind_rows(weekly_prop_3) %>% 
   mutate(Age_group = factor(Age_group, levels = c('12 and over','16-17 years', "18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
   arrange(Name, desc(Age_group))
 
@@ -3260,11 +3339,11 @@ wsx_wk_by_wk_prop %>%
 
 # recreating vaccine at a glance LTLA ####
 
-latest_denominators_1 <- vaccine_age_df %>% 
+latest_denominators_1 <- vaccine_ts_df %>% 
   filter(Date == max(Date)) %>%
   select(Name, Age_group, Denominator)
 
-latest_denominators_2 <-  vaccine_age_df %>% 
+latest_denominators_2 <-  vaccine_ts_df %>% 
   filter(Date == max(Date)) %>%
   filter(Age_group %in% c('65-69 years','70-74 years','75-79 years','80-84 years','85-89 years','90+ years')) %>% 
   select(Name, Denominator) %>% 
@@ -3273,7 +3352,7 @@ latest_denominators_2 <-  vaccine_age_df %>%
   mutate(Age_group = '65 and over') %>%
   ungroup() 
 
-latest_denominators_3 <-  vaccine_age_df %>% 
+latest_denominators_3 <-  vaccine_ts_df %>% 
   filter(Date == max(Date)) %>%
   filter(Age_group %in% c('16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years",'60-64 years')) %>% 
   select(Name, Denominator) %>% 
@@ -3283,49 +3362,41 @@ latest_denominators_3 <-  vaccine_age_df %>%
   ungroup() 
 
 latest_denominators <- latest_denominators_1 %>% 
-  group_by(Name) %>% 
-  summarise(Denominator = sum(Denominator, na.rm = TRUE)) %>% 
-  mutate(Age_group = '12 and over') %>%
-  ungroup() %>% 
-  bind_rows(latest_denominators_1) %>% 
   bind_rows(latest_denominators_2) %>% 
   bind_rows(latest_denominators_3)
 
-vaccine_df_ltla_1 <- vaccine_age_df %>% 
+vaccine_df_ltla_1 <- vaccine_ts_df %>% 
   group_by(Name, Age_group) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
-            Dose_2 = sum(Dose_2, na.rm = TRUE)) %>% 
+            Dose_2 = sum(Dose_2, na.rm = TRUE),
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE)) %>% 
   left_join(latest_denominators, by = c('Name', 'Age_group'))
 
-vaccine_df_ltla_2 <- vaccine_age_df %>% 
+vaccine_df_ltla_2 <- vaccine_ts_df %>% 
   filter(Age_group %in% c('65-69 years','70-74 years','75-79 years','80-84 years','85-89 years','90+ years')) %>% 
   group_by(Name) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
-            Dose_2 = sum(Dose_2, na.rm = TRUE)) %>% 
+            Dose_2 = sum(Dose_2, na.rm = TRUE),
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE)) %>% 
   mutate(Age_group = '65 and over') %>% 
   left_join(latest_denominators, by = c('Name', 'Age_group'))
 
-vaccine_df_ltla_3 <- vaccine_age_df %>% 
+vaccine_df_ltla_3 <- vaccine_ts_df %>% 
   filter(Age_group %in% c('16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years",'60-64 years')) %>% 
   group_by(Name) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
-            Dose_2 = sum(Dose_2, na.rm = TRUE)) %>% 
+            Dose_2 = sum(Dose_2, na.rm = TRUE),
+            Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE)) %>% 
   mutate(Age_group = '16-64 years') %>% 
   left_join(latest_denominators, by = c('Name', 'Age_group'))
 
-vaccine_df_ltla_4 <- vaccine_age_df %>% 
-  group_by(Name) %>% 
-  summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
-            Dose_2 = sum(Dose_2, na.rm = TRUE)) %>% 
-  mutate(Age_group = '12 and over') %>% 
-  left_join(latest_denominators, by = c('Name', 'Age_group'))
-
-vaccine_df_ltla <- vaccine_df_ltla_2 %>% 
+vaccine_df_ltla <- vaccine_df_ltla_1 %>% 
+  bind_rows(vaccine_df_ltla_2) %>% 
   bind_rows(vaccine_df_ltla_3) %>% 
-  bind_rows(vaccine_df_ltla_4) %>% 
-  mutate(Proportion_dose_1 = Dose_1 / Denominator)
+  mutate(Proportion_dose_1 = Dose_1 / Denominator) %>% 
+  filter(Age_group %in% c('12 and over', '16-64 years', '65 and over'))
 
-vaccine_df_ltla_pt_1 <- vaccine_df_ltla%>% 
+vaccine_df_ltla_pt_1 <- vaccine_df_ltla %>% 
   select(Name, Dose_1, Age_group) %>% 
   mutate(Age_group = factor(Age_group, levels = c('12 and over', '16-64 years', '65 and over'))) %>% 
   arrange(Age_group) %>% 
@@ -3334,7 +3405,7 @@ vaccine_df_ltla_pt_1 <- vaccine_df_ltla%>%
   pivot_wider(names_from = label,
               values_from = Dose_1) 
 
-vaccine_df_ltla_pt_2 <- vaccine_df_ltla%>% 
+vaccine_df_ltla_pt_2 <- vaccine_df_ltla %>% 
   select(Name, Proportion_dose_1, Age_group) %>% 
   mutate(Age_group = factor(Age_group, levels = c('12 and over', '16-64 years', '65 and over'))) %>% 
   arrange(Age_group) %>% 
@@ -3351,26 +3422,3 @@ vaccine_df_ltla_pt_1 %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
 
-# 
-# vaccine_df_ltla %>%  toJSON() %>% 
-#   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))  
-# vaccine_df_ltla_pt_1 %>% 
-#   left_join(vaccine_df_ltla_pt_2, by = 'Name') %>% 
-#   select(Name, `Number of individuals aged 18 and over`, `Proportion (18 and over)`, `Number of individuals aged 18-64 years`, `Proportion (18-64 years)`, `Number of individuals aged 65 and over`, `Proportion (65 and over)`) %>% 
-#   mutate(Name = factor(Name, levels = c('Adur' ,'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England'))) %>% 
-#   arrange(Name) %>% 
-#   toJSON() %>%
-#   write_lines(paste0(mobile_output_directory_x, '/vaccine_at_a_glance.json'))
-
-# vaccine_df_ltla %>% 
-#   mutate(prop_dose_2 = Dose_2 / Denominator) %>% 
-#   filter(Age_group == '12 and over') %>% 
-#   view()
-# 
-# vaccine_age_df %>% 
-#   filter(Age_group == '16-17 years') %>% 
-#   filter(Date == max(Date)) %>% 
-#   select(Name, Cumulative_dose_1, Cumulative_dose_2, Denominator) %>% 
-#   mutate(prop_dose_1 = Cumulative_dose_1 / Denominator) %>% 
-#   mutate(prop_dose_2 = Cumulative_dose_2 / Denominator) %>% 
-#   view()
