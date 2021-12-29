@@ -2854,7 +2854,6 @@ for(i in urls) {
   dflist[[i]] <- df
 }
 
-names(vaccine_age_df)
 
 # bind together (unnest)
 vaccine_age_df <- bind_rows(dflist) %>%
