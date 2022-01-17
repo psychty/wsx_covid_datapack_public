@@ -1,15 +1,14 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","11,832","18,433.6","270th","Decile 9","610","950.3","262nd","Decile 9","seven days to 11 January"
-"Arun","30,433","18,888.1","259th","Decile 9","1,269","787.6","309th","10% of authorities
-with lowest rate","seven days to 11 January"
-"Chichester","21,479","17,677.0","285th","10% of authorities
-with lowest rate","1,002","824.6","303rd","10% of authorities
-with lowest rate","seven days to 11 January"
-"Crawley","27,426","24,384.3","88th","Decile 3","1,410","1,253.6","123rd","Decile 4","seven days to 11 January"
-"Horsham","26,292","18,073.3","277th","Decile 9","1,307","898.4","286th","10% of authorities
-with lowest rate","seven days to 11 January"
-"Mid Sussex","32,002","21,034.3","207th","Decile 7","1,612","1,059.5","211th","Decile 7","seven days to 11 January"
-"Worthing","20,897","18,872.5","260th","Decile 9","1,136","1,025.9","231st","Decile 8","seven days to 11 January"
-"West Sussex","170,361","19,635.1","-","-",NA,NA,NA,NA,NA
-"South East region","1,942,264","21,072.0","-","-",NA,NA,NA,NA,NA
-"England","12,906,041","22,822.3","-","-",NA,NA,NA,NA,NA
+"Adur","11,922","18,573.9","270th","Decile 9","573","892.7","248th","Decile 8","seven days to 12 January"
+"Arun","30,594","18,988.0","262nd","Decile 9","1,156","717.5","312th","10% of authorities
+with lowest rate","seven days to 12 January"
+"Chichester","21,611","17,785.7","284th","10% of authorities
+with lowest rate","936","770.3","299th","10% of authorities
+with lowest rate","seven days to 12 January"
+"Crawley","27,598","24,537.2","87th","Decile 3","1,277","1,135.4","113th","Decile 4","seven days to 12 January"
+"Horsham","26,507","18,221.1","276th","Decile 9","1,190","818.0","283rd","Decile 9","seven days to 12 January"
+"Mid Sussex","32,215","21,174.3","208th","Decile 7","1,449","952.4","210th","Decile 7","seven days to 12 January"
+"Worthing","21,042","19,003.5","261st","Decile 9","1,003","905.8","243rd","Decile 8","seven days to 12 January"
+"West Sussex","171,489","19,765.1","-","-",NA,NA,NA,NA,NA
+"South East region","1,954,335","21,203.0","-","-",NA,NA,NA,NA,NA
+"England","12,979,908","22,952.9","-","-",NA,NA,NA,NA,NA
