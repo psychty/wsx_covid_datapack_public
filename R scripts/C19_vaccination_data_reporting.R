@@ -173,10 +173,6 @@ as.character(vaccine_meta %>%
   toJSON() %>% 
   write_lines(paste0(mobile_output_directory_x, '/vaccine_administered_date.json'))
 
-County_boundary <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>% 
-  filter(ctyua19nm %in% c('West Sussex', 'East Sussex', 'Brighton and Hove')) %>%
-  spTransform(CRS("+init=epsg:4326"))
-
 # MSOA vaccine data ####
 mye_nims_msoa <- read_csv(paste0(github_repo_dir, '/Source files/msoa_nims_pop_estimates.csv')) %>% 
   mutate(Population_12_and_over = Age_12_and_over) %>%

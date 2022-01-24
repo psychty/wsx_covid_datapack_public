@@ -14,7 +14,7 @@ bord_style <- fp_border(color = "black", style = "solid", width = .5)
 options(scipen = 999)
 
 ph_theme = function(){
-  theme( 
+  theme(
     plot.title = element_text(colour = "#000000", face = "bold", size = 10),    
     plot.subtitle = element_text(colour = "#000000", size = 10),
     panel.grid.major.x = element_blank(), 
@@ -56,7 +56,6 @@ mye_total <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data
   ungroup() %>% 
   select(-Count) %>% 
   unique()
-
 
 if(exists('mye_total') == FALSE) {
   mye_total <- read_csv('https://raw.githubusercontent.com/psychty/wsx_covid_datapack_public/528abda9d01ad41c7975efb546e1c4f1bd300e2b/Source%20files/mye2020_ltla.csv') 
@@ -706,35 +705,24 @@ ft_utla_rolling_rate_wsx <- flextable(rolling_utla_rate_wsx) %>%
   hline_top(border = bord_style, part = "all" )
 
 # Attempt to get utla boundaries ####
-utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp") %>%
-  filter(substr(ctyua19cd, 1,1 ) == 'E') 
+utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/69109c4fbbc54f1f9d6e18000031a5fd_0.geojson",  what = "sp") %>%
+  filter(substr(CTYUA21CD, 1,1 ) == 'E') 
 
-utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson",  what = "sp")
-
-# download.file('https://opendata.arcgis.com/datasets/b216b4c8a4e74f6fb692a1785255d777_0.geojson', paste0(output_directory_x, '/failsafe_utla_boundary.geojson'), mode = 'wb')
-
-if(exists('utla_ua_boundaries_json') == FALSE) {
-  utla_ua_boundaries_json <- geojson_read(paste0(output_directory_x, '/failsafe_utla_boundary.geojson'),  what = "sp")  %>%
-    filter(substr(ctyua19cd, 1,1 ) == 'E') 
-}
-
-if(exists('utla_ua_boundaries') == FALSE) {
-  utla_ua_boundaries <- geojson_read(paste0(output_directory_x, '/failsafe_utla_boundary.geojson'),  what = "sp")  
-}
+utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/69109c4fbbc54f1f9d6e18000031a5fd_0.geojson",  what = "sp")
 
 utla_ua_boundaries_json <- utla_ua_boundaries_json %>% 
-  mutate(ctyua19nm = ifelse(ctyua19nm %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(ctyua19nm %in% c('City of London', 'Hackney'), 'Hackney and City of London', ctyua19nm))) %>% 
-  mutate(ctyua19cd = ifelse(ctyua19cd %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(ctyua19cd %in% c('E09000001', 'E09000012'), 'E09000012', ctyua19cd))) %>% 
-  group_by(ctyua19cd, ctyua19nm) %>% 
+  mutate(CTYUA21NM = ifelse(CTYUA21NM %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(CTYUA21NM %in% c('City of London', 'Hackney'), 'Hackney and City of London', CTYUA21NM))) %>% 
+  mutate(CTYUA21CD = ifelse(CTYUA21CD %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(CTYUA21CD %in% c('E09000001', 'E09000012'), 'E09000012', CTYUA21CD))) %>% 
+  group_by(CTYUA21CD, CTYUA21NM) %>% 
   summarise() %>% 
-  arrange(ctyua19cd) %>% 
-  left_join(utla_rate, by = c('ctyua19cd' = 'Code')) 
+  arrange(CTYUA21CD) %>% 
+  left_join(utla_rate, by = c('CTYUA21CD' = 'Code')) 
 
 utla_ua_boundaries <- utla_ua_boundaries %>% 
-  fortify(region = "ctyua19cd") %>% 
-  rename(ctyua19cd = id) %>% 
-  filter(substr(ctyua19cd, 1,1 ) == 'E') %>% 
-  left_join(utla_rate, by = c('ctyua19cd' = 'Code')) %>% 
+  fortify(region = "CTYUA21CD") %>% 
+  rename(CTYUA21CD = id) %>% 
+  filter(substr(CTYUA21CD, 1,1 ) == 'E') %>% 
+  left_join(utla_rate, by = c('CTYUA21CD' = 'Code')) %>% 
   filter(!is.na(Cumulative_per_100000))
 
 map_theme = function(){
@@ -1373,7 +1361,7 @@ for(i in 1:length(areas_to_loop)){
     ph_theme() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
           legend.position = 'right')  +
-    guides(colour = FALSE)
+    guides(colour = 'none')
   
   png(paste0(output_directory_x, '/Figure_7_wkly_deaths_carehomes_', gsub(' ', '_', area_x), '.png'),
       width = 1280,
@@ -1416,7 +1404,7 @@ ltla_deaths_plot_1 <- ggplot(ltla_deaths_df,
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
         legend.position = 'bottom')  +
-  guides(colour = FALSE) +
+  guides(colour = 'none') +
   facet_wrap(~Name, ncol = 3)
 
 png(paste0(output_directory_x, '/Figure_9_covid_19_deaths_wsx_ltlas.png'),
@@ -1454,7 +1442,7 @@ ltla_deaths_plot_2 <- ggplot(ltla_deaths_df_2,
   ph_theme() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
         legend.position = 'bottom')  +
-  guides(colour = FALSE) +
+  guides(colour = 'none') +
   facet_wrap(~Name, ncol = 3)
 
 png(paste0(output_directory_x, '/Covid_19_deaths_in_carehomes_wsx_ltlas.png'),
@@ -1680,54 +1668,6 @@ wkly_template <- wkly_template %>%
 wkly_template %>%  
   print(paste0(github_repo_dir, '/Latest_West_Sussex_C19_slide_deck.pptx'))
 
-# Restrictions ####
-
-# https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/914840/LA_watchlist_data_file_week35.XLSX
-
-# download.file('https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/919133/Contain_framework_lower_tier_local_authority_watchlist_-_maps_by_Lower_Super_Output_Area_data_-_18_September_2020.xlsx', paste0(github_repo_dir, '/ltla_watchlist.xlsx'), mode = 'wb')
-# 
-# 
-# #               
-# 
-# lookup <- read_csv('https://opendata.arcgis.com/datasets/3e4f4af826d343349c13fb7f0aa2a307_0.csv')
-# 
-# # read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
-#   # View()
-# 
-# rest_of_england_restrictions <- read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv') %>% 
-#   filter(Category == 'Rest of England') %>% 
-#   mutate(l_national_ruleofsix = 1,
-#          l_national_raves = 1,
-#          l_national_openinghours = 1)
-# 
-# ltla_restrictions <-  geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
-# 
-# if(exists('ltla_restrictions') == FALSE) {
-#   ltla_restrictions <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
-# }
-# 
-# ltla_restrictions <- ltla_restrictions  %>% 
-#   left_join(lookup, by = c('lad19nm' = 'LTLA19NM')) %>% 
-#   filter(substr(lad19cd, 1, 1) == 'E') %>% 
-#   left_join(read_csv('https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/commonslibrary-coronavirus-restrictions-data.csv'), by = c('lad19cd' = 'lacode')) %>% 
-#   select(!c(Country, lad19nmw)) %>% 
-#   rename(Restriction_type = restrictions) %>% 
-#   rename(l_tier = tier) %>% 
-#   mutate(label = paste0('<Strong>', lad19nm, '</Strong><br><br>This area is currently in the <Strong>', l_tier, ' </Strong>level of restrictions.<br>', ifelse(Restriction_type == 'National', 'This areas is currently subject to <b>national</b> restrictions only. ', ifelse(Restriction_type == 'Local', 'This area is currently subject to <b>local</b> restrictions in addition to the national legislation.', NA)), ' Restrictions for this area include:', '<ul>', ifelse(local_ruleofsix == 1, '<li>Not gathering socially in groups larger than six unless it is for an exempted purpose.</li>', ''), ifelse(local_householdmixing == 1, '<li>Not mixing with other households (e.g. visiting each other inside their homes).</li>', ''), ifelse(local_raves == 1, '<li>Not gathering in large groups sometimes called raves, of typically 30 or more people (some exceptions of large gatherings apply).</li>', ''), ifelse(local_stayinglocal == 1, '<li>Not leaving the local area or entering a protected area without a reasonable excuse.</li>', ''), ifelse(local_notstayingaway == 1, '<li>Not staying overnight somewhere other than their home without a reasonable excuse.</li>', ''), ifelse(local_businessclosures == 1, '<li>Certain businesses must close physical premises and move to online/delivery/take away only services.</li>', ''), ifelse(local_openinghours == 1, '<li>Certain businesses must restrict openning hours (e.g. close early).</li>', ''), '<li>Wearing a face covering is required in many public venues, in shops and when using public transport. This includes customers and staff members. Some exemptions apply.</li></ul>For further information see: ', url_local)) %>%
-#   select(objectid, lad19nm, l_tier, label)
-# 
-# # leaflet(ltla_restrictions) %>% 
-# #   addTiles() %>%
-# #   addPolygons(stroke = FALSE, 
-# #               smoothFactor = 0.3, 
-# #               fillOpacity = .6,
-# #               fillColor = ~ifelse(Restriction_type == 'National', '#ffb400', '#9762a2'),
-# #               label = ~label)
-# 
-# geojson_write(geojson_json(ltla_restrictions), file = paste0(output_directory_x, '/ltla_covid_restrictions_hcl_latest.geojson'))
-
-#paste0('Information provided by the House of Commons Library Coronavirus Restrictions Tool (available: https://visual.parliament.uk/research/visualisations/coronavirus-restrictions-map/). Contains Parliamentary information licensed under the Open Parliament Licence v3.0.')
-
 # Seven day incidence and growth rate ####
 
 # Exact Poisin confidence intervals are calculated using the pois.exact function from the epitools package (see https://www.rdocumentation.org/packages/epitools/versions/0.09/topics/pois.exact for details)
@@ -1762,7 +1702,7 @@ growth_rate_ltla <- growth_rate %>%
   filter(Type %in% c('Lower Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_ltla %>%
-  filter(Date >= '2021-04-01') %>%
+  filter(Date >= '2021-12-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_ltla$Name), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')), c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex','Worthing', 'England')))) %>% 
   arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
@@ -1777,7 +1717,7 @@ growth_rate_utla <- growth_rate %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_utla %>% 
-  filter(Date >= '2021-04-01') %>%
+  filter(Date >= '2021-12-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_utla$Name), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')))) %>% 
   arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
@@ -1792,7 +1732,7 @@ growth_rate_utla %>%
   write_lines(paste0(output_directory_x,'/wsx_eng_rate_change.json'))
 
 growth_rate_utla %>% 
-  filter(Date >= '2021-04-01') %>%
+  filter(Date >= '2021-12-01') %>%
   select(Date) %>% 
   unique() %>% 
   arrange(Date) %>% 
