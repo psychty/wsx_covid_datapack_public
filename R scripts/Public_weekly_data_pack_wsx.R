@@ -1186,7 +1186,7 @@ download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcomm
 Occurrences_ltla_2021 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'), sheet = 'Occurrences - All data', skip = 2)) %>% 
   mutate(`Week number` = paste0(`Week number`, ' - 2021'))
 
-Occurrences_ltla_2022 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), sheet = 'Occurrences_all_data', skip = 2)) %>% 
+Occurrences_ltla_2022 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), sheet = 'Occurrences - All data', skip = 2)) %>% 
   mutate(`Week number` = paste0(`Week number`, ' - 2022'))
 
 Occurrences_ltla <- read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), sheet = 'Occurrences - All data', skip = 2) %>% 
