@@ -38,7 +38,7 @@ ph_theme = function(){
 }
 
 #github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
-github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
+github_repo_dir <- './GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
@@ -56,6 +56,13 @@ mye_total <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data
   ungroup() %>% 
   select(-Count) %>% 
   unique()
+
+mye_total <- mye_total %>% 
+  mutate(Name = ifelse(Name %in% c('Hackney', 'City of London'), 'Hackney and City of London', Name)) %>% 
+  mutate(Code = ifelse(Code %in% c('E09000012', 'E09000001'), 'E09000012', Code)) %>% 
+  group_by(Type, Name, Code) %>% 
+  summarise(Population = sum(Population, na.rm = TRUE)) %>% 
+  ungroup()
 
 if(exists('mye_total') == FALSE) {
   mye_total <- read_csv('https://raw.githubusercontent.com/psychty/wsx_covid_datapack_public/528abda9d01ad41c7975efb546e1c4f1bd300e2b/Source%20files/mye2020_ltla.csv') 
@@ -1175,9 +1182,9 @@ rm(week_ending_a, week_ending_b, week_ending_c)
 
 download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables20211.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2022/lahbtables2022week031.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2022/lahbtables2022week04.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -1760,6 +1767,13 @@ mye_ages <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.
   mutate(Age = paste0(Age, ' years')) %>% 
   mutate(Age = ifelse(Age %in% c('80-84 years', '85+ years'), '80+ years', Age)) %>% 
   group_by(Name, Code, Age, Type) %>% 
+  summarise(Population = sum(Population, na.rm = TRUE)) %>% 
+  ungroup()
+
+mye_ages <- mye_ages %>% 
+  mutate(Name = ifelse(Name %in% c('Hackney', 'City of London'), 'Hackney and City of London', Name)) %>% 
+  mutate(Code = ifelse(Code %in% c('E09000012', 'E09000001'), 'E09000012', Code)) %>% 
+  group_by(Type, Name, Code, Age) %>% 
   summarise(Population = sum(Population, na.rm = TRUE)) %>% 
   ungroup()
 
