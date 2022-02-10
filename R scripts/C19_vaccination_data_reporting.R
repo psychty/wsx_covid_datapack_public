@@ -36,11 +36,11 @@ ph_theme = function(){
 }
 
 # github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
-github_repo_dir <- '~/GitHub/wsx_covid_datapack_public'
+github_repo_dir <- './GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
-mobile_github_repo_dir <- "~/GitHub/wsx_covid_public_mobile_site"
+mobile_github_repo_dir <- "./GitHub/wsx_covid_public_mobile_site"
 mobile_output_directory_x <- paste0(mobile_github_repo_dir, '/Outputs')
 
 # Age is based on age on 31st March 2021 to align with JCVI priority assignments
