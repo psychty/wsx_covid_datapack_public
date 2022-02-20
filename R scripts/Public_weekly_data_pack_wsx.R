@@ -1182,7 +1182,7 @@ rm(week_ending_a, week_ending_b, week_ending_c)
 
 download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2022/lahbtables2022week05.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
@@ -1776,6 +1776,10 @@ mye_ages <- mye_ages %>%
   group_by(Type, Name, Code, Age) %>% 
   summarise(Population = sum(Population, na.rm = TRUE)) %>% 
   ungroup()
+
+if(exists('mye_ages') == FALSE){
+mye_ages <- read_csv('https://raw.githubusercontent.com/psychty/wsx_covid_public_mobile_site/main/Source_files/mye_ages.csv')
+}
 
 # 
 # asr_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=newCasesBySpecimenDateAgeDemographics&format=csv') %>% 
