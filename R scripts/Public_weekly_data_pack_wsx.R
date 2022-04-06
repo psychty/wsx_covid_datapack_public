@@ -38,10 +38,11 @@ ph_theme = function(){
 }
 
 #github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
-# github_repo_dir <- './GitHub/wsx_covid_datapack_public'
-github_repo_dir <- '~/repos/wsx_covid_datapack_public'
+github_repo_dir <- './GitHub/wsx_covid_datapack_public'
+#github_repo_dir <- '~/repos/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
+
 
 # 2020 MYE
 mye_total <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=2092957699,2013265928,1820327937...1820328318,1816133633...1816133848&date=latest&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
