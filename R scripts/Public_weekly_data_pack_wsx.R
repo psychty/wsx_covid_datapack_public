@@ -1162,6 +1162,56 @@ dev.off()
 # The tables include deaths that occurred up to the Friday before last but were registered up to last Friday. Figures by place of death may differ to previously published figures due to improvements in the way we code place of death.											
 # These figures do not include deaths of those residents outside England and Wales or those records where the place of residence is either missing or not yet fully coded. For this reason counts may differ to published figures when summed. These figures represent death occurrences and registrations, there can be a delay between the date a death occurred and the date a death was registered. More information can be found in our impact of registration delays release. 	
 
+# Five year average deaths 
+
+# download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/adhocs/12615deathregistrationsandfiveyearaverageweeklydeathsbylocalauthorityandplaceofoccurrenceenglandandwales2015to2019/data.xlsx', paste0(github_repo_dir, '/Source files/five_year_average.xlsx'), mode = 'wb')
+
+# Whilst 2015 had 53 weeks and the rest of 2015-2019 had 52 weeks, the total number of deaths for the average 
+
+# five_year_average_raw <- read_excel("GitHub/wsx_covid_datapack_public/Source files/five_year_average.xlsx", sheet = "Table 1", skip = 16) %>% 
+#   rename(Area_Code = 'Local Authority Code',
+#          Area_Name = 'Local Authority Name',
+#          Setting = 'Place of occurrence',
+#          Week_number = 'Week Number',
+#          Deaths = 'Five year average number of deaths') %>% 
+#   filter(Area_Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing'))
+# 
+# five_year_all_settings <- five_year_average_raw %>% 
+#   group_by(Area_Code, Area_Name, Week_number) %>% 
+#   summarise(Setting = 'All settings',
+#             Deaths = sum(Deaths, na.rm = TRUE))
+# 
+# five_year_average_ltla_df <- five_year_average_raw %>% 
+#   bind_rows(five_year_all_settings) %>% 
+#   mutate(Setting = factor(Setting, levels = c('All settings', 'Home', 'Care home', 'Hospital', 'Hospice', 'Other communal establishment', 'Elsewhere')))
+# 
+# five_year_average_wsx_df <- five_year_average_ltla_df %>% 
+#   group_by(Setting, Week_number) %>% 
+#   summarise(Area_Code = NA,
+#             Area_Name = 'West Sussex',
+#             Deaths = sum(Deaths, na.rm = TRUE))
+# 
+# five_year_average_df <- five_year_average_ltla_df %>% 
+#   bind_rows(five_year_average_wsx_df)
+# 
+# five_year_average_df %>% 
+#   write.csv(paste0(github_repo_dir, '/Source files/ons_2015_19_average_deaths.csv'), row.names = FALSE)
+# 
+
+five_year_average_df_extra_year <- read_csv(paste0(github_repo_dir, '/Source files/ons_2015_19_average_deaths.csv')) %>% 
+  # filter(Setting == 'All settings') %>% 
+  filter(Week_number == 52) %>% 
+  mutate(Week_number = 53) 
+
+five_year_average_df <- read_csv(paste0(github_repo_dir, '/Source files/ons_2015_19_average_deaths.csv')) %>% 
+  # filter(Setting == 'All settings') %>% 
+  bind_rows(five_year_average_df_extra_year) %>% 
+  rename(week_extracted = Week_number,
+         Name = Area_Name,
+         Expected_deaths = Deaths,
+         Place_of_death = Setting) %>% 
+  select(!c(Area_Code))
+
 # For this data, the week ends on a friday (so friday is the cut off date for each week of data). It might be helpful for us to say as at this date this is the number of deaths. To do this we need to convert each week number into a 'friday date'.
 set_week_start('Friday')
 
@@ -1221,10 +1271,15 @@ Occurrences_wsx <- Occurrences_ltla %>%
   left_join(week_ending, by = 'Week_number') %>% 
   ungroup()
 
+unique(five_year_average_df$Place_of_death)
+unique(Occurrences$Place_of_death)
+
 Occurrences <- Occurrences_ltla %>% 
   bind_rows(Occurrences_wsx) %>% 
   arrange(week_id) %>% 
-  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022")))
+  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022"))) %>% 
+  mutate(week_extracted = as.numeric(gsub(' ', '', substr(Week_number, 1,2)))) %>% 
+  left_join(five_year_average_df, by = c('Name', 'Place_of_death', 'week_extracted'))
 
 rm(Occurrences_ltla, Occurrences_wsx, Occurrences_ltla_2021, Occurrences_ltla_2022)
 
@@ -1238,14 +1293,16 @@ weekly_all_place_all_deaths <- Occurrences %>%
   filter(Cause == 'All causes') %>% 
   arrange(Week_number) %>% 
   group_by(Name, Week_ending) %>% 
-  summarise(Deaths = sum(Deaths, na.rm = TRUE)) %>% 
-  select(Name, Week_ending, Deaths) %>% 
+  summarise(Deaths = sum(Deaths, na.rm = TRUE),
+            Expected_deaths = sum(Expected_deaths, na.rm = TRUE)) %>% 
+  select(Name, Week_ending, Deaths, Expected_deaths) %>% 
   mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
   rename(All_deaths = Deaths)
 
 All_settings_occurrences <- Occurrences %>% 
   group_by(Name, Week_number, Week_ending, Cause) %>% 
-  summarise(Deaths = sum(Deaths, na.rm = TRUE)) %>% 
+  summarise(Deaths = sum(Deaths, na.rm = TRUE),
+            Expected_deaths = sum(Expected_deaths, na.rm = TRUE)) %>% 
   group_by(Name, Cause) %>% 
   arrange(Cause, Week_number) %>% 
   mutate(Cumulative_deaths = cumsum(Deaths))  %>% 
@@ -1254,7 +1311,7 @@ All_settings_occurrences <- Occurrences %>%
 weekly_all_place_deaths <- All_settings_occurrences %>% 
   filter(Name %in% areas_to_loop) %>%
   arrange(Week_number) %>% 
-  select(Name, Cause, Week_ending, Deaths) %>% 
+  select(Name, Cause, Week_ending, Deaths, Expected_deaths) %>% 
   mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
   pivot_wider(id_cols = c(Name, Week_ending),
               names_from = Cause,
@@ -1286,7 +1343,7 @@ for(i in 1:length(areas_to_loop)){
   
   max_deaths_break <- ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 20, 2, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 50, 5, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 100, 10, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 250, 25, ifelse(max(area_x_cov_non_cov$All_deaths, na.rm = TRUE) < 500, 50, 100)))))
   
-  area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
+area_x_wk_cause_deaths_plot <-  ggplot(area_x_cov_non_cov,
                                          aes(x = Week_ending, 
                                              y = Deaths,
                                              fill = Cause_1,
@@ -1294,10 +1351,15 @@ for(i in 1:length(areas_to_loop)){
                                              label = Deaths)) +
     geom_bar(stat = 'identity',
              width = .8) +
+    geom_line(aes(x = Week_ending,
+                  y = Expected_deaths),
+              group = 1,
+              colour = '#000000') +
     labs(title = paste0('Weekly deaths; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
          subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
          x = 'Week',
-         y = 'Number of deaths') +
+         y = 'Number of deaths',
+         caption = 'The black line denotes the five year average (2015-2019) number of deaths.') +
     scale_fill_manual(values = c('#2F5597','#BDD7EE'),
                       name = 'Number of deaths since\nweek ending 3rd Jan 2020') +
     scale_colour_manual(values = c('#2F5597','#BDD7EE')) +
@@ -1319,14 +1381,14 @@ for(i in 1:length(areas_to_loop)){
     filter(Place_of_death %in% 'Care home') %>% 
     filter(Cause == 'All causes') %>% 
     arrange(week_id) %>% 
-    select(Name, Week_ending, Deaths) %>% 
+    select(Name, Week_ending, Deaths, Expected_deaths) %>% 
     mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
     rename(All_deaths = Deaths)
   
   carehome_weekly_deaths <- Occurrences %>%
     filter(Place_of_death %in% 'Care home') %>% 
     arrange(week_id) %>% 
-    select(Name, Cause, Week_ending, Week_number, Deaths) %>% 
+    select(Name, Cause, Week_ending, Week_number, Deaths, Expected_deaths) %>% 
     mutate(Week_ending = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label)) %>% 
     pivot_wider(id_cols = c(Name, Week_ending, Week_number),
                 names_from = Cause,
@@ -1350,7 +1412,7 @@ for(i in 1:length(areas_to_loop)){
     mutate(Cause_1 = paste0(ifelse(Cause == 'Non-Covid', 'COVID not mentioned', gsub(' ', '-', Cause)), ' (', format(Deaths_to_date, big.mark = ',', trim = TRUE), ' deaths)')) %>% 
     mutate(Cause_1 = factor(Cause_1, levels = unique(Cause_1)))
   
-  area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
+area_x_wk_cause_deaths_plot_2 <- ggplot(area_x_cov_non_cov_carehome,
                                           aes(x = Week_ending, 
                                               y = Deaths,
                                               fill = Cause_1,
@@ -1358,10 +1420,15 @@ for(i in 1:length(areas_to_loop)){
                                               label = Deaths)) +
     geom_bar(stat = 'identity',
              width = .8) +
+    geom_line(aes(x = Week_ending,
+                  y = Expected_deaths),
+              group = 1,
+              colour = '#000000') +
     labs(title = paste0('Weekly deaths in care homes; ', area_x,'; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)]),
          subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
          x = 'Week',
-         y = 'Number of deaths') +
+         y = 'Number of deaths',
+         caption = 'The black line denotes the five year average (2015-2019) number of deaths.') +
     scale_fill_manual(values = c('#ED7D31','#FFD966'),
                       name = 'Number of deaths since\nweek ending 3rd Jan 2020)') +
     scale_colour_manual(values = c('#ED7D31','#FFD966')) +
@@ -1388,83 +1455,83 @@ max_deaths_limit <- ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 50, ro
 
 max_deaths_break <- ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 20, 2, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 50, 5, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 100, 10, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 250, 25, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 500, 50, 100)))))
 
-ltla_deaths_plot_1 <- ggplot(ltla_deaths_df,
-                             aes(x = Week_ending, 
-                                 y = Deaths,
-                                 fill = Cause,
-                                 colour = Cause,
-                                 label = Deaths)) +
-  geom_bar(stat = 'identity',
-           colour = '#ffffff') +
-  # geom_text(data = subset(area_x_cov_non_cov, Deaths > 0),
-  #           position = 'stack',
-  #           size = 3, 
-  #           fontface = "bold",
-  #           aes(vjust = lab_posit)) +
-  labs(title = paste0('Weekly deaths; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)], '; West Sussex lower tier Local Authorities'),
-       subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
-       x = 'Week',
-       y = 'Number of deaths') +
-  scale_fill_manual(values = c('#2F5597','#BDD7EE'),
-                    labels = c('COVID-19', 'COVID not mentioned')) +
-  scale_colour_manual(values = c('#000000', '#ffffff')) +
-  scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
-                     limits = c(0,max_deaths_limit)) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-        legend.position = 'bottom')  +
-  guides(colour = 'none') +
-  facet_wrap(~Name, ncol = 3)
-
-png(paste0(output_directory_x, '/Figure_9_covid_19_deaths_wsx_ltlas.png'),
-    width = 1580,
-    height = 1050,
-    res = 120)
-print(ltla_deaths_plot_1)
-dev.off()
-
-ltla_deaths_df_2 <- carehome_weekly_deaths %>% 
-  filter(Name != 'West Sussex')
-
-ltla_deaths_plot_2 <- ggplot(ltla_deaths_df_2,
-                             aes(x = Week_ending, 
-                                 y = Deaths,
-                                 fill = Cause,
-                                 colour = Cause,
-                                 label = Deaths)) +
-  geom_bar(stat = 'identity',
-           colour = '#ffffff') +
-  # geom_text(data = subset(area_x_cov_non_cov, Deaths > 0),
-  #           position = 'stack',
-  #           size = 3, 
-  #           fontface = "bold",
-  #           aes(vjust = lab_posit)) +
-  labs(title = paste0('Weekly deaths in care homes; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)], '; West Sussex lower tier Local Authorities'),
-       subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
-       x = 'Week',
-       y = 'Number of deaths') +
-  scale_fill_manual(values = c('#ED7D31','#FFD966'),
-                    labels = c('COVID-19', 'COVID not mentioned')) +
-  scale_colour_manual(values = c('#000000', '#ffffff')) +
-  scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
-                     limits = c(0,max_deaths_limit)) +
-  ph_theme() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-        legend.position = 'bottom')  +
-  guides(colour = 'none') +
-  facet_wrap(~Name, ncol = 3)
-
-png(paste0(output_directory_x, '/Covid_19_deaths_in_carehomes_wsx_ltlas.png'),
-    width = 1580,
-    height = 1050,
-    res = 120)
-print(ltla_deaths_plot_2)
-dev.off()
+# ltla_deaths_plot_1 <- ggplot(ltla_deaths_df,
+#                              aes(x = Week_ending, 
+#                                  y = Deaths,
+#                                  fill = Cause,
+#                                  colour = Cause,
+#                                  label = Deaths)) +
+#   geom_bar(stat = 'identity',
+#            colour = '#ffffff') +
+#   # geom_text(data = subset(area_x_cov_non_cov, Deaths > 0),
+#   #           position = 'stack',
+#   #           size = 3, 
+#   #           fontface = "bold",
+#   #           aes(vjust = lab_posit)) +
+#   labs(title = paste0('Weekly deaths; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)], '; West Sussex lower tier Local Authorities'),
+#        subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
+#        x = 'Week',
+#        y = 'Number of deaths') +
+#   scale_fill_manual(values = c('#2F5597','#BDD7EE'),
+#                     labels = c('COVID-19', 'COVID not mentioned')) +
+#   scale_colour_manual(values = c('#000000', '#ffffff')) +
+#   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
+#                      limits = c(0,max_deaths_limit)) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
+#         legend.position = 'bottom')  +
+#   guides(colour = 'none') +
+#   facet_wrap(~Name, ncol = 3)
+# 
+# png(paste0(output_directory_x, '/Figure_9_covid_19_deaths_wsx_ltlas.png'),
+#     width = 1580,
+#     height = 1050,
+#     res = 120)
+# print(ltla_deaths_plot_1)
+# dev.off()
+# 
+# ltla_deaths_df_2 <- carehome_weekly_deaths %>% 
+#   filter(Name != 'West Sussex')
+# 
+# ltla_deaths_plot_2 <- ggplot(ltla_deaths_df_2,
+#                              aes(x = Week_ending, 
+#                                  y = Deaths,
+#                                  fill = Cause,
+#                                  colour = Cause,
+#                                  label = Deaths)) +
+#   geom_bar(stat = 'identity',
+#            colour = '#ffffff') +
+#   # geom_text(data = subset(area_x_cov_non_cov, Deaths > 0),
+#   #           position = 'stack',
+#   #           size = 3, 
+#   #           fontface = "bold",
+#   #           aes(vjust = lab_posit)) +
+#   labs(title = paste0('Weekly deaths in care homes; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)], '; West Sussex lower tier Local Authorities'),
+#        subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
+#        x = 'Week',
+#        y = 'Number of deaths') +
+#   scale_fill_manual(values = c('#ED7D31','#FFD966'),
+#                     labels = c('COVID-19', 'COVID not mentioned')) +
+#   scale_colour_manual(values = c('#000000', '#ffffff')) +
+#   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
+#                      limits = c(0,max_deaths_limit)) +
+#   ph_theme() +
+#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
+#         legend.position = 'bottom')  +
+#   guides(colour = 'none') +
+#   facet_wrap(~Name, ncol = 3)
+# 
+# png(paste0(output_directory_x, '/Covid_19_deaths_in_carehomes_wsx_ltlas.png'),
+#     width = 1580,
+#     height = 1050,
+#     res = 120)
+# print(ltla_deaths_plot_2)
+# dev.off()
 
 # Exporting for figures #
 all_deaths_json_export <- All_settings_occurrences %>%
   ungroup() %>%
-  select(Name, Week_number, Week_ending, Cause, Deaths) %>%
+  select(Name, Week_number, Week_ending, Cause, Deaths, Expected_deaths) %>%
   group_by(Name, Week_number, Week_ending) %>%
   spread(Cause, Deaths) %>%
   mutate(`Not attributed to Covid-19` = `All causes` - `COVID 19`) %>%
@@ -1477,7 +1544,7 @@ all_deaths_json_export <- All_settings_occurrences %>%
   mutate(Date_label = factor(paste0('w/e ', ordinal(as.numeric(format(Week_ending, '%d'))), format(Week_ending, ' %b %y')), levels = deaths_labels$deaths_label))
 
 all_deaths_json_export %>% 
-  select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause) %>% 
+  select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause, Expected_deaths) %>% 
   toJSON() %>%
   write_lines(paste0(output_directory_x, '/deaths_all_settings.json'))
 
@@ -1490,6 +1557,9 @@ all_deaths_json_export %>%
   toJSON() %>%
   write_lines(paste0(output_directory_x, '/deaths_limits_by_area.json'))
 
+five_year_average_df_ch <- five_year_average_df %>% 
+  filter(Place_of_death == 'Care home')
+
 carehome_deaths_json_export <- Occurrences %>% 
   filter(Place_of_death %in% 'Care home') %>% 
   arrange(week_id) %>% 
@@ -1500,7 +1570,7 @@ carehome_deaths_json_export <- Occurrences %>%
               values_from = Deaths) %>% 
   mutate(`Not attributed to Covid-19` = `All causes` - `COVID 19`) %>%
   gather(key = 'Cause', value = 'Deaths', `All causes`:`Not attributed to Covid-19`) %>% 
-  select(Name, Week_number, Week_ending, Cause, Date_label, Deaths) %>%
+select(Name, Week_number, Week_ending, Cause, Date_label, Deaths) %>%
   group_by(Name, Week_number, Week_ending, Date_label) %>%
   spread(Cause, Deaths) %>%
   rename(`Covid-19` = `COVID 19`) %>%
@@ -1508,10 +1578,12 @@ carehome_deaths_json_export <- Occurrences %>%
   group_by(Name) %>%
   mutate(Cumulative_deaths_all_cause = cumsum(`All causes`)) %>%
   mutate(Cumulative_covid_deaths = cumsum(`Covid-19`)) %>%
-  mutate(Cumulative_deaths_label = paste0('As at ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' the total cumulative number of deaths in care homes for 2020 was<b> ', format(Cumulative_deaths_all_cause, big.mark = ',', trim = TRUE), '</b>. The cumulative number of care home deaths where Covid-19 is recorded as a cause by this date was ', format(Cumulative_covid_deaths, big.mark = ',', trim = TRUE), '. This is ', round((Cumulative_covid_deaths/Cumulative_deaths_all_cause) * 100, 1), '% of deaths occuring by this week.')) 
+  mutate(Cumulative_deaths_label = paste0('As at ', format(Week_ending, '%d %B %Y'), ' in ', Name, ' the total cumulative number of deaths in care homes for 2020 was<b> ', format(Cumulative_deaths_all_cause, big.mark = ',', trim = TRUE), '</b>. The cumulative number of care home deaths where Covid-19 is recorded as a cause by this date was ', format(Cumulative_covid_deaths, big.mark = ',', trim = TRUE), '. This is ', round((Cumulative_covid_deaths/Cumulative_deaths_all_cause) * 100, 1), '% of deaths occuring by this week.')) %>% 
+  mutate(week_extracted = as.numeric(gsub(' ', '', substr(Week_number, 1,2)))) %>% 
+  left_join(five_year_average_df_ch[c('Name', 'week_extracted', 'Expected_deaths')], by = c('Name', 'week_extracted'))
 
 carehome_deaths_json_export %>% 
-  select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause) %>% 
+  select(Name, Week_number, Date_label, `Covid-19`, `Not attributed to Covid-19`, Deaths_in_week_label, Cumulative_deaths_label, Cumulative_covid_deaths, Cumulative_deaths_all_cause, Expected_deaths) %>% 
   toJSON() %>%
   write_lines(paste0(output_directory_x, '/deaths_carehomes.json'))
 

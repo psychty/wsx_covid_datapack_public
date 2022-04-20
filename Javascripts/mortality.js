@@ -189,13 +189,15 @@ xAxis_mortality_1
 var first_mortality_period = weeks[0];
 var last_mortality_period = weeks[weeks.length - 1];
 
-if (width_hm < 750) {
+// if (width_hm < 1050) {
   xAxis_mortality_1.call(
     d3
       .axisBottom(x_m1)
-      .tickValues([first_mortality_period, last_mortality_period])
+      .tickValues([first_mortality_period, 'w/e 1st Jan 21', last_mortality_period])
   );
 
+// "w/e 7th Jan 22"
+  
   xAxis_mortality_1
     .selectAll("text")
     .attr("transform", "rotate(0)")
@@ -203,7 +205,7 @@ if (width_hm < 750) {
       return i % 2 ? "end" : "start";
     })
     .style("font-size", ".8rem");
-}
+// }
 
 var y_m1_ts = d3
   .scaleLinear()
@@ -226,6 +228,7 @@ var bars_m1 = svg_fg_mortality_1
   .data(stackedData_m1)
   .enter()
   .append("g")
+  .attr("z-index", "1")
   .attr("fill", function (d) {
     return colour_covid_non_covid_all_settings(d.key);
   })
@@ -393,6 +396,27 @@ svg_fg_mortality_1
       " of all deaths."
   );
 
+  var lines_m1 = svg_fg_mortality_1
+  .append("path")
+  .datum(chosen_m1_df)
+  .attr("fill", "none")
+  .attr("stroke", "#000000")
+  .attr("id", "lines1")
+  .style("stroke-dasharray", ("5, 1"))
+  .attr("stroke-width", 2)
+  .attr(
+    "d",
+    d3
+      .line()
+      .defined((d) => !isNaN(d.Expected_deaths))
+      .x(function (d) {
+        return x_m1(d.Date_label) + x_m1.bandwidth() / 2;
+     })
+      .y(function (d) {
+      return y_m1_ts(d.Expected_deaths);
+     })
+  );
+
 //! Figure 2
 
 var chosen_m2_df = deaths_by_week_ch.filter(function (d) {
@@ -480,11 +504,11 @@ xAxis_mortality_2
   .style("text-anchor", "end")
   .style("font-size", ".8rem");
 
-if (width_hm < 750) {
+// if (width_hm < 750) {
   xAxis_mortality_2.call(
     d3
       .axisBottom(x_m2)
-      .tickValues([first_mortality_period, last_mortality_period])
+      .tickValues([first_mortality_period, 'w/e 1st Jan 21', last_mortality_period])
   );
 
   xAxis_mortality_2
@@ -494,7 +518,7 @@ if (width_hm < 750) {
       return i % 2 ? "end" : "start";
     })
     .style("font-size", ".8rem");
-}
+// }
 
 var y_m2_ts = d3
   .scaleLinear()
@@ -535,6 +559,29 @@ var bars_m2 = svg_fg_mortality_2
   .attr("width", x_m2.bandwidth())
   .on("mousemove", showTooltip_m2)
   .on("mouseout", mouseleave_m2);
+
+  
+  var lines_m2 = svg_fg_mortality_2
+  .append("path")
+  .datum(chosen_m2_df)
+  .attr("fill", "none")
+  .attr("stroke", "maroon")
+  .attr("id", "lines2")
+  .style("stroke-dasharray", ("5, 1"))
+  .attr("stroke-width", 2)
+  .attr(
+    "d",
+    d3
+      .line()
+      .defined((d) => !isNaN(d.Expected_deaths))
+      .x(function (d) {
+        return x_m2(d.Date_label) + x_m2.bandwidth() / 2;
+     })
+      .y(function (d) {
+      return y_m2_ts(d.Expected_deaths);
+     })
+  );
+
 
 svg_fg_mortality_2
   .append("text")
@@ -750,6 +797,9 @@ function update_m12() {
   y_m1_ts_axis.selectAll("text").style("font-size", ".8rem");
 
   svg_fg_mortality_1.selectAll("#bars1").remove();
+  svg_fg_mortality_1.selectAll('#lines1').remove()
+
+  
 
   var bars_m1 = svg_fg_mortality_1
     .append("g")
@@ -778,6 +828,7 @@ function update_m12() {
     })
     .attr("width", x_m1.bandwidth());
 
+   
   bars_m1.on("mousemove", showTooltip_m1).on("mouseout", mouseleave_m1);
 
   svg_fg_mortality_1.selectAll("#m1_chosen_area").remove();
@@ -962,6 +1013,44 @@ function update_m12() {
         " of all deaths."
     );
 
+    // lines_m1
+    // .datum(chosen_m1_df)
+    // .transition()
+    // .duration(500)
+    //    .attr(
+    //      "d",
+    //      d3
+    //        .line()
+    //        .defined((d) => !isNaN(d.Expected_deaths))
+    //        .x(function (d) {
+    //          return x_m1(d.Date_label) + x_m1.bandwidth() / 2;
+    //       })
+    //        .y(function (d) {
+    //        return y_m1_ts(d.Expected_deaths);
+    //       })
+    //    );
+
+    var lines_m1 = svg_fg_mortality_1
+    .append("path")
+    .datum(chosen_m1_df)
+    .attr("fill", "none")
+    .attr("stroke", "maroon")
+    .attr("id", "lines1")
+    .style("stroke-dasharray", ("5, 1"))
+    .attr("stroke-width", 2)
+    .attr(
+      "d",
+      d3
+        .line()
+        .defined((d) => !isNaN(d.Expected_deaths))
+        .x(function (d) {
+          return x_m1(d.Date_label) + x_m1.bandwidth() / 2;
+       })
+        .y(function (d) {
+        return y_m1_ts(d.Expected_deaths);
+       })
+    );
+  
   d3.select("#selected_m2_title").html(function (d) {
     return (
       "Weekly deaths (all ages, care home settings); " +
@@ -981,6 +1070,7 @@ function update_m12() {
   });
 
   svg_fg_mortality_2.selectAll("#bars2").remove();
+  svg_fg_mortality_2.selectAll("#lines2").remove();
 
   var y_m2_ts = d3
     .scaleLinear()
@@ -1024,30 +1114,41 @@ function update_m12() {
 
   bars_m2.on("mousemove", showTooltip_m2).on("mouseout", mouseleave_m2);
 
+  
+  var lines_m2 = svg_fg_mortality_2
+  .append("path")
+  .datum(chosen_m2_df)
+  .attr("fill", "none")
+  .attr("stroke", "maroon")
+  .attr("id", "lines2")
+  .style("stroke-dasharray", ("5, 1"))
+  .attr("stroke-width", 2)
+  .attr(
+    "d",
+    d3
+      .line()
+      .defined((d) => !isNaN(d.Expected_deaths))
+      .x(function (d) {
+        return x_m2(d.Date_label) + x_m2.bandwidth() / 2;
+     })
+      .y(function (d) {
+      return y_m2_ts(d.Expected_deaths);
+     })
+  );
+
+
   svg_fg_mortality_2.selectAll("#m1_chosen_area").remove();
-
   svg_fg_mortality_2.selectAll("#covid_dot_m2").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_covid").remove();
-
   svg_fg_mortality_2.selectAll("#m2_place_1").remove();
-
   svg_fg_mortality_2.selectAll("#m2_place_2").remove();
-
   svg_fg_mortality_2.selectAll("#m2_place_3").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_all").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_all_text_1").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_all_text_2").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_all_text_3").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_all_text_4").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_all").remove();
-
   svg_fg_mortality_2.selectAll("#m2_selected_cumulative_all_text_5").remove();
 
   svg_fg_mortality_2

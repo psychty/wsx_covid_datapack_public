@@ -985,3 +985,10 @@ td {
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
 }
+
+.good_to_know {
+  border: 2px solid #cc0052;
+  border-radius: 5px;
+  padding: 10px;
+  padding-top: 5px;
+}
