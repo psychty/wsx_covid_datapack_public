@@ -1,12 +1,12 @@
 "Name","Cumulative cases","Cumulative rate per 100,000 residents","Local Authority Rank (out of 315) where 1 = Highest Rate per 100,000","Decile of cumulative rate per 100,000","Rolling 7-day new cases","Rolling 7-day case rate per 100,000","Local Authority Rank (out of 315) where 1 = Highest Rolling 7-day rate per 100,000","Decile of rolling rate per 100,000","Rolling_period"
-"Adur","19,342","30,133.8","254th","Decile 9","137","213.4","218th","Decile 7","seven days to 20 April"
-"Arun","48,528","30,118.6","255th","Decile 9","418","259.4","99th","Decile 4","seven days to 20 April"
-"Chichester","35,052","28,847.5","277th","Decile 9","317","260.9","96th","Decile 4","seven days to 20 April"
+"Adur","19,342","30,133.8","254th","Decile 9","124","193.2","236th","Decile 8","seven days to 21 April"
+"Arun","48,528","30,118.6","255th","Decile 9","409","253.8","77th","Decile 3","seven days to 21 April"
+"Chichester","35,052","28,847.5","277th","Decile 9","304","250.2","82nd","Decile 3","seven days to 21 April"
 "Crawley","40,408","35,926.5","20th","10% of authorities
-with highest rate","250","222.3","194th","Decile 7","seven days to 20 April"
-"Horsham","44,298","30,450.8","245th","Decile 8","360","247.5","128th","Decile 5","seven days to 20 April"
-"Mid Sussex","50,410","33,133.5","128th","Decile 5","400","262.9","92nd","Decile 3","seven days to 20 April"
-"Worthing","34,865","31,487.4","211th","Decile 7","253","228.5","178th","Decile 6","seven days to 20 April"
+with highest rate","238","211.6","188th","Decile 7","seven days to 21 April"
+"Horsham","44,298","30,450.8","245th","Decile 8","349","239.9","112th","Decile 4","seven days to 21 April"
+"Mid Sussex","50,410","33,133.5","128th","Decile 5","373","245.2","93rd","Decile 3","seven days to 21 April"
+"Worthing","34,865","31,487.4","211th","Decile 7","221","199.6","222nd","Decile 8","seven days to 21 April"
 "West Sussex","272,903","31,453.7","-","-",NA,NA,NA,NA,NA
 "South East region","2,983,525","32,368.9","-","-",NA,NA,NA,NA,NA
 "England","18,489,342","32,695.5","-","-",NA,NA,NA,NA,NA
