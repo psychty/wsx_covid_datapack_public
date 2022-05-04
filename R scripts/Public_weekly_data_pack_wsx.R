@@ -1236,7 +1236,7 @@ download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2022/lahbtables2022week15.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2022/lahbtables2022week16.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -1270,9 +1270,6 @@ Occurrences_wsx <- Occurrences_ltla %>%
   select(Name, Week_number, Cause, Place_of_death, Deaths) %>% 
   left_join(week_ending, by = 'Week_number') %>% 
   ungroup()
-
-unique(five_year_average_df$Place_of_death)
-unique(Occurrences$Place_of_death)
 
 Occurrences <- Occurrences_ltla %>% 
   bind_rows(Occurrences_wsx) %>% 
@@ -1454,79 +1451,6 @@ ltla_deaths_df <- weekly_all_place_deaths %>%
 max_deaths_limit <- ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 50, round_any(max(ltla_deaths_df$All_deaths, na.rm = TRUE), 5, ceiling), ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 100, round_any(max(ltla_deaths_df$All_deaths, na.rm = TRUE), 10, ceiling), ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 250, round_any(max(ltla_deaths_df$All_deaths, na.rm = TRUE), 25, ceiling), ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 500, round_any(max(ltla_deaths_df$All_deaths, na.rm = TRUE), 50, ceiling), round_any(max(ltla_deaths_df$All_deaths, na.rm = TRUE), 100, ceiling)))))
 
 max_deaths_break <- ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 20, 2, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 50, 5, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 100, 10, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 250, 25, ifelse(max(ltla_deaths_df$All_deaths, na.rm = TRUE) < 500, 50, 100)))))
-
-# ltla_deaths_plot_1 <- ggplot(ltla_deaths_df,
-#                              aes(x = Week_ending, 
-#                                  y = Deaths,
-#                                  fill = Cause,
-#                                  colour = Cause,
-#                                  label = Deaths)) +
-#   geom_bar(stat = 'identity',
-#            colour = '#ffffff') +
-#   # geom_text(data = subset(area_x_cov_non_cov, Deaths > 0),
-#   #           position = 'stack',
-#   #           size = 3, 
-#   #           fontface = "bold",
-#   #           aes(vjust = lab_posit)) +
-#   labs(title = paste0('Weekly deaths; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)], '; West Sussex lower tier Local Authorities'),
-#        subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
-#        x = 'Week',
-#        y = 'Number of deaths') +
-#   scale_fill_manual(values = c('#2F5597','#BDD7EE'),
-#                     labels = c('COVID-19', 'COVID not mentioned')) +
-#   scale_colour_manual(values = c('#000000', '#ffffff')) +
-#   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
-#                      limits = c(0,max_deaths_limit)) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-#         legend.position = 'bottom')  +
-#   guides(colour = 'none') +
-#   facet_wrap(~Name, ncol = 3)
-# 
-# png(paste0(output_directory_x, '/Figure_9_covid_19_deaths_wsx_ltlas.png'),
-#     width = 1580,
-#     height = 1050,
-#     res = 120)
-# print(ltla_deaths_plot_1)
-# dev.off()
-# 
-# ltla_deaths_df_2 <- carehome_weekly_deaths %>% 
-#   filter(Name != 'West Sussex')
-# 
-# ltla_deaths_plot_2 <- ggplot(ltla_deaths_df_2,
-#                              aes(x = Week_ending, 
-#                                  y = Deaths,
-#                                  fill = Cause,
-#                                  colour = Cause,
-#                                  label = Deaths)) +
-#   geom_bar(stat = 'identity',
-#            colour = '#ffffff') +
-#   # geom_text(data = subset(area_x_cov_non_cov, Deaths > 0),
-#   #           position = 'stack',
-#   #           size = 3, 
-#   #           fontface = "bold",
-#   #           aes(vjust = lab_posit)) +
-#   labs(title = paste0('Weekly deaths in care homes; w/e 3rd Jan 2020 - ', deaths_labels$deaths_label[length(deaths_labels$deaths_label)], '; West Sussex lower tier Local Authorities'),
-#        subtitle = paste0('By week of occurrence and by Covid-19 mentioned on death certificate (deaths registered by ', format(max(deaths_labels$Week_ending) + 8, '%d %B %Y'), ')'),
-#        x = 'Week',
-#        y = 'Number of deaths') +
-#   scale_fill_manual(values = c('#ED7D31','#FFD966'),
-#                     labels = c('COVID-19', 'COVID not mentioned')) +
-#   scale_colour_manual(values = c('#000000', '#ffffff')) +
-#   scale_y_continuous(breaks = seq(0,max_deaths_limit, max_deaths_break),
-#                      limits = c(0,max_deaths_limit)) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5),
-#         legend.position = 'bottom')  +
-#   guides(colour = 'none') +
-#   facet_wrap(~Name, ncol = 3)
-# 
-# png(paste0(output_directory_x, '/Covid_19_deaths_in_carehomes_wsx_ltlas.png'),
-#     width = 1580,
-#     height = 1050,
-#     res = 120)
-# print(ltla_deaths_plot_2)
-# dev.off()
 
 # Exporting for figures #
 all_deaths_json_export <- All_settings_occurrences %>%
@@ -1855,47 +1779,6 @@ if(exists('mye_ages') == FALSE){
 mye_ages <- read_csv('https://raw.githubusercontent.com/psychty/wsx_covid_public_mobile_site/main/Source_files/mye_ages.csv')
 }
 
-# 
-# asr_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=newCasesBySpecimenDateAgeDemographics&format=csv') %>% 
-#   filter(substr(areaCode, 1,1) == 'E') %>%
-#   select(-areaType) %>% 
-#   rename(Name = areaName,
-#          Code = areaCode,
-#          Date = date) 
-# 
-# asr_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=newCasesBySpecimenDateAgeDemographics&format=csv') %>% 
-#   filter(substr(areaCode, 1,1) == 'E') %>%
-#   select(-areaType) %>% 
-#   rename(Name = areaName,
-#          Code = areaCode,
-#          Date = date) 
-# 
-# asr_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=newCasesBySpecimenDateAgeDemographics&format=csv') %>% 
-#   filter(substr(areaCode, 1,1) == 'E') %>%
-#   select(-areaType) %>% 
-#   rename(Name = areaName,
-#          Code = areaCode,
-#          Date = date) 
-# 
-# asr_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=newCasesBySpecimenDateAgeDemographics&format=csv') %>% 
-#   filter(substr(areaCode, 1,1) == 'E') %>%
-#   select(-areaType) %>% 
-#   rename(Name = areaName,
-#          Code = areaCode,
-#          Date = date) 
-# 
-# age_spec <- asr_ltla %>% 
-#   bind_rows(asr_utla) %>% 
-#   bind_rows(asr_region) %>% 
-#   bind_rows(asr_nation) %>% 
-#   unique() %>% 
-#   filter(Name %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
-#   mutate(Name = ifelse(Name == 'South East', 'South East region', Name)) %>% 
-#   group_by(Name) %>% 
-#   arrange(Name, Date) #%>% 
-#   mutate(LFD_7_day_tests = rollapplyr(newLFDTests, 7, sum , align = 'right', partial = TRUE)) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y'))
-
 library(showtext)
 library(httr)
 
@@ -1962,27 +1845,6 @@ age_spec <- bind_rows(dflist) %>%
   mutate(Age = factor(Age, levels = c('0-4 years', '5-9 years', '10-14 years', '15-19 years', '20-24 years' , '25-29 years', '30-34 years', '35-39 years', '40-44 years', '45-49 years', '50-54 years' ,'55-59 years', '60-64 years' , '65-69 years', '70-74 years', '75-79 years', '80+ years'))) %>% 
   mutate(Date = as.Date(Date))
 
-# We need to back fill the missing days!! 
-
-# age_spec <- read_csv('https://coronavirus.data.gov.uk/downloads/demographic/cases/specimenDate_ageDemographic-unstacked.csv') %>% 
-#   filter(areaName %in% c('Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')) %>% 
-#   select(areaCode, areaName, areaType, date, `newCasesBySpecimenDate-0_4`,`newCasesBySpecimenDate-5_9`,`newCasesBySpecimenDate-10_14`,`newCasesBySpecimenDate-15_19`,`newCasesBySpecimenDate-20_24`,`newCasesBySpecimenDate-25_29`,`newCasesBySpecimenDate-30_34`,`newCasesBySpecimenDate-35_39`,`newCasesBySpecimenDate-40_44`,`newCasesBySpecimenDate-45_49`,`newCasesBySpecimenDate-50_54`,`newCasesBySpecimenDate-55_59`,`newCasesBySpecimenDate-60_64`,`newCasesBySpecimenDate-65_69`,`newCasesBySpecimenDate-70_74`,`newCasesBySpecimenDate-75_79`,`newCasesBySpecimenDate-80_84`,`newCasesBySpecimenDate-85_89`,`newCasesBySpecimenDate-90+`,`newCasesBySpecimenDate-unassigned`) %>%
-#   pivot_longer(cols = c(`newCasesBySpecimenDate-0_4`,`newCasesBySpecimenDate-5_9`,`newCasesBySpecimenDate-10_14`,`newCasesBySpecimenDate-15_19`,`newCasesBySpecimenDate-20_24`,`newCasesBySpecimenDate-25_29`,`newCasesBySpecimenDate-30_34`,`newCasesBySpecimenDate-35_39`,`newCasesBySpecimenDate-40_44`,`newCasesBySpecimenDate-45_49`,`newCasesBySpecimenDate-50_54`,`newCasesBySpecimenDate-55_59`,`newCasesBySpecimenDate-60_64`,`newCasesBySpecimenDate-65_69`,`newCasesBySpecimenDate-70_74`,`newCasesBySpecimenDate-75_79`,`newCasesBySpecimenDate-80_84`,`newCasesBySpecimenDate-85_89`,`newCasesBySpecimenDate-90+`,`newCasesBySpecimenDate-unassigned`),
-#                names_to = 'Age') %>% 
-#   mutate(Age = gsub('newCasesBySpecimenDate-', '', Age)) %>% 
-#   mutate(Age = ifelse(Age == 'unassigned', 'Unknown', paste0(Age, ' years'))) %>% 
-#   mutate(Age = gsub('_', '-', Age)) %>% 
-#   mutate(Age = ifelse(Age %in% c('80-84 years', '85-89 years', '90+ years'), '80+ years', Age)) %>%
-#   filter(areaType != 'overview') %>% 
-#   mutate(areaType = ifelse(areaType == 'ltla', 'Lower Tier Local Authority', ifelse(areaType == 'utla', 'Upper Tier Local Authority', ifelse(areaType == 'region', 'Region', ifelse(areaType == 'nation' , 'Nation', NA))))) %>% 
-#   rename(Name = areaName,
-#          Code = areaCode,
-#          Type = areaType,
-#          Cases = value,
-#          Date = date) %>% 
-#   group_by(Name, Age, Date) %>% 
-#   summarise(Cases = sum(Cases, na.rm = TRUE)) 
-
 Areas <- c('Adur', 'Arun', 'Chichester','Crawley', 'Horsham', 'Mid Sussex', 'Worthing', 'West Sussex', 'South East', 'England')
 Ages <- data.frame(Age = c('0-4 years', '5-9 years', '10-14 years', '15-19 years', '20-24 years' , '25-29 years', '30-34 years', '35-39 years', '40-44 years', '45-49 years', '50-54 years' ,'55-59 years', '60-64 years' , '65-69 years', '70-74 years', '75-79 years', '80+ years'))
 Dates <- seq.Date(min(age_spec$Date), max(age_spec$Date), by = '1 day')
@@ -2022,10 +1884,6 @@ case_age_df_daily <- age_df_daily_combined %>%
   mutate(Change_actual_by_week = ifelse(Perc_change_on_rolling_7_days_tidy == 'No change (zero cases)', 0, ifelse(Perc_change_on_rolling_7_days_tidy == '0 cases in previous 7 days', 1, Perc_change_on_rolling_7_days_actual))) %>% 
   ungroup() %>% 
   mutate(ASR = pois.exact(Rolling_7_day_new_cases, Population)[[3]]*100000)
-
-# case_age_df_daily %>%
-#   filter(Name == 'West Sussex') %>%
-#   View()
 
 case_age_df_daily %>% 
   ungroup() %>% 
@@ -2085,11 +1943,6 @@ case_age_df_daily %>%
   select(Name, Age, Date_label, Cases, Cumulative_cases, Rolling_7_day_new_cases, Change_actual_by_week, ASR) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x,'/age_specific_rates_60_plus_by_date.json'))
-
-# case_age_df_daily %>% 
-#   mutate(Age = ifelse(Age %in% c('0-4 years', '5-9 years'), '0-9 years', ifelse(Age %in% c('10-14 years', '15-19 years'), '10-19 years',ifelse(Age %in% c('20-24 years', '25-29 years'), '20-29 years',ifelse(Age %in% c('30-34 years', '35-39 years'), '30-39 years',ifelse(Age %in% c('40-44 years', '45-49 years'), '40-49 years',ifelse(Age %in% c('50-54 years', '55-59 years'), '50-59 years',ifelse(Age %in% c('60-64 years', '65-69 years'), '60-69 years',ifelse(Age %in% c('70-74 years', '75-79 years'), '70-79 years', '80+ years'))))))))) %>%
-#   select(Age) %>% 
-#   unique()
 
 # MSOA map ####
 if(!file.exists(paste0(github_repo_dir, '/Source files/msoa_lookup_local.csv'))) {
@@ -2458,396 +2311,6 @@ png(paste0(output_directory_x, '/Figure_7_day_rolling_positivity_rates_latest_fa
 print(positivity_worked_plotted)
 dev.off() 
 
-# Hospital admissions ####
-# 
-# if(!file.exists(paste0(github_repo_dir, '/Source files/etr.csv'))){
-#   download.file('https://files.digital.nhs.uk/assets/ods/current/etr.zip', paste0(github_repo_dir, '/Source files/etr.zip'), mode = 'wb')
-#   unzip(paste0(github_repo_dir, '/Source files/etr.zip'), exdir = github_repo_dir)
-#   file.remove(paste0(github_repo_dir, '/Source files/etr.zip'), paste0(github_repo_dir, '/Source files/etr.pdf'))
-# }
-# 
-# calls_hosp_webpage <- read_html('https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/') %>%
-#   html_nodes("a") %>%
-#   html_attr("href")
-# 
-# download.file(grep('Weekly-covid', calls_hosp_webpage, value = T), paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'), mode = 'wb')
-# 
-# trust_admission_date <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-#                                     sheet = 'All beds COVID',
-#                                     skip = 2, 
-#                                     col_names = FALSE, 
-#                                     n_max = 5) %>% 
-#   rename(Item = ...1,
-#          Description = ...2) %>%
-#   filter(Item == 'Published:') %>% 
-#   mutate(Description  = as.Date(as.numeric(Description), origin = "1899-12-30"))
-# 
-# admissions_df_trust <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsTrust&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
-# 
-# admissions_df_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nhsRegion&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
-# 
-# admissions_df_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=newAdmissions&metric=hospitalCases&metric=covidOccupiedMVBeds&format=csv')
-# 
-# # We need to use data.gov to get cumulative admissions because the NHS digital data only starts on August 1st
-# admissions_df <- admissions_df_trust %>%
-#   bind_rows(admissions_df_region) %>% 
-#   bind_rows(admissions_df_nation) %>% 
-#   rename(Name = areaName,
-#          Admissions_or_new_cases_in_last_24hrs = newAdmissions,
-#          Patients_occupying_beds = hospitalCases,
-#          Patients_occupying_mv_beds = covidOccupiedMVBeds,
-#          Date = date) %>% 
-#   mutate(Admissions_or_new_cases_in_last_24hrs = replace_na(Admissions_or_new_cases_in_last_24hrs, 0),
-#          Patients_occupying_beds = replace_na(Patients_occupying_beds, 0),
-#          Patients_occupying_mv_beds = replace_na(Patients_occupying_mv_beds, 0)) %>% 
-#   mutate(Patients_occupying_non_mv_beds = Patients_occupying_beds - Patients_occupying_mv_beds) %>% 
-#   select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
-#   group_by(Name) %>%
-#   arrange(Name, Date) %>%
-#   mutate(Rolling_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, sum, align = 'right', fill = NA),
-#          Rolling_average_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, mean, align = 'right', fill = NA),
-#          Total_admissions = cumsum(Admissions_or_new_cases_in_last_24hrs)) %>%
-#   filter(Name %in%  c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England')) %>% 
-#   mutate(Name = factor(Name, levels = c('Brighton and Sussex University Hospitals NHS Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust','Western Sussex Hospitals NHS Foundation Trust', 'South East', 'England'))) %>%
-#   arrange(Name) %>%
-#   ungroup() %>% 
-#   add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-19'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) %>% 
-#   add_row(Name = 'Sussex Community NHS Foundation Trust', Date = as.Date('2020-03-20'), Admissions_or_new_cases_in_last_24hrs = NA, Patients_occupying_beds = NA, Patients_occupying_mv_beds = NA, Patients_occupying_non_mv_beds = NA, Rolling_7_day_admissions = NA, Rolling_average_7_day_admissions = NA, Total_admissions = NA) 
-# 
-# # patients occupying beds as at 8am
-# admissions_date <- admissions_df_trust %>% 
-#   filter(!is.na(newAdmissions)) %>% 
-#   filter(date == max(date, na.rm = TRUE)) %>% 
-#   select(date) %>% 
-#   unique() %>% 
-#   mutate(item = 'Admissions')
-# 
-# occupied_date <- admissions_df_trust %>% 
-#   filter(!is.na(hospitalCases)) %>% 
-#   filter(date == max(date, na.rm = TRUE)) %>% 
-#   select(date) %>% 
-#   unique() %>% 
-#   mutate(item = 'Patients in hospital')
-# 
-# publish_date <- data.frame(date = trust_admission_date$Description,
-#                            item = 'Publish date')
-# 
-# admissions_date %>% 
-#   bind_rows(occupied_date) %>% 
-#   bind_rows(publish_date) %>% 
-#   mutate(Date_label = format(date, '%A %d %B %Y')) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/hospital_meta.json'))
-# 
-# data.frame(Date = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7)) %>% 
-#   filter(Date >= min(admissions_df$Date)) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/admission_date_labels.json'))
-# 
-# hospital_table_a <- admissions_df %>% 
-#   filter(Date == admissions_date$date) %>%
-#   select(Name, Admissions_or_new_cases_in_last_24hrs, Rolling_7_day_admissions, Total_admissions)
-# 
-# hospital_table_b <- admissions_df %>% 
-#   filter(Date == occupied_date$date) %>%
-#   select(Name, Patients_occupying_beds, Patients_occupying_mv_beds)
-# 
-# hospital_table <- hospital_table_a %>% 
-#   left_join(hospital_table_b, by = 'Name')
-# 
-# hospital_table %>% 
-#   select(!Admissions_or_new_cases_in_last_24hrs) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/latest_hospital_summary.json'))
-# 
-# admissions_export_df <- admissions_df %>% 
-#   filter(Date <= admissions_date$date) %>% 
-#   select(Name, Date, Admissions_or_new_cases_in_last_24hrs, Rolling_average_7_day_admissions, Rolling_7_day_admissions, Total_admissions) %>% 
-#   group_by(Name) %>% 
-#   arrange(Name, Date) %>% 
-#   mutate(Previous_Rolling_7_day_admissions = lag(Rolling_7_day_admissions, 7)) %>% 
-#   mutate(Perc_change_rolling_7_day_admissions = (Rolling_7_day_admissions - lag(Rolling_7_day_admissions, 7))/ lag(Admissions_or_new_cases_in_last_24hrs, 7)) %>% 
-#   mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions == Inf, 1,Perc_change_rolling_7_day_admissions)) %>% 
-#   mutate(Perc_change_rolling_7_day_admissions = replace_na(Perc_change_rolling_7_day_admissions, 0)) %>% 
-#   mutate(Perc_change_rolling_7_day_admissions = ifelse(Perc_change_rolling_7_day_admissions <0, 'Down', ifelse(Perc_change_rolling_7_day_admissions == 0, 'Same', ifelse(Perc_change_rolling_7_day_admissions > 0, 'Up', NA)))) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   select(!Date)
-# 
-# admissions_export_df %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/admissions_export_df.json'))
-# 
-# # admissions_export_df %>% view()
-# 
-# beds_occupied_export_df <- admissions_df %>% 
-#   select(Name, Date, Patients_occupying_beds, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
-#   group_by(Name) %>% 
-#   arrange(Name, Date) %>% 
-#   mutate(Previous_occupying_beds = lag(Patients_occupying_beds, 7)) %>% 
-#   mutate(Perc_change_on_beds_occupied = (Patients_occupying_beds - lag(Patients_occupying_beds, 7))/ lag(Patients_occupying_beds, 7)) %>% 
-#   mutate(Perc_change_on_beds_occupied = ifelse(Perc_change_on_beds_occupied == Inf, 1, Perc_change_on_beds_occupied)) %>% 
-#   mutate(Perc_change_on_beds_occupied = replace_na(Perc_change_on_beds_occupied, 0)) %>% 
-#   mutate(Change_direction = ifelse(Perc_change_on_beds_occupied <0, 'decreased', ifelse(Perc_change_on_beds_occupied == 0, 'stayed the same', ifelse(Perc_change_on_beds_occupied > 0, 'increased', NA)))) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   filter(Date <= occupied_date$date) %>% 
-#   select(!c(Date))
-# 
-# data.frame(Date = seq.Date(occupied_date$date -(52*7), occupied_date$date, by = 7)) %>% 
-#   filter(Date >= min(admissions_df$Date)) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/occupied_date_labels.json'))
-# 
-# beds_occupied_export_df %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/beds_occupied_export_df.json'))
-
-# trust_admissions_1 <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-#                                   sheet = 'Hosp ads & diag',
-#                                   skip = 13) %>% 
-#   filter(!is.na(Name)) %>% 
-#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
-#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-#   pivot_longer(names_to = 'Date', values_to = 'Admissions_or_new_cases_in_last_24hrs', cols = 5:ncol(.)) %>% 
-#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30"))  %>% 
-#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
-#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code')) %>% 
-#   mutate(Source_of_admission = 'All')
-#
-# trust_admissions_1_ch <- read_excel(paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-#                                      sheet = 'Care home ads and diags',
-#                                      skip = 13) %>% 
-#   filter(!is.na(Name)) %>% 
-#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
-#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-#   pivot_longer(names_to = 'Date', values_to = 'Admissions_or_new_cases_in_last_24hrs', cols = 5:ncol(.)) %>% 
-#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30"))  %>% 
-#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
-#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code')) %>% 
-#   mutate(Source_of_admission = 'Care home')
-#
-# admissions_source_df <- trust_admissions_1 %>% 
-#   bind_rows(trust_admissions_1_ch) %>% 
-#   pivot_wider(names_from = Source_of_admission, values_from = Admissions_or_new_cases_in_last_24hrs) %>% 
-#   mutate(All = replace_na(All, 0),
-#          `Care home` = replace_na(`Care home`, 0)) %>% 
-#   mutate(`Not care home` = All - `Care home`) %>% 
-#   select(!All) %>% 
-#   pivot_longer(cols = c(`Not care home`, `Care home`), names_to = 'Source_of_admission',  values_to = 'Admissions_or_new_cases_in_last_24hrs') %>% 
-#   mutate(Source_of_admission = factor(Source_of_admission, levels = c('Care home', 'Not care home'))) %>% 
-#   group_by(Name, Source_of_admission) %>% 
-#   arrange(Name, Source_of_admission, Date) %>% 
-#   mutate(Rolling_7_day_admissions = rollapply(Admissions_or_new_cases_in_last_24hrs, 7, sum, align = 'right', fill = NA),
-#          Total_admissions = cumsum(Admissions_or_new_cases_in_last_24hrs)) 
-
-#trust_x <- 'England'
-
-#admissions_x_df <- admissions_df %>% 
-# filter(Name == trust_x)
-
-# ggplot(admissions_x_df,
-#        aes(x = Date,
-#            y = Admissions_or_new_cases_in_last_24hrs)) +
-#   geom_bar(stat = 'identity',
-#            width = .9,
-#            fill = '#901020') +
-#   geom_line(aes(x = Date,
-#                 group = 1,
-#                 y = Rolling_average_7_day_admissions),
-#             colour = '#000000',
-#             lwd = 1.2) +
-#   scale_x_date(date_labels = "%d %b %y",
-#                breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
-#                expand = c(0,0.01)) +
-#   scale_y_continuous(expand = c(0,0.01)) +
-#   labs(x = 'Date',
-#        y = 'Number of admissions',
-#        title = paste0('Number of new admissions with a positive COVID-19 test result; ',trust_x),
-#        subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-#
-# ggplot(admissions_x_df,
-#        aes(x = Date,
-#            y = Rolling_7_day_admissions)) +
-#   geom_line(group = 1,
-#             colour = '#901020') +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
-#                expand = c(0.01,0.01)) +
-#   labs(x = 'Date',
-#        y = 'Rolling 7 day admissions',
-#        title = paste0('Rolling 7 day number of new admissions with a positive COVID-19 test result; ',trust_x),
-#        subtitle = paste0('New admissions or inpatients with a new diagnosis; data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-# 
-# patients_in_beds_df <- admissions_df %>% 
-#   select(Name, Date, Patients_occupying_mv_beds, Patients_occupying_non_mv_beds) %>% 
-#   filter(Date <= occupied_date$date) %>% 
-#   pivot_longer(cols = c(Patients_occupying_non_mv_beds, Patients_occupying_mv_beds), names_to = 'Bed_type', values_to = 'Patients_occupying_beds') %>% 
-#   mutate(Bed_type = ifelse(Bed_type == 'Patients_occupying_mv_beds', 'Mechanical ventilation', ifelse(Bed_type == 'Patients_occupying_non_mv_beds', 'Not capable of mechanical ventilation', NA)))
-
-#patients_in_beds_df_x <- patients_in_beds_df %>% 
-#  filter(Name == trust_x)
-
-# ggplot(patients_in_beds_df_x,
-#        aes(x = Date,
-#            y = Patients_occupying_beds)) +
-#   geom_bar(stat = 'identity',
-#            colour = '#ffffff',
-#            aes(fill = Bed_type)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(admissions_date$date -(52*7), admissions_date$date, by = 7),
-#                expand = c(0.01,0.01)) +
-#   scale_fill_manual(values = c('#006900', '#669900'),
-#                     name = 'Bed type') +
-#   labs(x = 'Date',
-#        y = 'Number of inpatients',
-#        title = paste0('Number of patients in hospital with positive COVID-19 test result; ',trust_x),
-#        subtitle = paste0('Data up to ', format(admissions_date$date, '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y'))) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-
-# Share of inpatient beds occupied ####
-
-# trust_c19_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-#                                                     sheet = 'Adult G&A Beds Occupied COVID',
-#                                                     skip = 13) %>% 
-#   filter(!is.na(Name)) %>% 
-#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
-#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-#   pivot_longer(names_to = 'Date', values_to = 'c19_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
-#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
-#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
-#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
-# 
-# trust_other_patients_occupying_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-#                                                       sheet = 'Adult G&A Bed Occupied NonCOVID',
-#                                                       skip = 13) %>% 
-#   filter(!is.na(Name)) %>% 
-#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
-#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-#   pivot_longer(names_to = 'Date', values_to = 'other_patients_occupying_ga_beds', cols = 5:ncol(.)) %>% 
-#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
-#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust',  'Sussex Partnership NHS Foundation Trust','Brighton and Sussex University Hospitals NHS Trust')) %>% 
-#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
-# 
-# trust_vacant_ga_beds <- read_excel( paste0(github_repo_dir,'/Source files/trust_admissions.xlsx'),
-#                                     sheet = 'Adult G&A Beds Unoccupied',
-#                                     skip = 13) %>% 
-#   filter(!is.na(Name)) %>% 
-#   mutate(Name = capwords(Name, strict = TRUE)) %>% 
-#   mutate(Name = gsub('Nhs', 'NHS', Name)) %>% 
-#   mutate(Name = gsub(' And ', ' and ', Name)) %>% 
-#   mutate(Name = gsub('Cic', 'CIC', Name)) %>% 
-#   mutate(Name = gsub('C.i.c', 'C.I.C', Name)) %>% 
-#   pivot_longer(names_to = 'Date', values_to = 'vacant_ga_beds', cols = 5:ncol(.)) %>% 
-#   mutate(Date = as.Date(as.numeric(Date), origin = "1899-12-30")) %>% 
-#   filter(Name %in% c('England', 'South East', 'Western Sussex Hospitals NHS Foundation Trust', 'Surrey and Sussex Healthcare NHS Trust', 'Sussex Community NHS Foundation Trust', 'Sussex Partnership NHS Foundation Trust', 'Brighton and Sussex University Hospitals NHS Trust')) %>% 
-#   select(!c('Type 1 Acute?', 'NHS England Region', 'Code'))
-# 
-# bed_used_df <- trust_c19_patients_occupying_ga_beds %>% 
-#   left_join(trust_other_patients_occupying_ga_beds, by = c('Name', 'Date')) %>% 
-#   left_join(trust_vacant_ga_beds, by = c('Name', 'Date')) %>%
-#   pivot_longer(cols = c(c19_patients_occupying_ga_beds, other_patients_occupying_ga_beds, vacant_ga_beds), names_to = 'Bed_status', values_to = 'Beds') %>% 
-#   group_by(Name, Date) %>% 
-#   mutate(Total_open_beds = sum(Beds),
-#          Proportion = Beds/sum(Beds)) %>% 
-#   mutate(Bed_status = factor(ifelse(Bed_status == 'c19_patients_occupying_ga_beds', 'COVID-19 + patients', ifelse(Bed_status == 'other_patients_occupying_ga_beds', 'Other patients', ifelse(Bed_status == 'vacant_ga_beds', 'Vacant (open) beds', NA))), levels = c('COVID-19 + patients', 'Other patients', 'Vacant (open) beds')))
-
-# trust_admissions_metadata <- read_excel( paste0(github_repo_dir,'/Source_files/trust_admissions.xlsx'),
-#                                          sheet = 'All beds COVID',
-#                                          skip = 2, 
-#                                          col_names = FALSE, 
-#                                          n_max = 5) %>% 
-#   rename(Item = ...1,
-#          Description = ...2) %>%
-#   mutate(Description = ifelse(Item == 'Published:', as.character(format(as.Date(as.numeric(Description), origin = "1899-12-30"), '%d-%b-%Y')), Description))
-
-# beds_used_df_x <- bed_used_df %>% 
-#   filter(Name == trust_x)
-
-# ggplot(beds_used_df_x,
-#        aes(x = Date,
-#            y = Proportion)) +
-#   geom_bar(stat = 'identity',
-#            position = position_fill(reverse = TRUE),
-#            colour = '#ffffff',
-#            aes(fill = Bed_status)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(bed_used_df$Date) -(52*7), max(bed_used_df$Date), by = 7),
-#                expand = c(0.01,0.01)) +
-#   scale_fill_manual(values = c('#12263a', '#c96480', '#abcdef')) +
-#   scale_y_continuous(limits = c(0,1),
-#                      breaks = seq(0,1, .1),
-#                      labels = percent_format(accuracy = 1)) +
-#   labs(x = 'Date',
-#        y = 'Proportion',
-#        title = paste0('Proportion of patients occupying adult beds; ', trust_x),
-#        subtitle = paste0('Share of all adult general and acute beds (%); data available from ',  format(min(bed_used_df$Date), '%d %B %Y'), ' up to ', format(max(bed_used_df$Date), '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y')),
-#        caption = 'This measure only includes adult inpatient beds. It is estimated that adult beds comprised more than 99% of inpatient beds in NHS hospital trusts.') +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-
-# bed_used_df_export_1 <- bed_used_df %>%
-#   mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
-#   select(!c(Proportion, Total_open_beds)) %>% 
-#   pivot_wider(names_from = 'Bed_status', values_from = 'Beds') %>% 
-#   mutate(Total_open_beds = covid_19_patients + other + vacant) %>% 
-#   mutate(Label = paste0('As at 8:00am on ', ordinal(as.numeric(format(Date, '%d'))), format(Date, ' %B %Y'), ' there were ', format(covid_19_patients, big.mark = ','), ' patients in adult General and Acute inpatient beds, this is ', round((covid_19_patients / Total_open_beds)*100, 1), '% of the total number of open beds on this day.')) 
-
-# bed_used_df_export <- bed_used_df %>%
-#   mutate(Bed_status = ifelse(Bed_status == 'COVID-19 + patients', 'covid_19_patients', ifelse(Bed_status == 'Other patients', 'other', ifelse(Bed_status == 'Vacant (open) beds', 'vacant', NA)))) %>% 
-#   select(!c(Beds, Total_open_beds)) %>% 
-#   pivot_wider(names_from = 'Bed_status', values_from = 'Proportion') %>% 
-#   left_join(bed_used_df_export_1[c('Name', 'Date', 'Label')], by = c('Name', 'Date')) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   ungroup()
-# 
-# bed_used_df_export %>%
-#   select(!Date) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/patient_share_occupied_beds.json'))
-# 
-# data.frame(Date = seq.Date(max(bed_used_df_export$Date) -(52*7), max(bed_used_df_export$Date), by = 7)) %>% 
-#   filter(Date >= min(bed_used_df_export$Date)) %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/bed_share_ga_date_labels.json'))
-
-# ggplot(beds_used_df_x,
-#        aes(x = Date,
-#            y = Beds)) +
-#   geom_bar(stat = 'identity',
-#            colour = '#ffffff',
-#            aes(fill = Bed_status)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(bed_used_df$Date) -(52*7), max(bed_used_df$Date), by = 7),
-#                expand = c(0.01,0.01)) +
-#   scale_fill_manual(values = c('#12263a', '#c96480', '#abcdef')) +
-#   labs(x = 'Date',
-#        y = 'Number of beds',
-#        title = paste0('Number of patients occupying adult beds in NHS hospital trusts'),
-#        subtitle = paste0('Share of all adult general and acute beds (%); data up to ', format(max(bed_used_df$Date), '%d %B %Y'), ' as at ', format(trust_admission_date$Description, '%d %B %Y')),
-#        caption = 'This measure only includes adult inpatient beds. It is estimated that adult beds comprised more than 99% of inpatient beds in NHS hospital trusts.') +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5))
-
-
 # Vaccine time series counts ####
 
 lads <- c("E07000223", "E07000224","E07000225", "E07000226", "E07000227", "E07000228","E07000229")
@@ -2912,7 +2375,7 @@ vaccine_age_df <- bind_rows(dflist) %>%
          Dose_3_or_booster = newPeopleVaccinatedThirdInjectionByVaccinationDate) %>% 
   select(!c(apisource, Code)) %>% 
   mutate(Date = as.Date(Date)) %>% 
-  mutate(Age_group = factor(paste0(gsub('_', '-', Age_group), ' years'), levels = c('12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
+  mutate(Age_group = factor(paste0(gsub('_', '-', Age_group), ' years'), levels = c('05-11 years','12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
   group_by(Name, Age_group) %>% 
   arrange(Date) %>% 
   mutate(Seven_day_sum_dose_1 = round(rollapplyr(Dose_1, 7, sum, align = 'right', partial = TRUE),0)) %>%  
@@ -2926,11 +2389,11 @@ vaccine_age_df_1 <- vaccine_age_df %>%
   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) %>% 
-  mutate(Rolling_age_specific_second_dose_rate_per_100000 = ifelse(Age_group == '12-15 years', NA, Rolling_age_specific_second_dose_rate_per_100000)) %>% 
-  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = ifelse(Age_group == '12-15 years', NA, Cumulative_age_specific_second_dose_rate_per_100000))
+  mutate(Rolling_age_specific_second_dose_rate_per_100000 = ifelse(Age_group %in% c('05-11 years', '12-15 years'), NA, Rolling_age_specific_second_dose_rate_per_100000)) %>% 
+  mutate(Cumulative_age_specific_second_dose_rate_per_100000 = ifelse(Age_group %in% c('05-11 years', '12-15 years'), NA, Cumulative_age_specific_second_dose_rate_per_100000))
 
 vaccine_age_df_2 <- vaccine_age_df %>% 
-  filter(!Age_group %in% c('12-15 years', '16-17 years')) %>% 
+  filter(!Age_group %in% c('05-11 years','12-15 years', '16-17 years')) %>% 
   mutate(Rolling_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_3_or_booster, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Cumulative_dose_3_or_booster, Denominator)[[3]]*100000)
 
@@ -2956,7 +2419,7 @@ vaccine_ts_12_plus_df <- vaccine_age_df_final %>%
   mutate(Age_group = '12 and over')
 
 vaccine_ts_16_plus_df <- vaccine_age_df_final %>% 
-  filter(!Age_group %in% c('12-15 years')) %>% 
+  filter(!Age_group %in% c('05-11 years','12-15 years')) %>% 
   group_by(Date, Name) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
             Dose_2 = sum(Dose_2, na.rm = TRUE),
@@ -2977,7 +2440,7 @@ vaccine_ts_16_plus_df <- vaccine_age_df_final %>%
   mutate(Age_group = '16 and over')
 
 vaccine_ts_18_plus_df <- vaccine_age_df_final %>% 
-  filter(!Age_group %in% c('12-15 years', '16-17 years')) %>% 
+  filter(!Age_group %in% c('05-11 years','12-15 years', '16-17 years')) %>% 
   group_by(Date, Name) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
             Dose_2 = sum(Dose_2, na.rm = TRUE),
@@ -3036,52 +2499,6 @@ vaccination_area_ts_df_long %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_overall.json'))
 
-# ggplot(data = vaccine_ts_df_x,
-#        aes(x = Date,
-#            y = Seven_day_rolling_vaccinations,
-#            group = Dose_number,
-#            colour = Dose_number)) +
-#   geom_line(size = .9) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
-#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(vaccine_ts_df_x$Date) - (52*14), max(vaccine_ts_df_x$Date), by = 7),
-#                limits = c(min(vaccine_ts_df_x$Date), max(vaccine_ts_df_x$Date) + 2),
-#                expand = c(0.01,1)) +
-#   scale_colour_manual(values = c('#fa8800','#00563f'),
-#                       name = 'Dose',
-#                       labels = c('Dose 1', 'Dose 2')) +
-#   labs(x = 'Date of administration',
-#        y = 'Number of vaccinations\nin previous 7 days',
-#        title = paste0('Rolling 7 day number of Covid-19 vaccinations; ', 'West Sussex'),
-#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-#   theme(axis.text.x = element_text(size = 8))
-
-# ggplot(data = vaccine_ts_df_x,
-#        aes(x = Date,
-#            y = Seven_day_rolling_rate_vaccinations,
-#            group = Dose_number,
-#            colour = Dose_number)) +
-#   geom_line(size = .9) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
-#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(vaccine_ts_df_x$Date) - (52*14), max(vaccine_ts_df_x$Date), by = 7),
-#                limits = c(min(vaccine_ts_df_x$Date), max(vaccine_ts_df_x$Date) + 2),
-#                expand = c(0.01,1)) +
-#   scale_colour_manual(values = c('#fa8800','#00563f'),
-#                       name = 'Dose',
-#                       labels = c('Dose 1', 'Dose 2')) +
-#   labs(x = 'Date of administration',
-#        y = 'Rate of vaccinations per 100,000\nin previous 7 days',
-#        title = paste0('Rolling 7 day rate per 100,000 of Covid-19 vaccinations; ', 'West Sussex'),
-#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-#   theme(axis.text.x = element_text(size = 8))
-
-# vaccine_age_df %>% view()
-
 vaccination_area_ts_df_long %>% 
   ungroup() %>% 
   arrange(Date) %>% 
@@ -3098,122 +2515,6 @@ vaccination_area_ts_df_long %>%
   select(!Date) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_overall.json'))
-
-# vaccine_age_df_final %>% 
-#   mutate(Date_label = format(Date, '%d %b %y')) %>% 
-#   select(Name, Age_group, Date_label, Seven_day_sum_dose_1, Rolling_age_specific_first_dose_rate_per_100000, Seven_day_sum_dose_2, Rolling_age_specific_second_dose_rate_per_100000, Cumulative_dose_1, Cumulative_age_specific_first_dose_rate_per_100000, Cumulative_dose_2, Cumulative_age_specific_second_dose_rate_per_100000) %>%
-#   mutate(Rolling_age_specific_first_dose_rate_per_100000 = replace_na(Rolling_age_specific_first_dose_rate_per_100000, 0)) %>%
-#   mutate(Rolling_age_specific_second_dose_rate_per_100000 = replace_na(Rolling_age_specific_second_dose_rate_per_100000, 0)) %>%
-#   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = replace_na(Cumulative_age_specific_first_dose_rate_per_100000, 0)) %>%
-#   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = replace_na(Cumulative_age_specific_second_dose_rate_per_100000, 0)) %>%
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x, '/vaccination_timeseries_age.json'))
-
-# vaccine_ts_age_df_x <- vaccine_age_df %>% 
-#   filter(Name == 'West Sussex')
-
-# library(ggiraph)
-
-# viridis::inferno(15, direction = -1)
-
-# ggplot(data = vaccine_ts_age_df_x,
-#        aes(x = Date,
-#            y = Seven_day_sum_dose_1,
-#            group = Age_group,
-#            colour = Age_group)) +
-#   geom_line_interactive(aes(tooltip = paste0(Age_group),
-#                             data_id = paste0(Age_group)),
-#                         size = .9) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
-#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-#                expand = c(0.01,1)) +
-#   # scale_colour_manual(values = age_colours,
-#   #                     name = 'Age') +
-#   labs(x = 'Date of administration',
-#        y = 'Number of first dose\nvaccinations in previous 7 days',
-#        title = paste0('Rolling 7 day sum of first dose Covid-19 vaccinations; ', 'West Sussex'),
-#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-#   theme(axis.text.x = element_text(size = 8))
-# 
-# ggplot(data = vaccine_ts_age_df_x,
-#        aes(x = Date,
-#            y = Rolling_age_specific_first_dose_rate_per_100000,
-#            group = Age_group,
-#            colour = Age_group)) +
-#   geom_line_interactive(aes(tooltip = paste0(Age_group),
-#                             data_id = paste0(Age_group)),
-#                         size = .9) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
-#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-#                expand = c(0.01,1)) +
-#   # scale_colour_manual(values = age_colours,
-#   #                     name = 'Age') +
-#   labs(x = 'Date of administration',
-#        y = 'Rate of first dose\nvaccinations per 100,000 population\nin previous 7 days',
-#        title = paste0('Rolling 7 day rate per 100,000 population of first dose Covid-19 vaccinations; ', 'West Sussex'),
-#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-#   theme(axis.text.x = element_text(size = 8))
-# 
-# ggplot(data = vaccine_ts_age_df_x,
-#        aes(x = Date,
-#            y = Seven_day_sum_dose_2,
-#            group = Age_group,
-#            colour = Age_group)) +
-#   geom_line_interactive(aes(tooltip = paste0(Age_group),
-#                             data_id = paste0(Age_group)),
-#                         size = .9) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
-#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-#                expand = c(0.01,1)) +
-#   # scale_colour_manual(values = age_colours,
-#   #                     name = 'Age') +
-#   labs(x = 'Date of administration',
-#        y = 'Number of first dose\nvaccinations in previous 7 days',
-#        title = paste0('Rolling 7 day sum of first dose Covid-19 vaccinations; ', 'West Sussex'),
-#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-#   theme(axis.text.x = element_text(size = 8))
-# 
-# ggplot(data = vaccine_ts_age_df_x,
-#        aes(x = Date,
-#            y = Rolling_age_specific_second_dose_rate_per_100000,
-#            group = Age_group,
-#            colour = Age_group)) +
-#   geom_line_interactive(aes(tooltip = paste0(Age_group),
-#                             data_id = paste0(Age_group)),
-#                         size = .9) +
-#   ph_theme() +
-#   theme(axis.text.x = element_text(angle = 90, size = 6)) +
-#   scale_y_continuous(labels = label_comma(accuracy = 1)) +
-#   scale_x_date(date_labels = "%b %d",
-#                breaks = seq.Date(max(vaccine_ts_age_df_x$Date) -(52*14), max(vaccine_ts_age_df_x$Date), by = 7),
-#                limits = c(min(vaccine_ts_age_df_x$Date), max(vaccine_ts_age_df_x$Date)),
-#                expand = c(0.01,1)) +
-#   # scale_colour_manual(values = age_colours,
-#   #                     name = 'Age') +
-#   labs(x = 'Date of administration',
-#        y = 'Rate of first dose\nvaccinations per 100,000 population\nin previous 7 days',
-#        title = paste0('Rolling 7 day rate per 100,000 population of first dose Covid-19 vaccinations; ', 'West Sussex'),
-#        subtitle = paste0('Vaccinations administered to patients registered to addresses in ', 'West Sussex', '; as at ', format(last_date, '%d %B')))  +
-#   theme(axis.text.x = element_text(size = 8))
-
-# read_csv(paste0(github_repo_dir, '/Source files/jcvi_dates.csv'),
-#          col_types = cols(Opening_date = col_date(format = "%d/%m/%Y"))) %>% 
-#   mutate(Date_label = format(Opening_date, '%d %b %y')) %>% 
-#   filter(!is.na(Date_label)) %>% 
-#   toJSON() %>% 
-#   write_lines(paste0(output_directory_x,'/jcvi_cohort_key_dates.json'))
 
 # Week by week change ####
 
@@ -3313,7 +2614,7 @@ age_denominators <- vaccine_ts_df %>%
 
 # cumulative timeseries by age ####
 cumulative_vac <- vaccine_ts_df %>% 
-  mutate(Age_group = factor(Age_group, levels = c('12 and over', '16 and over', '18 and over', '12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
+  mutate(Age_group = factor(Age_group, levels = c('12 and over', '16 and over', '18 and over', '05-11 years', '12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
   mutate(Date_label = format(Date, '%d %b %y')) 
 
 cumulative_vac %>% 
@@ -3460,4 +2761,3 @@ vaccine_df_ltla_pt_1 %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
-
