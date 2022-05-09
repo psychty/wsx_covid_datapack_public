@@ -43,7 +43,7 @@ github_repo_dir <- './GitHub/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
 
-
+# list.files(github_repo_dir)
 # 2020 MYE
 mye_total <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=2092957699,2013265928,1820327937...1820328318,1816133633...1816133848&date=latest&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
   rename(Population = OBS_VALUE,
@@ -81,7 +81,9 @@ mye_total <- mye_total %>%
 daily_cases_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
 daily_cases_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
 daily_cases_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
-daily_cases_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
+#daily_cases_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
+
+daily_cases_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=newCasesBySpecimenDate&metric=cumCasesBySpecimenDate&format=csv')
 
 daily_cases <- daily_cases_ltla %>% 
   bind_rows(daily_cases_utla) %>% 
@@ -2761,3 +2763,4 @@ vaccine_df_ltla_pt_1 %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
+
