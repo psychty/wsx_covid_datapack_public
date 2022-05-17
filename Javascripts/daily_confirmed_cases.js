@@ -606,21 +606,21 @@ function update_annotations_f1() {
     cb = d3.select(this);
     grp = cb.property("value");
 
-    // If the box is check, show the notes
-    if (cb.property("checked")) {
-      svg_daily_new_case_bars
-        .selectAll("." + grp)
-        .transition()
-        .duration(1000)
-        .style("opacity", 1);
-    } else {
-      svg_daily_new_case_bars
-        .selectAll("." + grp)
-        .transition()
-        .duration(1000)
-        .style("opacity", 0);
-    }
-  });
+// If the box is check, show the notes
+  if (cb.property("checked")) {
+    svg_daily_new_case_bars
+     .selectAll("." + grp)
+     .transition()
+     .duration(1000)
+     .style("opacity", 1);
+  } else {
+    svg_daily_new_case_bars
+     .selectAll("." + grp)
+     .transition()
+     .duration(1000)
+     .style("opacity", 0);
+   }
+ });
 }
 
 // When a button change, I run the update function
