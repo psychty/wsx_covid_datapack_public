@@ -1238,7 +1238,7 @@ download.file('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2022/lahbtables2022week19.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2022/lahbtables2022week20.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -2474,7 +2474,8 @@ vaccine_ts_df %>%
   filter(Date == max(Date)) %>% 
   select(Date) %>% 
   unique() %>% 
-  mutate(Date = paste0(format(Date, '%A '), ordinal(as.numeric(format(Date, '%d'))), format(Date, ' %B'))) %>%   toJSON() %>% 
+  mutate(Date = paste0(format(Date, '%A '), ordinal(as.numeric(format(Date, '%d'))), format(Date, ' %B'))) %>%  
+  toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_latest_dose_date.json'))
 
 vaccination_area_ts_df_long <- vaccine_ts_df %>% 
@@ -2587,7 +2588,7 @@ wsx_wk_by_wk_3 <- all_age_vac %>%
 wsx_wk_by_wk <- wsx_wk_by_wk_1 %>% 
   left_join(wsx_wk_by_wk_2,  by = c('Name', 'Age_group')) %>% 
   left_join(wsx_wk_by_wk_3,  by = c('Name', 'Age_group')) %>% 
-  mutate(Age_group = factor(Age_group, levels = c('12 and over','16 and over', '18 and over','12-15 years','16-17 years','18-24 years','25-29 years','30-34 years','35-39 years','40-44 years','45-49 years','50-54 years','55-59 years','60+ years'))) %>% 
+  mutate(Age_group = factor(Age_group, levels = c('12 and over','16 and over', '18 and over','05-11 years','12-15 years','16-17 years','18-24 years','25-29 years','30-34 years','35-39 years','40-44 years','45-49 years','50-54 years','55-59 years','60+ years'))) %>% 
   arrange(Name, desc(Age_group))
 
 wsx_wk_by_wk %>% 
