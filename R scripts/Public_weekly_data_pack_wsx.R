@@ -1238,7 +1238,7 @@ download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/hea
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbtables2022week23.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbtables2022week24.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -2360,7 +2360,6 @@ for(i in urls) {
   dflist[[i]] <- df
 }
 
-
 # bind together (unnest)
 vaccine_age_df <- bind_rows(dflist) %>%
   unnest(vaccinationsAgeDemographics) %>% 
@@ -2376,6 +2375,7 @@ vaccine_age_df <- bind_rows(dflist) %>%
          Cumulative_dose_3_or_booster = cumPeopleVaccinatedThirdInjectionByVaccinationDate,
          Dose_3_or_booster = newPeopleVaccinatedThirdInjectionByVaccinationDate) %>% 
   select(!c(apisource, Code)) %>% 
+  filter(Age_group != "75+") %>% 
   mutate(Date = as.Date(Date)) %>% 
   mutate(Age_group = factor(paste0(gsub('_', '-', Age_group), ' years'), levels = c('05-11 years','12-15 years','16-17 years',"18-24 years", "25-29 years", "30-34 years", "35-39 years", "40-44 years", "45-49 years", "50-54 years", "55-59 years", "60-64 years", "65-69 years", "70-74 years", "75-79 years", "80-84 years", "85-89 years", "90+ years"))) %>% 
   group_by(Name, Age_group) %>% 
@@ -2385,9 +2385,16 @@ vaccine_age_df <- bind_rows(dflist) %>%
   mutate(Seven_day_sum_dose_3_or_booster = round(rollapplyr(Dose_3_or_booster, 7, sum, align = 'right', partial = TRUE),0)) %>% 
   select(Date, Name, Age_group, Denominator, Dose_1, Seven_day_sum_dose_1, Cumulative_dose_1, Dose_2, Seven_day_sum_dose_2, Cumulative_dose_2, Dose_3_or_booster, Seven_day_sum_dose_3_or_booster, Cumulative_dose_3_or_booster)
 
+# vaccine_age_df <- bind_rows(dflist) %>%
+#   unnest(vaccinationsAgeDemographics) %>%
+#   filter(age != '75+') %>% 
+#   filter(VaccineRegisterPopulationByVaccinationDate == 0) 
+# 
+
 # Currently routinely, 12-15 year olds have one dose, 16-17 year olds will be offered two doses, and 18+ will get three
 vaccine_age_df_1 <- vaccine_age_df %>% 
-    mutate(Rolling_age_specific_first_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_1, Denominator)[[3]]*100000) %>% 
+  filter(Denominator != 0) %>% 
+  mutate(Rolling_age_specific_first_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_1, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_first_dose_rate_per_100000 = pois.exact(Cumulative_dose_1, Denominator)[[3]]*100000)  %>% 
   mutate(Rolling_age_specific_second_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_2, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = pois.exact(Cumulative_dose_2, Denominator)[[3]]*100000) %>% 
@@ -2395,6 +2402,7 @@ vaccine_age_df_1 <- vaccine_age_df %>%
   mutate(Cumulative_age_specific_second_dose_rate_per_100000 = ifelse(Age_group %in% c('05-11 years', '12-15 years'), NA, Cumulative_age_specific_second_dose_rate_per_100000))
 
 vaccine_age_df_2 <- vaccine_age_df %>% 
+  filter(Denominator != 0) %>% 
   filter(!Age_group %in% c('05-11 years','12-15 years', '16-17 years')) %>% 
   mutate(Rolling_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Seven_day_sum_dose_3_or_booster, Denominator)[[3]]*100000) %>% 
   mutate(Cumulative_age_specific_third_or_booster_dose_rate_per_100000 = pois.exact(Cumulative_dose_3_or_booster, Denominator)[[3]]*100000)
@@ -2764,4 +2772,3 @@ vaccine_df_ltla_pt_1 %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
-
