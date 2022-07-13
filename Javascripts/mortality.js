@@ -193,7 +193,7 @@ var last_mortality_period = weeks[weeks.length - 1];
   xAxis_mortality_1.call(
     d3
       .axisBottom(x_m1)
-      .tickValues([first_mortality_period, 'w/e 1st Jan 21', last_mortality_period])
+      .tickValues([first_mortality_period, 'w/e 2nd Apr 21', last_mortality_period])
   );
 
 // "w/e 7th Jan 22"
@@ -508,7 +508,7 @@ xAxis_mortality_2
   xAxis_mortality_2.call(
     d3
       .axisBottom(x_m2)
-      .tickValues([first_mortality_period, 'w/e 1st Jan 21', last_mortality_period])
+      .tickValues([first_mortality_period, 'w/e 2nd Apr 21', last_mortality_period])
   );
 
   xAxis_mortality_2

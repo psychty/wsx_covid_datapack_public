@@ -1,8 +1,6 @@
 # Public facing data pack - West Sussex and LTLAs
 
-library(easypackages)
-
-libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR', 'showtext', 'httr')
+easypackages::libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR', 'showtext', 'httr')
 
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
@@ -1238,7 +1236,7 @@ download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/hea
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbtables2022week24.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbtables2022week261.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -2772,3 +2770,4 @@ vaccine_df_ltla_pt_1 %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
+
