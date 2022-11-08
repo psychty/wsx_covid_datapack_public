@@ -1,6 +1,9 @@
 # Public facing data pack - West Sussex and LTLAs
 
-easypackages::libraries("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR', 'showtext', 'httr', 'beepr')
+packages <- c("readxl", "readr", "plyr", "dplyr", "ggplot2", "png", "tidyverse", "scales", 'zoo', 'stats',"rgdal", 'rgeos', "tmaptools", 'sp', 'sf', 'maptools', 'leaflet', 'leaflet.extras', 'spdplyr', 'geojsonio', 'rmapshaper', 'jsonlite', 'grid', 'aweek', 'xml2', 'rvest', 'officer', 'flextable', 'viridis', 'epitools', 'PostcodesioR', 'showtext', 'httr')
+
+install.packages(setdiff(packages, rownames(installed.packages())))
+easypackages::libraries(packages)
 
 capwords = function(s, strict = FALSE) {
   cap = function(s) paste(toupper(substring(s, 1, 1)),
@@ -36,7 +39,8 @@ ph_theme = function(){
 }
 
 #github_repo_dir <- "~/Documents/GitHub/wsx_covid_datapack_public"
-github_repo_dir <- '~/Repos/wsx_covid_datapack_public/'
+# github_repo_dir <- '~/Repos/wsx_covid_datapack_public/'
+github_repo_dir <- 'C:/Users/asus/OneDrive/Documents/Repositories/wsx_covid_datapack_public'
 #github_repo_dir <- '~/repos/wsx_covid_datapack_public'
 output_directory_x <- paste0(github_repo_dir, '/Outputs')
 areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Horsham', 'Mid Sussex', 'Worthing')
@@ -75,7 +79,6 @@ mye_total <- mye_total %>%
   select(-Name)
 
 # Pillar 1 and 2 combined time series ####
-
 daily_cases_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
 daily_cases_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
 daily_cases_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
@@ -132,6 +135,7 @@ complete_date <- last_date - 5
 
 # One way to do this is to create a new dataframe with a row for each area and date, and left join the daily_cases data to it.
 first_date <- min(daily_cases$Date)
+
 last_case_date <- max(daily_cases$Date)
 
 data.frame(Item = 'first_case_period', Label =  format(first_date, '%d %b %y')) %>% 
@@ -1234,9 +1238,9 @@ rm(week_ending_a, week_ending_b, week_ending_c)
 
 download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables20212.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables20215.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbfileweek392022.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbfileweek432022.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -1245,8 +1249,9 @@ download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommun
 Occurrences_ltla_2021 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'), sheet = 'Occurrences - All data', skip = 2)) %>% 
   mutate(`Week number` = paste0(`Week number`, ' - 2021'))
 
-Occurrences_ltla_2022 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), sheet = 'Occurrences - All data', skip = 2)) %>% 
-  mutate(`Week number` = paste0(`Week number`, ' - 2022'))
+Occurrences_ltla_2022 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), sheet = 'Table 2', skip = 5)) %>% 
+  mutate(`Week number` = paste0(`Week number`, ' - 2022')) %>% 
+  rename('Number of deaths' = Deaths)
 
 Occurrences_ltla <- read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), sheet = 'Occurrences - All data', skip = 2) %>% 
   mutate(`Week number` = paste0(`Week number`, ' - 2020')) %>% 
