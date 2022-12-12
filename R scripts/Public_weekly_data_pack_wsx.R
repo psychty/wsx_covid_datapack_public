@@ -718,25 +718,22 @@ ft_utla_rolling_rate_wsx <- flextable(rolling_utla_rate_wsx) %>%
   hline_top(border = bord_style, part = "all" )
 
 # Attempt to get utla boundaries ####
-utla_ua_boundaries_json <- geojson_read("https://opendata.arcgis.com/datasets/69109c4fbbc54f1f9d6e18000031a5fd_0.geojson",  what = "sp") %>%
+utla_ua_boundaries_geojson <- st_read("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Counties_and_Unitary_Authorities_December_2021_EN_BUC/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson") %>%
   filter(substr(CTYUA21CD, 1,1 ) == 'E') 
 
-utla_ua_boundaries <- geojson_read("https://opendata.arcgis.com/datasets/69109c4fbbc54f1f9d6e18000031a5fd_0.geojson",  what = "sp")
+utla_ua_boundaries_geojson <- st_read("https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/CUA_Dec_2020_UK_BUC_2022/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson") %>%
+  filter(substr(CTYUA20CD, 1,1 ) == 'E') 
 
-utla_ua_boundaries_json <- utla_ua_boundaries_json %>% 
-  mutate(CTYUA21NM = ifelse(CTYUA21NM %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(CTYUA21NM %in% c('City of London', 'Hackney'), 'Hackney and City of London', CTYUA21NM))) %>% 
-  mutate(CTYUA21CD = ifelse(CTYUA21CD %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(CTYUA21CD %in% c('E09000001', 'E09000012'), 'E09000012', CTYUA21CD))) %>% 
-  group_by(CTYUA21CD, CTYUA21NM) %>% 
-  summarise() %>% 
-  arrange(CTYUA21CD) %>% 
-  left_join(utla_rate, by = c('CTYUA21CD' = 'Code')) 
+utla_spdf <- as_Spatial(utla_ua_boundaries_geojson, IDs = utla_ua_boundaries_geojson$CTYUA20CD) %>% 
+  # mutate(CTYUA20NM = ifelse(CTYUA20NM %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(CTYUA20NM %in% c('City of London', 'Hackney'), 'Hackney and City of London', CTYUA20NM))) %>% 
+  mutate(CTYUA20CD = ifelse(CTYUA20CD %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(CTYUA20CD %in% c('E09000001', 'E09000012'), 'E09000012', ifelse(CTYUA20CD %in% c('E06000060'), 'E10000002', CTYUA20CD)))) %>% 
+  arrange(CTYUA20CD) %>% 
+  left_join(utla_rate, by = c('CTYUA20CD' = 'Code')) 
 
-utla_ua_boundaries <- utla_ua_boundaries %>% 
-  fortify(region = "CTYUA21CD") %>% 
-  rename(CTYUA21CD = id) %>% 
-  filter(substr(CTYUA21CD, 1,1 ) == 'E') %>% 
-  left_join(utla_rate, by = c('CTYUA21CD' = 'Code')) %>% 
-  filter(!is.na(Cumulative_per_100000))
+leaflet() %>% 
+  addPolygons(data = utla_spdf,
+              label = paste0(utla_spdf$CTYUA20CD, ' ', utla_spdf$CTYUA20NM),
+              popup = paste0(utla_spdf$CTYUA20CD, ' ', utla_spdf$CTYUA20NM))
 
 map_theme = function(){
   theme( 
@@ -761,10 +758,20 @@ map_theme = function(){
   ) 
 } 
 
+library(broom)
+
+utla_spdf_fortified <- as_Spatial(utla_ua_boundaries_geojson, IDs = utla_ua_boundaries_geojson$CTYUA20CD) %>% 
+  tidy(region = "CTYUA20CD") %>%
+  rename(CTYUA20CD = id) %>% 
+  # mutate(CTYUA20NM = ifelse(CTYUA20NM %in% c('Cornwall', 'Isles of Scilly'), 'Cornwall and Isles of Scilly', ifelse(CTYUA20NM %in% c('City of London', 'Hackney'), 'Hackney and City of London', CTYUA20NM))) %>% 
+  mutate(CTYUA20CD = ifelse(CTYUA20CD %in% c('E06000053', 'E06000052'), 'E06000052', ifelse(CTYUA20CD %in% c('E09000001', 'E09000012'), 'E09000012', ifelse(CTYUA20CD %in% c('E06000060'), 'E10000002', CTYUA20CD)))) %>% 
+  arrange(CTYUA20CD) %>% 
+  left_join(utla_rate, by = c('CTYUA20CD' = 'Code')) 
+
 map_1 <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
-  geom_polygon(data = utla_ua_boundaries,
+  geom_polygon(data = utla_spdf_fortified,
                aes(x=long,
                    y=lat,
                    group = group,
@@ -782,7 +789,7 @@ map_1 <- ggplot() +
 inset_1 <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
-  geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
+  geom_polygon(data = subset(utla_spdf_fortified, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
                aes(x=long,
                    y=lat,
                    group = group,
@@ -808,7 +815,7 @@ dev.off()
 map_1b <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
-  geom_polygon(data = utla_ua_boundaries,
+  geom_polygon(data = utla_spdf_fortified,
                aes(x=long,
                    y=lat,
                    group = group,
@@ -826,7 +833,7 @@ map_1b <- ggplot() +
 inset_1b <- ggplot() +
   coord_fixed(1.5) +
   map_theme() +
-  geom_polygon(data = subset(utla_ua_boundaries, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
+  geom_polygon(data = subset(utla_spdf_fortified, Name %in% c(c("Barking and Dagenham", "Barnet", "Bexley","Brent", "Bromley", "Camden", "City of London", "Croydon","Ealing", "Enfield", "Greenwich", "Hackney","Hammersmith and Fulham", "Haringey", "Harrow","Havering", "Hillingdon", "Hounslow", "Islington","Kensington and Chelsea", "Kingston upon Thames", "Lambeth","Lewisham", "Merton", "Newham", "Redbridge", "Richmond upon Thames","Southwark", "Sutton", "Tower Hamlets", "Waltham Forest","Wandsworth", "Westminster"))),
                aes(x=long,
                    y=lat,
                    group = group,
@@ -853,7 +860,7 @@ utla_cumulative_rate_bins <- utla_cumulative_rate_bins %>%
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
   mutate(cumulative_bins = factor(cumulative_bins, levels = cumulative_bins))
 
-utla_ua_boundaries_rate_geo <- utla_ua_boundaries_json %>% 
+utla_ua_boundaries_rate_geo <- utla_spdf %>% 
   mutate(Label_1 = paste0('<b>', Name, '</b><br>', 'Number of cases so far as at ', format(last_date, '%d %B'), ': <b>', format(Cumulative_cases, big.mark = ',', trim = TRUE), ' (', format(round(Cumulative_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Cumulative_rate_rank), ' highest confirmed COVID-19 rate per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   mutate(Label_2 = paste0('Number of cases in the ', Rolling_period, ': <b>', format(Rolling_7_day_new_cases, big.mark = ',', trim = TRUE), ' (', format(round(Rolling_7_day_new_cases_per_100000,1), big.mark = ',', trim = TRUE), ' per 100,000 population)</b><br><br>', Name, ' has the ', ordinal(Rolling_rate_rank), ' highest confirmed COVID-19 rate of new cases in the most recent complete seven days per 100,000 out of Upper Tier Local Authorities in England.')) %>% 
   select(Name, Label_1, Label_2, Label_3, cumulative_bins, rolling_bins, Perc_change_on_rolling_7_days_tidy) %>% 
@@ -867,6 +874,10 @@ levels(utla_ua_boundaries_rate_geo@data$Perc_change_on_rolling_7_days_tidy)  %>%
   write_lines(paste0(output_directory_x, '/percentage_change_bins.json'))
 
 # geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
+
+leaflet() %>% 
+  addPolygons(data = utla_spdf,
+              label = paste0(utla_spdf$CTYUA20CD, ' ', utla_spdf$CTYUA20NM))
 
 geojson_write(geojson_json(utla_ua_boundaries_rate_geo), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
 
@@ -1008,13 +1019,11 @@ ft_ltla_rolling_rate_wsx <- flextable(rolling_ltla_rate_wsx) %>%
   hline_bottom(border = bord_style ) %>% 
   hline_top(border = bord_style, part = "all" )
 
-ltla_boundaries <- geojson_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
+# ltla_boundaries <-st_read('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson',  what = "sp") 
 
 #download.file('https://opendata.arcgis.com/datasets/3a4fa2ce68f642e399b4de07643eeed3_0.geojson', paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'), mode = 'wb')
 
-if(exists('ltla_boundaries') == FALSE) {
-  ltla_boundaries <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
-}
+ltla_boundaries <- geojson_read(paste0(output_directory_x, '/failsafe_ltla_boundary.geojson'),  what = "sp") 
 
 geo_rate_cumulative_ltla_bins <- ltla_cumulative_rate_bins %>% 
   mutate(cumulative_bins = gsub('\n',' ', cumulative_bins)) %>% 
@@ -1240,7 +1249,7 @@ download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/hea
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables20215.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbfileweek462022.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbfileweek472022.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
