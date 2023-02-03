@@ -47,7 +47,7 @@ areas_to_loop <- c('West Sussex', 'Adur', 'Arun', 'Chichester', 'Crawley', 'Hors
 
 # list.files(github_repo_dir)
 # 2020 MYE
-mye_total <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=2092957699,2013265928,1820327937...1820328318,1816133633...1816133848&date=latest&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
+mye_total <- read_csv('https://www.nomisweb.co.uk/api/v01/dataset/NM_2002_1.data.csv?geography=2092957699,2013265928,1820327937...1820328318,1816133633...1816133848&date=latestMINUS1&gender=0&c_age=200&measures=20100&select=date_name,geography_name,geography_type,geography_code,obs_value') %>% 
   rename(Population = OBS_VALUE,
          Code = GEOGRAPHY_CODE,
          Name = GEOGRAPHY_NAME,
@@ -82,8 +82,6 @@ mye_total <- mye_total %>%
 daily_cases_ltla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
 daily_cases_utla <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=utla&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
 daily_cases_region <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=region&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
-#daily_cases_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&metric=cumCasesBySpecimenDate&metric=newCasesBySpecimenDate&format=csv')  
-
 daily_cases_nation <- read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=newCasesBySpecimenDate&metric=cumCasesBySpecimenDate&format=csv')
 
 daily_cases <- daily_cases_ltla %>% 
@@ -730,11 +728,6 @@ utla_spdf <- as_Spatial(utla_ua_boundaries_geojson, IDs = utla_ua_boundaries_geo
   arrange(CTYUA20CD) %>% 
   left_join(utla_rate, by = c('CTYUA20CD' = 'Code')) 
 
-leaflet() %>% 
-  addPolygons(data = utla_spdf,
-              label = paste0(utla_spdf$CTYUA20CD, ' ', utla_spdf$CTYUA20NM),
-              popup = paste0(utla_spdf$CTYUA20CD, ' ', utla_spdf$CTYUA20NM))
-
 map_theme = function(){
   theme( 
     legend.position = "left", 
@@ -875,10 +868,6 @@ levels(utla_ua_boundaries_rate_geo@data$Perc_change_on_rolling_7_days_tidy)  %>%
 
 # geojson_write(ms_simplify(geojson_json(utla_ua_boundaries_rate_geo), keep = 0.2), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
 
-leaflet() %>% 
-  addPolygons(data = utla_spdf,
-              label = paste0(utla_spdf$CTYUA20CD, ' ', utla_spdf$CTYUA20NM))
-
 geojson_write(geojson_json(utla_ua_boundaries_rate_geo), file = paste0(output_directory_x, '/utla_covid_rate_latest.geojson'))
 
 levels(utla_cumulative_rate_bins$cumulative_bins) %>% 
@@ -890,7 +879,6 @@ levels(utla_rolling_rate_bins$rolling_bins) %>%
   write_lines(paste0(output_directory_x, '/utla_rolling_rate_bins.json'))
 
 # LTLA rate ####
-
 ltla_rate_1 <- p12_test_df %>% 
   ungroup() %>% 
   filter(Date == max(Date)) %>%
@@ -1228,7 +1216,7 @@ five_year_average_df <- read_csv(paste0(github_repo_dir, '/Source files/ons_2015
 # For this data, the week ends on a friday (so friday is the cut off date for each week of data). It might be helpful for us to say as at this date this is the number of deaths. To do this we need to convert each week number into a 'friday date'.
 set_week_start('Friday')
 
-week_ending_a <- data.frame(Week_ending= get_date(week = 1:53, year = 2020)) %>%
+week_ending_a <- data.frame(Week_ending = get_date(week = 1:53, year = 2020)) %>%
   mutate(Week_number = paste0(row_number(), ' - 2020'))
 
 week_ending_b <- data.frame(Week_ending = get_date(week = 2:53, year = 2021)) %>%
@@ -1237,19 +1225,25 @@ week_ending_b <- data.frame(Week_ending = get_date(week = 2:53, year = 2021)) %>
 week_ending_c <- data.frame(Week_ending = get_date(week = 2:53, year = 2022)) %>%
   mutate(Week_number = paste0(row_number(), ' - 2022'))
 
+week_ending_d <- data.frame(Week_ending = get_date(week = 2:53, year = 2023)) %>%
+  mutate(Week_number = paste0(row_number(), ' - 2023'))
+
 week_ending <- week_ending_a %>%
   bind_rows(week_ending_b) %>%
   bind_rows(week_ending_c) %>% 
-  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022"))) %>%
+  bind_rows(week_ending_d) %>% 
+  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022", "1 - 2023", "2 - 2023", "3 - 2023", "4 - 2023",  "5 - 2023",  "6 - 2023",  "7 - 2023", "8 - 2023",  "9 - 2023",  "10 - 2023", "11 - 2023", "12 - 2023", "13 - 2023", "14 - 2023", "15 - 2023", "16 - 2023", "17 - 2023", "18 - 2023", "19 - 2023", "20 - 2023", "21 - 2023", "22 - 2023", "23 - 2023", "24 - 2023", "25 - 2023", "26 - 2023", "27 - 2023", "28 - 2023", "29 - 2023", "30 - 2023", "31 - 2023", "32 - 2023", "33 - 2023", "34 - 2023", "35 - 2023", "36 - 2023", "37 - 2023", "38 - 2023", "39 - 2023", "40 - 2023", "41 - 2023", "42 - 2023", "43 - 2023", "44 - 2023", "45 - 2023", "46 - 2023", "47 - 2023", "48 - 2023", "49 - 2023", "50 - 2023", "51 - 2023", "52 - 2023"))) %>%
   mutate(week_id = row_number())
 
-rm(week_ending_a, week_ending_b, week_ending_c)
+rm(week_ending_a, week_ending_b, week_ending_c, week_ending_d)
 
 download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2020/lahbtablesweek01to532020datawk232021.xlsx', paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), mode = 'wb')
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables20215.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/lahbfileweek512022.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/refreshlahbfileweek522022reg21jan28.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2023/lahbfileweek032023.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2023.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -1262,10 +1256,15 @@ Occurrences_ltla_2022 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_
   mutate(`Week number` = paste0(`Week number`, ' - 2022')) %>% 
   rename('Number of deaths' = Deaths)
 
+Occurrences_ltla_2023 <- (read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2023.xlsx'), sheet = 'Table 2', skip = 5)) %>% 
+  mutate(`Week number` = paste0(`Week number`, ' - 2023')) %>% 
+  rename('Number of deaths' = Deaths)
+
 Occurrences_ltla <- read_excel(paste0(github_repo_dir, '/Source files/ons_mortality_2020.xlsx'), sheet = 'Occurrences - All data', skip = 2) %>% 
   mutate(`Week number` = paste0(`Week number`, ' - 2020')) %>% 
   bind_rows(Occurrences_ltla_2021) %>% 
   bind_rows(Occurrences_ltla_2022) %>% 
+  bind_rows(Occurrences_ltla_2023) %>% 
   rename(Name = `Area name`,
          Cause = `Cause of death`,
          Week_number = `Week number`,
@@ -1288,11 +1287,11 @@ Occurrences_wsx <- Occurrences_ltla %>%
 Occurrences <- Occurrences_ltla %>% 
   bind_rows(Occurrences_wsx) %>% 
   arrange(week_id) %>% 
-  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022"))) %>% 
+  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022", "1 - 2023", "2 - 2023", "3 - 2023", "4 - 2023",  "5 - 2023",  "6 - 2023",  "7 - 2023", "8 - 2023",  "9 - 2023",  "10 - 2023", "11 - 2023", "12 - 2023", "13 - 2023", "14 - 2023", "15 - 2023", "16 - 2023", "17 - 2023", "18 - 2023", "19 - 2023", "20 - 2023", "21 - 2023", "22 - 2023", "23 - 2023", "24 - 2023", "25 - 2023", "26 - 2023", "27 - 2023", "28 - 2023", "29 - 2023", "30 - 2023", "31 - 2023", "32 - 2023", "33 - 2023", "34 - 2023", "35 - 2023", "36 - 2023", "37 - 2023", "38 - 2023", "39 - 2023", "40 - 2023", "41 - 2023", "42 - 2023", "43 - 2023", "44 - 2023", "45 - 2023", "46 - 2023", "47 - 2023", "48 - 2023", "49 - 2023", "50 - 2023", "51 - 2023", "52 - 2023"))) %>% 
   mutate(week_extracted = as.numeric(gsub(' ', '', substr(Week_number, 1,2)))) %>% 
   left_join(five_year_average_df, by = c('Name', 'Place_of_death', 'week_extracted'))
 
-rm(Occurrences_ltla, Occurrences_wsx, Occurrences_ltla_2021, Occurrences_ltla_2022)
+rm(Occurrences_ltla, Occurrences_wsx, Occurrences_ltla_2021, Occurrences_ltla_2022, Occurrences_ltla_2023)
 
 deaths_labels <- Occurrences %>% 
   arrange(week_id) %>% 
@@ -1736,7 +1735,7 @@ growth_rate_utla <- growth_rate %>%
   filter(Type %in% c('Upper Tier Local Authority', 'Unitary Authority') | Name == 'England')
 
 growth_rate_utla %>% 
-  filter(Date >= '2021-12-01') %>%
+  filter(Date >= '2022-04-01') %>%
   mutate(Name = factor(Name, levels = c(setdiff(unique(growth_rate_utla$Name), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')), c('Brighton and Hove', 'East Sussex', 'West Sussex', 'England')))) %>% 
   arrange(Name) %>% 
   select(Name, Date, Rolling_7_day_rate, Change_actual_by_week, Perc_change_on_rolling_7_days_tidy, Label_1, Label_2) %>% 
@@ -1751,7 +1750,7 @@ growth_rate_utla %>%
   write_lines(paste0(output_directory_x,'/wsx_eng_rate_change.json'))
 
 growth_rate_utla %>% 
-  filter(Date >= '2021-12-01') %>%
+  filter(Date >= '2022-04-01') %>%
   select(Date) %>% 
   unique() %>% 
   arrange(Date) %>% 
@@ -2402,7 +2401,6 @@ vaccine_age_df <- bind_rows(dflist) %>%
 #   filter(age != '75+') %>% 
 #   filter(VaccineRegisterPopulationByVaccinationDate == 0) 
 # 
-
 # Currently routinely, 12-15 year olds have one dose, 16-17 year olds will be offered two doses, and 18+ will get three
 vaccine_age_df_1 <- vaccine_age_df %>% 
   filter(Denominator != 0) %>% 
@@ -2498,14 +2496,14 @@ vaccine_ts_df %>%
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_latest_dose_date.json'))
 
-vaccination_area_ts_df_long <- vaccine_ts_df %>% 
+vaccination_area_ts_df_long <- vaccine_ts_df %>%
   select(Name, Date, Seven_day_sum_dose_1, Seven_day_sum_dose_2, Seven_day_sum_dose_3_or_booster) %>% 
   pivot_longer(cols = c('Seven_day_sum_dose_1', 'Seven_day_sum_dose_2', 'Seven_day_sum_dose_3_or_booster'),
                names_to = 'Dose_number',
                values_to = 'Seven_day_rolling_vaccinations') %>% 
   mutate(Dose_number = ifelse(Dose_number == 'Seven_day_sum_dose_1', 'Dose_1', ifelse(Dose_number == 'Seven_day_sum_dose_2', 'Dose_2', ifelse(Dose_number == 'Seven_day_sum_dose_3_or_booster', 'Dose_3_or_booster', NA))))
 
-vaccination_area_ts_rate_df_long <- vaccine_ts_df %>% 
+vaccination_area_ts_rate_df_long <- vaccine_ts_df %>%
   select(Name, Date, Rolling_age_specific_first_dose_rate_per_100000, Rolling_age_specific_second_dose_rate_per_100000, Rolling_age_specific_third_or_booster_dose_rate_per_100000) %>% 
   pivot_longer(cols = c('Rolling_age_specific_first_dose_rate_per_100000', 'Rolling_age_specific_second_dose_rate_per_100000', 'Rolling_age_specific_third_or_booster_dose_rate_per_100000'),
                names_to = 'Dose_number',
@@ -2540,7 +2538,6 @@ vaccination_area_ts_df_long %>%
   write_lines(paste0(output_directory_x, '/vaccination_timeseries_overall.json'))
 
 # Week by week change ####
-
 set_week_start('Monday')
 
 # Create a dataframe consisting of 52 rows (one for each week) with the field 'Week_start' as the date of the start of each week. Add a number corresponding to the week number, create a string called match_key (which we will use to match the filepath to the week) and then a formatted label for the dates included in the week.
@@ -2553,19 +2550,23 @@ week_starting_b <- data.frame(Week_start = get_date(week = 1:52, year = 2021)) %
 week_starting_c <- data.frame(Week_start = get_date(week = 1:52, year = 2022)) %>%
   mutate(Week_number = paste0(row_number(), ' - 2022'))
 
+week_starting_d <- data.frame(Week_start = get_date(week = 1:52, year = 2023)) %>%
+  mutate(Week_number = paste0(row_number(), ' - 2023'))
+
 week_start_vac <- week_starting_a %>%
   bind_rows(week_starting_b) %>%
   bind_rows(week_starting_c) %>% 
+  bind_rows(week_starting_d) %>% 
   mutate(Week_range_label = paste0(format(Week_start, '%d %b'), ' to ', format(Week_start + 6, '%d %b %Y'))) %>%
-  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022"))) %>%
+  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022", "1 - 2023", "2 - 2023", "3 - 2023", "4 - 2023",  "5 - 2023",  "6 - 2023",  "7 - 2023", "8 - 2023",  "9 - 2023",  "10 - 2023", "11 - 2023", "12 - 2023", "13 - 2023", "14 - 2023", "15 - 2023", "16 - 2023", "17 - 2023", "18 - 2023", "19 - 2023", "20 - 2023", "21 - 2023", "22 - 2023", "23 - 2023", "24 - 2023", "25 - 2023", "26 - 2023", "27 - 2023", "28 - 2023", "29 - 2023", "30 - 2023", "31 - 2023", "32 - 2023", "33 - 2023", "34 - 2023", "35 - 2023", "36 - 2023", "37 - 2023", "38 - 2023", "39 - 2023", "40 - 2023", "41 - 2023", "42 - 2023", "43 - 2023", "44 - 2023", "45 - 2023", "46 - 2023", "47 - 2023", "48 - 2023", "49 - 2023", "50 - 2023", "51 - 2023", "52 - 2023"))) %>%
   mutate(week_id = row_number())
 
-rm(week_starting_a, week_starting_b, week_starting_c)
+rm(week_starting_a, week_starting_b, week_starting_c, week_starting_d)
 
 all_age_vac <- vaccine_ts_df %>% 
-  mutate(Week_number = paste0(date2week(Date, numeric = TRUE), ifelse(Date < '2021-01-04', ' - 2020', ifelse(Date < '2022-01-03', ' - 2021', ' - 2022' )))) %>% 
+  mutate(Week_number = paste0(date2week(Date, numeric = TRUE), ifelse(Date < '2021-01-04', ' - 2020', ifelse(Date < '2022-01-03', ' - 2021',  ifelse(Date < '2023-01-02', ' - 2022', ' - 2023' ))))) %>% 
   left_join(week_start_vac, by = 'Week_number') %>% 
-  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022"))) %>% 
+  mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022", "1 - 2023", "2 - 2023", "3 - 2023", "4 - 2023",  "5 - 2023",  "6 - 2023",  "7 - 2023", "8 - 2023",  "9 - 2023",  "10 - 2023", "11 - 2023", "12 - 2023", "13 - 2023", "14 - 2023", "15 - 2023", "16 - 2023", "17 - 2023", "18 - 2023", "19 - 2023", "20 - 2023", "21 - 2023", "22 - 2023", "23 - 2023", "24 - 2023", "25 - 2023", "26 - 2023", "27 - 2023", "28 - 2023", "29 - 2023", "30 - 2023", "31 - 2023", "32 - 2023", "33 - 2023", "34 - 2023", "35 - 2023", "36 - 2023", "37 - 2023", "38 - 2023", "39 - 2023", "40 - 2023", "41 - 2023", "42 - 2023", "43 - 2023", "44 - 2023", "45 - 2023", "46 - 2023", "47 - 2023", "48 - 2023", "49 - 2023", "50 - 2023", "51 - 2023", "52 - 2023"))) %>% 
   mutate(Age_group = ifelse(Age_group %in% c('60-64 years','65-69 years','70-74 years','75-79 years','80-84 years','85-89 years','90+ years'), '60+ years', Age_group)) %>% 
   group_by(Name, Age_group, Week_number, Week_start, Week_range_label) %>% 
   summarise(Dose_1 = sum(Dose_1, na.rm = TRUE),
@@ -2573,7 +2574,7 @@ all_age_vac <- vaccine_ts_df %>%
             Dose_3_or_booster = sum(Dose_3_or_booster, na.rm = TRUE)) %>% 
   ungroup()
 
-week_x <- ifelse(paste0(date2week(last_date, numeric = TRUE)-1, ifelse(last_date < '2021-01-04', ' - 2020', ifelse(last_date < '2022-01-03', ' - 2021', ' - 2022'))) == '0 - 2021', '53 - 2020', ifelse(paste0(date2week(last_date, numeric = TRUE) - 1, ifelse(last_date < '2021-01-04', ' - 2020', ifelse(last_date < '2022-01-03', ' - 2021', ' - 2022'))) == '0 - 2022', '52 - 2021', paste0(date2week(last_date, numeric = TRUE) - 1, ifelse(last_date < '2021-01-04', ' - 2020', ifelse(last_date < '2022-01-03', ' - 2021', ' - 2022')))))
+week_x <- ifelse(paste0(date2week(last_date, numeric = TRUE)-1, ifelse(last_date < '2021-01-04', ' - 2020', ifelse(last_date < '2022-01-03', ' - 2021', ifelse(last_date < '2023-01-02', ' - 2022',  ' - 2023')))) == '0 - 2021', '53 - 2020', ifelse(paste0(date2week(last_date, numeric = TRUE)-1, ifelse(last_date < '2021-01-04', ' - 2020', ifelse(last_date < '2022-01-03', ' - 2021', ifelse(last_date < '2023-01-02', ' - 2022',  ' - 2023')))) == '0 - 2022', '52 - 2021', ifelse(paste0(date2week(last_date, numeric = TRUE)-1, ifelse(last_date < '2021-01-04', ' - 2020', ifelse(last_date < '2022-01-03', ' - 2021', ifelse(last_date < '2023-01-02', ' - 2022',  ' - 2023')))) == '0 - 2023', '52 - 2022',  paste0(date2week(last_date, numeric = TRUE)-1, ifelse(last_date < '2021-01-04', ' - 2020', ifelse(last_date < '2022-01-03', ' - 2021', ifelse(last_date < '2023-01-02', ' - 2022',  ' - 2023')))))))
 
 date_weeks_x <- week_start_vac %>%
   filter(Week_number == week_x)
@@ -2656,7 +2657,7 @@ cumulative_vac %>%
 # Week by week percentage
 
 weekly_prop_df <- vaccine_ts_df %>% 
-  mutate(Week_number = paste0(date2week(Date, numeric = TRUE), ifelse(Date < '2021-01-04', ' - 2020',ifelse(Date < '2022-01-03', ' - 2021', ' - 2022' )))) %>% 
+  mutate(Week_number = paste0(date2week(Date, numeric = TRUE), ifelse(Date < '2021-01-04', ' - 2020', ifelse(Date < '2022-01-03', ' - 2021', ifelse(Date < '2023-01-02', ' - 2022', ' - 2023' ))))) %>% 
   left_join(week_start_vac, by = 'Week_number') %>% 
   mutate(Week_number = factor(Week_number, levels = c("1 - 2020", "2 - 2020",  "3 - 2020", "4 - 2020",  "5 - 2020",  "6 - 2020",  "7 - 2020",  "8 - 2020",  "9 - 2020",  "10 - 2020", "11 - 2020", "12 - 2020", "13 - 2020", "14 - 2020", "15 - 2020", "16 - 2020", "17 - 2020", "18 - 2020", "19 - 2020", "20 - 2020", "21 - 2020", "22 - 2020", "23 - 2020", "24 - 2020", "25 - 2020", "26 - 2020", "27 - 2020", "28 - 2020", "29 - 2020", "30 - 2020", "31 - 2020", "32 - 2020", "33 - 2020", "34 - 2020", "35 - 2020", "36 - 2020", "37 - 2020", "38 - 2020", "39 - 2020", "40 - 2020", "41 - 2020", "42 - 2020", "43 - 2020", "44 - 2020", "45 - 2020", "46 - 2020", "47 - 2020", "48 - 2020", "49 - 2020", "50 - 2020", "51 - 2020", "52 - 2020", "53 - 2020", "1 - 2021", "2 - 2021", "3 - 2021", "4 - 2021",  "5 - 2021",  "6 - 2021",  "7 - 2021", "8 - 2021",  "9 - 2021",  "10 - 2021", "11 - 2021", "12 - 2021", "13 - 2021", "14 - 2021", "15 - 2021", "16 - 2021", "17 - 2021", "18 - 2021", "19 - 2021", "20 - 2021", "21 - 2021", "22 - 2021", "23 - 2021", "24 - 2021", "25 - 2021", "26 - 2021", "27 - 2021", "28 - 2021", "29 - 2021", "30 - 2021", "31 - 2021", "32 - 2021", "33 - 2021", "34 - 2021", "35 - 2021", "36 - 2021", "37 - 2021", "38 - 2021", "39 - 2021", "40 - 2021", "41 - 2021", "42 - 2021", "43 - 2021", "44 - 2021", "45 - 2021", "46 - 2021", "47 - 2021", "48 - 2021", "49 - 2021", "50 - 2021", "51 - 2021", "52 - 2021", "1 - 2022", "2 - 2022", "3 - 2022", "4 - 2022",  "5 - 2022",  "6 - 2022",  "7 - 2022", "8 - 2022",  "9 - 2022",  "10 - 2022", "11 - 2022", "12 - 2022", "13 - 2022", "14 - 2022", "15 - 2022", "16 - 2022", "17 - 2022", "18 - 2022", "19 - 2022", "20 - 2022", "21 - 2022", "22 - 2022", "23 - 2022", "24 - 2022", "25 - 2022", "26 - 2022", "27 - 2022", "28 - 2022", "29 - 2022", "30 - 2022", "31 - 2022", "32 - 2022", "33 - 2022", "34 - 2022", "35 - 2022", "36 - 2022", "37 - 2022", "38 - 2022", "39 - 2022", "40 - 2022", "41 - 2022", "42 - 2022", "43 - 2022", "44 - 2022", "45 - 2022", "46 - 2022", "47 - 2022", "48 - 2022", "49 - 2022", "50 - 2022", "51 - 2022", "52 - 2022"))) %>% 
   # mutate(Age_group = ifelse(Age_group %in% c('60-64 years','65-69 years','70-74 years','75-79 years','80-84 years','85-89 years','90+ years'), '60+ years', Age_group)) %>% 
@@ -2784,5 +2785,3 @@ vaccine_df_ltla_pt_1 %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
-
-

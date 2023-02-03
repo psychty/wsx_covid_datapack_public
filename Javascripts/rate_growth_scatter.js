@@ -172,7 +172,7 @@ function new_date_growth_utla() {
 // UTLA slider
 // This is not great, but it takes the number of unique dates and recreates an array of dates from september 01
 var dataTime = d3.range(0, utla_growth_ts_dates.length).map(function (d) {
-  return new Date(2021, 11, 01 + d);
+  return new Date(2022, 03, 01 + d);
 });
 
 console.log(utla_growth_ts_dates);
@@ -563,7 +563,7 @@ function new_date_growth_ltla() {
 // LTLA date slider
 // This is not great, but it takes the number of unique dates and recreates an array of dates from November 01
 var dataTime_ltla = d3.range(0, ltla_growth_ts_dates.length).map(function (d) {
-  return new Date(2021, 11, 01 + d);
+  return new Date(2022, 03, 01 + d);
 });
 
 var sliderTime_ltla = d3
