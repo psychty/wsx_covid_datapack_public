@@ -1241,9 +1241,9 @@ download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/hea
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables20215.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/refreshlahbfileweek522022reg21jan28.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/refreshlahbfileweek522022regmar25.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2023/lahbfileweek032023.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2023.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2023/lahbfileweek112023.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2023.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
@@ -2785,3 +2785,4 @@ vaccine_df_ltla_pt_1 %>%
   arrange(Name) %>% 
   toJSON() %>% 
   write_lines(paste0(output_directory_x, '/vaccine_at_a_glance.json'))  
+
