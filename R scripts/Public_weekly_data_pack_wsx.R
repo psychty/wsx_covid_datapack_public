@@ -528,7 +528,7 @@ new_case_rate_plot <- ggplot(hm_df, aes(x = Date,
        y = NULL,
        caption = 'Cases for dates after the red dashed line are not considered complete due to a lag in test result reporting.') +
   scale_x_date(date_labels = "%d %b %Y",
-               breaks = seq.Date((last_date -1) -(104*7), last_date -1, by = 14),
+               breaks = seq.Date((last_date -1) -(208*7), last_date -1, by = 28),
                limits = c(min(hm_df$Date), max(hm_df$Date)),
                expand = c(0,0.0)) +
   hm_theme() +
@@ -545,9 +545,9 @@ new_case_rate_plot <- ggplot(hm_df, aes(x = Date,
                xend = complete_date + 1,
                yend = Inf,
                color = "red",
-               size = .15,
+               linewidth = .15,
                linetype = "dashed") 
-
+# here ####
 png(paste0(output_directory_x, '/Figure_2_confirmed_heatmap_rate.png'),
     width = 1480,
     height = 650,
@@ -794,7 +794,7 @@ inset_1 <- ggplot() +
   scale_fill_manual(values = c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'),
                     name = 'Decile of cumulative\nrate per 100k') +
   labs(title = 'London') +
-  theme(plot.background  = element_rect(colour = "black", fill=NA, size=.1),
+  theme(plot.background  = element_rect(colour = "black", fill=NA, linewidth=.1),
         plot.title = element_text(size = 8))
 
 png(paste0(output_directory_x, '/Figure_3_cumulative_rate_utla_latest.png'),
@@ -1241,9 +1241,9 @@ download.file('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/hea
 
 download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables20215.xlsx'),paste0(github_repo_dir, '/Source files/ons_mortality_2021.xlsx'),  mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/refreshlahbfileweek522022regmar25.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2022/refreshlahbfileweek522022regapr8.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2022.xlsx'), mode = 'wb')
 
-download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2023/lahbfileweek112023.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2023.xlsx'), mode = 'wb')
+download.file(paste0('https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2023/lahbfileweek132023.xlsx'),  paste0(github_repo_dir, '/Source files/ons_mortality_2023.xlsx'), mode = 'wb')
 
 # Use occurrences, be mindful that the most recent week of occurrence data may not be complete if the death is not registered within 7 days (there is a week lag in reporting to allow up to seven days for registration to take place), this will be updated each week. Estimates suggest around 74% of deaths in England and Wales are registered within seven calendar days of occurrence, with the proportion as low as 68% in the South East region. It is difficult to know what impact Covid-19 has on length of time taken to register a death. 
 
